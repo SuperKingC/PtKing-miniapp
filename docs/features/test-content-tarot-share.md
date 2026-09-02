@@ -2,6 +2,28 @@
 
 状态：已落地（代码与测试全绿，待用户开发者工具预览验收）
 
+> 更新（415edff）：存档 bug 真修复（wxGlobal）、factor 计分模式、测试扩至 17 个。
+> 详见下文「存档 bug 修复」与「factor 模式」章节；最新清单见 testRegistrySanity.test.ts。
+
+## 存档 bug 修复（测完没有报告的真因）
+
+微信运行时把 `wx` 注入到**每个模块的闭包作用域**，而不一定挂在 `globalThis` 上（真机尤甚）。
+此前 `(globalThis as ...).wx` 守卫在真机上全部落空 → `saveTestRecord` 静默空操作 → 报告页查无记录。
+修复：新增 `services/wxGlobal.ts`（`typeof wx` 裸标识符探测优先 + globalThis 兜底 + node/vitest 安全），
+testRecords / tarotHistory / shareMenu / dynamicTests / assetBaseUrl 五处统一切换。
+
+## factor 计分模式（第四种）
+
+`factorWeights` 多因素累加 → 单因素按 `count × maxWeight` 归一化为百分位 →
+因素级 `reverse` 取反 → 主导因素（并列按定义序）经 `reportByFactor` 映射到报告。
+适用多维度剖析型测试（大五/暗黑）。注意：反向题若已在定义侧反转计分，因素级不要再声明 reverse（避免双重取反）。
+
+## 17 测试清单（按首页展示顺序）
+
+MBTI(28题/维度)、大五人格(30题/factor)、暗黑人格(27题/factor)、恋爱人格、依恋风格、社交人格、
+单身力、天赋能力、职场角色、情商测评、职场倦怠、宠物人格(6型)、憨憨指数(band max30)、
+内耗指数、睡眠质量、精神年龄、手机依赖。
+
 ## M2 测试内容扩量
 
 - 新增 4 个测试定义（`domain/tests/`）：
