@@ -1,0 +1,86 @@
+import type { TestDefinition } from '../testEngine'
+
+/**
+ * 单身力测试（band 模式）：8 题、每题 0-3 分四档，总分 0-24 落三档。
+ * 「单身力」= 单身生活的自洽程度，趣味向，无婚恋评判色彩。
+ */
+
+const OPTIONS: TestDefinition['questions'][number]['options'] = [
+  { text: '完全不是我', weight: 0 },
+  { text: '偶尔有一点', weight: 1 },
+  { text: '经常如此', weight: 2 },
+  { text: '就是我本人', weight: 3 },
+]
+
+function q(text: string): TestDefinition['questions'][number] {
+  return { text, options: OPTIONS.map((option) => ({ ...option })) }
+}
+
+export const SINGLE_TEST: TestDefinition = {
+  id: 'single-power',
+  title: '单身力测试',
+  category: '情感',
+  meta: { minutes: 2, resultLabel: '3 档 · 解读' },
+  intro: [
+    '单身力，不是「喜欢单身」，而是单身时也能把日子过好的能力：一个人吃饭不将就、一个人旅行够尽兴、情绪有出口、生活有秩序。',
+    '8 道日常题，测测你的单身自洽指数——分数高低都不重要，重要的是知道自己现在处在哪个状态。',
+  ],
+  notice: '该测试可免费测试+查看个人结果报告，包含单身力解读与生活建议。感谢你的理解与支持。',
+  questions: [
+    q('一个人吃饭，你会好好做一顿/认真点一桌吗？'),
+    q('周末没有安排，你会觉得自在还是慌？'),
+    q('看到别人秀恩爱，你的真实感受？'),
+    q('生病一个人扛，你能照顾好自己吗？'),
+    q('你的兴趣爱好，能填满下班后的时间吗？'),
+    q('深夜emo来袭，你有稳定的排解方式吗？'),
+    q('你做重大决定时，需要别人拿主意吗？'),
+    q('对未来伴侣的态度，你更接近？'),
+  ],
+  scoring: {
+    type: 'band',
+    max: 24,
+    bands: [
+      { min: 0, max: 8, reportId: 'single-growing' },
+      { min: 9, max: 16, reportId: 'single-steady' },
+      { min: 17, max: 24, reportId: 'single-flourish' },
+    ],
+  },
+  reports: {
+    'single-growing': {
+      id: 'single-growing',
+      title: '充电进行时',
+      tagline: '一个人有点慌，但正在学会稳',
+      summary:
+        '你的单身力还在充电阶段。一个人的时候容易空虚，热闹散场后的落差感也常找上门——这不丢人，大多数人都从这里起步。好消息是：单身力是一项可练的技能，而你已经在测了。',
+      detail: [
+        '第一步：把「一个人吃饭」升级成「认真吃饭」，仪式感是自洽的起点。',
+        '小建议：培养一个能独立完成的爱好，填满最容易慌的周末早晨。',
+        '小提醒：找朋友搭子不丢人，但别把排解孤独全押在别人身上。',
+      ],
+    },
+    'single-steady': {
+      id: 'single-steady',
+      title: '自洽进行时',
+      tagline: '一个人挺好，偶尔也想要个拥抱',
+      summary:
+        '你的单身力处于健康区间。大部分时间你能把日子过得有声有色，偶尔emo也知道怎么接住自己。你不是「不需要人」，而是「有也行、没有也能过」——这正是最好的状态。',
+      detail: [
+        '你的优势：情绪有出口、生活有节奏，独处和社交切换自如。',
+        '小建议：保持一个「独自完成的小成就清单」，低谷时拿出来看。',
+        '小提醒：别因为「过得挺好」就关闭心门，值得的人出现时留扇门。',
+      ],
+    },
+    'single-flourish': {
+      id: 'single-flourish',
+      title: '单身满级',
+      tagline: '你不是没人爱，是把自己爱得很满',
+      summary:
+        '你的单身力接近满级。一个人也能把生活过成想要的样子：吃饭认真、兴趣丰富、情绪自洽、决定自主。你的单身是选择，不是将就。',
+      detail: [
+        '你的优势：完整的自我是你最大的魅力，在任何关系里都不会失去自己。',
+        '小建议：把你的生活方式分享给需要的人，你比想象中更有影响力。',
+        '小提醒：满级不是终点，遇到心动时勇敢一点，你输得起也赢得多。',
+      ],
+    },
+  },
+}

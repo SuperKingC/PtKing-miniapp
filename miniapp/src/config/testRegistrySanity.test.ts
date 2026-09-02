@@ -13,9 +13,29 @@ const CLINICAL_HINTS = [/确诊/, /病理/, /用药建议/]
 describe('test registry sanity (all published tests)', () => {
   const definitions = listTestDefinitions()
 
-  it('publishes the M2 five-test lineup in a stable order', () => {
-    expect(TEST_LIST_ORDER).toEqual(['mbti', 'love-persona', 'gift', 'overthink', 'sleep'])
-    expect(definitions).toHaveLength(5)
+  it('publishes the M2.5 twelve-test lineup in a stable order', () => {
+    expect(TEST_LIST_ORDER).toEqual([
+      'mbti',
+      'love-persona',
+      'attachment-style',
+      'social-style',
+      'single-power',
+      'gift',
+      'work-role',
+      'eq',
+      'burnout',
+      'overthink',
+      'sleep',
+      'mind-age',
+      'phone-addiction',
+    ])
+  })
+
+  it('covers every category with at least one test', () => {
+    const categories = new Set(listTestDefinitions().map((def) => def.category))
+    for (const category of ['人格', '情感', '职场', '趣味']) {
+      expect(categories.has(category as never)).toBe(true)
+    }
   })
 
   it('keeps ids unique and kebab-cased', () => {
@@ -31,7 +51,7 @@ describe('test registry sanity (all published tests)', () => {
     (_id, def) => {
       // 结构完整
       expect(def.title).toBeTruthy()
-      expect(def.category).toMatch(/^(人格|情感|趣味)$/)
+      expect(def.category).toMatch(/^(人格|情感|职场|趣味)$/)
       expect(def.meta.minutes).toBeGreaterThan(0)
       expect(def.meta.resultLabel).toBeTruthy()
       expect(def.intro.length).toBeGreaterThanOrEqual(2)

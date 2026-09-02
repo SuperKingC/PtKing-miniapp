@@ -46,7 +46,7 @@ export type TestScoring =
 export interface TestDefinition {
   id: string
   title: string
-  category: '人格' | '情感' | '趣味'
+  category: '人格' | '情感' | '职场' | '趣味'
   meta: TestMeta
   intro: string[]
   notice: string

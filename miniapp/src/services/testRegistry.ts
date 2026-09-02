@@ -4,6 +4,14 @@ import { LOVE_PERSONA_TEST } from '../domain/tests/lovePersonaTest'
 import { GIFT_TEST } from '../domain/tests/giftTest'
 import { OVERTHINK_TEST } from '../domain/tests/overthinkTest'
 import { SLEEP_TEST } from '../domain/tests/sleepTest'
+import { SOCIAL_TEST } from '../domain/tests/socialStyleTest'
+import { ATTACHMENT_TEST } from '../domain/tests/attachmentStyleTest'
+import { SINGLE_TEST } from '../domain/tests/singlePowerTest'
+import { WORK_ROLE_TEST } from '../domain/tests/workRoleTest'
+import { BURNOUT_TEST } from '../domain/tests/burnoutTest'
+import { EQ_TEST } from '../domain/tests/eqTest'
+import { MIND_AGE_TEST } from '../domain/tests/mindAgeTest'
+import { PHONE_TEST } from '../domain/tests/phoneTest'
 
 /**
  * 测试注册表：静态内置定义兜底 + COS JSON 动态下发合并（M2）。
@@ -19,15 +27,31 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
   [GIFT_TEST.id]: GIFT_TEST,
   [OVERTHINK_TEST.id]: OVERTHINK_TEST,
   [SLEEP_TEST.id]: SLEEP_TEST,
+  [SOCIAL_TEST.id]: SOCIAL_TEST,
+  [ATTACHMENT_TEST.id]: ATTACHMENT_TEST,
+  [SINGLE_TEST.id]: SINGLE_TEST,
+  [WORK_ROLE_TEST.id]: WORK_ROLE_TEST,
+  [BURNOUT_TEST.id]: BURNOUT_TEST,
+  [EQ_TEST.id]: EQ_TEST,
+  [MIND_AGE_TEST.id]: MIND_AGE_TEST,
+  [PHONE_TEST.id]: PHONE_TEST,
 }
 
 /** 首页卡片展示顺序：静态顺序为基，动态新增的测试排在其后 */
 let listOrder: string[] = [
   MBTI_TEST.id,
   LOVE_PERSONA_TEST.id,
+  ATTACHMENT_TEST.id,
+  SOCIAL_TEST.id,
+  SINGLE_TEST.id,
   GIFT_TEST.id,
+  WORK_ROLE_TEST.id,
+  EQ_TEST.id,
+  BURNOUT_TEST.id,
   OVERTHINK_TEST.id,
   SLEEP_TEST.id,
+  MIND_AGE_TEST.id,
+  PHONE_TEST.id,
 ]
 
 let definitions: Record<string, TestDefinition> = { ...STATIC_DEFINITIONS }

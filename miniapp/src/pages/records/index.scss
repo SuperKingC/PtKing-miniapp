@@ -11,6 +11,35 @@
   font-size: var(--font-size-body);
 }
 
+.records-page__stats {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.records-page__stat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 28rpx 12rpx;
+  border-radius: 24rpx;
+  background: var(--color-card-bg);
+}
+
+.records-page__stat-value {
+  max-width: 100%;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.records-page__stat-label {
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
 .records-page__list {
   display: flex;
   flex-direction: column;
