@@ -1,12 +1,15 @@
 import { Text, View } from '@tarojs/components'
+import { useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions } from '../../services/testRegistry'
 import './index.scss'
 
 const QUICK_CATEGORIES = ['最新测试', '热门测试', '情感恋爱', '人格自我'] as const
 
-// 测试中心首页：注册表数据驱动（M1 只有 MBTI 一张可测卡；M2 COS 下发扩量后卡片自动增加）
+// 测试中心首页：注册表数据驱动（M2 起五个静态测试 + COS 下发扩量后卡片自动增加）
 export default function TestPage() {
   const definitions = listTestDefinitions()
+
+  useShareAppMessage(() => ({ title: 'PtKing · 测测你的隐藏人格' }))
 
   return (
     <View className="test-page">

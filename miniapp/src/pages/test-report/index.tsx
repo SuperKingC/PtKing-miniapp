@@ -1,12 +1,13 @@
 import { useMemo } from 'react'
 import { Text, View } from '@tarojs/components'
-import { useRouter } from '@tarojs/taro'
+import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro'
 import { getTestDefinition } from '../../services/testRegistry'
 import { loadTestRecords } from '../../services/testRecords'
 import './index.scss'
 
 // 报告页：结果标题 + tagline + 维度条（dimension 模式）/分数（band 模式）+ 摘要 + 三条解读 + 行动按钮。
-// 报告数据取最近一次该测试的本地记录（答题页落库后 redirect 过来，必有记录）
+// 报告数据取最近一次该测试的本地记录（答题页落库后 redirect 过来，必有记录）。
+// M4 分享：报告页转发给好友时带结果型标题（不剧透具体答案内容）
 export default function TestReportPage() {
   const router = useRouter()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
@@ -15,6 +16,15 @@ export default function TestReportPage() {
     if (!definition) return null
     return loadTestRecords().find((item) => item.testId === definition.id) ?? null
   }, [definition])
+
+  useShareAppMessage(() => {
+    const report = definition && record ? definition.reports[record.result.reportId] : null
+    return {
+      title: report
+        ? `我在 ${definition!.title} 里测出了「${report.title}」，你也来试试`
+        : 'PtKing · 来测测你的隐藏人格',
+    }
+  })
 
   if (!definition || !record) {
     return (
