@@ -1,9 +1,11 @@
 import type { TestResult } from '../domain/testEngine'
+import { getWxGlobal } from './wxGlobal'
 
 /**
  * 测试记录存储（M1 本地 storage 版；M2 迁服务端，关联 openid 跨设备同步）。
  * 注意 Taro getStorageSync 无值时返回空串而非 undefined（Pet10 698990d 教训），
- * 读取必须加 typeof 守卫。模块用守卫式 wx 全局读写，node/vitest 里可安全 import。
+ * 读取必须加 typeof 守卫。wx 访问统一走 getWxGlobal（真机闭包注入兼容，见 wxGlobal.ts），
+ * node/vitest 里无 wx 返回 undefined，调用方走静默兜底。
  */
 
 export interface TestRecord {
@@ -18,8 +20,7 @@ const MAX_RECORDS = 200
 
 function readStorage(): unknown {
   try {
-    const wxApi = (globalThis as { wx?: { getStorageSync?: (key: string) => unknown } }).wx
-    return wxApi?.getStorageSync?.(STORAGE_KEY)
+    return getWxGlobal()?.getStorageSync?.(STORAGE_KEY)
   } catch {
     return ''
   }
@@ -27,8 +28,7 @@ function readStorage(): unknown {
 
 function writeStorage(payload: TestRecord[]): void {
   try {
-    const wxApi = (globalThis as { wx?: { setStorageSync?: (key: string, value: unknown) => void } }).wx
-    wxApi?.setStorageSync?.(STORAGE_KEY, payload)
+    getWxGlobal()?.setStorageSync?.(STORAGE_KEY, payload)
   } catch {
     // 存储写入失败不阻断流程（记录是增强功能，不是主链路）
   }

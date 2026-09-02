@@ -11,7 +11,7 @@ describe('share capability wiring', () => {
 
     expect(app).toContain('showShareMenu()')
     expect(app).toMatch(/useEffect\(\(\) => \{\s*showShareMenu\(\)/)
-    expect(service).toContain('showShareMenu?:')
+    expect(service).toContain('getWxGlobal()?.showShareMenu')
   })
 
   it('registers result-flavored share titles on the report page', () => {

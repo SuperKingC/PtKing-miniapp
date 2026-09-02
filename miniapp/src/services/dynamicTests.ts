@@ -1,5 +1,6 @@
 import { applyDynamicTestDefinitions } from './testRegistry'
 import { isValidTestDefinition } from './testRegistryMerge'
+import { getWxGlobal } from './wxGlobal'
 
 /**
  * COS 动态测试下发（M2）：从资产根 {根}/tests/registry-vN.json 拉取定义数组，
@@ -8,25 +9,17 @@ import { isValidTestDefinition } from './testRegistryMerge'
  */
 const REGISTRY_JSON_PATH = '/tests/registry-v1.json'
 
-interface WxRequestLike {
-  request?: (options: {
-    url: string
-    success?: (res: { data?: unknown }) => void
-    fail?: () => void
-  }) => void
-}
-
 export async function loadDynamicTests(baseUrl: string): Promise<void> {
   const trimmed = baseUrl.replace(/\/$/, '')
   if (!trimmed) return
-  const wxApi = (globalThis as { wx?: WxRequestLike }).wx
-  if (!wxApi?.request) return
+  const request = getWxGlobal()?.request
+  if (!request) return
 
   try {
     const data = await new Promise<unknown>((resolve, reject) => {
-      wxApi.request!({
+      request({
         url: `${trimmed}${REGISTRY_JSON_PATH}`,
-        success: (res) => resolve(res?.data),
+        success: (res: { data?: unknown }) => resolve(res?.data),
         fail: () => reject(new Error('request_failed')),
       })
     })

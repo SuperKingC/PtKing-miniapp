@@ -3,8 +3,9 @@
  * 构建时注入：TARO_ASSET_BASE_URL（正式域名+版本目录，M0 阶段有占位默认值）；
  * TARO_ASSET_DEV_BASE_URL 仅本地开发构建注入（本机 http-server 模拟 COS）。
  * 子路径由各功能自持：测试内容拼 {根}/tests/...，塔罗拼 {根}/tarot/...，本模块只管根地址。
- * 注意：这里不能静态 import @tarojs/taro（在 node/vitest 里导入即崩），平台读取走守卫式 wx 全局。
+ * 注意：这里不能静态 import @tarojs/taro（在 node/vitest 里导入即崩），平台读取走 wxGlobal 守卫。
  */
+import { getWxGlobal } from './wxGlobal'
 
 const prodBaseUrl = (
   typeof TARO_ASSET_BASE_URL === 'string' ? TARO_ASSET_BASE_URL : ''
@@ -30,7 +31,7 @@ export function resolveAssetBaseUrlForPlatform(
 
 function currentPlatform(): string {
   try {
-    const wxApi = (globalThis as { wx?: { getSystemInfoSync?: () => { platform?: string } } }).wx
+    const wxApi = getWxGlobal()
     return wxApi?.getSystemInfoSync?.().platform ?? ''
   } catch {
     return ''

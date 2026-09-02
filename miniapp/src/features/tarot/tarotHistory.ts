@@ -1,17 +1,17 @@
 import type { TarotReading } from './tarotReading'
+import { getWxGlobal } from '../../services/wxGlobal'
 
 /**
  * 塔罗解读历史（本地 storage，最新在前，上限 20 条）。
- * 用守卫式 wx 全局读写（不在模块顶层 import Taro：node/vitest 里静态导入即崩），
- * 读侧对非数组/坏结构一律回退空数组。
+ * wx 访问统一走 getWxGlobal（不静态 import Taro：node/vitest 里导入即崩；
+ * 真机闭包注入兼容见 wxGlobal.ts），读侧对非数组/坏结构一律回退空数组。
  */
 const historyKey = 'ptking_tarot_history'
 const historyLimit = 20
 
 function readRaw(): unknown {
   try {
-    const wxApi = (globalThis as { wx?: { getStorageSync?: (key: string) => unknown } }).wx
-    return wxApi?.getStorageSync?.(historyKey)
+    return getWxGlobal()?.getStorageSync?.(historyKey)
   } catch {
     return []
   }
@@ -19,8 +19,7 @@ function readRaw(): unknown {
 
 function writeRaw(payload: TarotReading[]): void {
   try {
-    const wxApi = (globalThis as { wx?: { setStorageSync?: (key: string, value: unknown) => void } }).wx
-    wxApi?.setStorageSync?.(historyKey, payload)
+    getWxGlobal()?.setStorageSync?.(historyKey, payload)
   } catch {
     // 历史是增强功能，写失败不阻断主流程
   }

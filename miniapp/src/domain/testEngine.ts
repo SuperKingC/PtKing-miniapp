@@ -26,6 +26,8 @@ export interface TestOption {
   weight?: number
   /** archetype 模式：该选项投票给的人格报告 id */
   reportId?: string
+  /** factor 模式：该选项为各因素累加的分数（缺省键不计） */
+  factorWeights?: Record<string, number>
 }
 
 export interface TestQuestion {
@@ -42,6 +44,13 @@ export type TestScoring =
     }
   | { type: 'band'; max: number; bands: Array<{ min: number; max: number; reportId: string }> }
   | { type: 'archetype'; reports: string[] }
+  | {
+      type: 'factor'
+      /** 因素定义：id/名称；报告按主导因素（含反向因素取反后）映射 */
+      factors: Array<{ id: string; label: string; /** 反向计分因素：取 100-百分位 */ reverse?: boolean }>
+      /** 主导因素 → 报告 id 映射（并列时按本数组顺序取先） */
+      reportByFactor: Record<string, string>
+    }
 
 export interface TestDefinition {
   id: string
@@ -67,6 +76,8 @@ export interface TestResult {
   reportId: string
   dimensionScores: DimensionScore[]
   bandScore: number | null
+  /** factor 模式：各因素百分位（0-100，反向因素已取反），非 factor 模式为空 */
+  factorScores: Array<{ id: string; label: string; percent: number }>
 }
 
 function invalidDefinition(testId: string, reason: string): never {
@@ -106,7 +117,7 @@ function scoreDimension(def: TestDefinition, answers: number[]): TestResult {
 
   const reportId = letters.join('')
   if (!def.reports[reportId]) invalidDefinition(def.id, `missing_report_${reportId}`)
-  return { reportId, dimensionScores, bandScore: null }
+  return { reportId, dimensionScores, bandScore: null, factorScores: [] }
 }
 
 function scoreBand(def: TestDefinition, answers: number[]): TestResult {
@@ -120,7 +131,57 @@ function scoreBand(def: TestDefinition, answers: number[]): TestResult {
   const band = scoring.bands.find((b) => total >= b.min && total <= b.max)
   if (!band) invalidDefinition(def.id, `band_gap_${total}`)
   if (!def.reports[band.reportId]) invalidDefinition(def.id, `missing_report_${band.reportId}`)
-  return { reportId: band.reportId, dimensionScores: [], bandScore: total }
+  return { reportId: band.reportId, dimensionScores: [], bandScore: total, factorScores: [] }
+}
+
+function scoreFactor(def: TestDefinition, answers: number[]): TestResult {
+  const scoring = def.scoring as Extract<TestScoring, { type: 'factor' }>
+  const sums = new Map<string, number>()
+  const counts = new Map<string, number>()
+  for (const factor of scoring.factors) {
+    sums.set(factor.id, 0)
+    counts.set(factor.id, 0)
+  }
+
+  def.questions.forEach((question, qIndex) => {
+    const chosen = question.options[answers[qIndex]]
+    const weights = chosen.factorWeights
+    if (!weights || Object.keys(weights).length === 0) {
+      invalidDefinition(def.id, `question_${qIndex}_weights`)
+    }
+    for (const [factorId, value] of Object.entries(weights!)) {
+      if (!sums.has(factorId)) invalidDefinition(def.id, `unknown_factor_${factorId}`)
+      sums.set(factorId, sums.get(factorId)! + value)
+      counts.set(factorId, counts.get(factorId)! + 1)
+    }
+  })
+
+  const factorScores: Array<{ id: string; label: string; percent: number }> = []
+  for (const factor of scoring.factors) {
+    const sum = sums.get(factor.id)!
+    const count = counts.get(factor.id)!
+    if (count === 0) invalidDefinition(def.id, `factor_${factor.id}_unpolled`)
+    // 单因素满分 = 该因素被计分的题数 × 每题最大权重（权重上限按 4 计，与大五/暗黑量表的四点计分一致）
+    const maxWeight = Math.max(
+      4,
+      ...def.questions.flatMap((q) => Object.values(q.options.flatMap((o) => Object.values(o.factorWeights ?? {})))),
+    )
+    const rawPercent = Math.round((sum / (count * maxWeight)) * 100)
+    const percent = factor.reverse ? 100 - rawPercent : rawPercent
+    factorScores.push({ id: factor.id, label: factor.label, percent })
+  }
+
+  // 主导因素 = 百分位最高者（反向已取反）；并列按 factors 定义顺序取先（确定性）
+  let dominant = scoring.factors[0]
+  for (const factor of scoring.factors) {
+    const current = factorScores.find((f) => f.id === factor.id)!
+    const best = factorScores.find((f) => f.id === dominant.id)!
+    if (current.percent > best.percent) dominant = factor
+  }
+  const reportId = scoring.reportByFactor[dominant.id]
+  if (!reportId || !def.reports[reportId]) invalidDefinition(def.id, `missing_report_${dominant.id}`)
+
+  return { reportId, dimensionScores: [], bandScore: null, factorScores }
 }
 
 function scoreArchetype(def: TestDefinition, answers: number[]): TestResult {
@@ -146,7 +207,7 @@ function scoreArchetype(def: TestDefinition, answers: number[]): TestResult {
   }
   if (best <= 0) invalidDefinition(def.id, 'archetype_no_votes')
   if (!def.reports[reportId]) invalidDefinition(def.id, `missing_report_${reportId}`)
-  return { reportId, dimensionScores: [], bandScore: null }
+  return { reportId, dimensionScores: [], bandScore: null, factorScores: [] }
 }
 
 /**
@@ -171,6 +232,8 @@ export function scoreTest(def: TestDefinition, answers: number[]): TestResult {
       return scoreBand(def, answers)
     case 'archetype':
       return scoreArchetype(def, answers)
+    case 'factor':
+      return scoreFactor(def, answers)
     default:
       invalidDefinition(def.id, 'scoring_type')
   }

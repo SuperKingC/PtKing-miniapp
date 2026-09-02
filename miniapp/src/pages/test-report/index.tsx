@@ -30,6 +30,15 @@ export default function TestReportPage() {
     return (
       <View className="test-report">
         <Text className="test-report__missing">还没有该测试的报告，先去完成一次测试吧。</Text>
+        <View
+          className="test-report__action"
+          hoverClass="none"
+          onClick={() => {
+            wx.switchTab({ url: '/pages/test/index' })
+          }}
+        >
+          <Text>去测试中心</Text>
+        </View>
       </View>
     )
   }
@@ -58,6 +67,21 @@ export default function TestReportPage() {
               <Text className="test-report__dim-label">{dim.label}</Text>
               <View className="test-report__dim-track">
                 <View className="test-report__dim-fill" style={{ width: `${dim.percent}%` }} />
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {record.result.factorScores.length > 0 && (
+        <View className="test-report__dims">
+          {record.result.factorScores.map((factor) => (
+            <View key={factor.id} className="test-report__dim">
+              <Text className="test-report__dim-label">
+                {factor.label} · {factor.percent}%
+              </Text>
+              <View className="test-report__dim-track">
+                <View className="test-report__dim-fill" style={{ width: `${factor.percent}%` }} />
               </View>
             </View>
           ))}

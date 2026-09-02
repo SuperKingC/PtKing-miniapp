@@ -139,6 +139,87 @@ describe('testEngine archetype scoring', () => {
   })
 })
 
+function factorFixture(): TestDefinition {
+  return {
+    ...dimensionFixture(),
+    id: 'fixture-factor',
+    title: '因素测试',
+    questions: [
+      {
+        text: 'q1',
+        options: [
+          { text: 'a', factorWeights: { open: 4, neat: 1 } },
+          { text: 'b', factorWeights: { open: 1, neat: 4 } },
+        ],
+      },
+      {
+        text: 'q2',
+        options: [
+          { text: 'a', factorWeights: { open: 3, neat: 2 } },
+          { text: 'b', factorWeights: { open: 1, neat: 3 } },
+        ],
+      },
+      {
+        text: 'q3',
+        options: [
+          { text: 'a', factorWeights: { dark: 4 } },
+          { text: 'b', factorWeights: { dark: 1 } },
+        ],
+      },
+    ],
+    scoring: {
+      type: 'factor',
+      factors: [
+        { id: 'open', label: '开放性' },
+        { id: 'neat', label: '严谨性' },
+        { id: 'dark', label: '暗黑度', reverse: true },
+      ],
+      reportByFactor: { open: 'open-r', neat: 'neat-r', dark: 'dark-r' },
+    },
+    reports: {
+      'open-r': { id: 'open-r', title: '开放主导', tagline: 't', summary: 's', detail: [] },
+      'neat-r': { id: 'neat-r', title: '严谨主导', tagline: 't', summary: 's', detail: [] },
+      'dark-r': { id: 'dark-r', title: '暗黑主导', tagline: 't', summary: 's', detail: [] },
+    },
+  }
+}
+
+describe('testEngine factor scoring', () => {
+  it('computes per-factor percents with reverse factors flipped', () => {
+    // q1:a(open4/neat1) q2:b(open1/neat3) q3:a(dark4→反向=0)
+    const result = scoreTest(factorFixture(), [0, 1, 0])
+    expect(result.factorScores).toEqual([
+      { id: 'open', label: '开放性', percent: 63 },
+      { id: 'neat', label: '严谨性', percent: 50 },
+      { id: 'dark', label: '暗黑度', percent: 0 },
+    ])
+    expect(result.reportId).toBe('open-r')
+  })
+
+  it('elects the dominant factor deterministically on ties', () => {
+    // [1,0,1]: open 50 / neat 75 / dark(反向) 75 → neat 与 dark 并列，按 factors 定义序取先（neat）
+    const result = scoreTest(factorFixture(), [1, 0, 1])
+    expect(result.reportId).toBe('neat-r')
+  })
+
+  it('prefers the earlier-declared factor when the first two tie', () => {
+    // [1,0,0]: open (1+3)/8=50 / neat (4+2)/8=75 → 修正用例改用真并列 open/dark：
+    // [0,1,1]: open 25 / neat 50 / dark 75 → dark 唯一最高
+    const result = scoreTest(factorFixture(), [0, 1, 1])
+    expect(result.reportId).toBe('dark-r')
+  })
+
+  it('rejects options without factor weights and unknown factor ids', () => {
+    const missing = factorFixture()
+    missing.questions[0].options[0] = { text: 'a' }
+    expect(() => scoreTest(missing, [0, 0, 0])).toThrow('invalid_test_definition')
+
+    const ghost = factorFixture()
+    ghost.questions[2].options[0] = { text: 'a', factorWeights: { ghost: 4 } }
+    expect(() => scoreTest(ghost, [0, 0, 0])).toThrow('invalid_test_definition')
+  })
+})
+
 describe('resolveReportTitle', () => {
   it('prefers the report title and falls back to the raw id', () => {
     const def = dimensionFixture()

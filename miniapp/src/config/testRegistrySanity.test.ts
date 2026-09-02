@@ -13,9 +13,11 @@ const CLINICAL_HINTS = [/确诊/, /病理/, /用药建议/]
 describe('test registry sanity (all published tests)', () => {
   const definitions = listTestDefinitions()
 
-  it('publishes the M2.5 twelve-test lineup in a stable order', () => {
+  it('publishes the M2.5 seventeen-test lineup in a stable order', () => {
     expect(TEST_LIST_ORDER).toEqual([
       'mbti',
+      'bigfive',
+      'dark-triad',
       'love-persona',
       'attachment-style',
       'social-style',
@@ -24,11 +26,14 @@ describe('test registry sanity (all published tests)', () => {
       'work-role',
       'eq',
       'burnout',
+      'pet-persona',
+      'goofy',
       'overthink',
       'sleep',
       'mind-age',
       'phone-addiction',
     ])
+    expect(listTestDefinitions()).toHaveLength(17)
   })
 
   it('covers every category with at least one test', () => {
@@ -103,6 +108,24 @@ describe('test registry sanity (all published tests)', () => {
         const second = scoreTest(def, def.questions.map(() => 1))
         expect(def.reports[first.reportId]).toBeTruthy()
         expect(def.reports[second.reportId]).toBeTruthy()
+      } else if (def.scoring.type === 'factor') {
+        // 因素模式：reportByFactor 的键是因素 id、值是报告 id。
+        // 把每题「该因素权重最高」的选项拉满作答，必须命中对应的报告
+        for (const [factorId, targetReport] of Object.entries(def.scoring.reportByFactor)) {
+          const answers = def.questions.map((question) => {
+            let best = 0
+            let bestScore = -1
+            question.options.forEach((option, optionIndex) => {
+              const score = option.factorWeights?.[factorId] ?? -1
+              if (score > bestScore) {
+                bestScore = score
+                best = optionIndex
+              }
+            })
+            return best
+          })
+          expect(scoreTest(def, answers).reportId).toBe(targetReport)
+        }
       }
     },
   )

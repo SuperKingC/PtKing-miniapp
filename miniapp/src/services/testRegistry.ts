@@ -12,6 +12,10 @@ import { BURNOUT_TEST } from '../domain/tests/burnoutTest'
 import { EQ_TEST } from '../domain/tests/eqTest'
 import { MIND_AGE_TEST } from '../domain/tests/mindAgeTest'
 import { PHONE_TEST } from '../domain/tests/phoneTest'
+import { BIGFIVE_TEST } from '../domain/tests/bigFiveTest'
+import { DARK_TRIAD_TEST } from '../domain/tests/darkTriadTest'
+import { PET_PERSONA_TEST } from '../domain/tests/petPersonaTest'
+import { GOOFY_TEST } from '../domain/tests/goofyTest'
 
 /**
  * 测试注册表：静态内置定义兜底 + COS JSON 动态下发合并（M2）。
@@ -35,11 +39,17 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
   [EQ_TEST.id]: EQ_TEST,
   [MIND_AGE_TEST.id]: MIND_AGE_TEST,
   [PHONE_TEST.id]: PHONE_TEST,
+  [BIGFIVE_TEST.id]: BIGFIVE_TEST,
+  [DARK_TRIAD_TEST.id]: DARK_TRIAD_TEST,
+  [PET_PERSONA_TEST.id]: PET_PERSONA_TEST,
+  [GOOFY_TEST.id]: GOOFY_TEST,
 }
 
 /** 首页卡片展示顺序：静态顺序为基，动态新增的测试排在其后 */
 let listOrder: string[] = [
   MBTI_TEST.id,
+  BIGFIVE_TEST.id,
+  DARK_TRIAD_TEST.id,
   LOVE_PERSONA_TEST.id,
   ATTACHMENT_TEST.id,
   SOCIAL_TEST.id,
@@ -48,6 +58,8 @@ let listOrder: string[] = [
   WORK_ROLE_TEST.id,
   EQ_TEST.id,
   BURNOUT_TEST.id,
+  PET_PERSONA_TEST.id,
+  GOOFY_TEST.id,
   OVERTHINK_TEST.id,
   SLEEP_TEST.id,
   MIND_AGE_TEST.id,
