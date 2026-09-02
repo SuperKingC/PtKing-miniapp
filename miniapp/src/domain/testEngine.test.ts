@@ -1,0 +1,148 @@
+import { describe, expect, it } from 'vitest'
+import {
+  scoreTest,
+  resolveReportTitle,
+  type TestDefinition,
+} from './testEngine'
+
+// 通用引擎的构造夹具：2 维度各 2 题、每题二选项
+function dimensionFixture(): TestDefinition {
+  return {
+    id: 'fixture-dim',
+    title: '维度测试',
+    category: '人格',
+    meta: { minutes: 1, resultLabel: '4 型' },
+    intro: ['夹具'],
+    notice: '夹具',
+    questions: [
+      { dim: 'AB', text: 'q1', options: [{ text: 'A' }, { text: 'B' }] },
+      { dim: 'AB', text: 'q2', options: [{ text: 'A' }, { text: 'B' }] },
+      { dim: 'CD', text: 'q3', options: [{ text: 'C' }, { text: 'D' }] },
+      { dim: 'CD', text: 'q4', options: [{ text: 'C' }, { text: 'D' }] },
+    ],
+    scoring: {
+      type: 'dimension',
+      dims: [
+        { id: 'AB', letters: ['A', 'B'], labels: ['A 极', 'B 极'] },
+        { id: 'CD', letters: ['C', 'D'], labels: ['C 极', 'D 极'] },
+      ],
+    },
+    reports: {
+      AC: { id: 'AC', title: 'AC 型', tagline: 't', summary: 's', detail: [] },
+      AD: { id: 'AD', title: 'AD 型', tagline: 't', summary: 's', detail: [] },
+      BC: { id: 'BC', title: 'BC 型', tagline: 't', summary: 's', detail: [] },
+      BD: { id: 'BD', title: 'BD 型', tagline: 't', summary: 's', detail: [] },
+    },
+  }
+}
+
+function bandFixture(): TestDefinition {
+  return {
+    ...dimensionFixture(),
+    id: 'fixture-band',
+    title: '区间测试',
+    questions: [
+      { text: 'q1', options: [{ text: 'a', weight: 1 }, { text: 'b', weight: 2 }, { text: 'c', weight: 3 }] },
+      { text: 'q2', options: [{ text: 'a', weight: 1 }, { text: 'b', weight: 2 }, { text: 'c', weight: 3 }] },
+    ],
+    scoring: {
+      type: 'band',
+      max: 6,
+      bands: [
+        { min: 2, max: 3, reportId: 'low' },
+        { min: 4, max: 6, reportId: 'high' },
+      ],
+    },
+    reports: {
+      low: { id: 'low', title: '低位', tagline: 't', summary: 's', detail: [] },
+      high: { id: 'high', title: '高位', tagline: 't', summary: 's', detail: [] },
+    },
+  }
+}
+
+function archetypeFixture(): TestDefinition {
+  return {
+    ...dimensionFixture(),
+    id: 'fixture-arch',
+    title: '类型测试',
+    questions: [
+      { text: 'q1', options: [{ text: 'x', reportId: 'fox' }, { text: 'y', reportId: 'owl' }] },
+      { text: 'q2', options: [{ text: 'x', reportId: 'fox' }, { text: 'y', reportId: 'owl' }] },
+      { text: 'q3', options: [{ text: 'x', reportId: 'fox' }, { text: 'y', reportId: 'owl' }] },
+    ],
+    scoring: { type: 'archetype', reports: ['fox', 'owl'] },
+    reports: {
+      fox: { id: 'fox', title: '狐狸型', tagline: 't', summary: 's', detail: [] },
+      owl: { id: 'owl', title: '猫头鹰型', tagline: 't', summary: 's', detail: [] },
+    },
+  }
+}
+
+describe('testEngine dimension scoring', () => {
+  it('maps majority votes to letters per dimension', () => {
+    const result = scoreTest(dimensionFixture(), [0, 1, 1, 1])
+    expect(result.reportId).toBe('AD')
+    expect(result.bandScore).toBeNull()
+  })
+
+  it('reports side-0 percent per dimension', () => {
+    const result = scoreTest(dimensionFixture(), [0, 0, 1, 1])
+    expect(result.dimensionScores).toEqual([
+      { id: 'AB', label: 'A 极 ↔ B 极', percent: 100 },
+      { id: 'CD', label: 'C 极 ↔ D 极', percent: 0 },
+    ])
+  })
+
+  it('breaks ties deterministically toward the first letter', () => {
+    const result = scoreTest(dimensionFixture(), [0, 1, 0, 1])
+    expect(result.reportId).toBe('AC')
+  })
+
+  it('rejects wrong answer length and out-of-range indices', () => {
+    expect(() => scoreTest(dimensionFixture(), [0, 1])).toThrow('invalid_test_answers')
+    expect(() => scoreTest(dimensionFixture(), [0, 1, 2, 0])).toThrow('invalid_test_answers')
+    expect(() => scoreTest(dimensionFixture(), [0, 1, 1, -1])).toThrow('invalid_test_answers')
+  })
+
+  it('rejects dimension-mode questions without a valid dim', () => {
+    const broken = dimensionFixture()
+    broken.questions[0] = { text: 'q1', options: [{ text: 'A' }, { text: 'B' }] }
+    expect(() => scoreTest(broken, [0, 0, 0, 0])).toThrow('invalid_test_definition')
+  })
+})
+
+describe('testEngine band scoring', () => {
+  it('sums explicit weights and lands in the matching band', () => {
+    expect(scoreTest(bandFixture(), [2, 1]).reportId).toBe('high')
+    expect(scoreTest(bandFixture(), [2, 1]).bandScore).toBe(5)
+    expect(scoreTest(bandFixture(), [0, 1]).reportId).toBe('low')
+  })
+
+  it('rejects totals outside declared bands', () => {
+    const broken = bandFixture()
+    broken.scoring = { type: 'band', max: 6, bands: [{ min: 3, max: 6, reportId: 'high' }] }
+    expect(() => scoreTest(broken, [0, 0])).toThrow('band_gap_2')
+  })
+})
+
+describe('testEngine archetype scoring', () => {
+  it('elects the top-voted archetype deterministically on ties', () => {
+    expect(scoreTest(archetypeFixture(), [0, 0, 1]).reportId).toBe('fox')
+    expect(scoreTest(archetypeFixture(), [0, 1, 1]).reportId).toBe('owl')
+    expect(scoreTest(archetypeFixture(), [1, 1, 0]).reportId).toBe('owl')
+  })
+
+  it('rejects options voting for unregistered reports', () => {
+    const broken = archetypeFixture()
+    broken.questions[0].options[0] = { text: 'x', reportId: 'ghost' }
+    expect(() => scoreTest(broken, [0, 0, 0])).toThrow('invalid_test_definition')
+  })
+})
+
+describe('resolveReportTitle', () => {
+  it('prefers the report title and falls back to the raw id', () => {
+    const def = dimensionFixture()
+    expect(resolveReportTitle(def, 'AC')).toBe('AC 型')
+    expect(resolveReportTitle(def, 'ZZ')).toBe('ZZ')
+  })
+})

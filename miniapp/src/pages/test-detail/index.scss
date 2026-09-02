@@ -1,0 +1,101 @@
+.test-detail {
+  min-height: 100vh;
+  padding: 40rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
+}
+
+.test-detail__missing {
+  display: block;
+  margin-top: 200rpx;
+  text-align: center;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-body);
+}
+
+.test-detail__card {
+  border-radius: 32rpx;
+  background: var(--color-card-bg);
+  padding: 48rpx 40rpx;
+}
+
+.test-detail__title {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-overlay-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+}
+
+.test-detail__capsules {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 40rpx;
+}
+
+.test-detail__capsule {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 20rpx 12rpx;
+  border-radius: 16rpx;
+  background: var(--color-primary-soft);
+}
+
+.test-detail__capsule-label {
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-detail__capsule-value {
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+}
+
+.test-detail__intro {
+  margin-top: 44rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.test-detail__paragraph {
+  font-size: var(--font-size-body);
+  line-height: 1.8;
+  color: var(--color-ink);
+  text-align: justify;
+}
+
+.test-detail__notice {
+  margin-top: 44rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #f7f5fb;
+}
+
+.test-detail__notice-title {
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.test-detail__notice-body {
+  font-size: var(--font-size-secondary);
+  line-height: 1.7;
+  color: var(--color-ink-secondary);
+}
+
+.test-detail__start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 520rpx;
+  height: 104rpx;
+  margin: 64rpx auto 0;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #8f7bf0 0%, #6c5ce7 100%);
+  color: #ffffff;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-semibold);
+}

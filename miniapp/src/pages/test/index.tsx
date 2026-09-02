@@ -1,17 +1,13 @@
 import { Text, View } from '@tarojs/components'
+import { listTestDefinitions } from '../../services/testRegistry'
 import './index.scss'
 
-// M0 骨架静态预览页：版式按「做梦心理」参考稿搭（快速分类宫格 + 横滑大卡），
-// 数据与跳转在 M1 由测试引擎（COS JSON TestDefinition）驱动后替换
 const QUICK_CATEGORIES = ['最新测试', '热门测试', '情感恋爱', '人格自我'] as const
 
-const FEATURED_CARDS = [
-  { id: 'mbti', title: 'MBTI 测试', meta: '24 题 · 约 3-5 分钟', theme: 'violet' },
-  { id: 'love', title: '恋爱人格', meta: '12 题 · 约 2-3 分钟', theme: 'rose' },
-  { id: 'burnout', title: '内耗指数', meta: '8 题 · 约 1-2 分钟', theme: 'amber' },
-] as const
-
+// 测试中心首页：注册表数据驱动（M1 只有 MBTI 一张可测卡；M2 COS 下发扩量后卡片自动增加）
 export default function TestPage() {
+  const definitions = listTestDefinitions()
+
   return (
     <View className="test-page">
       <View className="test-page__section-title">快速测试</View>
@@ -24,13 +20,26 @@ export default function TestPage() {
       </View>
       <View className="test-page__section-title">人格专区</View>
       <View className="test-page__cards">
-        {FEATURED_CARDS.map((card) => (
-          <View key={card.id} className={`test-page__card test-page__card--${card.theme}`}>
-            <Text className="test-page__card-title">{card.title}</Text>
-            <Text className="test-page__card-meta">{card.meta}</Text>
-            <Text className="test-page__card-badge">即将上线</Text>
+        {definitions.map((definition) => (
+          <View
+            key={definition.id}
+            className="test-page__card test-page__card--violet"
+            hoverClass="none"
+            onClick={() => {
+              wx.navigateTo({ url: `/pages/test-detail/index?testId=${definition.id}` })
+            }}
+          >
+            <Text className="test-page__card-title">{definition.title}</Text>
+            <Text className="test-page__card-meta">
+              {definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟
+            </Text>
+            <Text className="test-page__card-badge">可测试</Text>
           </View>
         ))}
+        <View className="test-page__card test-page__card--locked">
+          <Text className="test-page__card-meta">更多测试</Text>
+          <Text className="test-page__card-title">敬请期待</Text>
+        </View>
       </View>
     </View>
   )

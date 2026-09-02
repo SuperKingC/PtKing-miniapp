@@ -4,6 +4,9 @@ export default defineAppConfig({
     'pages/tarot/index',
     'pages/records/index',
     'pages/me/index',
+    'pages/test-detail/index',
+    'pages/test-play/index',
+    'pages/test-report/index',
   ],
   tabBar: {
     color: '#9a8f86',

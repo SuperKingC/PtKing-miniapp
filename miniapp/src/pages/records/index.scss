@@ -1,13 +1,46 @@
 .records-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  padding: 48rpx;
+  min-height: 100vh;
+  padding: 32rpx;
 }
 
 .records-page__empty {
+  display: block;
+  margin-top: 240rpx;
+  text-align: center;
   color: var(--color-ink-secondary);
   font-size: var(--font-size-body);
-  text-align: center;
+}
+
+.records-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.records-page__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  background: var(--color-card-bg);
+}
+
+.records-page__item-title {
+  display: block;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+}
+
+.records-page__item-result {
+  display: block;
+  margin-top: 8rpx;
+  font-size: var(--font-size-secondary);
+  color: var(--color-primary);
+}
+
+.records-page__item-time {
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
 }
