@@ -1,0 +1,27 @@
+.me-page {
+  padding: 32rpx;
+}
+
+.me-page__entries {
+  border-radius: 28rpx;
+  background: var(--color-card-bg);
+  overflow: hidden;
+}
+
+.me-page__entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36rpx 32rpx;
+  font-size: var(--font-size-body);
+  color: var(--color-ink);
+}
+
+.me-page__entry + .me-page__entry {
+  border-top: 1rpx solid #f0edf5;
+}
+
+.me-page__arrow {
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-card-title);
+}

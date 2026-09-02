@@ -1,0 +1,13 @@
+.records-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 48rpx;
+}
+
+.records-page__empty {
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-body);
+  text-align: center;
+}

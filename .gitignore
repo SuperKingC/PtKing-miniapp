@@ -1,0 +1,10 @@
+node_modules/
+miniapp/node_modules/
+miniapp/dist/
+miniapp/.swc/
+miniapp/project.private.config.json
+dist/
+_tmp*
+tmp*
+*.log
+.DS_Store

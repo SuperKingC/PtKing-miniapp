@@ -1,0 +1,83 @@
+.test-page {
+  min-height: 100vh;
+  padding: 32rpx 32rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.test-page__section-title {
+  margin: 24rpx 0 20rpx;
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  color: var(--color-ink);
+}
+
+.test-page__quick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+}
+
+.test-page__quick-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: 20rpx;
+  background: var(--color-card-bg);
+  font-size: var(--font-size-aux);
+  color: var(--color-ink);
+}
+
+.test-page__cards {
+  display: flex;
+  gap: 20rpx;
+  overflow-x: auto;
+}
+
+.test-page__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 300rpx;
+  height: 300rpx;
+  padding: 28rpx;
+  border-radius: 28rpx;
+  background: var(--color-card-bg);
+}
+
+.test-page__card--violet {
+  background: linear-gradient(160deg, #ece7ff 0%, #ffffff 70%);
+}
+
+.test-page__card--rose {
+  background: linear-gradient(160deg, #ffe8ec 0%, #ffffff 70%);
+}
+
+.test-page__card--amber {
+  background: linear-gradient(160deg, #fff1dc 0%, #ffffff 70%);
+}
+
+.test-page__card-title {
+  margin-top: 48rpx;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+}
+
+.test-page__card-meta {
+  margin-top: 12rpx;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-page__card-badge {
+  position: absolute;
+  right: 20rpx;
+  bottom: 20rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-aux);
+}

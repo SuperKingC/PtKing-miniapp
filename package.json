@@ -1,0 +1,10 @@
+{
+  "name": "ptking-miniapp",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:weapp": "npm --prefix miniapp run build:weapp",
+    "dev:weapp": "npm --prefix miniapp run dev:weapp",
+    "test": "npm --prefix miniapp run test"
+  }
+}
