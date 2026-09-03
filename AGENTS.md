@@ -24,6 +24,15 @@
 - 换同路径图片必须升文件名防缓存。
 - WXSS 绝对定位写显式四边 + 显式宽高；内联尺寸写 rpx 不写 px。
 
+## 美术资产与 miniapp-kit
+
+- 美术资产一律走 kit 流水线（`npm run art` / `art:ui`），不手工改图、不改 `D:\Mine\miniapp-kit`（kit 仓库只读，要改回 kit 改）。
+- `art.config.json` 含中转地址，gitignore 不入库；`art/prompts.txt` 入库；产物 `art/generated-art/` 不入库，走 COS 热更下发。
+- 密钥只存 kit 仓库根 `.env`，本项目仓库不落任何 key。
+- 重设计界面先用 `npm run art:ui -- "界面描述"` 出 5 张设计稿给用户挑，再写代码。
+- 新环境先跑 `npm run doctor:kit` 体检，缺失项征得用户同意再装。
+- 模拟器本地预览资产：`npm run art:preview` + 构建时注入 `TARO_ASSET_DEV_BASE_URL`（细则见 `docs/features/miniapp-kit.md`）。
+
 ## 验证
 
 - 开发期用最快相关检查（vitest 单文件）。

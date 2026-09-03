@@ -5,6 +5,13 @@
   "scripts": {
     "build:weapp": "npm --prefix miniapp run build:weapp",
     "dev:weapp": "npm --prefix miniapp run dev:weapp",
-    "test": "npm --prefix miniapp run test"
+    "test": "npm --prefix miniapp run test",
+    "art": "node ../miniapp-kit/art/gen.mjs -c art.config.json -p art/prompts.txt",
+    "art:ui": "node ../miniapp-kit/art/gen.mjs -c art.config.json -p art/prompts.txt --ui",
+    "art:probe": "node ../miniapp-kit/art/probe-transparent.mjs -c art.config.json",
+    "art:matting": "node scripts/matting.mjs",
+    "art:preview": "node ../miniapp-kit/preview/serve.mjs --dir art/generated-art --port 8787 --path /ptking-web/local-dev",
+    "art:upload": "node ../miniapp-kit/cos/upload-cos.mjs --dir art/generated-art",
+    "doctor:kit": "node ../miniapp-kit/doctor.mjs"
   }
 }

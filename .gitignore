@@ -8,3 +8,9 @@ _tmp*
 tmp*
 *.log
 .DS_Store
+
+# miniapp-kit 接入:项目实际配置含中转地址不入库(模板见 kit art/art.config.example.json);产物走 COS 也不入库
+.env
+art.config.json
+art/generated-art/
+generated_images/
