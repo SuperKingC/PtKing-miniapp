@@ -1,4 +1,5 @@
 import { Image, Text, View } from '@tarojs/components'
+import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import meBannerImg from '../../assets/illus/me-banner.png'
 import './index.scss'
 
@@ -11,6 +12,7 @@ const ENTRIES: Array<{ label: string; onTap?: () => void }> = [
 
 // 我的页（M1）：已做测试入口通记录页；其余条目 M2 起接账号信息与历史跳转
 export default function MePage() {
+  useTabBarSelected(3)
   return (
     <View className="me-page">
       <View className="me-page__banner">

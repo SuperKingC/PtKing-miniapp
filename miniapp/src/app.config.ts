@@ -13,6 +13,7 @@ export default defineAppConfig({
     selectedColor: '#c05f35',
     backgroundColor: '#ffffff',
     borderStyle: 'white',
+    custom: true,
     list: [
       {
         pagePath: 'pages/test/index',
@@ -42,9 +43,9 @@ export default defineAppConfig({
   },
   window: {
     navigationBarTitleText: 'PtKing',
-    navigationBarBackgroundColor: '#f6f4ff',
+    navigationBarBackgroundColor: '#f7f4ee',
     navigationBarTextStyle: 'black',
-    backgroundColor: '#f6f4ff',
+    backgroundColor: '#f7f4ee',
   },
   lazyCodeLoading: 'requiredComponents',
 })

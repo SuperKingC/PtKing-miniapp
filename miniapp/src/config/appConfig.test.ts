@@ -29,6 +29,7 @@ describe('WeChat app config (M0 skeleton)', () => {
     const configSource = readFileSync(resolve(miniappRoot(), 'src/app.config.ts'), 'utf8')
 
     expect(configSource).toContain('tabBar:')
+    expect(configSource).toContain('custom: true')
     expect((configSource.match(/pagePath/g) ?? []).length).toBe(TAB_PAGES.length)
     for (const page of TAB_PAGES) {
       expect(configSource).toContain(`pagePath: '${page}'`)

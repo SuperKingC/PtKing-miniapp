@@ -1,6 +1,7 @@
 import { Image, Text, View } from '@tarojs/components'
 import { getTestDefinition } from '../../services/testRegistry'
 import { loadTestRecords, type TestRecord } from '../../services/testRecords'
+import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import emptyRecordsImg from '../../assets/illus/empty-records.png'
 import './index.scss'
 
@@ -14,6 +15,7 @@ function formatTime(iso: string): string {
 
 // 记录页：顶部统计摘要（总次数/测过数/最新结果）+ 全部记录列表（按时间倒序，点击回看报告）
 export default function RecordsPage() {
+  useTabBarSelected(2)
   const records: TestRecord[] = loadTestRecords().filter((record) => getTestDefinition(record.testId))
   const testedCount = new Set(records.map((record) => record.testId)).size
   const latest = records[0]
