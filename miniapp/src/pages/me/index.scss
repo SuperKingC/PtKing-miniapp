@@ -2,6 +2,36 @@
   padding: 32rpx;
 }
 
+.me-page__banner {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
+  padding: 28rpx 32rpx;
+  border-radius: 28rpx;
+  background: var(--color-card-bg);
+}
+
+.me-page__banner-img {
+  flex-shrink: 0;
+  width: 220rpx;
+  height: 147rpx;
+}
+
+.me-page__banner-title {
+  display: block;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+}
+
+.me-page__banner-sub {
+  display: block;
+  margin-top: 8rpx;
+  font-size: var(--font-size-secondary);
+  color: var(--color-ink-secondary);
+}
+
 .me-page__entries {
   border-radius: 28rpx;
   background: var(--color-card-bg);

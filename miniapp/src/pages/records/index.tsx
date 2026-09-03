@@ -1,6 +1,7 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 import { getTestDefinition } from '../../services/testRegistry'
 import { loadTestRecords, type TestRecord } from '../../services/testRecords'
+import emptyRecordsImg from '../../assets/illus/empty-records.jpg'
 import './index.scss'
 
 function formatTime(iso: string): string {
@@ -23,7 +24,10 @@ export default function RecordsPage() {
   return (
     <View className="records-page">
       {records.length === 0 ? (
-        <Text className="records-page__empty">还没有测试记录，去「测试」页看看吧。</Text>
+        <View className="records-page__empty">
+          <Image className="records-page__empty-img" src={emptyRecordsImg} mode="aspectFit" />
+          <Text className="records-page__empty-text">还没有测试记录，去「测试」页看看吧。</Text>
+        </View>
       ) : (
         <>
           <View className="records-page__stats">

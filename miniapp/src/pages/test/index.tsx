@@ -1,8 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
 import { useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
+import heroImg from '../../assets/illus/hero-test-center.jpg'
+import spotPersonalityImg from '../../assets/illus/spot-personality.jpg'
+import spotLoveImg from '../../assets/illus/spot-love.jpg'
+import spotCareerImg from '../../assets/illus/spot-career.jpg'
+import spotFunImg from '../../assets/illus/spot-fun.jpg'
 import './index.scss'
 
 // 测试中心首页：分类 chips 筛选 + 注册表数据驱动卡片网格。
@@ -12,6 +17,14 @@ const CARD_THEME_BY_CATEGORY: Record<string, string> = {
   情感: 'rose',
   职场: 'blue',
   趣味: 'amber',
+}
+
+// 分类配图（奶油扁平插画风，白底配卡片白色渐变底部）
+const CARD_SPOT_BY_CATEGORY: Record<string, string> = {
+  人格: spotPersonalityImg,
+  情感: spotLoveImg,
+  职场: spotCareerImg,
+  趣味: spotFunImg,
 }
 
 export default function TestPage() {
@@ -27,8 +40,11 @@ export default function TestPage() {
   return (
     <View className="test-page">
       <View className="test-page__hero">
-        <Text className="test-page__hero-title">发现你的另一面</Text>
-        <Text className="test-page__hero-sub">{definitions.length} 个测试 · 全部免费</Text>
+        <View className="test-page__hero-text">
+          <Text className="test-page__hero-title">发现你的另一面</Text>
+          <Text className="test-page__hero-sub">{definitions.length} 个测试 · 全部免费</Text>
+        </View>
+        <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" />
       </View>
       <View className="test-page__chips">
         {TEST_CATEGORIES.map((category) => (
@@ -61,6 +77,11 @@ export default function TestPage() {
             <Text className="test-page__card-meta">
               {definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟
             </Text>
+            <Image
+              className="test-page__card-spot"
+              src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg}
+              mode="aspectFit"
+            />
             <Text className="test-page__card-badge">可测试</Text>
           </View>
         ))}

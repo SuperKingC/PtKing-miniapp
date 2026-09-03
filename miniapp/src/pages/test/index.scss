@@ -4,7 +4,23 @@
 }
 
 .test-page__hero {
-  padding: 40rpx 8rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 24rpx 28rpx 32rpx;
+  border-radius: 28rpx;
+  background: var(--color-card-bg);
+}
+
+.test-page__hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.test-page__hero-img {
+  flex-shrink: 0;
+  width: 240rpx;
+  height: 160rpx;
 }
 
 .test-page__hero-title {
@@ -96,11 +112,23 @@
 
 .test-page__card-badge {
   position: absolute;
+  top: 24rpx;
   right: 20rpx;
-  bottom: 20rpx;
+  bottom: auto;
+  left: auto;
   padding: 6rpx 16rpx;
   border-radius: 999rpx;
   background: rgba(108, 92, 231, 0.12);
   color: var(--color-primary);
   font-size: var(--font-size-aux);
+}
+
+.test-page__card-spot {
+  position: absolute;
+  top: auto;
+  right: 10rpx;
+  bottom: 10rpx;
+  left: auto;
+  width: 140rpx;
+  height: 140rpx;
 }

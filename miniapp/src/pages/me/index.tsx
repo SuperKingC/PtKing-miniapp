@@ -1,4 +1,5 @@
-import { Text, View } from '@tarojs/components'
+import { Image, Text, View } from '@tarojs/components'
+import meBannerImg from '../../assets/illus/me-banner.jpg'
 import './index.scss'
 
 const ENTRIES: Array<{ label: string; onTap?: () => void }> = [
@@ -12,6 +13,13 @@ const ENTRIES: Array<{ label: string; onTap?: () => void }> = [
 export default function MePage() {
   return (
     <View className="me-page">
+      <View className="me-page__banner">
+        <Image className="me-page__banner-img" src={meBannerImg} mode="aspectFit" />
+        <View className="me-page__banner-text">
+          <Text className="me-page__banner-title">PtKing</Text>
+          <Text className="me-page__banner-sub">测测你的隐藏人格</Text>
+        </View>
+      </View>
       <View className="me-page__entries">
         {ENTRIES.map((entry) => (
           <View
