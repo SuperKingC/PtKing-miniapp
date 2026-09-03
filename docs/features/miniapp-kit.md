@@ -42,6 +42,7 @@ kit 侧模块现状：`art/`（生图流水线）、`matting/`（纯色底抠图
 ## 约束
 
 - 测试内容（题目/报告文案/图片）不进主包，一律 `art/generated-art` → COS 热更下发（`TARO_ASSET_BASE_URL`）。
+- 白底生图透明化：kit `matting/floodfill_matting.py` 泛洪抠图（零权重，边框连通+容差软过渡，主体内部近色区不误伤）批量出透明 PNG，再 PIL 降分辨率落包；tabbar 图标与页面插画均为该链路。
 - 压缩只在流水线内走 TinyPNG 每张一次，严禁本地预压/二次压缩/降色板换体积；超 180KB 流水线只在末尾提醒。
 - 换同路径图片必须升文件名防缓存（流水线自动）；改图后微信开发者工具清缓存重编译。
 - 模型优先 `openai/gpt-5.4-image-2`（config `api.models` 首位），约 $0.47/张 2K；gemini 系约 $0.07/张。

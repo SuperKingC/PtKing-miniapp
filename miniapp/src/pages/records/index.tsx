@@ -1,7 +1,7 @@
 import { Image, Text, View } from '@tarojs/components'
 import { getTestDefinition } from '../../services/testRegistry'
 import { loadTestRecords, type TestRecord } from '../../services/testRecords'
-import emptyRecordsImg from '../../assets/illus/empty-records.jpg'
+import emptyRecordsImg from '../../assets/illus/empty-records.png'
 import './index.scss'
 
 function formatTime(iso: string): string {

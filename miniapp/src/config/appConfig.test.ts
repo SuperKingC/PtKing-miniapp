@@ -5,14 +5,14 @@ import { miniappRoot } from './testPaths'
 
 const TAB_PAGES = ['pages/test/index', 'pages/tarot/index', 'pages/records/index', 'pages/me/index'] as const
 const TAB_ICONS = [
-  'test-flat.png',
-  'test-active-flat.png',
-  'tarot-flat.png',
-  'tarot-active-flat.png',
-  'records-flat.png',
-  'records-active-flat.png',
-  'me-flat.png',
-  'me-active-flat.png',
+  'test-alpha.png',
+  'test-active-alpha.png',
+  'tarot-alpha.png',
+  'tarot-active-alpha.png',
+  'records-alpha.png',
+  'records-active-alpha.png',
+  'me-alpha.png',
+  'me-active-alpha.png',
 ] as const
 
 describe('WeChat app config (M0 skeleton)', () => {

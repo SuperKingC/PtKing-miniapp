@@ -1,5 +1,5 @@
 import { Image, Text, View } from '@tarojs/components'
-import meBannerImg from '../../assets/illus/me-banner.jpg'
+import meBannerImg from '../../assets/illus/me-banner.png'
 import './index.scss'
 
 const ENTRIES: Array<{ label: string; onTap?: () => void }> = [
