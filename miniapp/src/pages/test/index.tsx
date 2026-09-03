@@ -19,14 +19,13 @@ const CARD_THEME_BY_CATEGORY: Record<string, string> = {
   趣味: 'amber',
 }
 
-// 分类配图（奶油扁平插画风，透明底）；面具/爱心构图偏满，缩小一档放右下角
+// 分类配图（奶油扁平插画风，透明底，统一缩放贴卡片右下角）
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = {
   人格: spotPersonalityImg,
   情感: spotLoveImg,
   职场: spotCareerImg,
   趣味: spotFunImg,
 }
-const CARD_SPOT_SM_CATEGORIES = new Set(['人格', '情感'])
 
 export default function TestPage() {
   const definitions = listTestDefinitions()
@@ -79,11 +78,7 @@ export default function TestPage() {
               {definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟
             </Text>
             <Image
-              className={
-                CARD_SPOT_SM_CATEGORIES.has(definition.category)
-                  ? 'test-page__card-spot test-page__card-spot--sm'
-                  : 'test-page__card-spot'
-              }
+              className="test-page__card-spot"
               src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg}
               mode="aspectFit"
             />

@@ -62,14 +62,14 @@
 .test-page__grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  gap: 24rpx;
 }
 
 .test-page__card {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 323rpx;
+  width: 331rpx;
   height: 280rpx;
   padding: 28rpx;
   border-radius: 28rpx;
@@ -126,14 +126,9 @@
 .test-page__card-spot {
   position: absolute;
   top: auto;
-  right: 10rpx;
-  bottom: 10rpx;
+  right: 12rpx;
+  bottom: 12rpx;
   left: auto;
-  width: 140rpx;
-  height: 140rpx;
-}
-
-.test-page__card-spot--sm {
   width: 104rpx;
   height: 104rpx;
 }
