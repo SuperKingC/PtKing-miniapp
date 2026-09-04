@@ -28,6 +28,12 @@
   `sarcasticTest.ts`（阴阳怪气浓度测试，band 三档：白开水/微糖阴阳师/满级阴阳人，语言艺术梗）、
   `loserTalentTest.ts`（废柴天赋鉴定，archetype 4 型：锦鲤废柴/人间清醒废柴/究极睡神/气人天才，
   自嘲向反差萌）。
+  **深度报告 v2 全量覆盖（2026-09）**：`TestReport` 可选 v2 字段（deep 纵深长文/strengths 三优势/
+  blindSpots 三盲区/scenes 职场恋爱社交/actions 行动清单）已铺满全部 22 个测试约 89 型，
+  每型约 500 字聚焦心理动因（样稿口径：恋爱人格 4 型）；报告页渲染四张深度卡
+  （深度解读/优势与盲区/场景适配/行动清单）；sanity 契约校验 v2 字段质量
+  （deep>150 字、三优势三盲区三场景、行动≥3）。免费/付费拆分（M4）待定，
+  当前全量免费展示。
 - `services/testRegistry.ts`：静态注册表 + `TEST_LIST_ORDER` 展示顺序，页面数据驱动；
   M2 COS 下发新测试时此文件只加兜底条目。
 - `services/testRecords.ts`：本地 storage 记录（`ptking_test_records`，上限 200，最新在前）；
