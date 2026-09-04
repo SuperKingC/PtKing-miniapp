@@ -22,6 +22,7 @@ import { UNHINGED_TEST } from '../domain/tests/unhingedTest'
 import { SARCASTIC_TEST } from '../domain/tests/sarcasticTest'
 import { LOSER_TEST } from '../domain/tests/loserTalentTest'
 import { LOVE_BRAIN_TEST } from '../domain/tests/loveBrainTest'
+import { LOVE_TALK_TEST } from '../domain/tests/loveTalkTest'
 import { BREAKUP_TEST } from '../domain/tests/breakupTest'
 import { CRUSH_TEST } from '../domain/tests/crushTest'
 import { OFFICE_ROLE_TEST } from '../domain/tests/officeRoleTest'
@@ -59,6 +60,7 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
   [SARCASTIC_TEST.id]: SARCASTIC_TEST,
   [LOSER_TEST.id]: LOSER_TEST,
   [LOVE_BRAIN_TEST.id]: LOVE_BRAIN_TEST,
+  [LOVE_TALK_TEST.id]: LOVE_TALK_TEST,
   [BREAKUP_TEST.id]: BREAKUP_TEST,
   [CRUSH_TEST.id]: CRUSH_TEST,
   [OFFICE_ROLE_TEST.id]: OFFICE_ROLE_TEST,
@@ -91,6 +93,7 @@ let listOrder: string[] = [
   PHONE_TEST.id,
   // 2026-09-04 情感/职场扩批次
   LOVE_BRAIN_TEST.id,
+  LOVE_TALK_TEST.id,
   BREAKUP_TEST.id,
   CRUSH_TEST.id,
   OFFICE_ROLE_TEST.id,
