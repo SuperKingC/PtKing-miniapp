@@ -32,12 +32,13 @@ describe('share capability wiring', () => {
     expect(report).toContain('/pages/test-detail/index?testId=')
   })
 
-  it('wires the me-page entries: tarot history broadcast + contact sessions', () => {
+  it('wires the me-page entries: data management inline + contact sessions', () => {
     const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
 
-    // 塔罗历史：跨页广播打开塔罗流程历史面板
-    expect(me).toContain('TAROT_HISTORY_OPEN_EVENT')
-    // 联系作者/问题反馈走微信客服会话
+    // 数据管理直出我的页（清空测试记录/塔罗历史），不再依赖独立设置页
+    expect(me).toContain('clearTestRecords()')
+    expect(me).toContain('clearTarotHistory()')
+    // 联系/反馈走微信客服会话
     expect(me).toContain("openType={entry.contact ? 'contact' : undefined}")
   })
 

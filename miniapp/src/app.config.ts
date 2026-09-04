@@ -7,7 +7,6 @@ export default defineAppConfig({
     'pages/test-detail/index',
     'pages/test-play/index',
     'pages/test-report/index',
-    'pages/settings/index',
     'pages/privacy/index',
   ],
   tabBar: {

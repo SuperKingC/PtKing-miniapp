@@ -59,12 +59,13 @@ describe('WeChat app config (M0 skeleton)', () => {
     }
   })
 
-  it('registers the settings and privacy sub pages with source files', () => {
+  it('registers the privacy sub page with its source file (settings merged into me page)', () => {
     const configSource = readFileSync(resolve(miniappRoot(), 'src/app.config.ts'), 'utf8')
-    for (const page of ['pages/settings/index', 'pages/privacy/index'] as const) {
-      expect(configSource).toContain(`'${page}'`)
-      expect(existsSync(resolve(miniappRoot(), 'src', `${page}.tsx`))).toBe(true)
-    }
+
+    expect(configSource).toContain("'pages/privacy/index'")
+    expect(existsSync(resolve(miniappRoot(), 'src/pages/privacy/index.tsx'))).toBe(true)
+    // 设置内容并入我的页后，settings 页不应再注册
+    expect(configSource).not.toContain("'pages/settings/index'")
   })
 
   it('enables dark mode and routes nav/tab colors through theme variables', () => {
