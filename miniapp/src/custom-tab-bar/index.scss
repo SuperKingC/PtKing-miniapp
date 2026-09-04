@@ -5,12 +5,11 @@
   bottom: 0;
   left: 0;
   display: flex;
-  /* 白底高度 = item 显式 80rpx 内容区 + safe-area 纯白延伸（padding 撑开）。
-     不在容器上声明 height：height(calc 含 env)+padding+box-sizing 的组合
-     在不同环境的解析行为不稳定，曾导致内容整体偏上；
-     item 自带高度后，居中只依赖 item 内部的 center，结果确定 */
+  /* 高度全权交给 item：原生内容区 112rpx + 底部安全区一起算进 item 高度，
+     图标文字在其中垂直居中 → 图标文字落在整条白底的正中（安全区延伸部分也参与居中）。
+     容器不声明 height/padding——height(calc 含 env)+padding+box-sizing 组合曾实测不稳（90164dd），
+     单层 item 显式高度行为确定；安卓等无安全区环境 env=0，高度即 112rpx */
   align-items: flex-start;
-  padding-bottom: env(safe-area-inset-bottom);
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(20rpx);
   border-top: 1rpx solid rgba(80, 62, 44, 0.06);
@@ -23,8 +22,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* 112rpx = 微信原生 tabBar 内容区高度：80rpx 时图标+文字贴顶、safe-area 全落在下方，视觉偏上 */
-  height: 112rpx;
+  height: calc(112rpx + env(safe-area-inset-bottom));
   gap: 4rpx;
 }
 
