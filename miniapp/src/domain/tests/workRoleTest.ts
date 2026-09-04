@@ -107,6 +107,11 @@ function q(text: string): TestDefinition['questions'][number] {
   return { text, options: OPTIONS.map((option) => ({ ...option })) }
 }
 
+/** 逐题定制选项（对齐 loveBrainTest 金标准）：每题 [文案, reportId]，一题内每个 reportId 恰好一次 */
+function qo(text: string, options: Array<[string, string]>): TestDefinition['questions'][number] {
+  return { text, options: options.map(([optionText, reportId]) => ({ text: optionText, reportId })) }
+}
+
 export const WORK_ROLE_TEST: TestDefinition = {
   id: 'work-role',
   title: '职场角色测试',
@@ -116,16 +121,26 @@ export const WORK_ROLE_TEST: TestDefinition = {
     '一个团队里有人掌舵、有人深耕、有人黏合、有人点火花——没有哪种角色更高级，只有位置放得对不对。看清自己的职场角色，发力才不拧巴。',
     '20 道职场场景题，找出你在团队里的天然位置。',
   ],
-  notice: '该测试为趣味向内容，包含职场角色解析与合作建议。感谢你的理解与支持。',
+  notice: '该测试为趣味向内容，包含职场角色解析与合作建议。',
   questions: [
     q('项目陷入僵局，你本能先做什么？'),
     q('同事甩锅到你头上，你会？'),
-    q('你最受不了的同事类型是？'),
+    qo('同事身上哪种特质最让你受不了？', [
+      ['没方向：吵了三小时还定不了主意，人人都在等别人先动', 'work-captain'],
+      ['差不多：交付漏洞百出，还理直气壮「能过就行」', 'work-master'],
+      ['拆台型：当众搅黄气氛，把团队攒的信任弄碎', 'work-glue'],
+      ['守旧派：一句「以前都这么干」堵死所有新思路', 'work-spark'],
+    ]),
     q('接手一个新任务，你最先关注？'),
     q('开会时你的存在感更像？'),
     q('加薪晋升的关键，你认为主要是？'),
     q('你工作里最有成就感的时刻是？'),
-    q('同事会向你抱怨「工作里最受不了什么」？'),
+    qo('同事向你抱怨工作烦恼时，你通常？', [
+      ['听两句就开始支招：「这事这么解，要不要我帮你推一下？」', 'work-captain'],
+      ['追问细节，帮TA把问题从头到尾捋清楚', 'work-master'],
+      ['先接住情绪：不管对错，先让TA把委屈说完', 'work-glue'],
+      ['边听边冒点子：「换个思路试试？我给你出三个方案」', 'work-spark'],
+    ]),
     q('新项目启动没人牵头，你会？'),
     q('你的方案被人改得面目全非，你会？'),
     q('团队士气低落的时候，你会？'),

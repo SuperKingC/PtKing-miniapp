@@ -1,8 +1,9 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 精神年龄测试（archetype 模式）：8 题、四档精神年龄投票最高票。
+ * 精神年龄测试（archetype 模式）：20 题、逐题定制选项，四档精神年龄投票最高票。
  * 趣味向内容：精神年龄与实际年龄无关，档位文案带反差萌。
+ * 四档光谱：16 少年感（冲劲好奇）→ 25 青年感（稳妥规划）→ 35 成熟感（现实权衡）→ 60 超龄感（省事求稳）。
  */
 
 const REPORTS: TestDefinition['reports'] = {
@@ -26,7 +27,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '你是聚会的心脏：组局喊你，永远不亏。' },
     ],
     actions: ['给冲动配 24 小时冷静期：大额消费和重大决定，过夜再拍板。', '把「无聊但重要」的事游戏化：完成就奖励一件有趣的小东西。', '保留一颗 16 岁的心，配一个 30 岁的待办清单。'],
-  
+
   },
   'mind-twenties': {
     id: 'mind-twenties',
@@ -48,7 +49,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '朋友爱找你「参谋」：你的建议又落地又不无聊。' },
     ],
     actions: ['给「上头的事」设预算上限，在额度内允许自己不理性。', '重大选择给自己 72 小时窗口：既要攻略，也要听心。', '每季度做一次「敢做清单」：至少完成一件不计算后果的小事。'],
-  
+
   },
   'mind-thirties': {
     id: 'mind-thirties',
@@ -70,7 +71,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '朋友把你当人生顾问：你的「过来人视角」是资产。' },
     ],
     actions: ['每周做一件「没用但喜欢」的事，防止稳定滑向麻木。', '主动向亲近的人展示一次脆弱，连接从暴露柔软开始。', '保持一项「新技能学习」，让成长曲线别太平。'],
-  
+
   },
   'mind-sixties': {
     id: 'mind-sixties',
@@ -92,19 +93,8 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '你是朋友圈的智者：少说教，多陪伴，是智者的高级形态。' },
     ],
     actions: ['每年挑战一件「麻烦但新鲜」的事，钝感力别用错了对象。', '把你的经验写成东西：文字、语音、饭桌故事，传承需要载体。', '保留一份「再试一次」的清单：松弛是对结果，不是对投入。'],
-  
+
   },
-}
-
-const OPTIONS: Array<{ text: string; reportId: string }> = [
-  { text: '太好了，冲！新鲜的东西最爱了', reportId: 'mind-teen' },
-  { text: '先查查攻略，值得就去试试', reportId: 'mind-twenties' },
-  { text: '看看对生活有没有实际影响再说', reportId: 'mind-thirties' },
-  { text: '麻烦，别折腾，现在这样就挺好', reportId: 'mind-sixties' },
-]
-
-function q(text: string): TestDefinition['questions'][number] {
-  return { text, options: OPTIONS.map((option) => ({ ...option })) }
 }
 
 export const MIND_AGE_TEST: TestDefinition = {
@@ -113,31 +103,191 @@ export const MIND_AGE_TEST: TestDefinition = {
   category: '趣味',
   meta: { minutes: 4, resultLabel: '4 档 · 解析' },
   intro: [
-    '身份证年龄没法选，但精神年龄是自己活出来的。有人 20 岁就爱养生，有人 50 岁还在追星——年龄只是数字，心态才是真相。',
-    '20 道日常题，测测你的灵魂今年几岁。',
+    '有人 20 岁就揣着保温杯，有人 50 岁还在追新——身份证上的数字选不了，灵魂的岁数是自己活出来的。',
+    '20 道日常题：从闹钟、歌单到体检报告，处处都是心态露的马脚。测完你就知道，你的灵魂今年几岁。',
   ],
-  notice: '该测试为趣味娱乐内容，测测你的灵魂今年几岁。感谢你的理解与支持。',
+  notice: '本测试为娱乐向内容，精神年龄仅供玩梗参考，不构成任何专业建议。',
   questions: [
-    q('刷到最新的潮流玩意儿，你的反应是？'),
-    q('熬夜追剧/看球，对你来说？'),
-    q('朋友临时起意喊你出去玩，你通常？'),
-    q('你如何看待「闲置物品断舍离」？'),
-    q('听到父母/长辈的唠叨，你的感受？'),
-    q('你在意别人对你的评价吗？'),
-    q('你的消费观更接近？'),
-    q('回忆学生时代，你更多是？'),
-    q('手机系统提示更新，你会？'),
-    q('朋友聊起你看不懂的新梗，你会？'),
-    q('搬家收拾东西，你的风格是？'),
-    q('对「稳定」这个词，你的感觉是？'),
-    q('你的闹钟设置是？'),
-    q('对「养生」这件事，你的态度？'),
-    q('你的歌单更接近？'),
-    q('朋友约你凌晨看日出，你会？'),
-    q('换季的时候，你会？'),
-    q('你对「现在的年轻人」的看法是？'),
-    q('玩到很晚的第二天，你的状态？'),
-    q('体检报告出来，你会？'),
+    {
+      text: '刷到最新的潮流玩意儿，你的反应是？',
+      options: [
+        { text: '「哇这是啥！」——收藏、下单、开箱一气呵成，到手先玩三天', reportId: 'mind-teen' },
+        { text: '先翻一圈测评和价格——评论区看完，再决定这钱花得值不值', reportId: 'mind-twenties' },
+        { text: '先问自己「用得上吗」——答案是能，才愿意花时间去了解', reportId: 'mind-thirties' },
+        { text: '划走——花里胡哨，把手里这台用旧了再说', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '熬夜追剧/看球，对你来说？',
+      options: [
+        { text: '基本操作——嘴上说「最后一集」，回过神来天都亮了', reportId: 'mind-teen' },
+        { text: '熬，但熬得明白——更新表提前看好，明早的事提前排开', reportId: 'mind-twenties' },
+        { text: '挑重点熬——大结局、决赛夜才留夜，平时十一点准时熄灯', reportId: 'mind-thirties' },
+        { text: '收藏了，打算周末白天看——熬夜这事，交给年轻人吧', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '朋友临时起意喊你出去玩，你通常？',
+      options: [
+        { text: '「等我五分钟！」——出门装备常年在玄关待命，说走就走', reportId: 'mind-teen' },
+        { text: '快速盘一遍：今晚没安排、这周没超支——「走，几点见」', reportId: 'mind-twenties' },
+        { text: '先问清「去哪、几个人、几点散」——心里有底再点头', reportId: 'mind-thirties' },
+        { text: '「你们去吧，玩得开心」——不是不想去，是在家更舒坦', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '你如何看待「闲置物品断舍离」？',
+      options: [
+        { text: '没这烦恼——买时三分钟热度，弃时也干脆，家里攒不下闲置', reportId: 'mind-teen' },
+        { text: '定期清一轮，顺手挂上二手平台——能回血一点是一点', reportId: 'mind-twenties' },
+        { text: '一年两次大整理：常用的留，一年没碰的处理掉——空间也是成本', reportId: 'mind-thirties' },
+        { text: '扔不得，都是钱买的——万一哪天用得上呢？先码整齐放着', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '听到父母/长辈的唠叨，你的感受？',
+      options: [
+        { text: '「知道了知道了」——嘴上应着，转头就忘', reportId: 'mind-teen' },
+        { text: '嫌归嫌，记归记——嘴上顶两句，行动上悄悄照办一半', reportId: 'mind-twenties' },
+        { text: '当信息来处理：在理的听进去，过时的笑着岔开', reportId: 'mind-thirties' },
+        { text: '「嗯嗯，您说得都对」——不顶嘴也不上心，一团和气', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '你在意别人对你的评价吗？',
+      options: [
+        { text: '在意，全写在脸上——不过情绪来得快去得快，第二天就忘了', reportId: 'mind-teen' },
+        { text: '会看，但会拆——有用的建议收藏，酸话一笑而过', reportId: 'mind-twenties' },
+        { text: '基本不动摇——先过「这人重要吗、说得在理吗」两道筛子', reportId: 'mind-thirties' },
+        { text: '不在意——嘴长在别人身上，日子是我自己在过', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '你的消费观更接近？',
+      options: [
+        { text: '喜欢就买，快乐优先——月底吃土，月初又是条好汉', reportId: 'mind-teen' },
+        { text: '比价、蹲券、看测评——但真值得的东西，眼睛都不眨', reportId: 'mind-twenties' },
+        { text: '购物车先放一周——分清「需要」和「想要」再付款', reportId: 'mind-thirties' },
+        { text: '够用就行——东西没坏就换新的，纯属浪费', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '回忆学生时代，你更多是？',
+      options: [
+        { text: '画面全是课间和放学——知识点忘光了，笑声全记得', reportId: 'mind-teen' },
+        { text: '学玩两不误——错题本和游戏存档一样整齐，该拼的时候没含糊', reportId: 'mind-twenties' },
+        { text: '靠谱担当——帮老师收作业、帮同学讲题，从小就是「靠得住」', reportId: 'mind-thirties' },
+        { text: '细节都想不起来了，只记得那年日子过得慢——挺怀念的', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '手机系统提示更新，你会？',
+      options: [
+        { text: '马上更！新功能第一个摸透——顺手还给同事当了回讲解员', reportId: 'mind-teen' },
+        { text: '看更新日志和首批反馈——好评就升，翻车就再等等', reportId: 'mind-twenties' },
+        { text: '顺手就升了——不追新也不抗拒，别耽误用就行', reportId: 'mind-thirties' },
+        { text: '「稍后提醒」点了半年——系统好好的，升什么级', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '朋友聊起你看不懂的新梗，你会？',
+      options: [
+        { text: '「这啥？快教我」——当场学会，三天后我玩得比谁都熟', reportId: 'mind-teen' },
+        { text: '默默记下，回头查清出处和用法——下次聊天得用对', reportId: 'mind-twenties' },
+        { text: '听不懂就跟着笑——聊天图个开心，又不是上文化课', reportId: 'mind-thirties' },
+        { text: '看你们笑得前仰后合——梗是啥不重要，气氛到了就好', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '搬家收拾东西，你的风格是？',
+      options: [
+        { text: '收拾五分钟，玩俩小时——翻出个旧物件能坐着研究半天', reportId: 'mind-teen' },
+        { text: '照攻略分类打包，一箱一箱贴好标签——全程有条不紊', reportId: 'mind-twenties' },
+        { text: '边打包边清仓——运费按斤算，别替废物买单', reportId: 'mind-thirties' },
+        { text: '全都带走——旧物件有感情，大不了让师傅多跑一趟', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '对「稳定」这个词，你的感觉是？',
+      options: [
+        { text: '有点闷——一眼望到头的日子，光是想想就困了', reportId: 'mind-teen' },
+        { text: '又爱又怕——想要它兜底，又怕它磨平我的劲头', reportId: 'mind-twenties' },
+        { text: '挺好的——稳定不是不折腾，是不用天天折腾', reportId: 'mind-thirties' },
+        { text: '这就是好日子本身——安定、规律、不用操心明天', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '你的闹钟设置是？',
+      options: [
+        { text: '只有一个，还常年被一秒拍掉——「再睡五分钟」才是真闹钟', reportId: 'mind-teen' },
+        { text: '设了五个、隔五分钟一档，铃声由轻到重——赖床也赖得有条理', reportId: 'mind-twenties' },
+        { text: '就一个，定在必须起的时间——醒了就起，赖床只会更累', reportId: 'mind-thirties' },
+        { text: '不用闹钟——到点自然醒，这份本事年轻人眼红不来', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '对「养生」这件事，你的态度？',
+      options: [
+        { text: '离我还远——快乐水配炸鸡，才是青春的味道', reportId: 'mind-teen' },
+        { text: '边作边补：熬最深的夜，泡最贵的枸杞——教程收藏一堆，全看心情', reportId: 'mind-twenties' },
+        { text: '列进日程了：十二点前睡、每周动两次——条条在计划上', reportId: 'mind-thirties' },
+        { text: '早就长在日常里了：早睡、口淡、不喝冰的——规律到年轻人害怕', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '你的歌单更接近？',
+      options: [
+        { text: '热歌新歌打榜区——上周的循环还没腻，新的又冲进来了', reportId: 'mind-teen' },
+        { text: '按场景切换：健身要燃、通勤要治愈——配速和情绪都靠它管', reportId: 'mind-twenties' },
+        { text: '老歌占大半——新歌听两句就划走，「还是这些耐听」', reportId: 'mind-thirties' },
+        { text: '常年不变——陪自己走过日子的旋律，比什么新歌都顺耳', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '朋友约你凌晨看日出，你会？',
+      options: [
+        { text: '「冲！」——凌晨爬起来一点不困，太阳跳出来那一刻全值了', reportId: 'mind-teen' },
+        { text: '先查天气和路线——晴天、有车、不耽误白天正事，就赴约', reportId: 'mind-twenties' },
+        { text: '盘了盘来回车程和第二天的安排——挑个周末白天去看也一样', reportId: 'mind-thirties' },
+        { text: '「日出天天有，好觉不常有」——你们拍给我看，一样美', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '换季的时候，你会？',
+      options: [
+        { text: '没感觉——短袖外面套件外套，一扛就过去了', reportId: 'mind-teen' },
+        { text: '提前看天气预报和穿搭攻略——秋装早加购了，就等一个满减', reportId: 'mind-twenties' },
+        { text: '按日子办：到点收夏被、铺冬被，小毯子提前放床头', reportId: 'mind-thirties' },
+        { text: '快人一步——秋裤早早安排上了，冻不着才是硬道理', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '你对「现在的年轻人」的看法是？',
+      options: [
+        { text: '「这不就是我」——你们聊的这群人里，我冲得最靠前', reportId: 'mind-teen' },
+        { text: '一半羡慕一半摇头——羡慕那股劲儿，也替他们的钱包捏把汗', reportId: 'mind-twenties' },
+        { text: '谁没年轻过——别急着贴标签，那只是还没到收着的年纪', reportId: 'mind-thirties' },
+        { text: '他们玩他们的新鲜，我晒我的太阳——各自安好，互不打扰', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '玩到很晚的第二天，你的状态？',
+      options: [
+        { text: '满血复活——睡三个小时照样活蹦乱跳，快乐就是充电器', reportId: 'mind-teen' },
+        { text: '靠预案撑着——昨晚睡前就把咖啡和补觉计划排好了', reportId: 'mind-twenties' },
+        { text: '低电量运行——该办的事照办，只是话比平时少一半', reportId: 'mind-thirties' },
+        { text: '得缓上两天——「一觉就满血」的本事，我是没有了', reportId: 'mind-sixties' },
+      ],
+    },
+    {
+      text: '体检报告出来，你会？',
+      options: [
+        { text: '不敢点开——「只要不打开，就没有异常」，这套我已用熟了', reportId: 'mind-teen' },
+        { text: '逐条读完，异常项当场查科普——收藏夹里新增三篇解读', reportId: 'mind-twenties' },
+        { text: '直接看结论页——要复查就约号，要调整就改作息，按条落实', reportId: 'mind-thirties' },
+        { text: '年年按时查、早早看完——「都还行」，然后该吃吃、该睡睡', reportId: 'mind-sixties' },
+      ],
+    },
   ],
   scoring: {
     type: 'archetype',

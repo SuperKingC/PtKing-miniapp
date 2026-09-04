@@ -2,7 +2,9 @@ import type { TestDefinition } from '../testEngine'
 
 /**
  * 恋爱人格测试（archetype 模式）：20 题、每题在四种恋爱人格间投票，最高票定型。
- * 四型取自恋爱关系中的经典行为模式，文案走趣味向，不做严肃心理测量声明。
+ * 选项逐题定制（对齐 loveBrainTest 样板）：每题四个选项都是对该题题干的直接回答，
+ * 且各投一型——guardian=踏实安排/做事、romantic=仪式感/心动、rational=沟通复盘/规划、
+ * free=随性/空间。四型取自恋爱关系中的经典行为模式，文案走趣味向，不做严肃心理测量声明。
  */
 
 const REPORTS: TestDefinition['reports'] = {
@@ -144,48 +146,197 @@ const REPORTS: TestDefinition['reports'] = {
   },
 }
 
-const OPTIONS: Array<{ text: string; reportId: string }> = [
-  { text: '提前订好餐厅，安排好整天的行程', reportId: 'love-guardian' },
-  { text: '准备一个小惊喜，氛围感拉满', reportId: 'love-romantic' },
-  { text: '聊聊最近的计划和状态，深度长谈', reportId: 'love-rational' },
-  { text: '想去哪去哪，玩得开心最重要', reportId: 'love-free' },
-]
-
-function q(text: string): TestDefinition['questions'][number] {
-  return { text, options: OPTIONS.map((option) => ({ ...option })) }
-}
-
 export const LOVE_PERSONA_TEST: TestDefinition = {
   id: 'love-persona',
   title: '恋爱人格测试',
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [
-    '恋爱里的你，是踏实的安全感担当，还是浪漫的心动至上主义者？是理性评估的长期主义者，还是渴望空间的自由灵魂？',
-    '20 道轻松的场景题，带你快速看清自己在恋爱中的天然姿态——没有好坏之分，只有更懂自己的相处方式。',
+    '同样谈一场恋爱，有人把日子过成贴心的日程表，有人过成心动的偶像剧，有人过成清醒的长期计划，还有人过成各自精彩的并行世界。',
+    '20 道恋爱日常场景题，凭第一直觉选就好——没有对错，测完你会拿到自己的恋爱人格：护花使者型、浪漫理想型、理性评估型，还是自由灵魂型。',
   ],
-  notice: '该测试为趣味向内容，包含恋爱人格类型与相处建议。感谢你的理解与支持。',
+  notice: '该测试为趣味向内容，结果仅供娱乐参考，不构成任何情感或人生建议。',
   questions: [
-    q('第一次约会，你的理想安排是？'),
-    q('对方一天没回消息，你会？'),
-    q('你更向往的相处状态是？'),
-    q('吵架之后，你通常？'),
-    q('你选择伴侣时，最先看重？'),
-    q('对「查手机」这件事，你觉得？'),
-    q('纪念日对你来说？'),
-    q('你理想中的爱情更像？'),
-    q('对方提议来一场说走就走的短途旅行，你的反应是？'),
-    q('你觉得纪念日仪式感的意义更多是？'),
-    q('两个人意见不一致时，你更看重？'),
-    q('聊到未来的生活规划，你的态度是？'),
-    q('对方临时加班放了你的鸽子，你会？'),
-    q('对方忘了说晚安，你会？'),
-    q('你更想收到哪种礼物？'),
-    q('对方情绪低落时，你通常会？'),
-    q('你觉得爱情里最不能将就的是？'),
-    q('一起旅行时，你负责的角色是？'),
-    q('你认为理想关系里「粘人」的程度是？'),
-    q('聊到「未来一起生活」，你的态度是？'),
+    {
+      text: '第一次约会，你的理想安排是？',
+      options: [
+        { text: '提前订好餐厅、排好整天行程，连下雨的备用方案都备好了', reportId: 'love-guardian' },
+        { text: '挑个氛围感满分的地方：日落、暖灯，还有恰到好处的歌', reportId: 'love-romantic' },
+        { text: '找家安静的店坐下来慢慢聊，先看看三观和不和', reportId: 'love-rational' },
+        { text: '不做攻略，出门再商量，走到哪算哪', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '对方一天没回消息，你会？',
+      options: [
+        { text: '有点坐不住，反复翻聊天记录，怀疑心动是不是降温了', reportId: 'love-romantic' },
+        { text: '应该是在忙，顺手把TA念叨过的那家甜品下单送过去', reportId: 'love-guardian' },
+        { text: '正好各忙各的，晚上想起来再聊也不迟', reportId: 'love-free' },
+        { text: '想想TA今天的日程确实满，晚上发一句「忙完不用急着回」', reportId: 'love-rational' },
+      ],
+    },
+    {
+      text: '你更向往的相处状态是？',
+      options: [
+        { text: '互相照应：TA的生活我兜底，我的事TA也上心', reportId: 'love-guardian' },
+        { text: '心动常在：见面仍有小鹿，牵手仍有感觉', reportId: 'love-romantic' },
+        { text: '像好朋友一样轻松：一起玩得尽兴，分开也各自精彩', reportId: 'love-free' },
+        { text: '像合拍的队友：大事聊得透，小事有默契', reportId: 'love-rational' },
+      ],
+    },
+    {
+      text: '吵架之后，你通常？',
+      options: [
+        { text: '嘴上不认输，手已经把TA爱吃的夜宵买回来了', reportId: 'love-guardian' },
+        { text: '冷战撑不过半小时，总得有人先讲土味情话破冰', reportId: 'love-romantic' },
+        { text: '等双方消了气，约个时间把分歧一条条摊开复盘', reportId: 'love-rational' },
+        { text: '各自待一会儿消消气，回头像没事人一样继续开黑', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '你选择伴侣时，最先看重？',
+      options: [
+        { text: '靠谱：说到做到，关键时刻靠得住', reportId: 'love-guardian' },
+        { text: '感觉：有没有心动，第一面就知道了', reportId: 'love-romantic' },
+        { text: '三观：聊得来、处得久，比什么都重要', reportId: 'love-rational' },
+        { text: '合拍：玩得到一起，还互不干涉', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '对「查手机」这件事，你觉得？',
+      options: [
+        { text: '太煞风景了，爱要靠感觉确认，不靠翻聊天记录', reportId: 'love-romantic' },
+        { text: '查是下策，有疑虑直接沟通，坦诚比取证有用', reportId: 'love-rational' },
+        { text: '没查过——TA的日程基本都一起安排，心里有数', reportId: 'love-guardian' },
+        { text: '坚决不查，我的手机也不欢迎被查', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '纪念日对你来说？',
+      options: [
+        { text: '日子记得牢牢的，餐厅和行程都提前弄好，TA只管人到', reportId: 'love-guardian' },
+        { text: '全年分量最重的大日子，惊喜和仪式一个都不能少', reportId: 'love-romantic' },
+        { text: '有意义，但怎么过最好提前商量好，别临场互相猜', reportId: 'love-rational' },
+        { text: '记得，但不想过度编排，好好吃顿饭就很好', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '你理想中的爱情更像？',
+      options: [
+        { text: '一部连续剧：随时上演心动的名场面', reportId: 'love-romantic' },
+        { text: '一段长跑：三观合拍，越处越有默契', reportId: 'love-rational' },
+        { text: '一个港湾：生活的琐事永远有人一起扛', reportId: 'love-guardian' },
+        { text: '两个大人的结盟：亲密，但谁也不是谁的附属', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '对方提议来一场说走就走的短途旅行，你的反应是？',
+      options: [
+        { text: '答应，然后一小时搞定车票和酒店——说走也要走得妥帖', reportId: 'love-guardian' },
+        { text: '光是「说走就走」四个字就已经心动了，走！', reportId: 'love-romantic' },
+        { text: '立刻应下，塞两件衣服背包就能出发', reportId: 'love-free' },
+        { text: '先看这周的安排和预算，可行的话马上定下来', reportId: 'love-rational' },
+      ],
+    },
+    {
+      text: '对方生病了，你的第一反应是？',
+      options: [
+        { text: '请好假直接过去照顾：粥煮上、药备齐，TA只管躺着', reportId: 'love-guardian' },
+        { text: '心疼得不行，花和TA最爱吃的甜品都备上了，马上出现', reportId: 'love-romantic' },
+        { text: '先问清症状，查过要不要就医，再叮嘱按时吃药多喝水', reportId: 'love-rational' },
+        { text: '跑腿下单把药和热粥送到，让TA好好睡一觉，不去打扰', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '两个人意见不一致时，你更看重？',
+      options: [
+        { text: '把双方的理由摆到桌面上，谁有道理听谁的', reportId: 'love-rational' },
+        { text: '先把事情定下来别耗着：怎么稳妥怎么来，执行交给我', reportId: 'love-guardian' },
+        { text: '输赢不重要，把气氛哄回来最重要', reportId: 'love-romantic' },
+        { text: '求同存异，各走各的路线，谁也别说服谁', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '聊到未来的生活规划，你的态度是？',
+      options: [
+        { text: '越具体越好：住哪、怎么分工，我可以先出一份方案', reportId: 'love-guardian' },
+        { text: '得有画面感：未来的家要留一整面墙放合照', reportId: 'love-romantic' },
+        { text: '一步一步来：先聊清各自的目标和节奏，再谈落地', reportId: 'love-rational' },
+        { text: '大方向一致就行，细节走着瞧，别急着写死', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '对方临时加班放了你的鸽子，你会？',
+      options: [
+        { text: '把订好的菜改成打包，直接送到TA公司楼下', reportId: 'love-guardian' },
+        { text: '有点小委屈，但要TA答应补一场正式的道歉约会', reportId: 'love-romantic' },
+        { text: '表示理解，重新对一下时间，挑个双方都空的日子补上', reportId: 'love-rational' },
+        { text: '那就改天，正好喊朋友开黑，一点不耽误', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '对方忘了说晚安，你会？',
+      options: [
+        { text: '嘴上说没事，心里记了一笔，第二天要对方哄回来', reportId: 'love-romantic' },
+        { text: '先琢磨TA是不是最近太累，找个周末聊聊彼此的状态', reportId: 'love-rational' },
+        { text: '压根没发现，我自己也刷着手机睡着了', reportId: 'love-free' },
+        { text: '主动发过去道晚安，再顺手确认TA明早要不要人叫', reportId: 'love-guardian' },
+      ],
+    },
+    {
+      text: '你更想收到哪种礼物？',
+      options: [
+        { text: '实用款：TA平时留意我缺什么，悄悄补齐', reportId: 'love-guardian' },
+        { text: '惊喜款：手写卡片，加一场提前布置的小仪式', reportId: 'love-romantic' },
+        { text: '计划款：把下半年一起旅行的攻略排好，当礼物送我', reportId: 'love-rational' },
+        { text: '自由款：购物卡就好，买什么让我自己挑', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '对方情绪低落时，你通常会？',
+      options: [
+        { text: '不多问，家务全包、杂事全接，让TA安心休息', reportId: 'love-guardian' },
+        { text: '挤到旁边哄，讲段子说情话，负责把TA逗笑', reportId: 'love-romantic' },
+        { text: '先听TA把来龙去脉讲完，再一起分析接下来怎么办', reportId: 'love-rational' },
+        { text: '给TA留个独处的空间，想聊想哭随时喊我', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '你觉得爱情里最不能将就的是？',
+      options: [
+        { text: '心动：对一个人没感觉，努力也装不出来', reportId: 'love-romantic' },
+        { text: '三观：聊不到一块，日子再甜也是内耗', reportId: 'love-rational' },
+        { text: '责任：答应的事要做到，别让一个人扛全部', reportId: 'love-guardian' },
+        { text: '边界：再亲密，也不能把自己弄丢', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '一起旅行时，你负责的角色是？',
+      options: [
+        { text: '后勤部长：订票订房看天气，一路照顾大家的胃', reportId: 'love-guardian' },
+        { text: '氛围担当：找机位拍大片，收集路上的小纪念', reportId: 'love-romantic' },
+        { text: '攻略参谋：比价排期做表格，预算一分不超', reportId: 'love-rational' },
+        { text: '随缘队员：跟着大部队走，被带去哪都新鲜', reportId: 'love-free' },
+      ],
+    },
+    {
+      text: '你认为理想关系里「粘人」的程度是？',
+      options: [
+        { text: '心动的时候恨不得时时刻刻贴在一起，黏一点才浪漫', reportId: 'love-romantic' },
+        { text: '各自忙完再见面，见面的质量比时长重要', reportId: 'love-rational' },
+        { text: '一周见两三次刚好，留足各自的空间', reportId: 'love-free' },
+        { text: '常常见面才踏实，周末就该排进彼此的日程', reportId: 'love-guardian' },
+      ],
+    },
+    {
+      text: '你们的消费观差异挺大，你会？',
+      options: [
+        { text: '坐下来把账摊开：共同开销怎么分、各存多少，先立个规则', reportId: 'love-rational' },
+        { text: '钱要花在心动上：纪念日和旅行的开销，贵一点也值得', reportId: 'love-romantic' },
+        { text: '先把TA需要的开销留足，我这边紧一紧就好', reportId: 'love-guardian' },
+        { text: '各管各的钱包，谁也别对谁买什么指手画脚', reportId: 'love-free' },
+      ],
+    },
   ],
   scoring: { type: 'archetype', reports: ['love-guardian', 'love-romantic', 'love-rational', 'love-free'] },
   reports: REPORTS,

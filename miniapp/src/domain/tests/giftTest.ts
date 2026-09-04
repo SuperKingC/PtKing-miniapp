@@ -107,6 +107,11 @@ function q(text: string): TestDefinition['questions'][number] {
   return { text, options: OPTIONS.map((option) => ({ ...option })) }
 }
 
+/** 逐题定制选项（对齐 loveBrainTest 金标准）：每题 [文案, reportId]，一题内每个 reportId 恰好一次 */
+function qo(text: string, options: Array<[string, string]>): TestDefinition['questions'][number] {
+  return { text, options: options.map(([optionText, reportId]) => ({ text: optionText, reportId })) }
+}
+
 export const GIFT_TEST: TestDefinition = {
   id: 'gift',
   title: '天赋能力测试',
@@ -116,13 +121,18 @@ export const GIFT_TEST: TestDefinition = {
     '每个人都有自己的「出厂设置」：有人天生爱琢磨新点子，有人天然接得住情绪，有人看见混乱就想理逻辑，有人想到就敢干。',
     '20 道日常场景题，帮你找到自己的天赋主战场——不是给自己设限，而是知道在哪里发力最省力。',
   ],
-  notice: '该测试为趣味向内容，包含天赋类型与发挥建议。感谢你的理解与支持。',
+  notice: '该测试为趣味向内容，包含天赋类型与发挥建议。',
   questions: [
     q('参加一个新活动，你最先做的是？'),
     q('朋友遇到难题来找你，你通常？'),
     q('你更喜欢的工作节奏是？'),
     q('面对一堆没做完的事，你会？'),
-    q('你刷手机时最常看的内容是？'),
+    qo('你刷手机时最常看的内容是？', [
+      ['脑洞和新奇创意：别人家的玩法与设计', 'gift-creator'],
+      ['真实的人和故事：普通生活的温度最打动你', 'gift-empath'],
+      ['深度解析与科普：把一件事讲透的长文和视频', 'gift-logic'],
+      ['实用教程与挑战清单：看完就想立刻上手', 'gift-action'],
+    ]),
     q('团队里大家最常夸你哪一点？'),
     q('学一样新东西，你更看重？'),
     q('空下来的一天，你更想？'),
@@ -132,10 +142,20 @@ export const GIFT_TEST: TestDefinition = {
     q('计划被打乱时，你的第一反应是？'),
     q('拿到一堆积木或拼图，你会？'),
     q('朋友要做一个糟糕的决定，你会？'),
-    q('你送礼物时的思考方式是？'),
+    qo('你送礼物时的思考方式是？', [
+      ['琢磨怎么送出「意料之外」：TA想不到的才够惊喜', 'gift-creator'],
+      ['回想TA最近念叨过什么：最懂TA的需要才最珍贵', 'gift-empath'],
+      ['列条件逐项过：预算、实用性、TA的偏好，筛出最优解', 'gift-logic'],
+      ['看到合适的当场拿下：纠结的功夫都够送出去了', 'gift-action'],
+    ]),
     q('看到别人做得比你更好，第一反应？'),
     q('学新技能时，你的方法是？'),
-    q('你的房间或工位更像？'),
+    qo('你的房间或工位更像？', [
+      ['一面贴满灵感便签和草稿的墙', 'gift-creator'],
+      ['摆满了朋友们送的小东西，每件都有故事', 'gift-empath'],
+      ['分类严明的收纳系统，所有东西各归其位', 'gift-logic'],
+      ['一张摊着三件「正在推进」事项的桌子', 'gift-action'],
+    ]),
     q('半夜冒出的灵感，你会？'),
     q('到一个新地方，你会先？'),
   ],
