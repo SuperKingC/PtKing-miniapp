@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 社交人格测试（archetype 模式）：8 题、四类社交风格投票最高票。
+ * 社交人格测试（archetype 模式）：20 题、四类社交风格投票最高票。
  * 趣味向自我认知内容，不带评判：每种风格都有闪光点与提醒。
  */
 
@@ -17,7 +17,7 @@ const REPORTS: TestDefinition['reports'] = {
       '社交真相：热闹给你充电，而不是耗电，这是稀缺天赋。',
       '给你的提醒：留一晚「不营业」的独处，把真实想法留给最亲的人。',
     ],
-    deep: '气氛点燃型的核心是「社交能量外放」：你在人群里会自然发光，主动开话题、接住冷场、把焦虑的陌生人变成朋友。能量科学的解释是：别人社交是耗电，你是充电——人群反而点亮你。你是天然的破冰机和情绪放大器，一个局因为你而不冷场。但外向光谱有自己的暗面：第一，你的能量来自外部刺激，独处太久会真正地萎靡（这不是矫洽，是神经系统的供电方式）；第二，「点燃气氛」的职责感可能让你不敢冷场、不敢沉默，把「让大家开心」背成了自己的KPI；第三，你可能被误判为「浮于表面」——其实你也能深聊，只是你的深聊常被热闹掩盖。',
+    deep: '气氛点燃型的核心是「社交能量外放」：你在人群里会自然发光，主动开话题、接住冷场、把焦虑的陌生人变成朋友。能量科学的解释是：别人社交是耗电，你是充电——人群反而点亮你。你是天然的破冰机和情绪放大器，一个局因为你而不冷场。但外向光谱有自己的暗面：第一，你的能量来自外部刺激，独处太久会真正地萎靡（这不是矫情，是神经系统的供电方式）；第二，「点燃气氛」的职责感可能让你不敢冷场、不敢沉默，把「让大家开心」背成了自己的KPI；第三，你可能被误判为「浮于表面」——其实你也能深聊，只是你的深聊常被热闹掩盖。',
     strengths: ['破冰与暖场能力天赋级，你在哪场就在哪', '情绪感染力强：你的笑声自带传播力', '认识人的速度快，人脉网络天然发达'],
     blindSpots: ['独处太久会真的萎靡，你需要学会高质量独处', '「不能冷场」的责任感让你不敢沉默，社交变成隐形KPI', '热闹的广度可能掩盖深度，知己数量常低于预期'],
     scenes: [
@@ -96,15 +96,60 @@ const REPORTS: TestDefinition['reports'] = {
   },
 }
 
-const OPTIONS: Array<{ text: string; reportId: string }> = [
+type QOptions = Array<{ text: string; reportId: string }>
+
+const OPTIONS: QOptions = [
   { text: '主动开话题，把气氛带起来', reportId: 'social-spark' },
   { text: '找一两个投缘的人深聊', reportId: 'social-anchor' },
   { text: '见招拆招，什么人都能聊两句', reportId: 'social-chameleon' },
   { text: '先观察全场，看到眼里的再开口', reportId: 'social-observer' },
 ]
 
-function q(text: string): TestDefinition['questions'][number] {
-  return { text, options: OPTIONS.map((option) => ({ ...option })) }
+/** 定制选项组：题干与通用四选项脱节的题，每题 4 项针对题干定制、各投一型（每 reportId 恰一次） */
+const INTRODUCED_AS_OPTIONS: QOptions = [
+  { text: '「这位是气氛担当，有TA在就没人尴尬」', reportId: 'social-spark' },
+  { text: '「这位是我能交心的朋友，认定了的那个」', reportId: 'social-anchor' },
+  { text: '「这位见什么人接什么话，跟谁都能聊到一块儿」', reportId: 'social-chameleon' },
+  { text: '「这位话不多，但看事最准，多听TA说」', reportId: 'social-observer' },
+]
+
+const VIEW_CONFLICT_OPTIONS: QOptions = [
+  { text: '当场把分歧聊开——观点归观点，气氛不能僵', reportId: 'social-spark' },
+  { text: '先弄明白对方为什么坚持，再认真说出我的想法', reportId: 'social-anchor' },
+  { text: '先不急着站队，找两边都能下的台阶', reportId: 'social-chameleon' },
+  { text: '默默记下双方论点，等场面静下来再给结论', reportId: 'social-observer' },
+]
+
+const SALES_CALL_OPTIONS: QOptions = [
+  { text: '跟对方聊得火热，挂电话前还互加了好友', reportId: 'social-spark' },
+  { text: '礼貌听完第一句就婉拒——不耽误别人，也不内耗自己', reportId: 'social-anchor' },
+  { text: '顺着话术应承两句，再不伤和气地找借口挂断', reportId: 'social-chameleon' },
+  { text: '一声不吭听完整套话术，最后回一句「不需要」', reportId: 'social-observer' },
+]
+
+const READ_NO_REPLY_OPTIONS: QOptions = [
+  { text: '嗨忘了——热闹一开场，手机就被我忘在角落', reportId: 'social-spark' },
+  { text: '想认真回——这句话配得上一个走心的答复，写着写着就晚了', reportId: 'social-anchor' },
+  { text: '在掂量措辞——对什么人用什么口吻，回错了场合就尴尬了', reportId: 'social-chameleon' },
+  { text: '在心里回完了——没什么好接的，我默认这事已经聊完', reportId: 'social-observer' },
+]
+
+const TRAIN_STRANGER_OPTIONS: QOptions = [
+  { text: '越聊越起劲，下车前已经互加微信约了下次吃饭', reportId: 'social-spark' },
+  { text: '礼貌回应，聊到真正投缘的话题才慢慢打开话匣子', reportId: 'social-anchor' },
+  { text: '对方抛什么话题都接得住，聊天节奏全程跟着TA走', reportId: 'social-chameleon' },
+  { text: '附和着听TA讲完，心里已经把这位邻座看了个大概', reportId: 'social-observer' },
+]
+
+const BOOK_RESTAURANT_OPTIONS: QOptions = [
+  { text: '通常是我——定位甩进群里，「就这家，七点见」', reportId: 'social-spark' },
+  { text: '我来订，但会先问一圈每个人的忌口和偏好', reportId: 'social-anchor' },
+  { text: '看这局谁做东——TA拿主意，我负责把两边的口味都圆上', reportId: 'social-chameleon' },
+  { text: '都行，我什么都能吃——除非没人定，我才丢一个候选', reportId: 'social-observer' },
+]
+
+function q(text: string, options: QOptions = OPTIONS): TestDefinition['questions'][number] {
+  return { text, options: options.map((option) => ({ ...option })) }
 }
 
 export const SOCIAL_TEST: TestDefinition = {
@@ -116,26 +161,26 @@ export const SOCIAL_TEST: TestDefinition = {
     '聚会的角落里、群聊的潜水时、饭局的敬酒间——每个人在社交场里都有自己的「默认姿态」。有人天生自来熟，有人慢热但走心，有人八面玲珑，有人安静观察。',
     '20 道日常场景题，看清你在社交场里的天然角色。没有好坏，只有更懂自己的社交节奏。',
   ],
-  notice: '该测试为趣味向内容，包含社交风格解析与建议。感谢你的理解与支持。',
+  notice: '该测试为娱乐向内容，社交风格解析仅供玩梗参考，不构成任何专业心理建议。',
   questions: [
     q('进一个全是陌生人的饭局，你的第一反应？'),
     q('群里大家聊得火热，你通常？'),
     q('新同事入职第一天，你会？'),
     q('朋友聚会结束时，你的感受？'),
-    q('别人介绍你时，你希望被怎么说？'),
-    q('遇到观点冲突，你通常？'),
+    q('别人介绍你时，你希望被怎么说？', INTRODUCED_AS_OPTIONS),
+    q('遇到观点冲突，你通常？', VIEW_CONFLICT_OPTIONS),
     q('你的微信好友数更接近？'),
     q('独处一整天没有社交，你会？'),
     q('电梯里遇到不太熟的同事，你会？'),
     q('团建被大家起哄来个节目，你会？'),
     q('新加入一个群聊，你前几天的状态是？'),
-    q('接到陌生推销电话，你通常？'),
+    q('接到陌生推销电话，你通常？', SALES_CALL_OPTIONS),
     q('聚会上有人全程冷落你，你会？'),
-    q('你的「已读不回」通常是因为？'),
-    q('陌生号码打来电话，你会？'),
+    q('你的「已读不回」通常是因为？', READ_NO_REPLY_OPTIONS),
+    q('长途高铁上，邻座陌生人主动跟你搭话，你会？', TRAIN_STRANGER_OPTIONS),
     q('和陌生室友同住旅行，你会？'),
     q('你更喜欢哪种聊天方式？'),
-    q('朋友聚会订餐厅，通常是谁拍板？'),
+    q('朋友聚会订餐厅，通常是谁拍板？', BOOK_RESTAURANT_OPTIONS),
     q('需要当众自我介绍时，你？'),
     q('你的朋友圈点赞习惯是？'),
   ],
