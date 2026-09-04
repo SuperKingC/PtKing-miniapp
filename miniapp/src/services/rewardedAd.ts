@@ -22,6 +22,11 @@ function adUnitId(): string {
   return typeof TARO_AD_UNIT_ID === 'string' ? TARO_AD_UNIT_ID : ''
 }
 
+/** 广告位是否已配置：未配置（本地开发/未开通流量主）时答题页不落锁，报告无解锁门 */
+export function isRewardedAdConfigured(): boolean {
+  return adUnitId() !== ''
+}
+
 /** 纯函数核心（可单测）：把（广告位配置、关闭回调、是否发生过 SDK 错误）规整为三态结果 */
 export function resolveAdOutcome(
   unitId: string,

@@ -55,6 +55,13 @@ describe('resolveAdOutcome (pure)', () => {
     expect(mod.resolveAdOutcome('unit', false, false)).toBe('aborted')
     expect(mod.resolveAdOutcome('unit', true, true)).toBe('unavailable')
   })
+
+  it('reports whether the ad unit is configured (gate only when configured)', async () => {
+    const unconfigured = await loadAdWithWx({}, null)
+    expect(unconfigured.isRewardedAdConfigured()).toBe(false)
+    const configured = await loadAdWithWx({}, 'unit_123')
+    expect(configured.isRewardedAdConfigured()).toBe(true)
+  })
 })
 
 describe('showRewardedAd', () => {

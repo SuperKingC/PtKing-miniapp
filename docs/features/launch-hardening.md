@@ -16,7 +16,7 @@
 
 链路：答题完成 → `saveTestRecord(..., { locked: true })` → 报告页锁定态（不渲染正文）→「观看视频解锁」→ `showRewardedAd()` → `unlockRecord` 持久化解锁。
 
-- 广告位配置：构建注入 `TARO_AD_UNIT_ID`（`config/index.ts` 读环境变量）。**留空 = 跳过广告直接展示报告**（本地开发、未开通流量主时的默认状态）；上线前在微信公众平台开通流量主、创建激励视频广告位，构建时注入 `TARO_AD_UNIT_ID=adunit-xxx`。
+- 广告位配置：构建注入 `TARO_AD_UNIT_ID`（`config/index.ts` 读环境变量）。**留空 = 记录不落锁，报告直接展示、无解锁门**（本地开发、未开通流量主时的默认状态）；上线前在微信公众平台开通流量主、创建激励视频广告位，构建时注入 `TARO_AD_UNIT_ID=adunit-xxx`，此后新完成的报告才出现解锁门。
 - 结果三态：`completed`（看完）/ `aborted`（中途关闭，toast 提示重看）/ `unavailable`（无广告位或 SDK 异常）。
 - **降级铁律**：SDK 任何异常（创建失败、show 两次重试失败、播放中 onError）一律 `unavailable`，调用方直接解锁报告——广告故障绝不阻断看报告主链路。另有 90s 看门狗防 onClose 不回调挂死。
 - 记录页对 `locked === true` 的记录展示「待解锁」徽标，点进报告页仍是解锁门。

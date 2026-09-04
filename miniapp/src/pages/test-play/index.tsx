@@ -3,13 +3,14 @@ import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import { scoreTest } from '../../domain/testEngine'
 import { captureError, trackEvent } from '../../services/monitor'
+import { isRewardedAdConfigured } from '../../services/rewardedAd'
 import { getTestDefinition } from '../../services/testRegistry'
 import { saveTestRecord } from '../../services/testRecords'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
 // 支持回退上一题改答案；最后一题作答即计分落记录并跳报告页。
-// 新记录落库即 locked=true（报告页看激励视频解锁）；广告位未配置时报告页自动解锁
+// 广告位已配置时新记录落库 locked=true（报告页看激励视频解锁）；未配置不落锁，报告直接展示
 export default function TestPlayPage() {
   const router = useRouter()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
@@ -46,7 +47,7 @@ export default function TestPlayPage() {
       try {
         const result = scoreTest(definition, nextAnswers)
         saveTestRecord(definition.id, result, {
-          locked: true,
+          locked: isRewardedAdConfigured(),
           testTitle: definition.title,
           resultTitle: definition.reports[result.reportId]?.title,
         })
