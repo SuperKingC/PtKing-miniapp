@@ -4,6 +4,10 @@
   right: 0;
   bottom: 0;
   left: 0;
+  /* 自定义 tabBar 是独立组件树，app.scss 的全局 box-sizing 规则不生效，必须显式声明：
+     否则 content-box 下 height(calc 含 safe-area) 再叠 padding-bottom，
+     白底会多出整整一倍安全区高度，tab 内容被顶到偏下 */
+  box-sizing: border-box;
   display: flex;
   align-items: stretch;
   /* 白底下移：内容区收窄到 80rpx，safe-area 只做纯白延伸（padding 而非计入内容高度），
