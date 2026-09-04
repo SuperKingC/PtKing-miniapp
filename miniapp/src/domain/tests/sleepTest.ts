@@ -46,7 +46,7 @@ export const SLEEP_TEST: TestDefinition = {
     q('睡前会吃东西或喝酒？'),
     q('睡觉对光线和声音很敏感？'),
     q('早上需要被反复叫醒？'),
-    q('醒来常觉得「睡了像没睡」？'),
+    q('你会做梦做到醒来还记得情节？'),
   ],
   scoring: {
     type: 'band',

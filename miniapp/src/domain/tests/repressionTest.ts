@@ -20,7 +20,7 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const REPRESSION_TEST: TestDefinition = {
   id: 'repression-test',
-  title: '性压抑指数测试',
+  title: '压抑指数测试',
   category: '人格',
   meta: { minutes: 4, resultLabel: '3 档 · 压抑指数' },
   intro: [
