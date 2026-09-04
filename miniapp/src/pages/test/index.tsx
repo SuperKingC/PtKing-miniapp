@@ -44,7 +44,7 @@ export default function TestPage() {
       <View className="test-page__hero">
         <View className="test-page__hero-text">
           <Text className="test-page__hero-title">发现你的另一面</Text>
-          <Text className="test-page__hero-sub">{definitions.length} 个测试 · 全部免费</Text>
+          <Text className="test-page__hero-sub">{definitions.length} 个测试 · 持续上新</Text>
         </View>
         <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" />
       </View>

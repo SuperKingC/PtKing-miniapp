@@ -65,7 +65,7 @@ describe('test registry sanity (all published tests)', () => {
       expect(def.meta.minutes).toBeGreaterThan(0)
       expect(def.meta.resultLabel).toBeTruthy()
       expect(def.intro.length).toBeGreaterThanOrEqual(2)
-      expect(def.notice).toContain('免费')
+      expect(def.notice).toBeTruthy()
       // 产品基准（2026-09）：题太少用户会觉得「不准」，全部上架测试不得低于 MIN_QUESTIONS
       expect(def.questions.length).toBeGreaterThanOrEqual(MIN_QUESTIONS)
       // 题目选项齐全、无重复文案
