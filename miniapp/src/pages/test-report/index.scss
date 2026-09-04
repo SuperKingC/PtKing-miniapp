@@ -55,14 +55,14 @@
 .test-report__dim-track {
   height: 16rpx;
   border-radius: 999rpx;
-  background: #efecf9;
+  background: var(--color-primary-soft);
   overflow: hidden;
 }
 
 .test-report__dim-fill {
   height: 16rpx;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, #a295f5 0%, #6c5ce7 100%);
+  background: var(--color-primary);
 }
 
 .test-report__band {
@@ -127,7 +127,7 @@
   height: 104rpx;
   margin: 64rpx auto 0;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, #8f7bf0 0%, #6c5ce7 100%);
+  background: var(--color-primary);
   color: #ffffff;
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
@@ -141,7 +141,7 @@
   height: 96rpx;
   margin: 24rpx auto 0;
   border-radius: 999rpx;
-  border: 2rpx solid #ddd6f3;
+  border: 2rpx solid var(--color-primary-soft);
   background: var(--color-card-bg);
   color: var(--color-ink-secondary);
   font-size: var(--font-size-body);

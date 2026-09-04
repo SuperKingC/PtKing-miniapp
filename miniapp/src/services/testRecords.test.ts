@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { parseTestRecords, appendRecord, type TestRecord } from './testRecords'
+import {
+  parseTestRecords,
+  appendRecord,
+  loadTestRecords,
+  saveTestRecord,
+  type TestRecord,
+} from './testRecords'
 
 const sample: TestRecord = {
   testId: 'mbti',
@@ -28,6 +34,27 @@ describe('testRecords parsing', () => {
   it('rejects non-string payloads (objects stored directly by older versions)', () => {
     expect(parseTestRecords({ foo: 1 })).toEqual([])
     expect(parseTestRecords(null)).toEqual([])
+  })
+})
+
+describe('save/load round-trip', () => {
+  it('round-trips a saved record through a wx storage mock', () => {
+    // 回归锁定：曾因写侧存数组、读侧只认 JSON 字符串，记录落库后永远读不出来
+    const memory = new Map<string, unknown>()
+    ;(globalThis as { wx?: unknown }).wx = {
+      setStorageSync: (key: string, value: unknown) => void memory.set(key, value),
+      getStorageSync: (key: string) => memory.get(key) ?? '',
+    }
+    try {
+      saveTestRecord(sample.testId, sample.result)
+      const loaded = loadTestRecords()
+      expect(loaded).toHaveLength(1)
+      expect(loaded[0].testId).toBe(sample.testId)
+      expect(loaded[0].result).toEqual(sample.result)
+      expect(typeof loaded[0].finishedAt).toBe('string')
+    } finally {
+      delete (globalThis as { wx?: unknown }).wx
+    }
   })
 })
 

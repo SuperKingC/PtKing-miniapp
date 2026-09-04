@@ -94,7 +94,7 @@
   height: 104rpx;
   margin: 64rpx auto 0;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, #8f7bf0 0%, #6c5ce7 100%);
+  background: var(--color-primary);
   color: #ffffff;
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
