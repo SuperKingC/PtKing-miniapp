@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { listTestDefinitions, TEST_LIST_ORDER } from '../services/testRegistry'
-import { scoreTest } from '../domain/testEngine'
+import { MIN_QUESTIONS, scoreTest } from '../domain/testEngine'
 
 /**
  * 注册表级 sanity：所有上架测试必须结构完整、报告齐全、可被极化答案命中、
@@ -61,7 +61,8 @@ describe('test registry sanity (all published tests)', () => {
       expect(def.meta.resultLabel).toBeTruthy()
       expect(def.intro.length).toBeGreaterThanOrEqual(2)
       expect(def.notice).toContain('免费')
-      expect(def.questions.length).toBeGreaterThanOrEqual(6)
+      // 产品基准（2026-09）：题太少用户会觉得「不准」，全部上架测试不得低于 MIN_QUESTIONS
+      expect(def.questions.length).toBeGreaterThanOrEqual(MIN_QUESTIONS)
       // 题目选项齐全、无重复文案
       for (const question of def.questions) {
         expect(question.options.length).toBeGreaterThanOrEqual(2)

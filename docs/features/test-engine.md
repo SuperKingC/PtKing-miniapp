@@ -9,20 +9,29 @@
 
 ## 实现
 
-- `domain/testEngine.ts`：`TestDefinition` + 三种计分模式纯函数——
+- `domain/testEngine.ts`：`TestDefinition` + 四种计分模式纯函数——
   `dimension`（维度二分多数票定字母拼 reportId，同票取第一极）、`band`（权重求和落区间）、
-  `archetype`（选项投票最高票人格，同票按定义序）。答案长度/下标严格校验；
+  `archetype`（选项投票最高票人格，同票按定义序；同时返回全部类型票数分布 `archetypeVotes`
+  供报告页画「人格倾向分布」，旧记录无此字段读侧须 `?? []` 兜底）、
+  `factor`（因素加权百分位，反向因素取反）。答案长度/下标严格校验；
   reportId 命不中 reports 一律抛 `invalid_test_definition:*` 不静默兜底。
-- `domain/tests/mbtiTest.ts`：28 题（四维度各 7，迁移自 Pet10，3 处「小多利」措辞中性化）
-  + 16 型报告文案（title/tagline/summary/3 条 detail）。
+  另导出：`MIN_QUESTIONS = 12`（上架最少题数基准，2026-09 定：题太少用户觉得「不准」，
+  静态 sanity 与 COS 新内容共同遵守）、`findBandIndex`（band 报告页刻度高亮）、
+  `radarChartGeometry`（雷达图顶点几何纯函数，canvas 绘制层用）。
+- `domain/tests/*.ts`：17 个测试全部 ≥12 题（2026-09 起 8/10 题的 13 个测试补齐到 12，
+  band 测试满分统一重算为 36 分、三档 0-12/13-24/25-36；MBTI 28 / 大五 30 / 暗黑 27 / 宠物 12 原有不动）。
 - `services/testRegistry.ts`：静态注册表 + `TEST_LIST_ORDER` 展示顺序，页面数据驱动；
   M2 COS 下发新测试时此文件只加兜底条目。
 - `services/testRecords.ts`：本地 storage 记录（`ptking_test_records`，上限 200，最新在前）；
   getStorageSync 空串 typeof 守卫（Pet10 698990d 同款坑）；坏数据丢弃不抛错。
+  存储契约：写侧 JSON.stringify、读侧 parse 只认字符串。
 - 页面：`pages/test`（中心，卡片接注册表+敬请期待占位卡）、`pages/test-detail`
-  （信息胶囊+介绍+注意卡+开始按钮）、`pages/test-play`（进度条+计数+双答案卡+左右翻页，
-  支持回退改答案）、`pages/test-report`（类型+维度条/分数+摘要+解读+再测一次）、
-  `pages/records`（记录列表回看）、`pages/me`（已做测试入口 → 记录 tab）。
+  （信息胶囊+介绍+注意卡+开始按钮）、`pages/test-play`（进度条+计数+自适应答案卡：
+  2 选项横排大卡、3+ 选项长文本纵向堆叠全宽卡+A/B/C/D 徽标，支持回退改答案）、
+  `pages/test-report`（hero 渐变结果卡+徽章行；图表随计分模式切换——dimension 双端百分比
+  维度条 / factor canvas 雷达图+百分位条 / archetype 票数分布条+次人格卡 / band 三档分数
+  刻度条+得分徽章；摘要+解读+再测一次）、`pages/records`（记录列表回看）、
+  `pages/me`（已做测试入口 → 记录 tab）。
 
 ## 导航链路
 

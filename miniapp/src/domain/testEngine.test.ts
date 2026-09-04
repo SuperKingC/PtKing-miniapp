@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   scoreTest,
   resolveReportTitle,
+  findBandIndex,
+  radarChartGeometry,
+  MIN_QUESTIONS,
   type TestDefinition,
 } from './testEngine'
 
@@ -137,6 +140,24 @@ describe('testEngine archetype scoring', () => {
     broken.questions[0].options[0] = { text: 'x', reportId: 'ghost' }
     expect(() => scoreTest(broken, [0, 0, 0])).toThrow('invalid_test_definition')
   })
+
+  it('returns full vote distribution in reports order including zero votes', () => {
+    // fox 2 票、owl 1 票；顺序与 scoring.reports 定义一致
+    expect(scoreTest(archetypeFixture(), [0, 0, 1]).archetypeVotes).toEqual([
+      { reportId: 'fox', count: 2 },
+      { reportId: 'owl', count: 1 },
+    ])
+    // 全投 owl：fox 保留 0 票（分布图需要）
+    expect(scoreTest(archetypeFixture(), [1, 1, 1]).archetypeVotes).toEqual([
+      { reportId: 'fox', count: 0 },
+      { reportId: 'owl', count: 3 },
+    ])
+  })
+
+  it('leaves archetypeVotes empty for non-archetype modes', () => {
+    expect(scoreTest(bandFixture(), [2, 1]).archetypeVotes).toEqual([])
+    expect(scoreTest(dimensionFixture(), [0, 0, 0, 0]).archetypeVotes).toEqual([])
+  })
 })
 
 function factorFixture(): TestDefinition {
@@ -225,5 +246,51 @@ describe('resolveReportTitle', () => {
     const def = dimensionFixture()
     expect(resolveReportTitle(def, 'AC')).toBe('AC 型')
     expect(resolveReportTitle(def, 'ZZ')).toBe('ZZ')
+  })
+})
+
+describe('findBandIndex', () => {
+  it('locates the band a score falls into', () => {
+    expect(findBandIndex(bandFixture(), 2)).toBe(0)
+    expect(findBandIndex(bandFixture(), 5)).toBe(1)
+  })
+
+  it('returns null for out-of-range scores and non-band modes', () => {
+    expect(findBandIndex(bandFixture(), 0)).toBeNull()
+    expect(findBandIndex(bandFixture(), 99)).toBeNull()
+    expect(findBandIndex(dimensionFixture(), 3)).toBeNull()
+  })
+})
+
+describe('radarChartGeometry', () => {
+  it('places the first vertex at top and distributes axes clockwise', () => {
+    const points = radarChartGeometry(5)
+    // 首顶点正上方：x 居中、y 在圆心上方
+    expect(points[0].x).toBeCloseTo(0.5)
+    expect(points[0].y).toBeLessThan(0.5)
+    // 五边形顶点数量正确，且都在 [0,1] 画布范围内
+    expect(points).toHaveLength(5)
+    for (const point of points) {
+      expect(point.x).toBeGreaterThanOrEqual(0)
+      expect(point.x).toBeLessThanOrEqual(1)
+      expect(point.y).toBeGreaterThanOrEqual(0)
+      expect(point.y).toBeLessThanOrEqual(1)
+    }
+  })
+
+  it('handles degenerate axis counts without NaN', () => {
+    expect(radarChartGeometry(0)).toEqual([])
+    const two = radarChartGeometry(2)
+    expect(two).toHaveLength(2)
+    for (const point of two) {
+      expect(Number.isFinite(point.x)).toBe(true)
+      expect(Number.isFinite(point.y)).toBe(true)
+    }
+  })
+})
+
+describe('MIN_QUESTIONS baseline', () => {
+  it('stays at the product-agreed minimum of 12', () => {
+    expect(MIN_QUESTIONS).toBe(12)
   })
 })

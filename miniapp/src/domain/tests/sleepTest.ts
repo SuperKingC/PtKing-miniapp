@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 睡眠质量测试（band 模式）：8 题、每题 0-3 分四档，总分 0-24 落三档报告。
+ * 睡眠质量测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档报告。
  * 趣味向生活方式自查，文案避免「诊断/障碍/治疗」等临床措辞（合规红线）。
  */
 
@@ -20,10 +20,10 @@ export const SLEEP_TEST: TestDefinition = {
   id: 'sleep',
   title: '睡眠质量测试',
   category: '趣味',
-  meta: { minutes: 2, resultLabel: '3 档 · 建议' },
+  meta: { minutes: 3, resultLabel: '3 档 · 建议' },
   intro: [
     '睡够 8 小时却还是累？躺下半小时睡不着？凌晨三点脑子突然开机？睡眠质量不只在时长，更在「落地质量」。',
-    '8 道近况自查题，2 分钟看看你最近的睡眠成色，并附上对应的小建议。',
+    '12 道近况自查题，3 分钟看看你最近的睡眠成色，并附上对应的小建议。',
   ],
   notice: '该测试为生活方式自查工具，非医疗评估；可免费测试+查看个人结果报告。',
   questions: [
@@ -35,14 +35,18 @@ export const SLEEP_TEST: TestDefinition = {
     q('周末会补觉补到中午？'),
     q('睡前脑子里事情停不下来？'),
     q('咖啡或浓茶是你的日常标配？'),
+    q('睡着后一点小动静就会把你弄醒？'),
+    q('每天的入睡和起床时间差得很远？'),
+    q('白天不靠咖啡/浓茶就撑不下去？'),
+    q('越到该睡的时间，脑子反而越清醒？'),
   ],
   scoring: {
     type: 'band',
-    max: 24,
+    max: 36,
     bands: [
-      { min: 0, max: 7, reportId: 'sleep-good' },
-      { min: 8, max: 15, reportId: 'sleep-mid' },
-      { min: 16, max: 24, reportId: 'sleep-low' },
+      { min: 0, max: 12, reportId: 'sleep-good' },
+      { min: 13, max: 24, reportId: 'sleep-mid' },
+      { min: 25, max: 36, reportId: 'sleep-low' },
     ],
   },
   reports: {

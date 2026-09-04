@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 恋爱人格测试（archetype 模式）：8 题、每题在四种恋爱人格间投票，最高票定型。
+ * 恋爱人格测试（archetype 模式）：12 题、每题在四种恋爱人格间投票，最高票定型。
  * 四型取自恋爱关系中的经典行为模式，文案走趣味向，不做严肃心理测量声明。
  */
 
@@ -74,7 +74,7 @@ export const LOVE_PERSONA_TEST: TestDefinition = {
   meta: { minutes: 3, resultLabel: '4 型 · 解析' },
   intro: [
     '恋爱里的你，是踏实的安全感担当，还是浪漫的心动至上主义者？是理性评估的长期主义者，还是渴望空间的自由灵魂？',
-    '8 道轻松的场景题，带你快速看清自己在恋爱中的天然姿态——没有好坏之分，只有更懂自己的相处方式。',
+    '12 道轻松的场景题，带你快速看清自己在恋爱中的天然姿态——没有好坏之分，只有更懂自己的相处方式。',
   ],
   notice: '该测试可免费测试+查看个人结果报告，包含恋爱人格类型与相处建议。感谢你的理解与支持。',
   questions: [
@@ -86,6 +86,10 @@ export const LOVE_PERSONA_TEST: TestDefinition = {
     q('对「查手机」这件事，你觉得？'),
     q('纪念日对你来说？'),
     q('你理想中的爱情更像？'),
+    q('对方提议来一场说走就走的短途旅行，你的反应是？'),
+    q('你觉得纪念日仪式感的意义更多是？'),
+    q('两个人意见不一致时，你更看重？'),
+    q('聊到未来的生活规划，你的态度是？'),
   ],
   scoring: { type: 'archetype', reports: ['love-guardian', 'love-romantic', 'love-rational', 'love-free'] },
   reports: REPORTS,

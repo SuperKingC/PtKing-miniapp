@@ -61,7 +61,8 @@ export default function TestPlayPage() {
       </View>
       <Text className="test-play__counter">{qIndex + 1}/{total}</Text>
       <Text className="test-play__question">{qIndex + 1}. {question.text}</Text>
-      <View className="test-play__options">
+      {/* 2 选项（MBTI 型二分题）横排大卡；3+ 选项（长文本场景题）纵向堆叠全宽卡，避免文字挤压竖排 */}
+      <View className={question.options.length > 2 ? 'test-play__options test-play__options--stack' : 'test-play__options'}>
         {question.options.map((option, optionIndex) => (
           <View
             key={option.text}
@@ -73,7 +74,12 @@ export default function TestPlayPage() {
             hoverClass="none"
             onClick={() => choose(optionIndex)}
           >
-            <Text>{option.text}</Text>
+            {question.options.length > 2 && (
+              <Text className={chosen === optionIndex ? 'test-play__option-key test-play__option-key--active' : 'test-play__option-key'}>
+                {String.fromCharCode(65 + optionIndex)}
+              </Text>
+            )}
+            <Text className="test-play__option-text">{option.text}</Text>
           </View>
         ))}
       </View>

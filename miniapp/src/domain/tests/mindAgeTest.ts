@@ -71,10 +71,10 @@ export const MIND_AGE_TEST: TestDefinition = {
   id: 'mind-age',
   title: '精神年龄测试',
   category: '趣味',
-  meta: { minutes: 2, resultLabel: '4 档 · 解析' },
+  meta: { minutes: 3, resultLabel: '4 档 · 解析' },
   intro: [
     '身份证年龄没法选，但精神年龄是自己活出来的。有人 20 岁就爱养生，有人 50 岁还在追星——年龄只是数字，心态才是真相。',
-    '8 道日常题，测测你的灵魂今年几岁。',
+    '12 道日常题，测测你的灵魂今年几岁。',
   ],
   notice: '该测试为趣味娱乐内容，可免费测试+查看个人结果报告。感谢你的理解与支持。',
   questions: [
@@ -86,6 +86,10 @@ export const MIND_AGE_TEST: TestDefinition = {
     q('你在意别人对你的评价吗？'),
     q('你的消费观更接近？'),
     q('回忆学生时代，你更多是？'),
+    q('手机系统提示更新，你会？'),
+    q('朋友聊起你看不懂的新梗，你会？'),
+    q('搬家收拾东西，你的风格是？'),
+    q('对「稳定」这个词，你的感觉是？'),
   ],
   scoring: {
     type: 'archetype',

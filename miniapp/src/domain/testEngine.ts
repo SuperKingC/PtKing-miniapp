@@ -78,7 +78,15 @@ export interface TestResult {
   bandScore: number | null
   /** factor 模式：各因素百分位（0-100，反向因素已取反），非 factor 模式为空 */
   factorScores: Array<{ id: string; label: string; percent: number }>
+  /**
+   * archetype 模式：全部类型按 scoring.reports 定义顺序的票数（含 0 票），供报告页画分布图；
+   * 非 archetype 模式为空。字段可选：引擎升级前落库的旧记录没有它，读侧必须 ?? [] 兜底。
+   */
+  archetypeVotes?: Array<{ reportId: string; count: number }>
 }
+
+/** 上架测试最少题数基准：题太少用户会觉得「不准」（2026-09 产品基准，静态 sanity 与 COS 内容共同遵守） */
+export const MIN_QUESTIONS = 12
 
 function invalidDefinition(testId: string, reason: string): never {
   throw new Error(`invalid_test_definition:${testId}:${reason}`)
@@ -117,7 +125,7 @@ function scoreDimension(def: TestDefinition, answers: number[]): TestResult {
 
   const reportId = letters.join('')
   if (!def.reports[reportId]) invalidDefinition(def.id, `missing_report_${reportId}`)
-  return { reportId, dimensionScores, bandScore: null, factorScores: [] }
+  return { reportId, dimensionScores, bandScore: null, factorScores: [], archetypeVotes: [] }
 }
 
 function scoreBand(def: TestDefinition, answers: number[]): TestResult {
@@ -131,7 +139,7 @@ function scoreBand(def: TestDefinition, answers: number[]): TestResult {
   const band = scoring.bands.find((b) => total >= b.min && total <= b.max)
   if (!band) invalidDefinition(def.id, `band_gap_${total}`)
   if (!def.reports[band.reportId]) invalidDefinition(def.id, `missing_report_${band.reportId}`)
-  return { reportId: band.reportId, dimensionScores: [], bandScore: total, factorScores: [] }
+  return { reportId: band.reportId, dimensionScores: [], bandScore: total, factorScores: [], archetypeVotes: [] }
 }
 
 function scoreFactor(def: TestDefinition, answers: number[]): TestResult {
@@ -181,7 +189,7 @@ function scoreFactor(def: TestDefinition, answers: number[]): TestResult {
   const reportId = scoring.reportByFactor[dominant.id]
   if (!reportId || !def.reports[reportId]) invalidDefinition(def.id, `missing_report_${dominant.id}`)
 
-  return { reportId, dimensionScores: [], bandScore: null, factorScores }
+  return { reportId, dimensionScores: [], bandScore: null, factorScores, archetypeVotes: [] }
 }
 
 function scoreArchetype(def: TestDefinition, answers: number[]): TestResult {
@@ -207,7 +215,9 @@ function scoreArchetype(def: TestDefinition, answers: number[]): TestResult {
   }
   if (best <= 0) invalidDefinition(def.id, 'archetype_no_votes')
   if (!def.reports[reportId]) invalidDefinition(def.id, `missing_report_${reportId}`)
-  return { reportId, dimensionScores: [], bandScore: null, factorScores: [] }
+  // 票数分布按 scoring.reports 定义顺序输出（含 0 票），供报告页画「人格倾向分布」
+  const archetypeVotes = scoring.reports.map((id) => ({ reportId: id, count: counts.get(id) ?? 0 }))
+  return { reportId, dimensionScores: [], bandScore: null, factorScores: [], archetypeVotes }
 }
 
 /**
@@ -242,4 +252,27 @@ export function scoreTest(def: TestDefinition, answers: number[]): TestResult {
 /** 结果展示标题：优先报告 title，缺定义时退 reportId（防御渲染层崩溃） */
 export function resolveReportTitle(def: TestDefinition, reportId: string): string {
   return def.reports[reportId]?.title ?? reportId
+}
+
+/** band 模式展示辅助：分数落在第几档（从 0 数）；未命中返回 null。供报告页高亮区间刻度 */
+export function findBandIndex(def: TestDefinition, score: number): number | null {
+  if (def.scoring.type !== 'band') return null
+  const index = def.scoring.bands.findIndex((band) => score >= band.min && score <= band.max)
+  return index === -1 ? null : index
+}
+
+/**
+ * 雷达图几何纯函数（factor 模式报告页 canvas 用）：返回各顶点画布坐标（0-1 归一化，y 向下）。
+ * 顶点顺序与 factors 一致、从正上方开始顺时针；axes 为空时返回空数组。
+ */
+export function radarChartGeometry(axisCount: number, radius = 0.38, center = 0.5): Array<{ x: number; y: number }> {
+  if (axisCount <= 0) return []
+  if (axisCount < 3) {
+    // 退化情形（0-2 个因素不构成多边形）：横排等距点，避免除零与重叠
+    return Array.from({ length: axisCount }, (_, index) => ({ x: (index + 1) / (axisCount + 1), y: center }))
+  }
+  return Array.from({ length: axisCount }, (_, index) => {
+    const angle = -Math.PI / 2 + (2 * Math.PI * index) / axisCount
+    return { x: center + radius * Math.cos(angle), y: center + radius * Math.sin(angle) }
+  })
 }

@@ -1,9 +1,9 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 憨憨指数测试（band 模式）：10 题、每题 0-3 分四档，总分 0-30 落三档。
+ * 憨憨指数测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
  * 「憨憨指数」= 迷糊/脱线/天然呆浓度，猎奇向娱乐内容，无贬义——憨是可爱的代名词。
- * 注意 max=30（10 题 × 3 分），是全部 band 测试里唯一超过 24 的，专门用来检验 band 引擎泛化性。
+ * 总分 0-36（12 题 × 3 分），与全部 band 测试统一的三档刻度。
  */
 
 const OPTIONS: TestDefinition['questions'][number]['options'] = [
@@ -24,7 +24,7 @@ export const GOOFY_TEST: TestDefinition = {
   meta: { minutes: 3, resultLabel: '3 档 · 憨度鉴定' },
   intro: [
     '出门忘带钥匙、进门找不到手机、别人笑完你才听懂笑话……「憨」不是傻，是一种天然的去油体质和快乐体质。',
-    '10 道日常翻车现场题，测测你的憨度浓度。分数越高，说明你越接近快乐的本源。',
+    '12 道日常翻车现场题，测测你的憨度浓度。分数越高，说明你越接近快乐的本源。',
   ],
   notice: '该测试为趣味娱乐内容，可免费测试+查看个人结果报告。感谢你的理解与支持。',
   questions: [
@@ -38,14 +38,16 @@ export const GOOFY_TEST: TestDefinition = {
     q('被身边人当场指出「你又来了」的经典操作？'),
     q('发消息发错群，措手不及？'),
     q('一边说「我记性可好了」，一边当场忘了上一句说什么？'),
+    q('出门带了伞，最后把伞落在了店里？'),
+    q('给手机充了一整夜，早上发现插排没通电？'),
   ],
   scoring: {
     type: 'band',
-    max: 30,
+    max: 36,
     bands: [
-      { min: 0, max: 10, reportId: 'goofy-hidden' },
-      { min: 11, max: 20, reportId: 'goofy-parttime' },
-      { min: 21, max: 30, reportId: 'goofy-fulltime' },
+      { min: 0, max: 12, reportId: 'goofy-hidden' },
+      { min: 13, max: 24, reportId: 'goofy-parttime' },
+      { min: 25, max: 36, reportId: 'goofy-fulltime' },
     ],
   },
   reports: {

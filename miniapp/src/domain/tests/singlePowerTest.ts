@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 单身力测试（band 模式）：8 题、每题 0-3 分四档，总分 0-24 落三档。
+ * 单身力测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
  * 「单身力」= 单身生活的自洽程度，趣味向，无婚恋评判色彩。
  */
 
@@ -20,10 +20,10 @@ export const SINGLE_TEST: TestDefinition = {
   id: 'single-power',
   title: '单身力测试',
   category: '情感',
-  meta: { minutes: 2, resultLabel: '3 档 · 解读' },
+  meta: { minutes: 3, resultLabel: '3 档 · 解读' },
   intro: [
     '单身力，不是「喜欢单身」，而是单身时也能把日子过好的能力：一个人吃饭不将就、一个人旅行够尽兴、情绪有出口、生活有秩序。',
-    '8 道日常题，测测你的单身自洽指数——分数高低都不重要，重要的是知道自己现在处在哪个状态。',
+    '12 道日常题，测测你的单身自洽指数——分数高低都不重要，重要的是知道自己现在处在哪个状态。',
   ],
   notice: '该测试可免费测试+查看个人结果报告，包含单身力解读与生活建议。感谢你的理解与支持。',
   questions: [
@@ -35,14 +35,18 @@ export const SINGLE_TEST: TestDefinition = {
     q('深夜emo来袭，你有稳定的排解方式吗？'),
     q('你做重大决定时，需要别人拿主意吗？'),
     q('对未来伴侣的态度，你更接近？'),
+    q('一个人看电影/看展，你的接受度？'),
+    q('家里的灯泡坏了/水管漏了，你的第一反应？'),
+    q('情绪低落的晚上，你能自己把自己捞起来吗？'),
+    q('听到「单身会不会孤独终老」的调侃，你的心态？'),
   ],
   scoring: {
     type: 'band',
-    max: 24,
+    max: 36,
     bands: [
-      { min: 0, max: 8, reportId: 'single-growing' },
-      { min: 9, max: 16, reportId: 'single-steady' },
-      { min: 17, max: 24, reportId: 'single-flourish' },
+      { min: 0, max: 12, reportId: 'single-growing' },
+      { min: 13, max: 24, reportId: 'single-steady' },
+      { min: 25, max: 36, reportId: 'single-flourish' },
     ],
   },
   reports: {

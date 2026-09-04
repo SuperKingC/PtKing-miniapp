@@ -74,7 +74,7 @@ export const GIFT_TEST: TestDefinition = {
   meta: { minutes: 3, resultLabel: '4 型 · 解析' },
   intro: [
     '每个人都有自己的「出厂设置」：有人天生爱琢磨新点子，有人天然接得住情绪，有人看见混乱就想理逻辑，有人想到就敢干。',
-    '8 道日常场景题，帮你找到自己的天赋主战场——不是给自己设限，而是知道在哪里发力最省力。',
+    '12 道日常场景题，帮你找到自己的天赋主战场——不是给自己设限，而是知道在哪里发力最省力。',
   ],
   notice: '该测试可免费测试+查看个人结果报告，包含天赋类型与发挥建议。感谢你的理解与支持。',
   questions: [
@@ -86,6 +86,10 @@ export const GIFT_TEST: TestDefinition = {
     q('团队里大家最常夸你哪一点？'),
     q('学一样新东西，你更看重？'),
     q('空下来的一天，你更想？'),
+    q('拿到一个新工具或新应用，你最先做什么？'),
+    q('朋友纠结两难来问你，你通常会？'),
+    q('计划外的空白时间突然砸来，你会？'),
+    q('计划被打乱时，你的第一反应是？'),
   ],
   scoring: { type: 'archetype', reports: ['gift-creator', 'gift-empath', 'gift-logic', 'gift-action'] },
   reports: REPORTS,

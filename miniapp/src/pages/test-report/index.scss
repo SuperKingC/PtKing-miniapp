@@ -1,6 +1,6 @@
 .test-report {
   min-height: 100vh;
-  padding: 48rpx 40rpx calc(80rpx + env(safe-area-inset-bottom));
+  padding: 32rpx 40rpx calc(80rpx + env(safe-area-inset-bottom));
 }
 
 .test-report__missing {
@@ -11,89 +11,350 @@
   font-size: var(--font-size-body);
 }
 
+/* ===== hero 结果卡：陶土橘渐变 + 白字 + 徽章行 ===== */
+.test-report__hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56rpx 40rpx 44rpx;
+  border-radius: 36rpx;
+  background: linear-gradient(150deg, #c05f35 0%, #d47a4a 58%, #e89a6f 100%);
+  box-shadow: 0 12rpx 36rpx rgba(192, 95, 53, 0.28);
+}
+
+/* 装饰同心圆：绝对定位显式四边 + 显式宽高（WXSS 规范） */
+.test-report__hero::before {
+  position: absolute;
+  top: -120rpx;
+  right: -120rpx;
+  bottom: auto;
+  left: auto;
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  content: '';
+}
+
+.test-report__hero::after {
+  position: absolute;
+  top: auto;
+  right: auto;
+  bottom: -150rpx;
+  left: -90rpx;
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  content: '';
+}
+
 .test-report__eyebrow {
+  position: relative;
+  z-index: 1;
   display: block;
   text-align: center;
   font-size: var(--font-size-aux);
-  color: var(--color-ink-secondary);
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 2rpx;
 }
 
 .test-report__type {
+  position: relative;
+  z-index: 1;
   display: block;
   margin-top: 20rpx;
   text-align: center;
   font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  color: #ffffff;
+  text-shadow: 0 4rpx 16rpx rgba(80, 40, 20, 0.18);
 }
 
 .test-report__tagline {
+  position: relative;
+  z-index: 1;
   display: block;
-  margin-top: 12rpx;
+  margin-top: 14rpx;
   text-align: center;
-  font-size: var(--font-size-body);
-  color: var(--color-ink-secondary);
+  font-size: var(--font-size-secondary);
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.test-report__dims {
-  margin-top: 48rpx;
-  padding: 32rpx;
-  border-radius: 24rpx;
-  background: var(--color-card-bg);
+.test-report__hero-badges {
+  position: relative;
+  z-index: 1;
   display: flex;
-  flex-direction: column;
-  gap: 28rpx;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: 32rpx;
 }
 
-.test-report__dim-label {
-  display: block;
-  margin-bottom: 12rpx;
+.test-report__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 24rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
   font-size: var(--font-size-aux);
-  color: var(--color-ink-secondary);
+  color: #ffffff;
 }
 
-.test-report__dim-track {
-  height: 16rpx;
-  border-radius: 999rpx;
-  background: var(--color-primary-soft);
-  overflow: hidden;
-}
-
-.test-report__dim-fill {
-  height: 16rpx;
-  border-radius: 999rpx;
-  background: var(--color-primary);
-}
-
-.test-report__band {
-  margin-top: 48rpx;
-  padding: 40rpx;
-  border-radius: 24rpx;
-  background: var(--color-card-bg);
-  text-align: center;
-}
-
-.test-report__band-value {
-  font-size: var(--font-size-display);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-.test-report__section {
-  margin-top: 40rpx;
+/* ===== 通用信息面板 ===== */
+.test-report__panel {
+  margin-top: 32rpx;
   padding: 36rpx 32rpx;
-  border-radius: 24rpx;
+  border-radius: 28rpx;
   background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
 }
 
-.test-report__section-title {
+.test-report__panel-title {
   display: block;
-  margin-bottom: 20rpx;
+  margin-bottom: 28rpx;
+  padding-left: 20rpx;
+  border-left: 8rpx solid var(--color-primary);
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
   color: var(--color-ink);
 }
 
+/* ===== dimension 模式：双端标注维度条 ===== */
+.test-report__dim {
+  margin-top: 24rpx;
+}
+
+.test-report__dim:first-of-type {
+  margin-top: 0;
+}
+
+.test-report__dim-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.test-report__dim-side {
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-report__dim-side--on {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.test-report__dim-track {
+  height: 20rpx;
+  border-radius: 999rpx;
+  background: #f3ece2;
+  overflow: hidden;
+}
+
+.test-report__dim-fill {
+  height: 20rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  transition: width 0.3s ease;
+}
+
+/* ===== factor 模式：雷达图 + 百分位条 ===== */
+.test-report__radar-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.test-report__radar {
+  width: 100%;
+  height: 420rpx;
+}
+
+.test-report__factor-list {
+  margin-top: 8rpx;
+}
+
+.test-report__factor-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 18rpx;
+}
+
+.test-report__factor-label {
+  flex: none;
+  width: 176rpx;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink);
+}
+
+.test-report__factor-track {
+  flex: 1;
+  height: 16rpx;
+  border-radius: 999rpx;
+  background: #f3ece2;
+  overflow: hidden;
+}
+
+.test-report__factor-fill {
+  height: 16rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+}
+
+.test-report__factor-value {
+  flex: none;
+  width: 88rpx;
+  text-align: right;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+/* ===== archetype 模式：倾向分布 + 次人格 ===== */
+.test-report__vote-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 18rpx;
+}
+
+.test-report__vote-row:first-of-type {
+  margin-top: 0;
+}
+
+.test-report__vote-label {
+  flex: none;
+  width: 220rpx;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.test-report__vote-label--on {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.test-report__vote-track {
+  flex: 1;
+  height: 16rpx;
+  border-radius: 999rpx;
+  background: #f3ece2;
+  overflow: hidden;
+}
+
+.test-report__vote-fill {
+  height: 16rpx;
+  border-radius: 999rpx;
+  background: #e2d5c6;
+}
+
+.test-report__vote-row:first-of-type .test-report__vote-fill {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+}
+
+.test-report__vote-value {
+  flex: none;
+  width: 76rpx;
+  text-align: right;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-report__runner {
+  margin-top: 28rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 20rpx;
+  border: 2rpx dashed #e8c9ae;
+  background: #fdf8f2;
+}
+
+.test-report__runner-chip {
+  display: inline-flex;
+  padding: 4rpx 18rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-aux);
+}
+
+.test-report__runner-title {
+  display: block;
+  margin-top: 14rpx;
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+}
+
+.test-report__runner-tagline {
+  display: block;
+  margin-top: 8rpx;
+  font-size: var(--font-size-aux);
+  line-height: 1.6;
+  color: var(--color-ink-secondary);
+}
+
+/* ===== band 模式：得分徽章 + 三档刻度条 ===== */
+.test-report__band-score {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.test-report__band-value {
+  font-size: 88rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.test-report__band-unit {
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-report__band-scale {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 36rpx;
+}
+
+.test-report__band-seg {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 18rpx 8rpx 14rpx;
+  border-radius: 16rpx;
+  background: #f8f3ec;
+}
+
+.test-report__band-seg--on {
+  background: linear-gradient(160deg, #f9eadf, #f3d9c4);
+  box-shadow: inset 0 0 0 3rpx var(--color-primary);
+}
+
+.test-report__band-seg-label {
+  font-size: var(--font-size-aux);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+}
+
+.test-report__band-seg--on .test-report__band-seg-label {
+  color: var(--color-primary);
+}
+
+.test-report__band-seg-range {
+  font-size: 22rpx;
+  color: var(--color-ink-secondary);
+}
+
+/* ===== 摘要 / 解读 ===== */
 .test-report__summary {
   font-size: var(--font-size-body);
   line-height: 1.8;
@@ -131,6 +392,7 @@
   color: #ffffff;
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
+  box-shadow: 0 10rpx 28rpx rgba(192, 95, 53, 0.3);
 }
 
 .test-report__back {

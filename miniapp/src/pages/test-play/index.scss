@@ -43,9 +43,16 @@
   line-height: 1.6;
 }
 
+/* 二分题：横排大卡 */
 .test-play__options {
   display: flex;
   gap: 28rpx;
+}
+
+/* 场景题（3+ 选项长文本）：纵向堆叠全宽卡，文字一行放下不再挤压竖排 */
+.test-play__options--stack {
+  flex-direction: column;
+  gap: 24rpx;
 }
 
 .test-play__option {
@@ -56,12 +63,21 @@
   min-height: 260rpx;
   padding: 32rpx;
   border-radius: 28rpx;
-  border: 3rpx solid #ece7f8;
-  background: #f2effc;
+  border: 3rpx solid var(--color-primary-soft);
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
   text-align: center;
   font-size: var(--font-size-card-title);
   color: var(--color-ink);
   line-height: 1.6;
+}
+
+/* 堆叠卡：左对齐横排（徽标 + 文本），高度随内容自适应 */
+.test-play__options--stack .test-play__option {
+  justify-content: flex-start;
+  min-height: 0;
+  padding: 30rpx 32rpx;
+  text-align: left;
 }
 
 .test-play__option--active {
@@ -69,6 +85,32 @@
   background: var(--color-primary-soft);
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
+}
+
+.test-play__option-key {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 24rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--color-primary-soft);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.test-play__option-key--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.test-play__option-text {
+  flex: 1;
 }
 
 .test-play__nav {
@@ -86,7 +128,7 @@
   height: 112rpx;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 8rpx 24rpx rgba(108, 92, 231, 0.16);
+  box-shadow: var(--shadow-card);
   color: var(--color-ink);
   font-size: var(--font-size-card-title);
 }
