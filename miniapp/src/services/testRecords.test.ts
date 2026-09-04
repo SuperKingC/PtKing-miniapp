@@ -3,6 +3,7 @@ import {
   buildHistoryRows,
   clearTestRecords,
   markRecordUnlocked,
+  normalizeRecordLocks,
   parseTestRecords,
   appendRecord,
   loadTestRecords,
@@ -16,6 +17,15 @@ const sample: TestRecord = {
   testId: 'mbti',
   finishedAt: '2026-09-02T10:00:00.000Z',
   result: { reportId: 'INTJ', dimensionScores: [], bandScore: null },
+}
+
+/** 锁定语义依赖「广告位已配置」：断言 locked=true 落库读回的用例需先注入广告位常量 */
+function withAdConfigured(): void {
+  ;(globalThis as { TARO_AD_UNIT_ID?: string }).TARO_AD_UNIT_ID = 'unit_test'
+}
+
+function withoutAdConfigured(): void {
+  delete (globalThis as { TARO_AD_UNIT_ID?: string }).TARO_AD_UNIT_ID
 }
 
 describe('testRecords parsing', () => {
@@ -87,6 +97,7 @@ describe('locked report + snapshot fields', () => {
       setStorageSync: (key: string, value: unknown) => void memory.set(key, value),
       getStorageSync: (key: string) => memory.get(key) ?? '',
     }
+    withAdConfigured()
     try {
       saveTestRecord(sample.testId, sample.result, {
         locked: true,
@@ -97,6 +108,30 @@ describe('locked report + snapshot fields', () => {
       expect(loaded.locked).toBe(true)
       expect(loaded.testTitle).toBe('MBTI 人格测试')
       expect(loaded.resultTitle).toBe('建筑师')
+    } finally {
+      delete (globalThis as { wx?: unknown }).wx
+      withoutAdConfigured()
+    }
+  })
+
+  it('normalizeRecordLocks treats legacy locked records as unlocked when no ad unit is configured', () => {
+    const locked: TestRecord = { ...sample, locked: true }
+    expect(normalizeRecordLocks([locked], true)[0].locked).toBe(true)
+    expect(normalizeRecordLocks([locked], false)[0].locked).toBe(false)
+    // 未锁定记录不受影响
+    expect(normalizeRecordLocks([sample], false)[0].locked).toBeUndefined()
+  })
+
+  it('loadTestRecords strips stale locks when the ad unit is absent (legacy dev records)', () => {
+    const memory = new Map<string, unknown>()
+    memory.set('ptking_test_records', JSON.stringify([{ ...sample, locked: true }]))
+    ;(globalThis as { wx?: unknown }).wx = {
+      setStorageSync: (key: string, value: unknown) => void memory.set(key, value),
+      getStorageSync: (key: string) => memory.get(key) ?? '',
+    }
+    withoutAdConfigured()
+    try {
+      expect(loadTestRecords()[0].locked).toBe(false)
     } finally {
       delete (globalThis as { wx?: unknown }).wx
     }

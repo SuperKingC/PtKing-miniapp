@@ -23,7 +23,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 80rpx;
+  /* 112rpx = 微信原生 tabBar 内容区高度：80rpx 时图标+文字贴顶、safe-area 全落在下方，视觉偏上 */
+  height: 112rpx;
   gap: 4rpx;
 }
 

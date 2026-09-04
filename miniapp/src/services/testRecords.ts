@@ -1,4 +1,5 @@
 import type { TestResult } from '../domain/testEngine'
+import { isRewardedAdConfigured } from './rewardedAd'
 import { getWxGlobal } from './wxGlobal'
 
 /**
@@ -73,7 +74,15 @@ export function appendRecord(records: TestRecord[], record: TestRecord, max = MA
 }
 
 export function loadTestRecords(): TestRecord[] {
-  return parseTestRecords(readStorage())
+  return normalizeRecordLocks(parseTestRecords(readStorage()), isRewardedAdConfigured())
+}
+
+/** 纯函数核心（可单测）：广告位未配置时，历史遗留的 locked 一律视为已解锁。
+ * 兼容「先落锁、后未配广告位」的旧记录（含广告位配置前落库的调试数据），
+ * 读取侧统一归一，报告页/记录页不需要各自兜底。 */
+export function normalizeRecordLocks(records: TestRecord[], adConfigured: boolean): TestRecord[] {
+  if (adConfigured) return records
+  return records.map((item) => (item.locked === true ? { ...item, locked: false } : item))
 }
 
 export interface SaveRecordMeta {

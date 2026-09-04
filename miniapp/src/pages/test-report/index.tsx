@@ -271,7 +271,7 @@ export default function TestReportPage() {
     )
   }
 
-  // ===== 解锁门：锁定记录不渲染报告正文，只给 hero 预告 + 解锁卡 =====
+  // ===== 解锁门：锁定记录不渲染报告正文，也不给次级出口（聚焦解锁动作，返回走导航） =====
   if (locked) {
     return (
       <View className="test-report">
@@ -295,24 +295,6 @@ export default function TestReportPage() {
             <Text>{unlocking ? '正在打开视频…' : '观看视频解锁'}</Text>
           </View>
           <Text className="test-report__gate-note">视频由微信广告提供，看完自动解锁</Text>
-        </View>
-        <View
-          className="test-report__action"
-          hoverClass="none"
-          onClick={() => {
-            wx.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
-          }}
-        >
-          <Text>再测一次</Text>
-        </View>
-        <View
-          className="test-report__back"
-          hoverClass="none"
-          onClick={() => {
-            wx.switchTab({ url: '/pages/test/index' })
-          }}
-        >
-          <Text>回到测试中心</Text>
         </View>
       </View>
     )
