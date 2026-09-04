@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
-import { Text, View } from '@tarojs/components'
-import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro'
+import { Button, Text, View } from '@tarojs/components'
+import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
 import { getTestDefinition } from '../../services/testRegistry'
 import { loadTestRecords } from '../../services/testRecords'
@@ -137,11 +137,23 @@ export default function TestReportPage() {
       })
   }, [radarScores])
 
+  // 好友转发：结果型标题（不剧透具体题目）+ 卡片直达该测试详情页引导开测
   useShareAppMessage(() => {
     const report = definition && record ? definition.reports[record.result.reportId] : null
     return {
       title: report
         ? `我在 ${definition!.title} 里测出了「${report.title}」，你也来试试`
+        : 'PtKing · 来测测你的隐藏人格',
+      path: definition ? `/pages/test-detail/index?testId=${definition.id}` : undefined,
+    }
+  })
+
+  // 朋友圈分享：单页模式打开，仅带结果型标题
+  useShareTimeline(() => {
+    const report = definition && record ? definition.reports[record.result.reportId] : null
+    return {
+      title: report
+        ? `我在 ${definition!.title} 里测出了「${report.title}」`
         : 'PtKing · 来测测你的隐藏人格',
     }
   })
@@ -381,6 +393,9 @@ export default function TestReportPage() {
       >
         <Text>再测一次</Text>
       </View>
+      <Button className="test-report__share" openType="share" hoverClass="none">
+        分享给好友
+      </Button>
       <View
         className="test-report__back"
         hoverClass="none"

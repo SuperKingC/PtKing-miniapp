@@ -41,16 +41,28 @@
 }
 
 .me-page__entry {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 0;
   padding: 36rpx 32rpx;
+  border-radius: 0;
+  background: transparent;
   font-size: var(--font-size-body);
+  font-weight: normal;
   color: var(--color-ink);
+  line-height: 1.4;
+  text-align: left;
+}
+
+/* 重置微信 button 默认伪元素边框 */
+.me-page__entry::after {
+  border: none;
 }
 
 .me-page__entry + .me-page__entry {
-  border-top: 1rpx solid #f0edf5;
+  border-top: 1rpx solid #f1e9df;
 }
 
 .me-page__arrow {

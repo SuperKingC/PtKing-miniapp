@@ -21,6 +21,26 @@ describe('share capability wiring', () => {
     expect(report).toContain('你也来试试')
   })
 
+  it('shares the report to moments and offers an in-page share button', () => {
+    const report = readFileSync(resolve(miniappRoot(), 'src/pages/test-report/index.tsx'), 'utf8')
+
+    // 朋友圈分享（showShareMenu 已开 shareTimeline 菜单，页面需声明 useShareTimeline）
+    expect(report).toContain('useShareTimeline')
+    // 页内分享按钮（微信转发入口）
+    expect(report).toContain('openType="share"')
+    // 好友卡片直达该测试详情页，引导开测
+    expect(report).toContain('/pages/test-detail/index?testId=')
+  })
+
+  it('wires the me-page entries: tarot history broadcast + contact sessions', () => {
+    const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
+
+    // 塔罗历史：跨页广播打开塔罗流程历史面板
+    expect(me).toContain('TAROT_HISTORY_OPEN_EVENT')
+    // 联系作者/问题反馈走微信客服会话
+    expect(me).toContain("openType={entry.contact ? 'contact' : undefined}")
+  })
+
   it('keeps the tarot page share title wiring from Pet10', () => {
     const tarotPage = readFileSync(resolve(miniappRoot(), 'src/pages/tarot/index.tsx'), 'utf8')
 

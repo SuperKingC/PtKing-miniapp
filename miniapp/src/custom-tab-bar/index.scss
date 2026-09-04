@@ -6,7 +6,10 @@
   left: 0;
   display: flex;
   align-items: stretch;
-  height: calc(88rpx + env(safe-area-inset-bottom));
+  /* 白底下移：内容区收窄到 80rpx，safe-area 只做纯白延伸（padding 而非计入内容高度），
+     保证 tab 图标+文字在可视内容区内上下居中 */
+  height: calc(80rpx + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(20rpx);
   border-top: 1rpx solid rgba(80, 62, 44, 0.06);
@@ -19,12 +22,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6rpx;
+  gap: 4rpx;
 }
 
 .tabbar__icon {
-  width: 46rpx;
-  height: 46rpx;
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .tabbar__text {

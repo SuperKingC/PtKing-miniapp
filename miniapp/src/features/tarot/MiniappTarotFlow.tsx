@@ -12,7 +12,7 @@ import { MiniappTarotHistoryPanel } from './MiniappTarotHistoryPanel'
 import { getTarotSanctuaryBackground, preloadTarotResources } from './tarotAssets'
 import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
-import { listTarotHistory, saveTarotReading } from './tarotHistory'
+import { listTarotHistory, saveTarotReading, TAROT_HISTORY_OPEN_EVENT } from './tarotHistory'
 import { buildShareText, buildTarotReading, buildTarotShareTitle } from './tarotReading'
 import { findTarotSpread, type MiniappTarotSpread } from './tarotSpreads'
 import './MiniappTarotFlow.scss'
@@ -48,6 +48,13 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
   useEffect(() => () => {
     leaveTimersRef.current.forEach((timer) => clearTimeout(timer))
     leaveTimersRef.current = []
+  }, [])
+
+  // 我的页「塔罗历史」入口跨页打开历史面板（tab 页常驻，eventCenter 监听常驻有效）
+  useEffect(() => {
+    const openHistory = () => setHistoryOpen(true)
+    Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)
+    return () => Taro.eventCenter.off(TAROT_HISTORY_OPEN_EVENT, openHistory)
   }, [])
 
   // while the reading is on screen, register a tarot-flavored share title so

@@ -9,6 +9,9 @@ import { getWxGlobal } from '../../services/wxGlobal'
 const historyKey = 'ptking_tarot_history'
 const historyLimit = 20
 
+/** 我的页「塔罗历史」入口 → 塔罗页打开历史面板（eventCenter 广播，tab 页常驻监听） */
+export const TAROT_HISTORY_OPEN_EVENT = 'ptking:tarot-history-open'
+
 function readRaw(): unknown {
   try {
     return getWxGlobal()?.getStorageSync?.(historyKey)
