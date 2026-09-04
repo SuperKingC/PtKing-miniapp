@@ -9,10 +9,12 @@ import recordsIcon from '../assets/tabbar/records-v2.png'
 import recordsActiveIcon from '../assets/tabbar/records-active-v2.png'
 import meIcon from '../assets/tabbar/me-v2.png'
 import meActiveIcon from '../assets/tabbar/me-active-v2.png'
+import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
 import './index.scss'
 
 // 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；毛玻璃底+暖色选中态。
-// 选中态由各 tab 页在 onShow 时经 getTabBar().setState 同步（见 hooks/useTabBarSelected）
+// 选中态双保险：①点击时乐观置位（即时反馈）②各 tab 页 onShow 经 eventCenter 广播索引
+// （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
 const TABS = [
   { text: '测试', icon: testIcon, activeIcon: testActiveIcon, path: '/pages/test/index' },
   { text: '塔罗', icon: tarotIcon, activeIcon: tarotActiveIcon, path: '/pages/tarot/index' },
@@ -23,7 +25,20 @@ const TABS = [
 export default class CustomTabBar extends Component {
   state = { selected: 0 }
 
+  componentDidMount() {
+    Taro.eventCenter.on(TABBAR_SELECT_EVENT, this.handleSelectEvent)
+  }
+
+  componentWillUnmount() {
+    Taro.eventCenter.off(TABBAR_SELECT_EVENT, this.handleSelectEvent)
+  }
+
+  handleSelectEvent = (index: number) => {
+    if (index !== this.state.selected) this.setState({ selected: index })
+  }
+
   handleSwitch = (index: number) => {
+    this.handleSelectEvent(index)
     Taro.switchTab({ url: TABS[index].path })
   }
 
