@@ -2,7 +2,8 @@ import type { TestDefinition } from '../testEngine'
 
 /**
  * XP 测试（archetype 模式）：20 题、每题在四种「心动触发器」间投票，最高票定型。
- * 「XP」取网络语境里的「让你上头的点」，内容全程走心动/氛围/偏好原型，不涉低俗表述（合规红线）。
+ * 「XP」取网络语境里的「让你上头的点」：题干与选项走强张力言情场景（对视、靠近、护短、
+ * 独占、失控瞬间），追求心跳加速的画面感；红线：不涉低俗与露骨表述（微信审核 + sanity 契约）。
  * 四型：反差感（意外性）、氛围感（场景情绪）、灵魂共振（同频感）、独占欲（专属感）。
  */
 
@@ -27,7 +28,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '你的心动开关值得告诉伴侣：TA努力反差的样子，本身就是反差。' },
     ],
     actions: ['把「心动浓度」和「爱意浓度」分开记账：平淡期不等于不爱。', '给慢热的人两次机会：TA的反差需要时间才会显影。', '警惕表演型反差：看TA对服务员、对前任、对弱者的样子。'],
-  
+
   },
   'xp-atmos': {
     id: 'xp-atmos',
@@ -49,7 +50,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '你的浪漫是朋友圈的标杆：分享你的氛围感，你会收获一群粉丝。' },
     ],
     actions: ['每季度做一次「日光灯测试」：摘掉滤镜，确认灯下的TA你依然喜欢。', '把氛围制造能力分一半给日常：柴米油盐也需要你的魔法。', '警惕高消费氛围陷阱：心动成本要和钱包和平共处。'],
-  
+
   },
   'xp-resonance': {
     id: 'xp-resonance',
@@ -71,7 +72,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '你交朋友慢但质量极高：你的朋友圈就是你的精神资产清单。' },
     ],
     actions: ['给「不同频但真诚」的人三次机会：共振可以后天调频。', '把线上聊得来的关系拉到线下验证：现实是共振的试金石。', '警惕「只有聊得来」的关系：问自己除了聊天，TA还是什么样的搭档？'],
-  
+
   },
   'xp-claim': {
     id: 'xp-claim',
@@ -93,7 +94,7 @@ const REPORTS: TestDefinition['reports'] = {
       { scene: '社交', text: '你的忠诚是关系里的稀缺品：遇到同样专一的人，你的世界会很稳。' },
     ],
     actions: ['给「验证行为」设频次上限：每月一次真心提问，胜过每天十次试探。', '用「体验被爱」替换「验证被爱」：享受当下的偏爱，而不是审计它。', '建立自己的「自我价值账户」：安全感多一点存自己身上，少一点押在对方那里。'],
-  
+
   },
 }
 
@@ -103,189 +104,189 @@ export const XP_TEST: TestDefinition = {
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 心动触发器' },
   intro: [
-    '「XP」是网络语境里「让你上头的点」——它决定了你会被什么样的人一击即中，又在什么瞬间彻底沦陷。',
-    '20 道心动场景题，测出你的心动触发器：有人吃反差、有人吃氛围、有人吃同频、有人吃专属感。找到它，你就读懂了自己的心动逻辑。',
+    '每个人身上都有一个「XP 开关」：平时藏得死死的，直到某个人出现——一个动作、半秒对视、一句不该温柔的话，你防了二十年的防线，一秒塌完。',
+    '20 个心动场景，把你一步步逼到开关面前：有人吃反差、有人吃氛围、有人吃同频、有人吃独占。测完你会知道，自己到底会输给什么样的人。',
   ],
-  notice: '该测试为趣味向内容，测出你的心动触发器。感谢你的理解与支持。',
+  notice: '本测试为娱乐向内容，只测你的心动偏好类型，不构成任何专业建议。',
   questions: [
     {
-      text: '人群里哪种人最容易让你多看两眼？',
+      text: '派对上，你的目光会钉在谁身上？',
       options: [
-        { text: '全场高冷，唯独对你露出一点破绽', reportId: 'xp-contrast' },
-        { text: '站在光线和音乐都刚刚好的地方', reportId: 'xp-atmos' },
-        { text: '开口第一句就接住了你没说出口的话', reportId: 'xp-resonance' },
-        { text: '对谁都淡淡的，只有给你留了专属位置', reportId: 'xp-claim' },
+        { text: '全场最矜的那张冷脸——TA的眼神扫过全场，却在你身上停了半秒', reportId: 'xp-contrast' },
+        { text: '靠窗的位置，灯光把TA的侧脸切成明暗两半，音乐刚好像为TA铺的', reportId: 'xp-atmos' },
+        { text: 'TA站在笑闹的人群外和你一样旁观，像另一个你', reportId: 'xp-resonance' },
+        { text: '有人凑近TA搭话，TA退开半步，目光却越过那人，落在你身上', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '哪种「回复消息」最让你心动？',
+      text: '凌晨一点，手机亮了。哪种内容让你心跳漏一拍？',
       options: [
-        { text: '一贯毒舌的人，突然发来笨拙的关心', reportId: 'xp-contrast' },
-        { text: '深夜发来一句「睡了吗」，配着刚好的BGM感', reportId: 'xp-atmos' },
-        { text: '你们同时打出了一模一样的一句话', reportId: 'xp-resonance' },
-        { text: '「别人问都没回，就等你这句」', reportId: 'xp-claim' },
+        { text: '那个从不说软话的人发来：「睡不着。就你，别告诉别人」', reportId: 'xp-contrast' },
+        { text: '一张雨夜窗景，没有配文——正是你们上次共撑一把伞的天气', reportId: 'xp-atmos' },
+        { text: '你们同时给对方发了一模一样的那句话，屏幕上下排着', reportId: 'xp-resonance' },
+        { text: '「这条只发给你。」而你恰好知道，TA的消息列表从来很热闹', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '让你瞬间上头的名场面是？',
+      text: '哪种「靠近」会让你瞬间僵住？',
       options: [
-        { text: '稳如泰山的人，为你慌了神', reportId: 'xp-contrast' },
-        { text: '雨夜共撑一把伞，谁都没说话', reportId: 'xp-atmos' },
-        { text: '聊到凌晨三点，发现三观严丝合缝', reportId: 'xp-resonance' },
-        { text: 'TA 当众说「这个只能给TA」', reportId: 'xp-claim' },
-      ],
-    },
-    {
-      text: '你更容易被哪种朋友圈吸引？',
-      options: [
-        { text: '日常高冷，偶尔露出反差萌的瞬间', reportId: 'xp-contrast' },
-        { text: '随手一拍全是电影感的氛围图', reportId: 'xp-atmos' },
-        { text: '评论区里你们聊得根本停不下来', reportId: 'xp-resonance' },
-        { text: '发的东西像加密电报，只有你看得懂', reportId: 'xp-claim' },
-      ],
-    },
-    {
-      text: '对方哪个小动作最致命？',
-      options: [
-        { text: '板了一天的脸，看到你绷不住笑了', reportId: 'xp-contrast' },
-        { text: '在喧闹里压低声音，只对你说', reportId: 'xp-atmos' },
-        { text: '精准接住你的烂梗，还顺势往下接', reportId: 'xp-resonance' },
-        { text: '不动声色把你不喜欢的东西换掉了', reportId: 'xp-claim' },
-      ],
-    },
-    {
-      text: '理想中的「偶遇」剧本是？',
-      options: [
-        { text: '一贯理智的人，在意外场合失态地追上来', reportId: 'xp-contrast' },
-        { text: '黄昏的路灯下，逆光站着一个模糊又好看的人', reportId: 'xp-atmos' },
-        { text: '在旧书店同时伸手拿了同一本书', reportId: 'xp-resonance' },
-        { text: 'TA说「我知道你会出现在这里」', reportId: 'xp-claim' },
+        { text: '从不越界的人伸手替你挡开人流，手掌停在你们之间一厘米的地方', reportId: 'xp-contrast' },
+        { text: '电梯只剩你们俩，TA站在你侧后方，呼吸声混进了你耳机的音乐里', reportId: 'xp-atmos' },
+        { text: 'TA不自觉跟着你的步伐，你们同时停下、同时转头', reportId: 'xp-resonance' },
+        { text: 'TA当着所有人的面很自然地披上你的外套：「你的，只有我能碰」', reportId: 'xp-claim' },
       ],
     },
     {
       text: '你吃哪一套「吃醋」？',
       options: [
-        { text: '平时云淡风轻的人阴阳怪气', reportId: 'xp-contrast' },
-        { text: '气氛降到冰点，空气里都是安静', reportId: 'xp-atmos' },
-        { text: '逻辑清晰地跟你辩「你昨天多看了TA一眼」', reportId: 'xp-resonance' },
-        { text: '直接宣布主权，眼神全是「是我的」', reportId: 'xp-claim' },
+        { text: '一贯云淡风轻的人，笑容还挂在脸上，捏着杯子的指节却白了', reportId: 'xp-contrast' },
+        { text: 'TA什么都没说，只是把音乐调大了一格，车厢里的空气突然安静', reportId: 'xp-atmos' },
+        { text: 'TA条理清晰地复盘你昨天多看的那一眼，逻辑严密得像篇论文', reportId: 'xp-resonance' },
+        { text: '「再看TA一眼试试。」——不是疑问句', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '什么样的「偏爱证据」最打动你？',
+      text: '哪种声音会让你的耳朵先沦陷？',
       options: [
-        { text: '说不在乎，却记得你所有随口一提', reportId: 'xp-contrast' },
-        { text: '为你把普通的一天布置出仪式感', reportId: 'xp-atmos' },
-        { text: '把「只有你懂」的秘密讲给你听', reportId: 'xp-resonance' },
-        { text: '排队的队伍里，永远先给你留位置', reportId: 'xp-claim' },
+        { text: '清冷的人在耳边开口，尾音是哑的——只对你哑', reportId: 'xp-contrast' },
+        { text: '雨声里混着深夜电台般的低语：「睡吧，我还在」', reportId: 'xp-atmos' },
+        { text: '电话那头，TA接上了你三天前没讲完的那个梗', reportId: 'xp-resonance' },
+        { text: 'TA隔着人群喊的不是你的名字，是只属于你的那个称呼', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '哪种「道歉」会让你瞬间原谅？',
+      text: '哪种关系开局最让你上头？',
       options: [
-        { text: '从不说软话的人，别扭地说了软话', reportId: 'xp-contrast' },
-        { text: '带你去你们第一次见面的那家店', reportId: 'xp-atmos' },
-        { text: '把你生气的点逐条复盘并给出方案', reportId: 'xp-resonance' },
-        { text: '「我可以对全世界嘴硬，除了你」', reportId: 'xp-claim' },
+        { text: '训你最多的是TA，替你把烂摊子收拾干净的，也是TA', reportId: 'xp-contrast' },
+        { text: '加班到深夜的办公区只剩你们，百叶窗把灯光切成一条一条', reportId: 'xp-atmos' },
+        { text: '你的方案只说了一半，TA直接报出了你的下一句', reportId: 'xp-resonance' },
+        { text: '全组人都挨过骂，唯独没有你——所有人都在猜你们的关系', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '你更容易记住对方的？',
+      text: '微醺的深夜，你希望坐在对面的是？',
       options: [
-        { text: '那个和平时判若两人的瞬间', reportId: 'xp-contrast' },
-        { text: '某次对视时空气里的静电感', reportId: 'xp-atmos' },
-        { text: '某句让你愣住三秒的话', reportId: 'xp-resonance' },
-        { text: 'TA给你的独一无二的称呼', reportId: 'xp-claim' },
+        { text: '千杯不醉的人，今晚两杯就红了耳根，眼神却清醒地锁着你', reportId: 'xp-contrast' },
+        { text: '酒吧角落的卡座，灯光刚好昏到看不清表情，只看得清眼神', reportId: 'xp-atmos' },
+        { text: '玩「真话接力」的TA——你们发现彼此的底线画在同一个位置', reportId: 'xp-resonance' },
+        { text: 'TA挡掉别人递来的酒：「TA这杯，我来倒」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '聊天时哪种「频率」最让你上头？',
+      text: '哪种对视会让你先移开眼睛？',
       options: [
-        { text: '高冷的人突然开启话痨模式', reportId: 'xp-contrast' },
-        { text: '深夜的音乐分享，不说话也舒服', reportId: 'xp-atmos' },
-        { text: '梗接梗、逻辑对逻辑，全程火花', reportId: 'xp-resonance' },
-        { text: '「这条消息只发给你一个人」', reportId: 'xp-claim' },
+        { text: '那双永远平静的眼睛里，第一次出现了你读不懂的东西', reportId: 'xp-contrast' },
+        { text: '转场时灯光暗了半秒，再亮起来的时候，TA还在看着你', reportId: 'xp-atmos' },
+        { text: '你们因为同一个笑点同时抬头，目光在半空撞上', reportId: 'xp-resonance' },
+        { text: 'TA看着你，却是对第三个人开口：「你刚才，碰到TA了」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '让你「破防」的瞬间更接近？',
+      text: 'TA向你暴露什么，最让你心跳加速？',
       options: [
-        { text: '永远赢的人，在你这里认了输', reportId: 'xp-contrast' },
-        { text: '陌生人海里，TA隔着人群看向你', reportId: 'xp-atmos' },
-        { text: '你藏得很深的心事，被一句话说中', reportId: 'xp-resonance' },
-        { text: 'TA偷偷为你破例了原则', reportId: 'xp-claim' },
+        { text: '那个从不失控的人，告诉你TA唯一的软肋', reportId: 'xp-contrast' },
+        { text: '天台、晚霞、刚刚好的风——TA只带你来过这里', reportId: 'xp-atmos' },
+        { text: '「这个想法我只跟你说过，别人听了我就是疯了」', reportId: 'xp-resonance' },
+        { text: 'TA的解锁密码、行程、日程——你全部都有权限', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '对方状态不好时，你希望TA？',
+      text: '冷战的时候，哪种「求和」会让你瞬间破功？',
       options: [
-        { text: '平时逞强的人，终于肯对你说「我不好」', reportId: 'xp-contrast' },
-        { text: '拉你走进黑夜的海边吹风', reportId: 'xp-atmos' },
-        { text: '和你复盘到天亮，聊通为止', reportId: 'xp-resonance' },
-        { text: '只允许你一个人陪着', reportId: 'xp-claim' },
+        { text: '说一不二的人发来一句：「我错了。别不理我。」', reportId: 'xp-contrast' },
+        { text: 'TA把你带回初次见面的那条街——那天的风，今天也在吹', reportId: 'xp-atmos' },
+        { text: 'TA把你们的争吵整理成一条条，最后一行写着：「但我不想赢你」', reportId: 'xp-resonance' },
+        { text: '「全世界我都可以让。就你，不行。」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '你理想中的关系进展是？',
+      text: '哪种「手」的细节最致命？',
       options: [
-        { text: '从针锋相对到防线的裂缝慢慢裂开', reportId: 'xp-contrast' },
-        { text: '在一次次刚刚好的氛围里水到渠成', reportId: 'xp-atmos' },
-        { text: '聊着聊着，突然发现已经谁也离不开谁', reportId: 'xp-resonance' },
-        { text: '从「特殊对待」开始，名分后置', reportId: 'xp-claim' },
+        { text: '能缝扣子也能签合同的那双手，唯独接不住你递过去的眼神', reportId: 'xp-contrast' },
+        { text: '斑马线变绿的前一秒，TA拉住你的手腕带你退回半步', reportId: 'xp-atmos' },
+        { text: '你们同时伸手去拿最后一块点心，指尖碰到，又同时弹开', reportId: 'xp-resonance' },
+        { text: '十指相扣时TA忽然收紧：「抓紧。人多的地方走丢，不赔」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '哪种「沉默」最让你心动？',
+      text: '暴雨天，你希望剧情怎么走？',
       options: [
-        { text: '想说什么又嘴硬咽回去的沉默', reportId: 'xp-contrast' },
-        { text: '并排坐着，夜风和心跳都刚刚好的沉默', reportId: 'xp-atmos' },
-        { text: '一个眼神就完成三句话信息的沉默', reportId: 'xp-resonance' },
-        { text: '「我不说，但你知道我只对你这样」的沉默', reportId: 'xp-claim' },
+        { text: '永远得体的人浑身湿透地出现：「就想快点见到你」', reportId: 'xp-contrast' },
+        { text: '一把伞、两个人、谁也不说话，雨声把整个世界隔音', reportId: 'xp-atmos' },
+        { text: '你刚想说「我们跑吧」，TA同时开了口——你们在雨里笑出声', reportId: 'xp-resonance' },
+        { text: 'TA把伞整个倾向你，自己半边肩膀湿透，还嘴硬：「我扛冻」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: ' TA 记住了你的什么，最让你心动？',
+      text: '聚会上，哪个瞬间最让你上头？',
       options: [
-        { text: '你假装不在意、其实很在意的点', reportId: 'xp-contrast' },
-        { text: '你提过的那家店、那首歌、那部电影', reportId: 'xp-atmos' },
-        { text: '你自己都没意识到的思维习惯', reportId: 'xp-resonance' },
-        { text: '你不喜欢什么——然后全部避开', reportId: 'xp-claim' },
+        { text: '全场瞩目的那个人穿过人群，只为把最后一杯你爱的酒放到你面前', reportId: 'xp-contrast' },
+        { text: '阳台、晚风、两个人的安静，室内的喧闹离得很远', reportId: 'xp-atmos' },
+        { text: '你们对视一眼就都懂了「想走了」，默契地同时起身', reportId: 'xp-resonance' },
+        { text: '有人问你「单身吗」，TA先答了：「TA不是。」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '心动有味道的话，你的那杯是？',
+      text: '失眠的凌晨，哪种陪伴最戳你？',
       options: [
-        { text: '先苦后回甘、入口意外的特调', reportId: 'xp-contrast' },
-        { text: '窗边、雨天、热美式的氛围组合', reportId: 'xp-atmos' },
-        { text: '和你上次聊到的那杯一模一样', reportId: 'xp-resonance' },
-        { text: '菜单上没有、只为你特调的一杯', reportId: 'xp-claim' },
+        { text: '作息严苛的人陪你聊到四点，六点照常出现，没人看得出痕迹', reportId: 'xp-contrast' },
+        { text: '语音里只有彼此的呼吸和窗外的雨，谁都没有挂断', reportId: 'xp-atmos' },
+        { text: '你们从童年聊到宇宙尽头，发现失眠的理由一模一样', reportId: 'xp-resonance' },
+        { text: '「睡前最后一句话必须是跟我说的。以后每天都是。」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '对方发来消息，哪种开头最让你想回？',
+      text: '哪种「失控」，会让你记一辈子？',
       options: [
-        { text: '「我平时不会跟别人说这个，但是……」', reportId: 'xp-contrast' },
-        { text: '「今天的晚霞，像我们那天看到的」', reportId: 'xp-atmos' },
-        { text: '「我刚想到一个话题，只有你聊得来」', reportId: 'xp-resonance' },
-        { text: '「问你个事，别人问我不答」', reportId: 'xp-claim' },
+        { text: '永远体面的人，在你面前第一次语无伦次', reportId: 'xp-contrast' },
+        { text: '摔门而去的人又在暴雨里折返，浑身狼狈地抱住你', reportId: 'xp-atmos' },
+        { text: 'TA脱口说出一句你自己都没察觉、藏了很多年的心事', reportId: 'xp-resonance' },
+        { text: 'TA当着所有人的面，撕掉了别人递来的号码牌', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '让你念念不忘的人，通常自带？',
+      text: '哪种「专属标记」最让你心里一紧？',
       options: [
-        { text: '一道只有你能看见的裂缝', reportId: 'xp-contrast' },
-        { text: '一段和TA绑定在一起的氛围记忆', reportId: 'xp-atmos' },
-        { text: '再也没人能接住的聊天频率', reportId: 'xp-resonance' },
-        { text: '一个只属于你的特殊身份', reportId: 'xp-claim' },
+        { text: '高冷的人在通讯录里给你单开了一组，备注软得不像TA', reportId: 'xp-contrast' },
+        { text: 'TA拍的你永远比真人好看——因为TA看你的角度自带光', reportId: 'xp-atmos' },
+        { text: '你们之间有一套黑话，外人一个字也听不懂', reportId: 'xp-resonance' },
+        { text: 'TA在你常坐的位置留了记号——「此处有人。TA的人。」', reportId: 'xp-claim' },
       ],
     },
     {
-      text: '如果给心动拍个特写镜头，画面是？',
+      text: '你受委屈的时候，你希望TA怎么做？',
       options: [
-        { text: '冷脸的人在转身后偷偷笑了', reportId: 'xp-contrast' },
-        { text: '逆光里TA的轮廓和扬起的灰尘', reportId: 'xp-atmos' },
-        { text: '两张同时被手机照亮、笑出声的脸', reportId: 'xp-resonance' },
-        { text: 'TA越过一整群人，把东西递给了你', reportId: 'xp-claim' },
+        { text: '永远讲道理的人红着眼说：「这次我不要道理，只要你没事」', reportId: 'xp-contrast' },
+        { text: 'TA不问原因，只把你带离人群——风衣、夜色，和一句「有我在」', reportId: 'xp-atmos' },
+        { text: 'TA一条条列出对方错在哪，最后却先问：「你疼不疼」', reportId: 'xp-resonance' },
+        { text: '「动TA之前，先过我这关。」说完把你的手揣进了TA的口袋', reportId: 'xp-claim' },
+      ],
+    },
+    {
+      text: '哪种「记得」，最让你招架不住？',
+      options: [
+        { text: '从不提纪念日的人，把你们每个「第一次」都记在加密备忘录里', reportId: 'xp-contrast' },
+        { text: '一年后的同一天、同一张桌子，TA连当天的歌单都提前订好了', reportId: 'xp-atmos' },
+        { text: '你随口编的笑话，成了TA好多年后的口头禅', reportId: 'xp-resonance' },
+        { text: 'TA的日历里你的事全部标红加粗：「你的事就是天大的事」', reportId: 'xp-claim' },
+      ],
+    },
+    {
+      text: '哪种「挽留」，会让你走不掉？',
+      options: [
+        { text: '那么骄傲的人堵在门口，说出口的却是一句笨拙的「别走，行不行」', reportId: 'xp-contrast' },
+        { text: '机场广播在催，TA拉着你在人流里逆行，灯光糊成一片光斑', reportId: 'xp-atmos' },
+        { text: '你刚想说「我们」，TA同时开了口——TA先说了', reportId: 'xp-resonance' },
+        { text: '「你走可以。把我也一起打包。」', reportId: 'xp-claim' },
+      ],
+    },
+    {
+      text: '如果给「心动」定格一个画面，你的版本是？',
+      options: [
+        { text: '冷脸的人背对着所有人，只对你做了个「过来」的口型', reportId: 'xp-contrast' },
+        { text: '深夜的天桥、呼啸的风、TA的衣角，和身后整座城市的灯', reportId: 'xp-atmos' },
+        { text: '两张被手机屏幕照亮的脸，因为同一句话同时笑出声', reportId: 'xp-resonance' },
+        { text: '人潮里TA回过身，很自然地把你的手塞进自己的外套口袋', reportId: 'xp-claim' },
       ],
     },
   ],
