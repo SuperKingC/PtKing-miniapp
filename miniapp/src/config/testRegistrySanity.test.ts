@@ -13,7 +13,7 @@ const CLINICAL_HINTS = [/确诊/, /病理/, /用药建议/]
 describe('test registry sanity (all published tests)', () => {
   const definitions = listTestDefinitions()
 
-  it('publishes the 2026-09 twenty-two-test lineup in a stable order', () => {
+  it('publishes the 2026-09 twenty-seven-test lineup in a stable order', () => {
     expect(TEST_LIST_ORDER).toEqual([
       'mbti',
       'xp-test',
@@ -37,8 +37,14 @@ describe('test registry sanity (all published tests)', () => {
       'sleep',
       'mind-age',
       'phone-addiction',
+      // 2026-09-04 情感/职场扩批次
+      'love-brain',
+      'breakup-style',
+      'crush-signal',
+      'office-role',
+      'boss-style',
     ])
-    expect(listTestDefinitions()).toHaveLength(22)
+    expect(listTestDefinitions()).toHaveLength(27)
   })
 
   it('covers every category with at least one test', () => {
