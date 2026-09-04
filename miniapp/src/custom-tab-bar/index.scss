@@ -5,10 +5,10 @@
   bottom: 0;
   left: 0;
   display: flex;
-  /* 高度全权交给 item：原生内容区 112rpx + 底部安全区一起算进 item 高度，
+  /* 高度全权交给 item：96rpx 内容区 + 底部安全区一起算进 item 高度，
      图标文字在其中垂直居中 → 图标文字落在整条白底的正中（安全区延伸部分也参与居中）。
      容器不声明 height/padding——height(calc 含 env)+padding+box-sizing 组合曾实测不稳（90164dd），
-     单层 item 显式高度行为确定；安卓等无安全区环境 env=0，高度即 112rpx */
+     单层 item 显式高度行为确定；安卓等无安全区环境 env=0，高度即 96rpx */
   align-items: flex-start;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(20rpx);
@@ -22,7 +22,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: calc(112rpx + env(safe-area-inset-bottom));
+  height: calc(96rpx + env(safe-area-inset-bottom));
   gap: 4rpx;
 }
 
@@ -42,18 +42,16 @@
   font-weight: 500;
 }
 
-/* 暗色模式：毛玻璃底转暖深棕，文字色同步 theme.json 的暗色档 */
-@media (prefers-color-scheme: dark) {
-  .tabbar {
-    background: rgba(33, 27, 22, 0.94);
-    border-top-color: rgba(255, 255, 255, 0.08);
-  }
+/* 暗色（tabbar--dark 类由组件按主题偏好挂载）：毛玻璃底转暖深棕 */
+.tabbar--dark {
+  background: rgba(33, 27, 22, 0.94);
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
 
-  .tabbar__text {
-    color: #8a7f72;
-  }
+.tabbar--dark .tabbar__text {
+  color: #8a7f72;
+}
 
-  .tabbar__text--active {
-    color: #e08a5c;
-  }
+.tabbar--dark .tabbar__text--active {
+  color: #e08a5c;
 }
