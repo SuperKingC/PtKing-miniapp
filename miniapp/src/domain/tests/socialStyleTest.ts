@@ -110,7 +110,7 @@ function q(text: string): TestDefinition['questions'][number] {
 export const SOCIAL_TEST: TestDefinition = {
   id: 'social-style',
   title: '社交人格测试',
-  category: '情感',
+  category: '人格',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [
     '聚会的角落里、群聊的潜水时、饭局的敬酒间——每个人在社交场里都有自己的「默认姿态」。有人天生自来熟，有人慢热但走心，有人八面玲珑，有人安静观察。',

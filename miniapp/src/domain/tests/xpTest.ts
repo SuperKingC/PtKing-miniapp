@@ -101,7 +101,7 @@ const REPORTS: TestDefinition['reports'] = {
 export const XP_TEST: TestDefinition = {
   id: 'xp-test',
   title: 'XP 测试',
-  category: '情感',
+  category: '人格',
   meta: { minutes: 4, resultLabel: '4 型 · 心动触发器' },
   intro: [
     '每个人身上都有一个「XP 开关」：平时藏得死死的，直到某个人出现——一个动作、半秒对视、一句不该温柔的话，你防了二十年的防线，一秒塌完。',
