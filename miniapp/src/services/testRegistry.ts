@@ -18,6 +18,9 @@ import { PET_PERSONA_TEST } from '../domain/tests/petPersonaTest'
 import { GOOFY_TEST } from '../domain/tests/goofyTest'
 import { XP_TEST } from '../domain/tests/xpTest'
 import { REPRESSION_TEST } from '../domain/tests/repressionTest'
+import { UNHINGED_TEST } from '../domain/tests/unhingedTest'
+import { SARCASTIC_TEST } from '../domain/tests/sarcasticTest'
+import { LOSER_TEST } from '../domain/tests/loserTalentTest'
 
 /**
  * 测试注册表：静态内置定义兜底 + COS JSON 动态下发合并（M2）。
@@ -47,16 +50,22 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
   [GOOFY_TEST.id]: GOOFY_TEST,
   [XP_TEST.id]: XP_TEST,
   [REPRESSION_TEST.id]: REPRESSION_TEST,
+  [UNHINGED_TEST.id]: UNHINGED_TEST,
+  [SARCASTIC_TEST.id]: SARCASTIC_TEST,
+  [LOSER_TEST.id]: LOSER_TEST,
 }
 
 /** 首页卡片展示顺序：静态顺序为基，动态新增的测试排在其后 */
 let listOrder: string[] = [
   MBTI_TEST.id,
   XP_TEST.id,
+  UNHINGED_TEST.id,
   BIGFIVE_TEST.id,
   DARK_TRIAD_TEST.id,
   LOVE_PERSONA_TEST.id,
   REPRESSION_TEST.id,
+  SARCASTIC_TEST.id,
+  LOSER_TEST.id,
   ATTACHMENT_TEST.id,
   SOCIAL_TEST.id,
   SINGLE_TEST.id,

@@ -19,11 +19,15 @@
   16personalities 约 130 题/大五 BFI-2 60 题/EPQ 88 题，国内趣味爆款主流 15-30 题，20 为「显得准」
   与完成率的平衡下限；静态 sanity 与 COS 新内容共同遵守）、`findBandIndex`（band 报告页刻度高亮）、
   `radarChartGeometry`（雷达图顶点几何纯函数，canvas 绘制层用）。
-- `domain/tests/*.ts`：19 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
+- `domain/tests/*.ts`：22 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
   +8 到 20；band 测试满分随之 24→36→60、三档 0-20/21-40/41-60；MBTI 28 / 大五 30 / 暗黑 27 不动）。
-  新增吸睛位：`xpTest.ts`（XP 测试，archetype 4 型「心动触发器」：反差感/氛围感/灵魂共振/独占欲，
+  吸睛位与猎奇位：`xpTest.ts`（XP 测试，archetype 4 型「心动触发器」：反差感/氛围感/灵魂共振/独占欲，
   文案全程心动场景、无低俗表述）、`repressionTest.ts`（性压抑指数测试，band 0-60 三档，
-  「情绪与需求的表达压抑度」自查向，非临床措辞；标题若平台审核受限可降级为「压抑指数测试」）。
+  「情绪与需求的表达压抑度」自查向，非临床措辞；标题若平台审核受限可降级为「压抑指数测试」）、
+  `unhingedTest.ts`（发疯指数测试，band 三档：稳定发挥/间歇性发疯/已疯但可爱，精神状态梗自嘲向）、
+  `sarcasticTest.ts`（阴阳怪气浓度测试，band 三档：白开水/微糖阴阳师/满级阴阳人，语言艺术梗）、
+  `loserTalentTest.ts`（废柴天赋鉴定，archetype 4 型：锦鲤废柴/人间清醒废柴/究极睡神/气人天才，
+  自嘲向反差萌）。
 - `services/testRegistry.ts`：静态注册表 + `TEST_LIST_ORDER` 展示顺序，页面数据驱动；
   M2 COS 下发新测试时此文件只加兜底条目。
 - `services/testRecords.ts`：本地 storage 记录（`ptking_test_records`，上限 200，最新在前）；
