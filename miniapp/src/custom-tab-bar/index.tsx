@@ -1,6 +1,13 @@
 import { Component } from 'react'
 import { Image, Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import {
+  THEME_CHANGE_EVENT,
+  currentSystemTheme,
+  getThemePreference,
+  resolveTheme,
+  type ResolvedTheme,
+} from '../services/theme'
 import testIcon from '../assets/tabbar/test-v2.png'
 import testActiveIcon from '../assets/tabbar/test-active-v2.png'
 import tarotIcon from '../assets/tabbar/tarot-v2.png'
@@ -23,18 +30,33 @@ const TABS = [
 ]
 
 export default class CustomTabBar extends Component {
-  state = { selected: 0 }
+  state = { selected: 0, theme: 'light' as ResolvedTheme }
 
   componentDidMount() {
     Taro.eventCenter.on(TABBAR_SELECT_EVENT, this.handleSelectEvent)
+    Taro.eventCenter.on(THEME_CHANGE_EVENT, this.handleThemeEvent)
+    // 初始主题：跟随系统时读系统档（与 theme.json 初始值一致）
+    this.setState({ theme: resolveTheme(getThemePreference(), currentSystemTheme()) })
+    try {
+      Taro.onThemeChange?.((res: { theme?: string }) => {
+        this.setState({ theme: resolveTheme(getThemePreference(), res?.theme) })
+      })
+    } catch {
+      // 环境不支持时保持初始主题
+    }
   }
 
   componentWillUnmount() {
     Taro.eventCenter.off(TABBAR_SELECT_EVENT, this.handleSelectEvent)
+    Taro.eventCenter.off(THEME_CHANGE_EVENT, this.handleThemeEvent)
   }
 
   handleSelectEvent = (index: number) => {
     if (index !== this.state.selected) this.setState({ selected: index })
+  }
+
+  handleThemeEvent = () => {
+    this.setState({ theme: resolveTheme(getThemePreference(), currentSystemTheme()) })
   }
 
   handleSwitch = (index: number) => {
@@ -43,9 +65,9 @@ export default class CustomTabBar extends Component {
   }
 
   render() {
-    const { selected } = this.state
+    const { selected, theme } = this.state
     return (
-      <View className="tabbar">
+      <View className={theme === 'dark' ? 'tabbar tabbar--dark' : 'tabbar'}>
         {TABS.map((tab, index) => (
           <View
             key={tab.path}

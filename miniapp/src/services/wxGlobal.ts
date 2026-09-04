@@ -16,6 +16,8 @@ export interface WxLike {
   onUnhandledRejection?: (callback: (res: { reason?: unknown }) => void) => void
   onPageNotFound?: (callback: (res: { path?: string }) => void) => void
   createRewardedVideoAd?: (options: { adUnitId: string }) => unknown
+  setNavigationBarColor?: (options: { frontColor: string; backgroundColor: string }) => void
+  setBackgroundColor?: (options: { backgroundColor: string }) => void
   createSelectorQuery?: () => {
     select: (selector: string) => {
       fields: (fields: Record<string, unknown>) => {

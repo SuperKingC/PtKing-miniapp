@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Button, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
+import { useAppTheme } from '../../hooks/useAppTheme'
 import { trackEvent } from '../../services/monitor'
 import { renderShareCard } from '../../services/reportShareCard'
 import { showRewardedAd } from '../../services/rewardedAd'
@@ -103,6 +104,8 @@ function formatDateLabel(iso: string): string {
 
 export default function TestReportPage() {
   const router = useRouter()
+  const theme = useAppTheme()
+  const darkTheme = theme === 'dark'
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
 
   // 该测试全部历史（新→旧）：?finishedAt= 指定时精确回看那一次，否则展示最新一次
@@ -172,25 +175,7 @@ export default function TestReportPage() {
     return []
   }, [factorScores, votes, definition])
 
-  // 暗色模式：跟随系统主题（画布取色在 JS，无法用 CSS 变量）
-  const [darkTheme, setDarkTheme] = useState(() => {
-    try {
-      return Taro.getSystemInfoSync().theme === 'dark'
-    } catch {
-      return false
-    }
-  })
-  useEffect(() => {
-    try {
-      const handler = (res: { theme?: string }) => setDarkTheme(res?.theme === 'dark')
-      Taro.onThemeChange?.(handler)
-      return () => {
-        Taro.offThemeChange?.(handler)
-      }
-    } catch {
-      return undefined
-    }
-  }, [])
+  // 暗色模式：统一由 useAppTheme 解析（偏好+系统），画布取色在 JS，无法用 CSS 变量
 
   // factor/archetype 模式雷达图：weapp canvas 2d 节点须经 createSelectorQuery 获取（ref 拿不到原生 node）
   useEffect(() => {
@@ -256,7 +241,7 @@ export default function TestReportPage() {
 
   if (!definition || !record) {
     return (
-      <View className="test-report">
+      <View className={`test-report theme-${theme}`}>
         <Text className="test-report__missing">还没有该测试的报告，先去完成一次测试吧。</Text>
         <View
           className="test-report__action"
@@ -273,13 +258,13 @@ export default function TestReportPage() {
 
   // ===== 解锁门：锁定记录不渲染报告正文，也不给次级出口（聚焦解锁动作，返回走导航） =====
   if (locked) {
-    return (
-      <View className="test-report">
-        <View className="test-report__hero">
-          <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
-          <Text className="test-report__type">报告已生成</Text>
-          <Text className="test-report__tagline">你的人格结果已就绪，看完一小段视频即可解锁</Text>
-        </View>
+  return (
+    <View className={`test-report theme-${theme}`}>
+      <View className="test-report__hero">
+        <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
+        <Text className="test-report__type">报告已生成</Text>
+        <Text className="test-report__tagline">你的人格结果已就绪，看完一小段视频即可解锁</Text>
+      </View>
         <View className="test-report__gate">
           <Text className="test-report__gate-title">解锁完整报告</Text>
           <Text className="test-report__gate-desc">
@@ -303,7 +288,7 @@ export default function TestReportPage() {
   const report = definition.reports[record.result.reportId]
   if (!report) {
     return (
-      <View className="test-report">
+      <View className={`test-report theme-${theme}`}>
         <Text className="test-report__missing">报告数据缺失，请重新测试。</Text>
       </View>
     )
@@ -329,7 +314,7 @@ export default function TestReportPage() {
   const historyRows = buildHistoryRows(history)
 
   return (
-    <View className="test-report">
+    <View className={`test-report theme-${theme}`}>
       <View className="test-report__hero">
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">{report.title}</Text>

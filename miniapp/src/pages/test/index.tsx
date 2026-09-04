@@ -4,6 +4,7 @@ import { useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
+import { useAppTheme } from '../../hooks/useAppTheme'
 import heroImg from '../../assets/illus/hero-test-center.png'
 import spotPersonalityImg from '../../assets/illus/spot-personality.png'
 import spotLoveImg from '../../assets/illus/spot-love.png'
@@ -30,6 +31,7 @@ const CARD_SPOT_BY_CATEGORY: Record<string, string> = {
 
 export default function TestPage() {
   useTabBarSelected(0)
+  const theme = useAppTheme()
   const definitions = listTestDefinitions()
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
   const visible = useMemo(
@@ -40,7 +42,7 @@ export default function TestPage() {
   useShareAppMessage(() => ({ title: 'PtKing · 测测你的隐藏人格' }))
 
   return (
-    <View className="test-page">
+    <View className={`test-page theme-${theme}`}>
       <View className="test-page__hero">
         <View className="test-page__hero-text">
           <Text className="test-page__hero-title">发现你的另一面</Text>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
+import { useAppTheme } from '../../hooks/useAppTheme'
 import { trackEvent } from '../../services/monitor'
 import { getTestDefinition } from '../../services/testRegistry'
 import './index.scss'
@@ -8,6 +9,7 @@ import './index.scss'
 // 测试详情页（对应「做梦心理」详情版式）：信息胶囊 + 介绍两段 + 注意卡 + 底部开始按钮
 export default function TestDetailPage() {
   const router = useRouter()
+  const theme = useAppTheme()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
 
   // 漏斗：进入详情页（与 test_start 对照得「详情→开测」转化）
@@ -17,7 +19,7 @@ export default function TestDetailPage() {
 
   if (!definition) {
     return (
-      <View className="test-detail">
+      <View className={`test-detail theme-${theme}`}>
         <Text className="test-detail__missing">测试不存在或已下架</Text>
       </View>
     )
@@ -30,7 +32,7 @@ export default function TestDetailPage() {
   ]
 
   return (
-    <View className="test-detail">
+    <View className={`test-detail theme-${theme}`}>
       <View className="test-detail__card">
         <Text className="test-detail__title">{definition.title}</Text>
         <View className="test-detail__capsules">

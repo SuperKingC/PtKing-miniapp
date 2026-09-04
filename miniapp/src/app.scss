@@ -28,8 +28,7 @@ page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* 暗色模式：跟随系统（app.json darkmode: true + theme.json 管导航/tabBar，
-   这里管页面变量；暖深棕底保持品牌温度，主色提亮一档保证对比度） */
+/* 暗色模式（跟随系统的初始值）：暖深棕底保持品牌温度，主色提亮一档保证对比度 */
 @media (prefers-color-scheme: dark) {
   page {
     --color-primary: #d97549;
@@ -41,6 +40,32 @@ page {
     --color-card-bg: #262019;
     --shadow-card: 0 6rpx 24rpx rgba(0, 0, 0, 0.4);
   }
+}
+
+/* 手动主题切换：页面根节点挂 theme-light / theme-dark 类（useAppTheme 解析偏好+系统主题），
+   类名级变量在子树里覆盖 page 级媒体查询——手动选浅色（系统深色）时内容仍为浅色 */
+.theme-light {
+  --color-primary: #c05f35;
+  --color-primary-soft: #f7e8dd;
+  --color-accent: #f39c6d;
+  --color-ink: #332e28;
+  --color-ink-secondary: #8a7f72;
+  --color-page-bg: #f7f4ee;
+  --color-card-bg: #ffffff;
+  --shadow-card: 0 6rpx 24rpx rgba(80, 62, 44, 0.07);
+}
+
+.theme-dark {
+  --color-primary: #d97549;
+  --color-primary-soft: #3a2c22;
+  --color-accent: #f39c6d;
+  --color-ink: #f1e8de;
+  --color-ink-secondary: #a39486;
+  --color-page-bg: #191411;
+  --color-card-bg: #262019;
+  --shadow-card: 0 6rpx 24rpx rgba(0, 0, 0, 0.4);
+  background: var(--color-page-bg);
+  color: var(--color-ink);
 }
 
 view,

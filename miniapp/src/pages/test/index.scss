@@ -95,23 +95,21 @@
   background: linear-gradient(160deg, #fff1dc 0%, #ffffff 75%);
 }
 
-/* 暗色模式：卡片渐变底转暖深色系（默认卡走 --color-card-bg 自动适配） */
-@media (prefers-color-scheme: dark) {
-  .test-page__card--violet {
-    background: linear-gradient(160deg, #2e2a3f 0%, #262019 75%);
-  }
+/* 暗色：卡片渐变底转暖深色系（默认卡走 --color-card-bg 自动适配；类名由 useAppTheme 驱动） */
+.theme-dark .test-page__card--violet {
+  background: linear-gradient(160deg, #2e2a3f 0%, #262019 75%);
+}
 
-  .test-page__card--rose {
-    background: linear-gradient(160deg, #3a272c 0%, #262019 75%);
-  }
+.theme-dark .test-page__card--rose {
+  background: linear-gradient(160deg, #3a272c 0%, #262019 75%);
+}
 
-  .test-page__card--blue {
-    background: linear-gradient(160deg, #23303f 0%, #262019 75%);
-  }
+.theme-dark .test-page__card--blue {
+  background: linear-gradient(160deg, #23303f 0%, #262019 75%);
+}
 
-  .test-page__card--amber {
-    background: linear-gradient(160deg, #3a3126 0%, #262019 75%);
-  }
+.theme-dark .test-page__card--amber {
+  background: linear-gradient(160deg, #3a3126 0%, #262019 75%);
 }
 
 .test-page__card-category {

@@ -1,3 +1,5 @@
+import { useAppTheme } from '../../hooks/useAppTheme'
+
 interface PolicySection {
   heading: string
   paragraphs: string[]
@@ -41,10 +43,11 @@ const SECTIONS: PolicySection[] = [
   },
 ]
 
-// 隐私政策与用户条款页：纯静态文案（微信审核要求的合规页面，入口在「我的 → 设置」）
+// 隐私政策与用户条款页：纯静态文案（微信审核要求的合规页面，入口在「我的」页）
 export default function PrivacyPage() {
+  const theme = useAppTheme()
   return (
-    <View className="privacy-page">
+    <View className={`privacy-page theme-${theme}`}>
       <Text className="privacy-page__title">隐私政策与用户条款</Text>
       <Text className="privacy-page__updated">更新日期：2026-09-04</Text>
       {SECTIONS.map((section) => (

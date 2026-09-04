@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
+import { useAppTheme } from '../../hooks/useAppTheme'
 import { scoreTest } from '../../domain/testEngine'
 import { captureError, trackEvent } from '../../services/monitor'
 import { isRewardedAdConfigured } from '../../services/rewardedAd'
@@ -13,6 +14,7 @@ import './index.scss'
 // 广告位已配置时新记录落库 locked=true（报告页看激励视频解锁）；未配置不落锁，报告直接展示
 export default function TestPlayPage() {
   const router = useRouter()
+  const theme = useAppTheme()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
   const [qIndex, setQIndex] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
@@ -24,7 +26,7 @@ export default function TestPlayPage() {
 
   if (!definition) {
     return (
-      <View className="test-play">
+      <View className={`test-play theme-${theme}`}>
         <Text className="test-play__missing">测试不存在或已下架</Text>
       </View>
     )
@@ -74,7 +76,7 @@ export default function TestPlayPage() {
   }
 
   return (
-    <View className="test-play">
+    <View className={`test-play theme-${theme}`}>
       <View className="test-play__progress-track">
         <View className="test-play__progress-fill" style={{ width: `${progress}%` }} />
       </View>

@@ -2,6 +2,7 @@ import { Image, Text, View } from '@tarojs/components'
 import { getTestDefinition } from '../../services/testRegistry'
 import { loadTestRecords, TEST_RECORDS_CAP, type TestRecord } from '../../services/testRecords'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
+import { useAppTheme } from '../../hooks/useAppTheme'
 import emptyRecordsImg from '../../assets/illus/empty-records.png'
 import './index.scss'
 
@@ -18,6 +19,7 @@ function formatTime(iso: string): string {
 // 达到存储上限时提示最早记录会被自动清理，可去设置页手动清空
 export default function RecordsPage() {
   useTabBarSelected(2)
+  const theme = useAppTheme()
   const records: TestRecord[] = loadTestRecords()
   const testedCount = new Set(records.map((record) => record.testId)).size
   const latest = records[0]
@@ -28,7 +30,7 @@ export default function RecordsPage() {
     : '—'
 
   return (
-    <View className="records-page">
+    <View className={`records-page theme-${theme}`}>
       {records.length === 0 ? (
         <View className="records-page__empty">
           <Image className="records-page__empty-img" src={emptyRecordsImg} mode="aspectFit" />
