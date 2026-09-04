@@ -149,7 +149,8 @@
 .test-report__dim-track {
   height: 20rpx;
   border-radius: 999rpx;
-  background: #f3ece2;
+  background: #ecdfca;
+  box-shadow: inset 0 0 0 2rpx #e3d2b8;
   overflow: hidden;
 }
 
@@ -191,14 +192,15 @@
 
 .test-report__factor-track {
   flex: 1;
-  height: 16rpx;
+  height: 20rpx;
   border-radius: 999rpx;
-  background: #f3ece2;
+  background: #ecdfca;
+  box-shadow: inset 0 0 0 2rpx #e3d2b8;
   overflow: hidden;
 }
 
 .test-report__factor-fill {
-  height: 16rpx;
+  height: 20rpx;
   border-radius: 999rpx;
   background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
 }
@@ -240,20 +242,21 @@
 
 .test-report__vote-track {
   flex: 1;
-  height: 16rpx;
+  height: 20rpx;
   border-radius: 999rpx;
-  background: #f3ece2;
+  background: #ecdfca;
+  box-shadow: inset 0 0 0 2rpx #e3d2b8;
   overflow: hidden;
 }
 
 .test-report__vote-fill {
-  height: 16rpx;
+  height: 20rpx;
   border-radius: 999rpx;
-  background: #e2d5c6;
+  background: #ddb287;
 }
 
 .test-report__vote-row:first-of-type .test-report__vote-fill {
-  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  background: linear-gradient(90deg, var(--color-accent), #a84a24);
 }
 
 .test-report__vote-value {

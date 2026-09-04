@@ -97,9 +97,30 @@ export default function TestReportPage() {
 
   const factorScores = record?.result.factorScores ?? []
 
-  // factor 模式雷达图：weapp canvas 2d 节点须经 createSelectorQuery 获取（ref 拿不到原生 node）
+  // archetype 票数分布（旧记录无该字段 → null；全 0 票防御 → null 走纯文字兜底）
+  const votes = useMemo(() => {
+    const raw = record?.result.archetypeVotes
+    if (!raw) return null
+    const total = raw.reduce((sum, item) => sum + item.count, 0)
+    return total > 0 ? { list: raw, total } : null
+  }, [record])
+
+  // 雷达数据统一来源：factor 模式用因素百分位，archetype 模式用票数占比，其余模式无雷达
+  const radarScores = useMemo(() => {
+    if (factorScores.length >= 3) return factorScores
+    if (votes && votes.list.length >= 3) {
+      return votes.list.map((vote) => ({
+        id: vote.reportId,
+        label: definition?.reports[vote.reportId]?.title ?? vote.reportId,
+        percent: Math.round((vote.count / votes.total) * 100),
+      }))
+    }
+    return []
+  }, [factorScores, votes, definition])
+
+  // factor/archetype 模式雷达图：weapp canvas 2d 节点须经 createSelectorQuery 获取（ref 拿不到原生 node）
   useEffect(() => {
-    if (factorScores.length < 3) return
+    if (radarScores.length < 3) return
     const query = Taro.createSelectorQuery()
     query
       .select('#report-radar')
@@ -112,9 +133,9 @@ export default function TestReportPage() {
         node.height = height * dpr
         const ctx = node.getContext('2d')
         ctx.scale(dpr, dpr)
-        drawRadar(ctx, width, height, factorScores)
+        drawRadar(ctx, width, height, radarScores)
       })
-  }, [factorScores])
+  }, [radarScores])
 
   useShareAppMessage(() => {
     const report = definition && record ? definition.reports[record.result.reportId] : null
@@ -156,13 +177,10 @@ export default function TestReportPage() {
   const bands = definition.scoring.type === 'band' ? definition.scoring.bands : []
   const bandLabels = bands.map((band) => definition.reports[band.reportId]?.title ?? band.reportId)
 
-  // archetype 票数分布（旧记录无该字段 → undefined 走纯文字兜底）
-  const votes = record.result.archetypeVotes
-  const totalVotes = votes ? votes.reduce((sum, item) => sum + item.count, 0) : 0
   // 次人格：票数第二高且 ≥1 票（并列按定义序取先）
   let runnerUp: { title: string; tagline: string; count: number } | null = null
-  if (votes && votes.length > 1) {
-    const sorted = [...votes].sort((a, b) => b.count - a.count)
+  if (votes && votes.list.length > 1) {
+    const sorted = [...votes.list].sort((a, b) => b.count - a.count)
     const second = sorted[1]
     const secondReport = second && second.count > 0 ? definition.reports[second.reportId] : null
     if (second && secondReport) {
@@ -234,11 +252,16 @@ export default function TestReportPage() {
         </View>
       )}
 
-      {votes && totalVotes > 0 && (
+      {votes && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">人格倾向分布</Text>
-          {votes.map((vote) => {
-            const percent = Math.round((vote.count / totalVotes) * 100)
+          {votes.list.length >= 3 && (
+            <View className="test-report__radar-wrap">
+              <canvas type="2d" id="report-radar" className="test-report__radar" />
+            </View>
+          )}
+          {votes.list.map((vote) => {
+            const percent = Math.round((vote.count / votes.total) * 100)
             const isTop = vote.reportId === record.result.reportId
             return (
               <View key={vote.reportId} className="test-report__vote-row">
