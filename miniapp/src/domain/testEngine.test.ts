@@ -290,7 +290,7 @@ describe('radarChartGeometry', () => {
 })
 
 describe('MIN_QUESTIONS baseline', () => {
-  it('stays at the product-agreed minimum of 12', () => {
-    expect(MIN_QUESTIONS).toBe(12)
+  it('stays at the product-agreed minimum of 20', () => {
+    expect(MIN_QUESTIONS).toBe(20)
   })
 })

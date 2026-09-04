@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 情商测评（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
+ * 情商测评（band 模式）：20 题、每题 0-3 分四档，总分 0-60 落三档。
  * 趣味向沟通与共情习惯自查，不带评判性结论。
  */
 
@@ -20,10 +20,10 @@ export const EQ_TEST: TestDefinition = {
   id: 'eq',
   title: '情商测评',
   category: '职场',
-  meta: { minutes: 3, resultLabel: '3 档 · 解读' },
+  meta: { minutes: 4, resultLabel: '3 档 · 解读' },
   intro: [
     '情商不是「会说话」，而是：听得懂别人的弦外之音、接得住自己的情绪、留得住彼此的体面。它在职场里的重要性，早已超过一纸文凭。',
-    '12 道日常沟通场景题（反向计分：越少踩坑越高分），看看你的情商账户余额。',
+    '20 道日常沟通场景题（反向计分：越少踩坑越高分），看看你的情商账户余额。',
   ],
   notice: '该测试为趣味自我觉察工具，非临床评估；可免费测试+查看个人结果报告。',
   questions: [
@@ -39,14 +39,22 @@ export const EQ_TEST: TestDefinition = {
     q('你会还没确认事实就先给人下定论？'),
     q('别人自嘲的时候，你会跟着补一刀？'),
     q('你会把「我这都是为你好」挂嘴边替人做决定？'),
+    q('你会打断别人抢话头？'),
+    q('你会把朋友的秘密当谈资？'),
+    q('你会在群里阴阳怪气？'),
+    q('你会对服务员/快递员发脾气？'),
+    q('你会用冷暴力处理矛盾？'),
+    q('别人安慰你时，你会说「你不懂」？'),
+    q('你会拿别人的缺点开玩笑？'),
+    q('你会当众让人下不来台？'),
   ],
   scoring: {
     type: 'band',
-    max: 36,
+    max: 60,
     bands: [
-      { min: 0, max: 12, reportId: 'eq-high' },
-      { min: 13, max: 24, reportId: 'eq-mid' },
-      { min: 25, max: 36, reportId: 'eq-grow' },
+      { min: 0, max: 20, reportId: 'eq-high' },
+      { min: 21, max: 40, reportId: 'eq-mid' },
+      { min: 41, max: 60, reportId: 'eq-grow' },
     ],
   },
   reports: {

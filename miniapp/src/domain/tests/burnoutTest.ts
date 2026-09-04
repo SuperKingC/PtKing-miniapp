@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 精神内耗型职业倦怠自查（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
+ * 精神内耗型职业倦怠自查（band 模式）：20 题、每题 0-3 分四档，总分 0-60 落三档。
  * 趣味向职业状态觉察，文案避免「诊断/治疗」临床措辞（合规红线），结尾档位引导休息而非医疗建议。
  */
 
@@ -20,10 +20,10 @@ export const BURNOUT_TEST: TestDefinition = {
   id: 'burnout',
   title: '职场倦怠测试',
   category: '职场',
-  meta: { minutes: 3, resultLabel: '3 档 · 建议' },
+  meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
     '周一睁眼就疲惫、开会只想划水、下班只想躺平？倦怠不是懒，是能量账户长期「只取不存」后的余额不足信号。',
-    '12 道近期状态自查题，3 分钟看看你的职业能量余额，附对应的小建议。',
+    '20 道近期状态自查题，3 分钟看看你的职业能量余额，附对应的小建议。',
   ],
   notice: '该测试为自我觉察工具，非医疗评估；可免费测试+查看个人结果报告。',
   questions: [
@@ -39,14 +39,22 @@ export const BURNOUT_TEST: TestDefinition = {
     q('你开始用「没意义」形容手里的活儿？'),
     q('同事约饭/团建，你的第一反应是想躲？'),
     q('想到「一年后还在做现在的事」，你的感受是？'),
+    q('你会用「看起来在忙」躲开新任务？'),
+    q('一听到「开会对齐」就感到累？'),
+    q('下班后你不想聊任何工作话题？'),
+    q('你的成就感更多来自工作之外？'),
+    q('周日晚上的你会焦虑？'),
+    q('你已经很久没主动提过新想法？'),
+    q('在工位最常做的动作是叹气/揉肩？'),
+    q('你觉得自己像「全自动待机」？'),
   ],
   scoring: {
     type: 'band',
-    max: 36,
+    max: 60,
     bands: [
-      { min: 0, max: 12, reportId: 'burnout-fresh' },
-      { min: 13, max: 24, reportId: 'burnout-tired' },
-      { min: 25, max: 36, reportId: 'burnout-empty' },
+      { min: 0, max: 20, reportId: 'burnout-fresh' },
+      { min: 21, max: 40, reportId: 'burnout-tired' },
+      { min: 41, max: 60, reportId: 'burnout-empty' },
     ],
   },
   reports: {

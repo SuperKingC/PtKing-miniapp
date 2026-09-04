@@ -85,8 +85,9 @@ export interface TestResult {
   archetypeVotes?: Array<{ reportId: string; count: number }>
 }
 
-/** 上架测试最少题数基准：题太少用户会觉得「不准」（2026-09 产品基准，静态 sanity 与 COS 内容共同遵守） */
-export const MIN_QUESTIONS = 12
+/** 上架测试最少题数基准：对照市场主流（MBTI Form M 93 题/16personalities 约 130/大五 BFI-2 60/国内趣味爆款 15-30 题），
+ * 20 题是「显得准」与完成率的平衡下限（2026-09 第二轮上调，静态 sanity 与 COS 内容共同遵守） */
+export const MIN_QUESTIONS = 20
 
 function invalidDefinition(testId: string, reason: string): never {
   throw new Error(`invalid_test_definition:${testId}:${reason}`)

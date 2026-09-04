@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 憨憨指数测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
+ * 憨憨指数测试（band 模式）：20 题、每题 0-3 分四档，总分 0-60 落三档。
  * 「憨憨指数」= 迷糊/脱线/天然呆浓度，猎奇向娱乐内容，无贬义——憨是可爱的代名词。
  * 总分 0-36（12 题 × 3 分），与全部 band 测试统一的三档刻度。
  */
@@ -21,10 +21,10 @@ export const GOOFY_TEST: TestDefinition = {
   id: 'goofy',
   title: '憨憨指数测试',
   category: '趣味',
-  meta: { minutes: 3, resultLabel: '3 档 · 憨度鉴定' },
+  meta: { minutes: 4, resultLabel: '3 档 · 憨度鉴定' },
   intro: [
     '出门忘带钥匙、进门找不到手机、别人笑完你才听懂笑话……「憨」不是傻，是一种天然的去油体质和快乐体质。',
-    '12 道日常翻车现场题，测测你的憨度浓度。分数越高，说明你越接近快乐的本源。',
+    '20 道日常翻车现场题，测测你的憨度浓度。分数越高，说明你越接近快乐的本源。',
   ],
   notice: '该测试为趣味娱乐内容，可免费测试+查看个人结果报告。感谢你的理解与支持。',
   questions: [
@@ -40,14 +40,22 @@ export const GOOFY_TEST: TestDefinition = {
     q('一边说「我记性可好了」，一边当场忘了上一句说什么？'),
     q('出门带了伞，最后把伞落在了店里？'),
     q('给手机充了一整夜，早上发现插排没通电？'),
+    q('对着自动门等半天，结果它是要自己推？'),
+    q('刚说完「我方向感特别好」，就带错了路？'),
+    q('出门前检查了三遍，钥匙还是锁在了屋里？'),
+    q('在自家楼下迷路过？'),
+    q('把盐当糖冲进了一杯「咖啡」？'),
+    q('连拍 20 张照片，回头一看全是糊的？'),
+    q('别人喊你名字，你「啊？」完半天才反应过来？'),
+    q('洗到一半发现洗发水拿成了护发素？'),
   ],
   scoring: {
     type: 'band',
-    max: 36,
+    max: 60,
     bands: [
-      { min: 0, max: 12, reportId: 'goofy-hidden' },
-      { min: 13, max: 24, reportId: 'goofy-parttime' },
-      { min: 25, max: 36, reportId: 'goofy-fulltime' },
+      { min: 0, max: 20, reportId: 'goofy-hidden' },
+      { min: 21, max: 40, reportId: 'goofy-parttime' },
+      { min: 41, max: 60, reportId: 'goofy-fulltime' },
     ],
   },
   reports: {

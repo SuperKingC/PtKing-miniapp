@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 手机依赖测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
+ * 手机依赖测试（band 模式）：20 题、每题 0-3 分四档，总分 0-60 落三档。
  * 趣味向数字生活习惯自查，非医疗口径。
  */
 
@@ -20,10 +20,10 @@ export const PHONE_TEST: TestDefinition = {
   id: 'phone-addiction',
   title: '手机依赖测试',
   category: '趣味',
-  meta: { minutes: 3, resultLabel: '3 档 · 建议' },
+  meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
     '「再刷五分钟」变成两小时、手机不在身边就心慌、上厕所必带手机……你用的是手机，还是手机在用你？',
-    '12 道日常习惯题，3 分钟测测你的「人机关系」成色，附对应的小建议。',
+    '20 道日常习惯题，3 分钟测测你的「人机关系」成色，附对应的小建议。',
   ],
   notice: '该测试为趣味生活习惯自查，非医疗评估；可免费测试+查看个人结果报告。',
   questions: [
@@ -39,14 +39,22 @@ export const PHONE_TEST: TestDefinition = {
     q('一觉得无聊，第一反应就是掏手机？'),
     q('明明没什么要紧事，也要把各个 App 轮着刷一遍？'),
     q('你会因为刷手机一拖再拖不睡觉？'),
+    q('走路的时候也在看手机？'),
+    q('手机不在视线内会心慌？'),
+    q('睡前刷手机超过半小时？'),
+    q('有 3 个以上每天必刷的 App？'),
+    q('吃饭时也要配个视频？'),
+    q('充电宝没电比钱包没带更慌？'),
+    q('会无意识解锁手机又锁上？'),
+    q('有人要借你手机，你会紧张？'),
   ],
   scoring: {
     type: 'band',
-    max: 36,
+    max: 60,
     bands: [
-      { min: 0, max: 12, reportId: 'phone-balanced' },
-      { min: 13, max: 24, reportId: 'phone-tied' },
-      { min: 25, max: 36, reportId: 'phone-hooked' },
+      { min: 0, max: 20, reportId: 'phone-balanced' },
+      { min: 21, max: 40, reportId: 'phone-tied' },
+      { min: 41, max: 60, reportId: 'phone-hooked' },
     ],
   },
   reports: {

@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 内耗指数测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档报告。
+ * 内耗指数测试（band 模式）：20 题、每题 0-3 分四档，总分 0-60 落三档报告。
  * 趣味向自我觉察工具，文案避免「诊断/筛查」等临床措辞（合规红线）。
  */
 
@@ -20,10 +20,10 @@ export const OVERTHINK_TEST: TestDefinition = {
   id: 'overthink',
   title: '内耗指数测试',
   category: '趣味',
-  meta: { minutes: 3, resultLabel: '3 档 · 建议' },
+  meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
     '想太多、睡不好、别人一句话能琢磨一整天？内耗更像一种「心理摩擦力」——事情还没开始，能量已经耗掉一半。',
-    '12 道日常场景题，3 分钟测出你最近的心理摩擦程度，并附上对应的小建议。',
+    '20 道日常场景题，3 分钟测出你最近的心理摩擦程度，并附上对应的小建议。',
   ],
   notice: '该测试为趣味自我觉察工具，非医疗评估；可免费测试+查看个人结果报告。',
   questions: [
@@ -39,14 +39,22 @@ export const OVERTHINK_TEST: TestDefinition = {
     q('消息已读不回，你会脑补出各种原因？'),
     q('要当众发言之前，心会先提起来？'),
     q('坏结果还没发生，你已经预演了好几遍？'),
+    q('睡前待办没完成，你会自责很久？'),
+    q('你会复盘「今天哪句话说错了」？'),
+    q('别人没说「谢谢」，你会多想？'),
+    q('做选择题你会反复改答案？'),
+    q('你会预想最坏结果来「保护自己」？'),
+    q('你会担心自己「不合群」？'),
+    q('尴尬瞬间你需要很久才能放下？'),
+    q('排队/堵车时，你会越想越烦？'),
   ],
   scoring: {
     type: 'band',
-    max: 36,
+    max: 60,
     bands: [
-      { min: 0, max: 12, reportId: 'overthink-low' },
-      { min: 13, max: 24, reportId: 'overthink-mid' },
-      { min: 25, max: 36, reportId: 'overthink-high' },
+      { min: 0, max: 20, reportId: 'overthink-low' },
+      { min: 21, max: 40, reportId: 'overthink-mid' },
+      { min: 41, max: 60, reportId: 'overthink-high' },
     ],
   },
   reports: {

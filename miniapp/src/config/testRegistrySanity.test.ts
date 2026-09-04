@@ -13,12 +13,14 @@ const CLINICAL_HINTS = [/确诊/, /病理/, /用药建议/]
 describe('test registry sanity (all published tests)', () => {
   const definitions = listTestDefinitions()
 
-  it('publishes the M2.5 seventeen-test lineup in a stable order', () => {
+  it('publishes the 2026-09 nineteen-test lineup in a stable order', () => {
     expect(TEST_LIST_ORDER).toEqual([
       'mbti',
+      'xp-test',
       'bigfive',
       'dark-triad',
       'love-persona',
+      'repression-test',
       'attachment-style',
       'social-style',
       'single-power',
@@ -33,7 +35,7 @@ describe('test registry sanity (all published tests)', () => {
       'mind-age',
       'phone-addiction',
     ])
-    expect(listTestDefinitions()).toHaveLength(17)
+    expect(listTestDefinitions()).toHaveLength(19)
   })
 
   it('covers every category with at least one test', () => {

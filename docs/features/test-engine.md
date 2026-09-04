@@ -15,11 +15,15 @@
   供报告页画「人格倾向分布」，旧记录无此字段读侧须 `?? []` 兜底）、
   `factor`（因素加权百分位，反向因素取反）。答案长度/下标严格校验；
   reportId 命不中 reports 一律抛 `invalid_test_definition:*` 不静默兜底。
-  另导出：`MIN_QUESTIONS = 12`（上架最少题数基准，2026-09 定：题太少用户觉得「不准」，
-  静态 sanity 与 COS 新内容共同遵守）、`findBandIndex`（band 报告页刻度高亮）、
+  另导出：`MIN_QUESTIONS = 20`（上架最少题数基准；2026-09 对照市场上调——MBTI Form M 93 题/
+  16personalities 约 130 题/大五 BFI-2 60 题/EPQ 88 题，国内趣味爆款主流 15-30 题，20 为「显得准」
+  与完成率的平衡下限；静态 sanity 与 COS 新内容共同遵守）、`findBandIndex`（band 报告页刻度高亮）、
   `radarChartGeometry`（雷达图顶点几何纯函数，canvas 绘制层用）。
-- `domain/tests/*.ts`：17 个测试全部 ≥12 题（2026-09 起 8/10 题的 13 个测试补齐到 12，
-  band 测试满分统一重算为 36 分、三档 0-12/13-24/25-36；MBTI 28 / 大五 30 / 暗黑 27 / 宠物 12 原有不动）。
+- `domain/tests/*.ts`：19 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
+  +8 到 20；band 测试满分随之 24→36→60、三档 0-20/21-40/41-60；MBTI 28 / 大五 30 / 暗黑 27 不动）。
+  新增吸睛位：`xpTest.ts`（XP 测试，archetype 4 型「心动触发器」：反差感/氛围感/灵魂共振/独占欲，
+  文案全程心动场景、无低俗表述）、`repressionTest.ts`（性压抑指数测试，band 0-60 三档，
+  「情绪与需求的表达压抑度」自查向，非临床措辞；标题若平台审核受限可降级为「压抑指数测试」）。
 - `services/testRegistry.ts`：静态注册表 + `TEST_LIST_ORDER` 展示顺序，页面数据驱动；
   M2 COS 下发新测试时此文件只加兜底条目。
 - `services/testRecords.ts`：本地 storage 记录（`ptking_test_records`，上限 200，最新在前）；

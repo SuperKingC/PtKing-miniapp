@@ -1,7 +1,7 @@
 import type { TestDefinition } from '../testEngine'
 
 /**
- * 单身力测试（band 模式）：12 题、每题 0-3 分四档，总分 0-36 落三档。
+ * 单身力测试（band 模式）：20 题、每题 0-3 分四档，总分 0-60 落三档。
  * 「单身力」= 单身生活的自洽程度，趣味向，无婚恋评判色彩。
  */
 
@@ -20,10 +20,10 @@ export const SINGLE_TEST: TestDefinition = {
   id: 'single-power',
   title: '单身力测试',
   category: '情感',
-  meta: { minutes: 3, resultLabel: '3 档 · 解读' },
+  meta: { minutes: 4, resultLabel: '3 档 · 解读' },
   intro: [
     '单身力，不是「喜欢单身」，而是单身时也能把日子过好的能力：一个人吃饭不将就、一个人旅行够尽兴、情绪有出口、生活有秩序。',
-    '12 道日常题，测测你的单身自洽指数——分数高低都不重要，重要的是知道自己现在处在哪个状态。',
+    '20 道日常题，测测你的单身自洽指数——分数高低都不重要，重要的是知道自己现在处在哪个状态。',
   ],
   notice: '该测试可免费测试+查看个人结果报告，包含单身力解读与生活建议。感谢你的理解与支持。',
   questions: [
@@ -39,14 +39,22 @@ export const SINGLE_TEST: TestDefinition = {
     q('家里的灯泡坏了/水管漏了，你的第一反应？'),
     q('情绪低落的晚上，你能自己把自己捞起来吗？'),
     q('听到「单身会不会孤独终老」的调侃，你的心态？'),
+    q('一个人逛超市，你的感受？'),
+    q('朋友圈都在晒对象，你会？'),
+    q('你因为「怕麻烦」拒绝过一段关系吗？'),
+    q('一个人旅行，你的态度？'),
+    q('你有「一个人也要有仪式感」的习惯吗？'),
+    q('对「结婚」这件事，你的态度？'),
+    q('朋友张罗给你介绍对象，你会？'),
+    q('你的独居生活更像？'),
   ],
   scoring: {
     type: 'band',
-    max: 36,
+    max: 60,
     bands: [
-      { min: 0, max: 12, reportId: 'single-growing' },
-      { min: 13, max: 24, reportId: 'single-steady' },
-      { min: 25, max: 36, reportId: 'single-flourish' },
+      { min: 0, max: 20, reportId: 'single-growing' },
+      { min: 21, max: 40, reportId: 'single-steady' },
+      { min: 41, max: 60, reportId: 'single-flourish' },
     ],
   },
   reports: {
