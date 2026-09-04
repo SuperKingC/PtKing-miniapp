@@ -625,25 +625,23 @@
   height: 480rpx;
 }
 
-/* ===== 暗色模式：CSS 变量覆盖不到的底色补丁 ===== */
-@media (prefers-color-scheme: dark) {
-  .test-report__dim-track,
-  .test-report__factor-track,
-  .test-report__vote-track {
-    background: #332a22;
-    box-shadow: inset 0 0 0 2rpx #3f352b;
-  }
+/* ===== 暗色：CSS 变量覆盖不到的底色补丁（类名由 useAppTheme 驱动） ===== */
+.theme-dark .test-report__dim-track,
+.theme-dark .test-report__factor-track,
+.theme-dark .test-report__vote-track {
+  background: #332a22;
+  box-shadow: inset 0 0 0 2rpx #3f352b;
+}
 
-  .test-report__band-seg {
-    background: #2e2720;
-  }
+.theme-dark .test-report__band-seg {
+  background: #2e2720;
+}
 
-  .test-report__band-seg--on {
-    background: linear-gradient(160deg, #3a2c22, #33261c);
-  }
+.theme-dark .test-report__band-seg--on {
+  background: linear-gradient(160deg, #3a2c22, #33261c);
+}
 
-  .test-report__runner {
-    border-color: #4a3a2c;
-    background: #2e2720;
-  }
+.theme-dark .test-report__runner {
+  border-color: #4a3a2c;
+  background: #2e2720;
 }
