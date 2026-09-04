@@ -21,6 +21,7 @@ interface MeEntry {
 const ENTRIES: MeEntry[] = [
   { label: '已做测试', onTap: () => { wx.switchTab({ url: '/pages/records/index' }) } },
   { label: '塔罗历史', onTap: openTarotHistory },
+  { label: '设置', onTap: () => { wx.navigateTo({ url: '/pages/settings/index' }) } },
   { label: '联系作者', contact: true },
   { label: '问题反馈', contact: true },
 ]

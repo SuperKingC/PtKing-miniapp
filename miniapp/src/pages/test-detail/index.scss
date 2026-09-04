@@ -74,6 +74,13 @@
   background: #f7f5fb;
 }
 
+/* 暗色模式：注意卡底色 */
+@media (prefers-color-scheme: dark) {
+  .test-detail__notice {
+    background: #2e2720;
+  }
+}
+
 .test-detail__notice-title {
   font-size: var(--font-size-secondary);
   font-weight: var(--font-weight-semibold);

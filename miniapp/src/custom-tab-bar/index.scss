@@ -42,3 +42,19 @@
   color: #c05f35;
   font-weight: 500;
 }
+
+/* 暗色模式：毛玻璃底转暖深棕，文字色同步 theme.json 的暗色档 */
+@media (prefers-color-scheme: dark) {
+  .tabbar {
+    background: rgba(33, 27, 22, 0.94);
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .tabbar__text {
+    color: #8a7f72;
+  }
+
+  .tabbar__text--active {
+    color: #e08a5c;
+  }
+}

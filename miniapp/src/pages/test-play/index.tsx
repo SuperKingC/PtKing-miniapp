@@ -1,18 +1,25 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import { scoreTest } from '../../domain/testEngine'
+import { captureError, trackEvent } from '../../services/monitor'
 import { getTestDefinition } from '../../services/testRegistry'
 import { saveTestRecord } from '../../services/testRecords'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
-// 支持回退上一题改答案；最后一题作答即计分落记录并跳报告页
+// 支持回退上一题改答案；最后一题作答即计分落记录并跳报告页。
+// 新记录落库即 locked=true（报告页看激励视频解锁）；广告位未配置时报告页自动解锁
 export default function TestPlayPage() {
   const router = useRouter()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
   const [qIndex, setQIndex] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
+
+  // 答题漏斗：进入答题页（有已答后续题数可对照流失）
+  useEffect(() => {
+    if (definition) trackEvent('test_start', { testId: definition.id })
+  }, [definition])
 
   if (!definition) {
     return (
@@ -35,9 +42,20 @@ export default function TestPlayPage() {
         : answers.map((value, index) => (index === qIndex ? optionIndex : value))
     setAnswers(nextAnswers)
     if (nextAnswers.length === total && qIndex === total - 1) {
-      const result = scoreTest(definition, nextAnswers)
-      saveTestRecord(definition.id, result)
-      wx.redirectTo({ url: `/pages/test-report/index?testId=${definition.id}` })
+      // 计分引擎抛错（如动态定义缺字段）不能断流程：捕获上报 + 提示重试
+      try {
+        const result = scoreTest(definition, nextAnswers)
+        saveTestRecord(definition.id, result, {
+          locked: true,
+          testTitle: definition.title,
+          resultTitle: definition.reports[result.reportId]?.title,
+        })
+        trackEvent('test_complete', { testId: definition.id, reportId: result.reportId })
+        wx.redirectTo({ url: `/pages/test-report/index?testId=${definition.id}` })
+      } catch (err) {
+        captureError(err, 'score_test_failed')
+        wx.showToast({ title: '报告生成失败，请重试', icon: 'none' })
+      }
       return
     }
     if (qIndex === answers.length) {

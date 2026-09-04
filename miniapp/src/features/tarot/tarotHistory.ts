@@ -47,3 +47,12 @@ export function listTarotHistory(): TarotReading[] {
 export function saveTarotReading(reading: TarotReading): void {
   writeRaw([reading, ...listTarotHistory()].slice(0, historyLimit))
 }
+
+/** 设置页「清空塔罗历史」：清空后历史面板与入口计数即恢复空态 */
+export function clearTarotHistory(): void {
+  try {
+    getWxGlobal()?.removeStorageSync?.(historyKey)
+  } catch {
+    // 清理失败不阻断
+  }
+}

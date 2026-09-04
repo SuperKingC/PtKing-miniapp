@@ -7,9 +7,23 @@
 export interface WxLike {
   getStorageSync?: (key: string) => unknown
   setStorageSync?: (key: string, value: unknown) => void
+  removeStorageSync?: (key: string) => void
   showShareMenu?: (options?: Record<string, unknown>) => void
   request?: (options: Record<string, unknown>) => void
-  getSystemInfoSync?: () => { platform?: string }
+  getSystemInfoSync?: () => { platform?: string; theme?: string }
+  getRealtimeLogManager?: () => unknown
+  onError?: (callback: (error: unknown) => void) => void
+  onUnhandledRejection?: (callback: (res: { reason?: unknown }) => void) => void
+  onPageNotFound?: (callback: (res: { path?: string }) => void) => void
+  createRewardedVideoAd?: (options: { adUnitId: string }) => unknown
+  createSelectorQuery?: () => {
+    select: (selector: string) => {
+      fields: (fields: Record<string, unknown>) => {
+        exec: (callback: (result: Array<{ node?: unknown; width?: number; height?: number } | undefined>) => void) => void
+      }
+    }
+  }
+  canvasToTempFilePath?: (options: Record<string, unknown>) => void
 }
 
 export function getWxGlobal(): WxLike | undefined {

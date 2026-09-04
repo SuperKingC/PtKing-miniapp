@@ -75,7 +75,7 @@ export function MiniappTarotReadingStage({
       <View className="miniapp-tarot__reading-actions">
         {canShare ? (
           <Button disabled={sharing || shared} onClick={onShare}>
-            {shared ? '已分享到聊天室 ✓' : sharing ? '分享中…' : '分享到聊天室'}
+            {shared ? '已复制解读 ✓' : sharing ? '复制中…' : '复制解读文案'}
           </Button>
         ) : (
           <Button openType="share">分享塔罗结果 · 邀请好友</Button>

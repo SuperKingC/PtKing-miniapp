@@ -7,12 +7,14 @@ export default defineAppConfig({
     'pages/test-detail/index',
     'pages/test-play/index',
     'pages/test-report/index',
+    'pages/settings/index',
+    'pages/privacy/index',
   ],
   tabBar: {
-    color: '#9a8f86',
-    selectedColor: '#c05f35',
-    backgroundColor: '#ffffff',
-    borderStyle: 'white',
+    color: '@tabColor',
+    selectedColor: '@tabSelectedColor',
+    backgroundColor: '@tabBgColor',
+    borderStyle: '@tabBorderStyle',
     custom: true,
     list: [
       {
@@ -43,9 +45,12 @@ export default defineAppConfig({
   },
   window: {
     navigationBarTitleText: 'PtKing',
-    navigationBarBackgroundColor: '#f7f4ee',
-    navigationBarTextStyle: 'black',
-    backgroundColor: '#f7f4ee',
+    navigationBarBackgroundColor: '@navBgColor',
+    navigationBarTextStyle: '@navTxtStyle',
+    backgroundColor: '@bgColor',
   },
+  // 暗色模式：导航栏/tabBar 颜色走 theme.json 双主题；页面配色走 app.scss 的 prefers-color-scheme 变量
+  darkmode: true,
+  themeLocation: 'theme.json',
   lazyCodeLoading: 'requiredComponents',
 })

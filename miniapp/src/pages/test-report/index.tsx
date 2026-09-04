@@ -1,9 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
+import { trackEvent } from '../../services/monitor'
+import { renderShareCard } from '../../services/reportShareCard'
+import { showRewardedAd } from '../../services/rewardedAd'
 import { getTestDefinition } from '../../services/testRegistry'
-import { loadTestRecords } from '../../services/testRecords'
+import { buildHistoryRows, loadTestRecords, unlockRecord, type TestRecord } from '../../services/testRecords'
 import './index.scss'
 
 // 报告页（高级感版式）：hero 结果卡（主报告+tagline+徽章）→ 模式化图表区 → 摘要/解读卡。
@@ -12,8 +15,9 @@ import './index.scss'
 // - factor：canvas 雷达图 + 百分位条（大五/暗黑）
 // - archetype：人格倾向分布横条 + 次人格卡（票数占比来自引擎 archetypeVotes，旧记录无该字段时整体隐藏）
 // - band：三档分数刻度条（高亮所在档）+ 得分徽章
-// 报告数据取最近一次该测试的本地记录（答题页落库后 redirect 过来，必有记录）。
-// M4 分享：报告页转发给好友时带结果型标题（不剧透具体答案内容）
+// 报告数据取该测试的本地记录（默认最新一次；?finishedAt= 精确回看某一次，答题页落库后 redirect 过来必有记录）。
+// 变现：新完成的报告 locked=true，看激励视频解锁正文；广告位未配置或 SDK 异常时直接解锁（不阻断主链路）。
+// M4 分享：结果型标题 + canvas 预生成的 5:4 结果卡片图（生成失败回退默认截图）
 
 interface FactorScore {
   id: string
@@ -21,16 +25,19 @@ interface FactorScore {
   percent: number
 }
 
-/** 雷达图绘制（ctx 注入便于复用）：环网格 + 轴线 + 数据多边形 + 顶点圆点，几何来自 domain 纯函数 */
+/** 雷达图绘制（ctx 注入便于复用）：环网格 + 轴线 + 数据多边形 + 顶点圆点，几何来自 domain 纯函数；取色随主题 */
 function drawRadar(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   scores: FactorScore[],
+  dark: boolean,
 ): void {
   const cx = width / 2
   const cy = height / 2
   const radius = Math.min(cx, cy) * 0.74
+  const gridColor = dark ? 'rgba(224, 138, 92, 0.22)' : 'rgba(192, 95, 53, 0.16)'
+  const lineColor = dark ? '#e08a5c' : '#c05f35'
   // 归一化几何（center 0.5 / radius 0.38）映射到画布像素空间
   const normalized = radarChartGeometry(scores.length)
   const points = normalized.map((point) => ({
@@ -39,7 +46,7 @@ function drawRadar(
   }))
 
   // 背景网格：4 层同心多边形环 + 轴线
-  ctx.strokeStyle = 'rgba(192, 95, 53, 0.16)'
+  ctx.strokeStyle = gridColor
   ctx.lineWidth = 1
   for (let ring = 1; ring <= 4; ring += 1) {
     ctx.beginPath()
@@ -59,7 +66,7 @@ function drawRadar(
     ctx.stroke()
   }
 
-  // 数据多边形：陶土橘半透明填充 + 实线描边 + 顶点圆点
+  // 数据多边形：品牌色半透明填充 + 实线描边 + 顶点圆点
   ctx.beginPath()
   scores.forEach((score, index) => {
     const vertex = points[index]
@@ -69,13 +76,13 @@ function drawRadar(
     else ctx.lineTo(x, y)
   })
   ctx.closePath()
-  ctx.fillStyle = 'rgba(192, 95, 53, 0.2)'
+  ctx.fillStyle = dark ? 'rgba(224, 138, 92, 0.24)' : 'rgba(192, 95, 53, 0.2)'
   ctx.fill()
-  ctx.strokeStyle = '#c05f35'
+  ctx.strokeStyle = lineColor
   ctx.lineWidth = 2
   ctx.stroke()
 
-  ctx.fillStyle = '#c05f35'
+  ctx.fillStyle = lineColor
   scores.forEach((score, index) => {
     const vertex = points[index]
     const x = cx + (vertex.x - cx) * (score.percent / 100)
@@ -86,14 +93,61 @@ function drawRadar(
   })
 }
 
+function formatDateLabel(iso: string): string {
+  try {
+    return iso.slice(5, 10).replaceAll('-', '.')
+  } catch {
+    return iso
+  }
+}
+
 export default function TestReportPage() {
   const router = useRouter()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
 
-  const record = useMemo(() => {
-    if (!definition) return null
-    return loadTestRecords().find((item) => item.testId === definition.id) ?? null
-  }, [definition])
+  // 该测试全部历史（新→旧）：?finishedAt= 指定时精确回看那一次，否则展示最新一次
+  const history = useMemo(
+    () => (definition ? loadTestRecords().filter((item) => item.testId === definition.id) : []),
+    [definition],
+  )
+  const record = useMemo((): TestRecord | null => {
+    const finishedAt = router.params.finishedAt
+    if (finishedAt) {
+      const hit = history.find((item) => item.finishedAt === finishedAt)
+      if (hit) return hit
+    }
+    return history[0] ?? null
+  }, [history, router.params.finishedAt])
+
+  // 激励视频解锁：新完成的报告 locked=true，看完广告才展示完整内容；
+  // 广告位未配置或 SDK 异常时 showRewardedAd 返回 unavailable，同样直接解锁（降级不阻断）
+  const [adUnlocked, setAdUnlocked] = useState(false)
+  const [unlocking, setUnlocking] = useState(false)
+  const locked = record?.locked === true && !adUnlocked
+
+  const handleUnlock = async () => {
+    if (!record || unlocking) return
+    setUnlocking(true)
+    try {
+      const outcome = await showRewardedAd()
+      trackEvent('report_unlock', { testId: definition?.id ?? '', outcome })
+      if (outcome === 'aborted') {
+        wx.showToast({ title: '看完视频才能解锁报告哦', icon: 'none' })
+      } else {
+        unlockRecord(record.testId, record.finishedAt)
+        setAdUnlocked(true)
+      }
+    } finally {
+      setUnlocking(false)
+    }
+  }
+
+  // 报告漏斗：进入报告页（带解锁状态，可算完测→解锁→分享转化）
+  useEffect(() => {
+    if (definition && record) {
+      trackEvent('report_view', { testId: definition.id, locked: record.locked === true })
+    }
+  }, [definition, record])
 
   const factorScores = record?.result.factorScores ?? []
 
@@ -118,6 +172,26 @@ export default function TestReportPage() {
     return []
   }, [factorScores, votes, definition])
 
+  // 暗色模式：跟随系统主题（画布取色在 JS，无法用 CSS 变量）
+  const [darkTheme, setDarkTheme] = useState(() => {
+    try {
+      return Taro.getSystemInfoSync().theme === 'dark'
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    try {
+      const handler = (res: { theme?: string }) => setDarkTheme(res?.theme === 'dark')
+      Taro.onThemeChange?.(handler)
+      return () => {
+        Taro.offThemeChange?.(handler)
+      }
+    } catch {
+      return undefined
+    }
+  }, [])
+
   // factor/archetype 模式雷达图：weapp canvas 2d 节点须经 createSelectorQuery 获取（ref 拿不到原生 node）
   useEffect(() => {
     if (radarScores.length < 3) return
@@ -133,18 +207,39 @@ export default function TestReportPage() {
         node.height = height * dpr
         const ctx = node.getContext('2d')
         ctx.scale(dpr, dpr)
-        drawRadar(ctx, width, height, radarScores)
+        drawRadar(ctx, width, height, radarScores, darkTheme)
       })
-  }, [radarScores])
+  }, [radarScores, darkTheme])
 
-  // 好友转发：结果型标题（不剧透具体题目）+ 卡片直达该测试详情页引导开测
+  // 分享卡片：报告就绪即预生成 5:4 卡片图（隐藏 canvas → 临时文件），转发时作 imageUrl
+  const [shareImagePath, setShareImagePath] = useState('')
+  useEffect(() => {
+    if (!definition || !record) return
+    const sharedReport = definition.reports[record.result.reportId]
+    if (!sharedReport) return
+    let cancelled = false
+    renderShareCard('share-card-canvas', {
+      testTitle: definition.title,
+      resultTitle: sharedReport.title,
+      tagline: sharedReport.tagline,
+    }).then((path) => {
+      if (!cancelled) setShareImagePath(path)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [definition, record])
+
+  // 好友转发：结果型标题（不剧透具体题目）+ 结果卡片图 + 直达该测试详情页引导开测
   useShareAppMessage(() => {
     const report = definition && record ? definition.reports[record.result.reportId] : null
+    trackEvent('report_share', { testId: definition?.id ?? '' })
     return {
       title: report
         ? `我在 ${definition!.title} 里测出了「${report.title}」，你也来试试`
         : 'PtKing · 来测测你的隐藏人格',
       path: definition ? `/pages/test-detail/index?testId=${definition.id}` : undefined,
+      imageUrl: shareImagePath || undefined,
     }
   })
 
@@ -155,6 +250,7 @@ export default function TestReportPage() {
       title: report
         ? `我在 ${definition!.title} 里测出了「${report.title}」`
         : 'PtKing · 来测测你的隐藏人格',
+      imageUrl: shareImagePath || undefined,
     }
   })
 
@@ -170,6 +266,53 @@ export default function TestReportPage() {
           }}
         >
           <Text>去测试中心</Text>
+        </View>
+      </View>
+    )
+  }
+
+  // ===== 解锁门：锁定记录不渲染报告正文，只给 hero 预告 + 解锁卡 =====
+  if (locked) {
+    return (
+      <View className="test-report">
+        <View className="test-report__hero">
+          <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
+          <Text className="test-report__type">报告已生成</Text>
+          <Text className="test-report__tagline">你的人格结果已就绪，看完一小段视频即可解锁</Text>
+        </View>
+        <View className="test-report__gate">
+          <Text className="test-report__gate-title">解锁完整报告</Text>
+          <Text className="test-report__gate-desc">
+            包含结果摘要、类型解读、深度解读、优势盲区、场景适配与行动清单。
+          </Text>
+          <View
+            className="test-report__gate-btn"
+            hoverClass="none"
+            onClick={() => {
+              void handleUnlock()
+            }}
+          >
+            <Text>{unlocking ? '正在打开视频…' : '观看视频解锁'}</Text>
+          </View>
+          <Text className="test-report__gate-note">视频由微信广告提供，看完自动解锁</Text>
+        </View>
+        <View
+          className="test-report__action"
+          hoverClass="none"
+          onClick={() => {
+            wx.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
+          }}
+        >
+          <Text>再测一次</Text>
+        </View>
+        <View
+          className="test-report__back"
+          hoverClass="none"
+          onClick={() => {
+            wx.switchTab({ url: '/pages/test/index' })
+          }}
+        >
+          <Text>回到测试中心</Text>
         </View>
       </View>
     )
@@ -199,6 +342,9 @@ export default function TestReportPage() {
       runnerUp = { title: secondReport.title, tagline: secondReport.tagline, count: second.count }
     }
   }
+
+  // 历史对比：多测同测试时展示本次 + 往前最多 3 次，band 模式带与上一次的分差
+  const historyRows = buildHistoryRows(history)
 
   return (
     <View className="test-report">
@@ -318,6 +464,44 @@ export default function TestReportPage() {
         </View>
       )}
 
+      {historyRows.length > 1 && (
+        <View className="test-report__panel">
+          <Text className="test-report__panel-title">历史对比 · 共 {history.length} 次</Text>
+          {historyRows.map((row) => (
+            <View
+              key={row.record.finishedAt}
+              className="test-report__history-row"
+              hoverClass="none"
+              onClick={() => {
+                wx.redirectTo({
+                  url: `/pages/test-report/index?testId=${definition.id}&finishedAt=${encodeURIComponent(row.record.finishedAt)}`,
+                })
+              }}
+            >
+              <Text className="test-report__history-attempt">第 {row.attempt} 次</Text>
+              <Text className="test-report__history-title">
+                {definition.reports[row.record.result.reportId]?.title ?? row.record.resultTitle ?? row.record.result.reportId}
+              </Text>
+              <Text className="test-report__history-date">{formatDateLabel(row.record.finishedAt)}</Text>
+              {typeof row.record.result.bandScore === 'number' && (
+                <Text className="test-report__history-score">{row.record.result.bandScore} 分</Text>
+              )}
+              {row.delta !== null && row.delta !== 0 && (
+                <Text
+                  className={
+                    row.delta > 0
+                      ? 'test-report__history-delta test-report__history-delta--up'
+                      : 'test-report__history-delta test-report__history-delta--down'
+                  }
+                >
+                  {row.delta > 0 ? `▲+${row.delta}` : `▼${row.delta}`}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+
       <View className="test-report__panel">
         <Text className="test-report__panel-title">结果摘要</Text>
         <Text className="test-report__summary">{report.summary}</Text>
@@ -405,6 +589,8 @@ export default function TestReportPage() {
       >
         <Text>回到测试中心</Text>
       </View>
+      {/* 分享卡片绘制专用隐藏画布（5:4，导出临时图后由微信转存），不参与页面展示 */}
+      <canvas type="2d" id="share-card-canvas" className="test-report__share-canvas" />
     </View>
   )
 }

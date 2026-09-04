@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
+import { trackEvent } from '../../services/monitor'
 import { getTestDefinition } from '../../services/testRegistry'
 import './index.scss'
 
@@ -8,6 +9,11 @@ import './index.scss'
 export default function TestDetailPage() {
   const router = useRouter()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
+
+  // 漏斗：进入详情页（与 test_start 对照得「详情→开测」转化）
+  useEffect(() => {
+    if (definition) trackEvent('test_detail_view', { testId: definition.id })
+  }, [definition])
 
   if (!definition) {
     return (

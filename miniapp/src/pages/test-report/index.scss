@@ -507,3 +507,143 @@
   color: var(--color-ink-secondary);
   font-size: var(--font-size-body);
 }
+
+/* ===== 激励视频解锁门 ===== */
+.test-report__gate {
+  margin-top: 32rpx;
+  padding: 44rpx 32rpx;
+  border-radius: 28rpx;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.test-report__gate-title {
+  display: block;
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+}
+
+.test-report__gate-desc {
+  display: block;
+  margin-top: 16rpx;
+  font-size: var(--font-size-secondary);
+  line-height: 1.7;
+  color: var(--color-ink-secondary);
+  text-align: justify;
+}
+
+.test-report__gate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 520rpx;
+  height: 104rpx;
+  margin: 36rpx auto 0;
+  border-radius: 999rpx;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: 0 10rpx 28rpx rgba(192, 95, 53, 0.3);
+}
+
+.test-report__gate-note {
+  display: block;
+  margin-top: 20rpx;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+/* ===== 历史对比 ===== */
+.test-report__history-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.test-report__history-row:first-of-type {
+  margin-top: 0;
+}
+
+.test-report__history-attempt {
+  flex: none;
+  width: 108rpx;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-report__history-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-secondary);
+  color: var(--color-ink);
+}
+
+.test-report__history-date {
+  flex: none;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-report__history-score {
+  flex: none;
+  font-size: var(--font-size-aux);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.test-report__history-delta {
+  flex: none;
+  width: 88rpx;
+  text-align: right;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
+.test-report__history-delta--up {
+  color: var(--color-primary);
+}
+
+.test-report__history-delta--down {
+  color: var(--color-ink-secondary);
+}
+
+/* ===== 分享卡片隐藏画布：屏外绘制专用，不参与展示 ===== */
+.test-report__share-canvas {
+  position: absolute;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: -1200rpx;
+  width: 600rpx;
+  height: 480rpx;
+}
+
+/* ===== 暗色模式：CSS 变量覆盖不到的底色补丁 ===== */
+@media (prefers-color-scheme: dark) {
+  .test-report__dim-track,
+  .test-report__factor-track,
+  .test-report__vote-track {
+    background: #332a22;
+    box-shadow: inset 0 0 0 2rpx #3f352b;
+  }
+
+  .test-report__band-seg {
+    background: #2e2720;
+  }
+
+  .test-report__band-seg--on {
+    background: linear-gradient(160deg, #3a2c22, #33261c);
+  }
+
+  .test-report__runner {
+    border-color: #4a3a2c;
+    background: #2e2720;
+  }
+}
