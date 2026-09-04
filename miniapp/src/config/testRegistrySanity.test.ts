@@ -80,6 +80,14 @@ describe('test registry sanity (all published tests)', () => {
         expect(report.tagline).toBeTruthy()
         expect(report.summary.length).toBeGreaterThan(20)
         expect(report.detail.length).toBe(3)
+        // 深度报告 v2 字段（可选，恋爱人格样稿已铺）：有则校验质量
+        if (report.deep !== undefined) {
+          expect(report.deep.length).toBeGreaterThan(150)
+          expect(report.strengths?.length).toBe(3)
+          expect(report.blindSpots?.length).toBe(3)
+          expect(report.scenes?.length).toBe(3)
+          expect(report.actions?.length).toBeGreaterThanOrEqual(3)
+        }
       }
     },
   )

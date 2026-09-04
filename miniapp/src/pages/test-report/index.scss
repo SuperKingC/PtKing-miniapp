@@ -365,6 +365,80 @@
   text-align: justify;
 }
 
+/* 深度报告 v2：优势/盲区小标题与场景行 */
+.test-report__subhead {
+  display: block;
+  margin: 28rpx 0 8rpx;
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.test-report__subhead--on {
+  margin-top: 0;
+  color: var(--color-primary);
+}
+
+.test-report__subhead--off {
+  color: var(--color-ink-secondary);
+}
+
+.test-report__scene {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  margin-top: 22rpx;
+}
+
+.test-report__scene:first-of-type {
+  margin-top: 0;
+}
+
+.test-report__scene-chip {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 52rpx;
+  border-radius: 14rpx;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-aux);
+  font-weight: var(--font-weight-semibold);
+}
+
+.test-report__scene-text {
+  flex: 1;
+  font-size: var(--font-size-body);
+  line-height: 1.7;
+  color: var(--color-ink);
+}
+
+.test-report__action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}
+
+.test-report__action-item:first-of-type {
+  margin-top: 0;
+}
+
+.test-report__action-num {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-aux);
+  font-weight: var(--font-weight-semibold);
+}
+
 .test-report__detail-item {
   display: flex;
   gap: 12rpx;

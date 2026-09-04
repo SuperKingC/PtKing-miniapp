@@ -16,6 +16,17 @@ export interface TestReport {
   tagline: string
   summary: string
   detail: string[]
+  /** —— 深度报告 v2 可选字段（有则报告页显示深度区块，无则维持现有版式；存量内容与旧记录零破坏）—— */
+  /** 类型纵深长文（约 300 字：行为模式的心理动因） */
+  deep?: string
+  /** 三大优势（一句话+短解释） */
+  strengths?: string[]
+  /** 三个盲区 */
+  blindSpots?: string[]
+  /** 场景适配：职场/恋爱/社交三段 */
+  scenes?: Array<{ scene: string; text: string }>
+  /** 行动清单（可执行建议） */
+  actions?: string[]
 }
 
 export interface TestOption {

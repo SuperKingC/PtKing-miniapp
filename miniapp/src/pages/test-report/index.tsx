@@ -321,6 +321,57 @@ export default function TestReportPage() {
         ))}
       </View>
 
+      {report.deep && (
+        <View className="test-report__panel">
+          <Text className="test-report__panel-title">深度解读</Text>
+          <Text className="test-report__summary">{report.deep}</Text>
+        </View>
+      )}
+
+      {report.strengths && report.blindSpots && (
+        <View className="test-report__panel">
+          <Text className="test-report__panel-title">优势与盲区</Text>
+          <Text className="test-report__subhead test-report__subhead--on">你的三大优势</Text>
+          {report.strengths.map((line) => (
+            <View key={line.slice(0, 10)} className="test-report__detail-item">
+              <Text className="test-report__detail-dot">+</Text>
+              <Text className="test-report__detail-text">{line}</Text>
+            </View>
+          ))}
+          <Text className="test-report__subhead test-report__subhead--off">你的三个盲区</Text>
+          {report.blindSpots.map((line) => (
+            <View key={line.slice(0, 10)} className="test-report__detail-item">
+              <Text className="test-report__detail-dot">!</Text>
+              <Text className="test-report__detail-text">{line}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {report.scenes && report.scenes.length > 0 && (
+        <View className="test-report__panel">
+          <Text className="test-report__panel-title">场景适配</Text>
+          {report.scenes.map((item) => (
+            <View key={item.scene} className="test-report__scene">
+              <Text className="test-report__scene-chip">{item.scene}</Text>
+              <Text className="test-report__scene-text">{item.text}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {report.actions && report.actions.length > 0 && (
+        <View className="test-report__panel">
+          <Text className="test-report__panel-title">行动清单</Text>
+          {report.actions.map((line, index) => (
+            <View key={line.slice(0, 10)} className="test-report__action-item">
+              <Text className="test-report__action-num">{index + 1}</Text>
+              <Text className="test-report__detail-text">{line}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
       <View
         className="test-report__action"
         hoverClass="none"
