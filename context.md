@@ -114,3 +114,4 @@
 - 原因：按用户要求还原「真机切离塔罗时隐藏后台 tab 栏」(`96f6b9e`)。
 - 修改：删除 `tabBarVisibility.ts` 与其测试；`custom-tab-bar` 恢复为仅在本页路由是塔罗时自隐；`.tabbar--hidden` 只保留 `display: none`。保留暗色图标提亮与塔罗可退出等后续体验改动。
 - 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；未再调用原生 hideTabBar。
+- 验证：`npm test -- src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（22 项）；`npm run build:weapp` 成功。未在微信开发者工具/真机点过双栏。
