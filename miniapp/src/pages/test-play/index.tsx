@@ -15,6 +15,7 @@ import {
   saveTestDraft,
   warnBeforeLeavingPlay,
 } from '../../services/testDrafts'
+import { tapFeedback } from '../../services/haptics'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
@@ -85,6 +86,7 @@ export default function TestPlayPage() {
         ? [...answers, optionIndex]
         : answers.map((value, index) => (index === qIndex ? optionIndex : value))
     setAnswers(nextAnswers)
+    tapFeedback()
     trackEvent('test_answer', { testId: definition.id, qIndex, optionIndex })
     if (nextAnswers.length === total && qIndex === total - 1) {
       // 计分引擎抛错（如动态定义缺字段）不能断流程：捕获上报 + 提示重试

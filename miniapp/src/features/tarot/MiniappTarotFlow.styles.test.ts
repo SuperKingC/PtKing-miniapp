@@ -209,6 +209,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(flowSource).toContain('loadError')
     expect(flowSource).toContain('failedUrls.length === 0')
     expect(flowSource).toContain('重新加载')
+    expect(flowSource).toContain('正在下载塔罗资源')
+    expect((flowSource.match(/miniapp-tarot__loading_exit/g) ?? []).length).toBeGreaterThanOrEqual(2)
     expect(styles).toContain('.miniapp-tarot__loading {')
     expect(styles).toContain('.miniapp-tarot__loading_ring')
     expect(styles).toContain('.miniapp-tarot__loading_retry')

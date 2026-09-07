@@ -36,6 +36,7 @@ export interface WxLike {
     }
   }
   canvasToTempFilePath?: (options: Record<string, unknown>) => void
+  vibrateShort?: (options?: { type?: 'heavy' | 'medium' | 'light' }) => void
 }
 
 export function getWxGlobal(): WxLike | undefined {

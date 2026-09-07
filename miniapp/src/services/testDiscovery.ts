@@ -32,3 +32,13 @@ export function pickRecommendedTests(
     })
     .slice(0, count)
 }
+
+/** 首页搜索：匹配标题、分类和简介。 */
+export function matchTests(definitions: TestDefinition[], keyword: string): TestDefinition[] {
+  const needle = keyword.trim().toLowerCase()
+  if (!needle) return definitions
+  return definitions.filter((item) => {
+    const haystack = [item.title, item.category, ...item.intro].join('\n').toLowerCase()
+    return haystack.includes(needle)
+  })
+}

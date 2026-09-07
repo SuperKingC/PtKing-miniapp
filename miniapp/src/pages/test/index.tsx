@@ -3,7 +3,9 @@ import { Image, Input, Text, View } from '@tarojs/components'
 import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
+import { matchTests, pickRecommendedTests } from '../../services/testDiscovery'
 import { listActiveTestDrafts } from '../../services/testDrafts'
+import { loadTestRecords } from '../../services/testRecords'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -38,15 +40,16 @@ export default function TestPage() {
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
   const [resume, setResume] = useState(() => listActiveTestDrafts(listTestDefinitions())[0] ?? null)
   const [query, setQuery] = useState('')
+  const [recentIds, setRecentIds] = useState(() => loadTestRecords().map((record) => record.testId))
   const keyword = query.trim()
   const visible = useMemo(
     () => filterByCategory(definitions, activeCategory),
     [definitions, activeCategory],
   )
-  const recommended = useMemo(() => {
-    const skipId = resume?.definition.id
-    return definitions.filter((item) => item.id !== skipId).slice(0, RECOMMEND_COUNT)
-  }, [definitions, resume])
+  const recommended = useMemo(
+    () => pickRecommendedTests(definitions, recentIds, resume?.definition.id, RECOMMEND_COUNT),
+    [definitions, recentIds, resume],
+  )
   const browsing = useMemo(() => {
     if (activeCategory !== 'all') return visible
     const hidden = new Set(recommended.map((item) => item.id))
@@ -55,13 +58,14 @@ export default function TestPage() {
   }, [activeCategory, visible, recommended, resume])
   const searched = useMemo(() => {
     if (!keyword) return null
-    return visible.filter((item) => item.title.includes(keyword) || item.category.includes(keyword))
+    return matchTests(visible, keyword)
   }, [keyword, visible])
 
   const refresh = () => {
     const next = listTestDefinitions()
     setDefinitions(next)
     setResume(listActiveTestDrafts(next)[0] ?? null)
+    setRecentIds(loadTestRecords().map((record) => record.testId))
   }
 
   useEffect(() => {
@@ -116,10 +120,13 @@ export default function TestPage() {
         <Input
           className="test-page__search-input"
           value={query}
-          placeholder="搜索测试名称"
+          placeholder="搜索名称、分类或简介"
           confirmType="search"
           onInput={(event) => setQuery(event.detail.value)}
         />
+        {keyword ? (
+          <Text className="test-page__search-clear" onClick={() => setQuery('')}>清空</Text>
+        ) : null}
       </View>
 
       {resume && (

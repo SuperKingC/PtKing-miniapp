@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Image, Text, View } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
-import { getTestDefinition } from '../../services/testRegistry'
+import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
+import { listActiveTestDrafts } from '../../services/testDrafts'
 import { loadTestRecords, TEST_RECORDS_CAP, type TestRecord } from '../../services/testRecords'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -35,14 +36,33 @@ export default function RecordsPage() {
   useTabBarSelected(2)
   const theme = useAppTheme()
   const [records, setRecords] = useState(() => loadTestRecords())
+  const [resume, setResume] = useState(() => listActiveTestDrafts(listTestDefinitions())[0] ?? null)
   const { testedCount, latestLabel } = summarize(records)
 
   useDidShow(() => {
     setRecords(loadTestRecords())
+    setResume(listActiveTestDrafts(listTestDefinitions())[0] ?? null)
   })
+
+  const resumeBanner = resume ? (
+    <View
+      className="records-page__resume"
+      hoverClass="none"
+      onClick={() => {
+        wx.navigateTo({ url: `/pages/test-play/index?testId=${resume.definition.id}` })
+      }}
+    >
+      <Text className="records-page__resume-kicker">继续答题</Text>
+      <Text className="records-page__resume-title">{resume.definition.title}</Text>
+      <Text className="records-page__resume-meta">
+        已答到第 {resume.draft.questionIndex + 1}/{resume.definition.questions.length} 题
+      </Text>
+    </View>
+  ) : null
 
   return (
     <View className={`records-page theme-${theme}`}>
+      {resumeBanner}
       {records.length === 0 ? (
         <View className="records-page__empty">
           <Image className="records-page__empty-img" src={emptyRecordsImg} mode="aspectFit" lazyLoad />

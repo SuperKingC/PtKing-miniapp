@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useDidShow, useRouter } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -15,9 +15,12 @@ export default function TestDetailPage() {
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
   const [hasDraft, setHasDraft] = useState(() => Boolean(definition && getTestDraft(definition)))
 
+  useEffect(() => {
+    if (definition) trackEvent('test_detail_view', { testId: definition.id })
+  }, [definition])
+
   useDidShow(() => {
     if (!definition) return
-    trackEvent('test_detail_view', { testId: definition.id })
     setHasDraft(Boolean(getTestDraft(definition)))
   })
 

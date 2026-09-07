@@ -16,3 +16,7 @@
 - 原因：继续完善记录刷新、解锁出口、搜索、切牌跳过与离开提示。
 - 修改文件：`pages/records`、`pages/test-detail`、`pages/test-report`、`pages/test`、`pages/test-play`、`features/tarot` 切牌跳过、`services/testDrafts.ts` 离开提示。
 
+- 时间：2026-09-07 16:24
+- 原因：继续优化推荐、搜索清空、塔罗加载超时与续答入口。
+- 修改文件：`services/testDiscovery.ts`、`services/haptics.ts`、`pages/test`、`pages/records`、`pages/me`、`pages/test-play`、`pages/test-detail`、`features/tarot/tarotAssets.ts`、`MiniappTarotFlow.tsx`、`MiniappTarotShuffleStage.tsx`、`wxGlobal.ts`。
+

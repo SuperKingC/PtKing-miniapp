@@ -37,7 +37,7 @@ export function MiniappTarotShuffleStage({
       const elapsed = Date.now() - startTimeRef.current
       const next = Math.min(100, startProgressRef.current + (elapsed / shuffleDurationMs) * 100)
       onProgress(next)
-    }, 40)
+    }, 90)
   }
 
   useEffect(() => stop, [])

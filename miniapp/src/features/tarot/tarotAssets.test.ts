@@ -16,6 +16,7 @@ import {
   getTarotSanctuaryBackground,
   getTarotArtworkUrl,
   preloadTarotResources,
+  TAROT_PRELOAD_TIMEOUT_MS,
 } from './tarotAssets'
 
 describe('miniapp tarot assets', () => {
@@ -50,5 +51,17 @@ describe('miniapp tarot assets', () => {
 
     expect(result.total).toBe(24)
     expect(result.failedUrls).toHaveLength(24)
+  })
+
+  it('treats hung downloads as failed after the preload timeout', async () => {
+    vi.useFakeTimers()
+    downloadFile.mockReturnValue(new Promise(() => undefined))
+
+    const pending = preloadTarotResources()
+    await vi.advanceTimersByTimeAsync(TAROT_PRELOAD_TIMEOUT_MS)
+    const result = await pending
+
+    expect(result.failedUrls).toHaveLength(24)
+    vi.useRealTimers()
   })
 })
