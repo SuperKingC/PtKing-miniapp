@@ -4,10 +4,26 @@
 
 塔罗牌、测试题 JSON、报告配图都不进小程序主包，统一放 COS 版本目录，由 `TARO_ASSET_BASE_URL` 热更下发。塔罗运行时拼 `{根}/tarot/...`，共 24 张。
 
-## 一次性准备
+## 在腾讯云创建存储桶（一次性）
 
-1. 开通腾讯云 COS 存储桶（建议公有读 / 或配 CDN），记下桶名、地域、访问域名。
-2. 在 `D:\Mine\miniapp-kit\.env` 写入（本仓库不放密钥）：
+1. 打开 [COS 存储桶列表](https://console.cloud.tencent.com/cos/bucket)，用已实名的腾讯云账号登录。未开通过对象存储时，按提示开通 COS。
+2. 点「创建存储桶」：
+   - **名称**：例如 `ptking-assets`（保存后会变成 `ptking-assets-125xxxxxxxx`，后面一串是你的 APPID，不要手改）。
+   - **所属地域**：选 **广州**（`ap-guangzhou`），和脚本默认、微信服务器都较近。
+   - **访问权限**：选 **公有读私有写**。小程序 `downloadFile` 要能不带签名直接拉图；选「私有读写」真机一定会失败。
+   - 版本控制、日志、加密保持默认即可。
+3. 创建完成后进入该桶「概览」，复制 **访问域名**，形如：
+
+```text
+https://ptking-assets-125xxxxxxxx.cos.ap-guangzhou.myqcloud.com
+```
+
+这就是后面的 `COS_PUBLIC_BASE`（不要加末尾 `/`，不要加 `assets/ptking`）。
+4. 申请密钥（本仓库不要保存）：访问管理 CAM → [API 密钥管理](https://console.cloud.tencent.com/cam/capi) → 「新建密钥」。得到 `SecretId` / `SecretKey`。能建子用户并只授这个桶的写权限更好；个人开发先用主账号密钥也可以。
+5. 安全组/防盗链：桶「安全管理 → 防盗链」先保持关闭。打开后若没放行微信客户端，手机会下不了图。
+6. 微信公众平台 → 开发管理 → 开发设置 → **downloadFile 合法域名**，只填主机名，例如 `ptking-assets-125xxxxxxxx.cos.ap-guangzhou.myqcloud.com`（不要 `https://`）。开发者工具可先关「不校验合法域名」做本机调试，真机必须配域名。
+
+然后把下面五项写进 `D:\Mine\miniapp-kit\.env`（本仓库不放密钥）：
 
 ```env
 COS_SECRET_ID=...
@@ -23,11 +39,9 @@ COS_PUBLIC_BASE=https://你的访问域名
 {COS_PUBLIC_BASE}/assets/ptking/{git短SHA}
 ```
 
-3. 本项目根已有 `art.config.json`（gitignore）。`output.cos` 保持 `assets/ptking`（或 `assets/{project}`）。
-4. 微信公众平台 → 开发管理 → 开发设置 → 服务器域名：
-   - **downloadFile 合法域名**加入 `COS_PUBLIC_BASE` 的主机名（只填域名，如 `xxx.cos.ap-guangzhou.myqcloud.com`）。
-   - 必须 HTTPS。未配置时真机下载失败，塔罗页停在「资源加载失败」。
-5. 把 24 张塔罗图放到本地资产目录（不入库）：
+`art.config.json` 的 `output.cos` 保持 `assets/ptking`。塔罗原图已从 Pet10 `public/tarot/` 拷到本地资产目录（gitignore，不入库）。换图覆盖同名文件后执行 `npm run assets:compress`（只 TinyPNG，不降分辨率），再 `npm run assets`。
+
+当前文件：
 
 ```text
 art/generated-art/tarot/ui/sanctuary-background.jpg
@@ -56,7 +70,13 @@ art/generated-art/tarot/cards/judgement.jpg
 art/generated-art/tarot/cards/the-world.jpg
 ```
 
-单图建议 JPEG、先降分辨率再压质量，尽量 ≤180KB。换图升文件名；塔罗这批文件名已与代码锁定，换内容覆盖同名即可（因上传带 git SHA 新目录，缓存自然失效）。
+牌面原图像素约 768×1152，背景约 900×1350。界面上牌面大约 190×300 rpx，真机按 2～3 倍屏也就需要约 400×600 像素。因此：
+
+- **只做 TinyPNG、不降分辨率**：像素不变，主要减 JPEG 体积，观感几乎不变。这是当前做法。
+- **适度缩小（例如收到 560×840）**：手机上看不出差别，体积会再小一截。
+- **收到显示尺寸（190×300）**：会发糊，不要这样做。
+
+换内容覆盖同名即可（上传带 git SHA 新目录，缓存自然失效）。文件名已与代码锁定，不要改名。
 
 ## 日常更新（一键）
 
@@ -77,7 +97,7 @@ npm run assets:publish
 
 | 命令 | 作用 |
 |---|---|
-| `assets` | 一键校验、上传并重建 |
+| `assets:compress` | 对 `art/generated-art/tarot` 做一次 TinyPNG，不改像素 |
 | `assets:check` | 只检查 24 张塔罗是否都在 `art/generated-art` |
 | `assets:upload` | dry-run，只打印将上传的 key |
 | `assets:publish` | 只真传并写地址，不重建 |

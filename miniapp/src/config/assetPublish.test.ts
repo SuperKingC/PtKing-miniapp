@@ -14,6 +14,8 @@ describe('COS asset publish workflow', () => {
     const publishSource = readFileSync(resolve(root, 'scripts/publish-assets.mjs'), 'utf8')
 
     expect(pkg.scripts.assets).toContain('publish-assets.mjs --yes --build')
+    expect(pkg.scripts['assets:compress']).toContain('compress-art.mjs')
+    expect(existsSync(resolve(root, 'scripts/compress-art.mjs'))).toBe(true)
     expect(pkg.scripts['assets:check']).toContain('publish-assets.mjs --check')
     expect(pkg.scripts['assets:upload']).toContain('publish-assets.mjs')
     expect(pkg.scripts['assets:publish']).toContain('publish-assets.mjs --yes')

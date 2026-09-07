@@ -7,6 +7,7 @@
     "dev:weapp": "node scripts/with-asset-env.mjs npm --prefix miniapp run dev:weapp",
     "test": "npm --prefix miniapp run test",
     "assets": "node scripts/publish-assets.mjs --yes --build",
+    "assets:compress": "node scripts/compress-art.mjs",
     "assets:check": "node scripts/publish-assets.mjs --check",
     "assets:upload": "node scripts/publish-assets.mjs",
     "assets:publish": "node scripts/publish-assets.mjs --yes",
