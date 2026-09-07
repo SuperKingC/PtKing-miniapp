@@ -1,8 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 
 // URL 构建经 assetBaseUrl 读宿主平台；node 环境静态导入 @tarojs/taro 会崩，统一 mock 掉
+const downloadFile = vi.fn()
+
 vi.mock('@tarojs/taro', () => ({
-  default: { getSystemInfoSync: () => ({ platform: 'devtools' }) },
+  default: {
+    getSystemInfoSync: () => ({ platform: 'devtools' }),
+    downloadFile,
+  },
 }))
 
 import {
@@ -36,5 +41,14 @@ describe('miniapp tarot assets', () => {
 
   it('exports preloadTarotResources as an async function', () => {
     expect(typeof preloadTarotResources).toBe('function')
+  })
+
+  it('reports every non-200 download as a failed resource', async () => {
+    downloadFile.mockResolvedValue({ statusCode: 404 })
+
+    const result = await preloadTarotResources()
+
+    expect(result.total).toBe(24)
+    expect(result.failedUrls).toHaveLength(24)
   })
 })

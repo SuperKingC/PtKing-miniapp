@@ -46,28 +46,37 @@ export function getTarotResourceUrls(): string[] {
   ]
 }
 
+export interface TarotPreloadResult {
+  failedUrls: string[]
+  total: number
+}
+
 /**
- * 下载全部塔罗资源到本地缓存，供后续 <Image> 直接使用。
+ * 下载全部塔罗资源，确认每张图片均可访问后才允许进入流程。
  * 使用并发 worker 模式，最多同时 4 个下载。
  */
 export async function preloadTarotResources(
   onProgress: (progress: number) => void = () => undefined,
-): Promise<void> {
+): Promise<TarotPreloadResult> {
   const urls = getTarotResourceUrls()
   if (urls.length === 0) {
     onProgress(1)
-    return
+    return { failedUrls: [], total: 0 }
   }
 
   // 动态导入避免在非小程序环境报错
   const Taro = await import('@tarojs/taro')
   let nextIndex = 0
   let completed = 0
+  const failedUrls: string[] = []
 
-  function downloadOne(url: string): Promise<void> {
-    return Taro.downloadFile({ url })
-      .then(() => undefined)
-      .catch(() => undefined)
+  async function downloadOne(url: string): Promise<void> {
+    try {
+      const result = await Taro.downloadFile({ url })
+      if (result.statusCode !== 200) failedUrls.push(url)
+    } catch {
+      failedUrls.push(url)
+    }
   }
 
   async function worker() {
@@ -82,5 +91,5 @@ export async function preloadTarotResources(
 
   const concurrency = Math.min(4, urls.length)
   await Promise.all(Array.from({ length: concurrency }, () => worker()))
-  onProgress(1)
+  return { failedUrls, total: urls.length }
 }

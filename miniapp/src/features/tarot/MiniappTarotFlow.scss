@@ -1657,10 +1657,29 @@
   letter-spacing: 1rpx;
 }
 
+.miniapp-tarot__loading_title {
+  color: #f0e6ff;
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-bold);
+}
+
 .miniapp-tarot__loading_hint {
   font-size: 26rpx;
   color: rgba(184, 156, 240, .54);
   letter-spacing: 2rpx;
+}
+
+.miniapp-tarot__loading_retry {
+  width: 300rpx;
+  margin: 8rpx 0 0;
+  border-radius: 28rpx;
+  color: #fff;
+  font-size: var(--font-size-body);
+  background: #7255b9;
+}
+
+.miniapp-tarot__loading_retry::after {
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

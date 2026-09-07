@@ -31,18 +31,32 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
   const [leaving, setLeaving] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
   const [resourcesLoaded, setResourcesLoaded] = useState(false)
+  const [loadError, setLoadError] = useState(false)
   const leaveTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const loadAttemptRef = useRef(0)
   const history = useMemo(() => historyOpen ? listTarotHistory() : [], [historyOpen, state.stage])
   const activeStageIndex = stageOrder.indexOf(state.stage)
 
-  useEffect(() => {
-    let cancelled = false
+  const loadResources = () => {
+    const attempt = ++loadAttemptRef.current
+    setLoadProgress(0)
+    setLoadError(false)
     preloadTarotResources((p) => {
-      if (!cancelled) setLoadProgress(p)
-    }).then(() => {
-      if (!cancelled) setResourcesLoaded(true)
+      if (attempt === loadAttemptRef.current) setLoadProgress(p)
     })
-    return () => { cancelled = true }
+      .then(({ failedUrls }) => {
+        if (attempt !== loadAttemptRef.current) return
+        if (failedUrls.length === 0) setResourcesLoaded(true)
+        else setLoadError(true)
+      })
+      .catch(() => {
+        if (attempt === loadAttemptRef.current) setLoadError(true)
+      })
+  }
+
+  useEffect(() => {
+    loadResources()
+    return () => { loadAttemptRef.current++ }
   }, [])
 
   useEffect(() => () => {
@@ -124,11 +138,21 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
 
       {!resourcesLoaded ? (
         <View className="miniapp-tarot__loading">
-          <View className="miniapp-tarot__loading-icon">
-            <View className="miniapp-tarot__loading_ring" />
-            <Text className="miniapp-tarot__loading_pct">{Math.round(loadProgress * 100)}%</Text>
-          </View>
-          <Text className="miniapp-tarot__loading_hint">正在加载塔罗资源…</Text>
+          {loadError ? (
+            <>
+              <Text className="miniapp-tarot__loading_title">资源加载失败</Text>
+              <Text className="miniapp-tarot__loading_hint">请检查网络和资源服务后重新加载</Text>
+              <Button className="miniapp-tarot__loading_retry" onClick={loadResources}>重新加载</Button>
+            </>
+          ) : (
+            <>
+              <View className="miniapp-tarot__loading-icon">
+                <View className="miniapp-tarot__loading_ring" />
+                <Text className="miniapp-tarot__loading_pct">{Math.round(loadProgress * 100)}%</Text>
+              </View>
+              <Text className="miniapp-tarot__loading_hint">正在下载塔罗资源…</Text>
+            </>
+          )}
         </View>
       ) : (
         <>
