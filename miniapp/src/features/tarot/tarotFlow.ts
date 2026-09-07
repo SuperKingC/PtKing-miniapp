@@ -151,6 +151,15 @@ export function tarotFlowReducer(
       return state
 
     case 'cut':
+      if (event.type === 'skip-ritual') {
+        return {
+          stage: 'fan',
+          question: state.question,
+          spread: state.spread,
+          candidates: event.candidates,
+          picked: [],
+        }
+      }
       if (event.type === 'start-cut' && !state.cutting) {
         return { ...state, cutting: true }
       }

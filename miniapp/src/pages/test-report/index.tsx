@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Button, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { APP_ENTERTAINMENT_DISCLAIMER, APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
 import { renderShareCard } from '../../services/reportShareCard'
 import { showRewardedAd } from '../../services/rewardedAd'
-import { getTestDefinition } from '../../services/testRegistry'
+import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
 import { buildHistoryRows, loadTestRecords, unlockRecord, type TestRecord } from '../../services/testRecords'
 import './index.scss'
 
@@ -94,6 +95,28 @@ function drawRadar(
   })
 }
 
+function FoldPanel({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string
+  open: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  return (
+    <View className="test-report__panel">
+      <View className="test-report__fold" hoverClass="none" onClick={onToggle}>
+        <Text className="test-report__panel-title">{title}</Text>
+        <Text className="test-report__fold-mark">{open ? '收起' : '展开'}</Text>
+      </View>
+      {open ? children : null}
+    </View>
+  )
+}
+
 function formatDateLabel(iso: string): string {
   try {
     return iso.slice(5, 10).replaceAll('-', '.')
@@ -126,7 +149,17 @@ export default function TestReportPage() {
   // 广告位未配置或 SDK 异常时 showRewardedAd 返回 unavailable，同样直接解锁（降级不阻断）
   const [adUnlocked, setAdUnlocked] = useState(false)
   const [unlocking, setUnlocking] = useState(false)
+  const [openDetail, setOpenDetail] = useState(false)
+  const [openDeep, setOpenDeep] = useState(false)
+  const [openStrengths, setOpenStrengths] = useState(false)
+  const [openScenes, setOpenScenes] = useState(false)
+  const [openHistory, setOpenHistory] = useState(false)
+  const [abortNote, setAbortNote] = useState('')
   const locked = record?.locked === true && !adUnlocked
+  const related = useMemo(() => {
+    if (!definition) return null
+    return listTestDefinitions().find((item) => item.category === definition.category && item.id !== definition.id) ?? null
+  }, [definition])
 
   const handleUnlock = async () => {
     if (!record || unlocking) return
@@ -135,8 +168,10 @@ export default function TestReportPage() {
       const outcome = await showRewardedAd()
       trackEvent('report_unlock', { testId: definition?.id ?? '', outcome })
       if (outcome === 'aborted') {
+        setAbortNote('需要看完视频才能解锁报告。也可以先回测试中心，报告会留在记录里。')
         wx.showToast({ title: '看完视频才能解锁报告哦', icon: 'none' })
       } else {
+        setAbortNote('')
         unlockRecord(record.testId, record.finishedAt)
         setAdUnlocked(true)
       }
@@ -177,12 +212,16 @@ export default function TestReportPage() {
 
   // 暗色模式：统一由 useAppTheme 解析（偏好+系统），画布取色在 JS，无法用 CSS 变量
 
+  const radarCanvasId = factorScores.length >= 3
+    ? 'report-factor-radar'
+    : 'report-archetype-radar'
+
   // factor/archetype 模式雷达图：weapp canvas 2d 节点须经 createSelectorQuery 获取（ref 拿不到原生 node）
   useEffect(() => {
-    if (radarScores.length < 3) return
+    if (locked || radarScores.length < 3) return
     const query = Taro.createSelectorQuery()
     query
-      .select('#report-radar')
+      .select(`#${radarCanvasId}`)
       .fields({ node: true, size: true })
       .exec((res) => {
         const { node, width, height } = res?.[0] ?? {}
@@ -194,7 +233,7 @@ export default function TestReportPage() {
         ctx.scale(dpr, dpr)
         drawRadar(ctx, width, height, radarScores, darkTheme)
       })
-  }, [radarScores, darkTheme])
+  }, [radarScores, radarCanvasId, darkTheme, locked])
 
   // 分享卡片：报告就绪即预生成 5:4 卡片图（隐藏 canvas → 临时文件），转发时作 imageUrl
   const [shareImagePath, setShareImagePath] = useState('')
@@ -222,7 +261,7 @@ export default function TestReportPage() {
     return {
       title: report
         ? `我在 ${definition!.title} 里测出了「${report.title}」，你也来试试`
-        : 'PtKing · 来测测你的隐藏人格',
+        : APP_SHARE_TITLE,
       path: definition ? `/pages/test-detail/index?testId=${definition.id}` : undefined,
       imageUrl: shareImagePath || undefined,
     }
@@ -234,7 +273,7 @@ export default function TestReportPage() {
     return {
       title: report
         ? `我在 ${definition!.title} 里测出了「${report.title}」`
-        : 'PtKing · 来测测你的隐藏人格',
+        : APP_SHARE_TITLE,
       imageUrl: shareImagePath || undefined,
     }
   })
@@ -263,7 +302,7 @@ export default function TestReportPage() {
       <View className="test-report__hero">
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">报告已生成</Text>
-        <Text className="test-report__tagline">你的人格结果已就绪，看完一小段视频即可解锁</Text>
+        <Text className="test-report__tagline">结果已经生成，看完一小段视频即可解锁</Text>
       </View>
         <View className="test-report__gate">
           <Text className="test-report__gate-title">解锁完整报告</Text>
@@ -280,6 +319,16 @@ export default function TestReportPage() {
             <Text>{unlocking ? '正在打开视频…' : '观看视频解锁'}</Text>
           </View>
           <Text className="test-report__gate-note">视频由微信广告提供，看完自动解锁</Text>
+          {abortNote && <Text className="test-report__gate-abort">{abortNote}</Text>}
+          <View
+            className="test-report__gate-back"
+            hoverClass="none"
+            onClick={() => {
+              wx.switchTab({ url: '/pages/test/index' })
+            }}
+          >
+            <Text>先回测试中心</Text>
+          </View>
         </View>
       </View>
     )
@@ -319,6 +368,7 @@ export default function TestReportPage() {
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">{report.title}</Text>
         <Text className="test-report__tagline">{report.tagline}</Text>
+        <Text className="test-report__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
         <View className="test-report__hero-badges">
           <View className="test-report__badge">
             <Text>{definition.meta.minutes} 分钟</Text>
@@ -330,6 +380,23 @@ export default function TestReportPage() {
             <Text>{definition.category}向</Text>
           </View>
         </View>
+      </View>
+
+      <View className="test-report__panel">
+        <Text className="test-report__panel-title">这次可能更接近</Text>
+        <Text className="test-report__summary">{report.summary}</Text>
+        {report.detail.slice(0, 3).map((line) => (
+          <View key={line.slice(0, 10)} className="test-report__detail-item">
+            <Text className="test-report__detail-dot">·</Text>
+            <Text className="test-report__detail-text">{line}</Text>
+          </View>
+        ))}
+        {report.actions?.[0] && (
+          <View className="test-report__next-action">
+            <Text className="test-report__subhead test-report__subhead--on">可以先试这一步</Text>
+            <Text className="test-report__detail-text">{report.actions[0]}</Text>
+          </View>
+        )}
       </View>
 
       {record.result.dimensionScores.length > 0 && (
@@ -361,7 +428,7 @@ export default function TestReportPage() {
         <View className="test-report__panel">
           <Text className="test-report__panel-title">因素雷达</Text>
           <View className="test-report__radar-wrap">
-            <canvas type="2d" id="report-radar" className="test-report__radar" />
+            <canvas type="2d" id="report-factor-radar" className="test-report__radar" />
           </View>
           <View className="test-report__factor-list">
             {factorScores.map((factor) => (
@@ -379,10 +446,10 @@ export default function TestReportPage() {
 
       {votes && (
         <View className="test-report__panel">
-          <Text className="test-report__panel-title">人格倾向分布</Text>
+          <Text className="test-report__panel-title">倾向分布</Text>
           {votes.list.length >= 3 && (
             <View className="test-report__radar-wrap">
-              <canvas type="2d" id="report-radar" className="test-report__radar" />
+              <canvas type="2d" id="report-archetype-radar" className="test-report__radar" />
             </View>
           )}
           {votes.list.map((vote) => {
@@ -402,7 +469,7 @@ export default function TestReportPage() {
           })}
           {runnerUp && (
             <View className="test-report__runner">
-              <Text className="test-report__runner-chip">次人格</Text>
+              <Text className="test-report__runner-chip">也接近</Text>
               <Text className="test-report__runner-title">{runnerUp.title}（{runnerUp.count} 票）</Text>
               <Text className="test-report__runner-tagline">{runnerUp.tagline}——你身上也藏着这一面。</Text>
             </View>
@@ -432,8 +499,11 @@ export default function TestReportPage() {
       )}
 
       {historyRows.length > 1 && (
-        <View className="test-report__panel">
-          <Text className="test-report__panel-title">历史对比 · 共 {history.length} 次</Text>
+        <FoldPanel
+          title={`历史对比 · 共 ${history.length} 次`}
+          open={openHistory}
+          onToggle={() => setOpenHistory((value) => !value)}
+        >
           {historyRows.map((row) => (
             <View
               key={row.record.finishedAt}
@@ -466,69 +536,62 @@ export default function TestReportPage() {
               )}
             </View>
           ))}
-        </View>
+        </FoldPanel>
       )}
 
-      <View className="test-report__panel">
-        <Text className="test-report__panel-title">结果摘要</Text>
-        <Text className="test-report__summary">{report.summary}</Text>
-      </View>
-
-      <View className="test-report__panel">
-        <Text className="test-report__panel-title">类型解读</Text>
-        {report.detail.map((line) => (
-          <View key={line.slice(0, 10)} className="test-report__detail-item">
-            <Text className="test-report__detail-dot">·</Text>
-            <Text className="test-report__detail-text">{line}</Text>
-          </View>
-        ))}
-      </View>
+      {report.detail.length > 3 && (
+        <FoldPanel title="完整解读" open={openDetail} onToggle={() => setOpenDetail((value) => !value)}>
+          {report.detail.map((line) => (
+            <View key={line.slice(0, 10)} className="test-report__detail-item">
+              <Text className="test-report__detail-dot">·</Text>
+              <Text className="test-report__detail-text">{line}</Text>
+            </View>
+          ))}
+        </FoldPanel>
+      )}
 
       {report.deep && (
-        <View className="test-report__panel">
-          <Text className="test-report__panel-title">深度解读</Text>
+        <FoldPanel title="深度解读" open={openDeep} onToggle={() => setOpenDeep((value) => !value)}>
           <Text className="test-report__summary">{report.deep}</Text>
-        </View>
+        </FoldPanel>
       )}
 
       {report.strengths && report.blindSpots && (
-        <View className="test-report__panel">
-          <Text className="test-report__panel-title">优势与盲区</Text>
-          <Text className="test-report__subhead test-report__subhead--on">你的三大优势</Text>
+        <FoldPanel title="优势与盲区" open={openStrengths} onToggle={() => setOpenStrengths((value) => !value)}>
+          <Text className="test-report__subhead test-report__subhead--on">可能帮到你的地方</Text>
           {report.strengths.map((line) => (
             <View key={line.slice(0, 10)} className="test-report__detail-item">
               <Text className="test-report__detail-dot">+</Text>
               <Text className="test-report__detail-text">{line}</Text>
             </View>
           ))}
-          <Text className="test-report__subhead test-report__subhead--off">你的三个盲区</Text>
+          <Text className="test-report__subhead test-report__subhead--off">容易忽略的地方</Text>
           {report.blindSpots.map((line) => (
             <View key={line.slice(0, 10)} className="test-report__detail-item">
               <Text className="test-report__detail-dot">!</Text>
               <Text className="test-report__detail-text">{line}</Text>
             </View>
           ))}
-        </View>
+        </FoldPanel>
       )}
 
       {report.scenes && report.scenes.length > 0 && (
-        <View className="test-report__panel">
-          <Text className="test-report__panel-title">场景适配</Text>
+        <FoldPanel title="场景适配" open={openScenes} onToggle={() => setOpenScenes((value) => !value)}>
           {report.scenes.map((item) => (
             <View key={item.scene} className="test-report__scene">
               <Text className="test-report__scene-chip">{item.scene}</Text>
               <Text className="test-report__scene-text">{item.text}</Text>
             </View>
           ))}
-        </View>
+        </FoldPanel>
       )}
 
-      {report.actions && report.actions.length > 0 && (
+      {report.actions && report.actions.length > 1 && (
         <View className="test-report__panel">
-          <Text className="test-report__panel-title">行动清单</Text>
-          {report.actions.map((line, index) => (
+          <Text className="test-report__panel-title">更多可以试的事</Text>
+          {report.actions.slice(1).map((line, index) => (
             <View key={line.slice(0, 10)} className="test-report__action-item">
-              <Text className="test-report__action-num">{index + 1}</Text>
+              <Text className="test-report__action-num">{index + 2}</Text>
               <Text className="test-report__detail-text">{line}</Text>
             </View>
           ))}
@@ -544,6 +607,17 @@ export default function TestReportPage() {
       >
         <Text>再测一次</Text>
       </View>
+      {related && (
+        <View
+          className="test-report__related"
+          hoverClass="none"
+          onClick={() => {
+            wx.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
+          }}
+        >
+          <Text>再看一个相关测试 · {related.title}</Text>
+        </View>
+      )}
       <Button className="test-report__share" openType="share" hoverClass="none">
         分享给好友
       </Button>

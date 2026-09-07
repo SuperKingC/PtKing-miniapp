@@ -56,6 +56,10 @@
   color: #e08a5c;
 }
 
+.tabbar--dark .tabbar__icon {
+  filter: brightness(1.18);
+}
+
 /* 后台页与塔罗页都必须卸掉固定栏，真机 switchTab 不会销毁旧实例 */
 .tabbar--hidden {
   display: none;

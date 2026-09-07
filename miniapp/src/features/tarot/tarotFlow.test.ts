@@ -184,4 +184,19 @@ describe('miniapp tarot question flow', () => {
       picked: [],
     })
   })
+
+  it('supports skipping from the cut stage to card selection', () => {
+    const cut = {
+      stage: 'cut' as const,
+      question: '问题',
+      spread: 'single' as const,
+      cutCount: 0,
+      cutting: false,
+    }
+    const fan = tarotFlowReducer(cut, {
+      type: 'skip-ritual',
+      candidates: candidates(),
+    })
+    expect(fan).toMatchObject({ stage: 'fan', spread: 'single', picked: [] })
+  })
 })

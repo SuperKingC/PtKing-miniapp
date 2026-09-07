@@ -143,6 +143,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
               <Text className="miniapp-tarot__loading_title">资源加载失败</Text>
               <Text className="miniapp-tarot__loading_hint">请检查网络和资源服务后重新加载</Text>
               <Button className="miniapp-tarot__loading_retry" onClick={loadResources}>重新加载</Button>
+              <Button className="miniapp-tarot__loading_exit" aria-label="退出塔罗" onClick={onClose}>退出塔罗</Button>
             </>
           ) : (
             <>
@@ -151,6 +152,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
                 <Text className="miniapp-tarot__loading_pct">{Math.round(loadProgress * 100)}%</Text>
               </View>
               <Text className="miniapp-tarot__loading_hint">正在下载塔罗资源…</Text>
+              <Button className="miniapp-tarot__loading_exit" aria-label="退出塔罗" onClick={onClose}>退出塔罗</Button>
             </>
           )}
         </View>
@@ -201,6 +203,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
               onStartCut={() => dispatch({ type: 'start-cut' })}
               onFinishCut={() => dispatch({ type: 'finish-cut' })}
               onContinue={() => dispatch({ type: 'enter-fan', candidates: createCandidates() })}
+              onSkip={() => dispatch({ type: 'skip-ritual', candidates: createCandidates() })}
             />
           )}
           {state.stage === 'fan' && (

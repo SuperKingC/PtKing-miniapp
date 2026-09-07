@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import Taro, { useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components'
+import { APP_TAROT_SHARE_TITLE } from '../../services/brand'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import './index.scss'
@@ -19,7 +20,7 @@ export default function TarotPage() {
     if (tarotShareTitle) {
       return { title: tarotShareTitle }
     }
-    return { title: 'PtKing 塔罗圣殿 · 来抽一张今日指引' }
+    return { title: APP_TAROT_SHARE_TITLE }
   })
 
   const handleShareTitleChange = useCallback((title: string) => {

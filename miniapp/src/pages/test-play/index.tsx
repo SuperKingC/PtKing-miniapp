@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -7,10 +7,20 @@ import { captureError, trackEvent } from '../../services/monitor'
 import { isRewardedAdConfigured } from '../../services/rewardedAd'
 import { getTestDefinition } from '../../services/testRegistry'
 import { saveTestRecord } from '../../services/testRecords'
+import {
+  clearTestDraft,
+  getTestContentSignature,
+  getTestDraft,
+  offerResumeTestDraft,
+  saveTestDraft,
+  warnBeforeLeavingPlay,
+} from '../../services/testDrafts'
+import { tapFeedback } from '../../services/haptics'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
 // 支持回退上一题改答案；最后一题作答即计分落记录并跳报告页。
+// 中途答案写入本地草稿，再次进入可继续或重新开始；题库热更后草稿失效。
 // 广告位已配置时新记录落库 locked=true（报告页看激励视频解锁）；未配置不落锁，报告直接展示
 export default function TestPlayPage() {
   const router = useRouter()
@@ -18,11 +28,32 @@ export default function TestPlayPage() {
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
   const [qIndex, setQIndex] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
+  const resumeAskedRef = useRef(false)
 
   // 答题漏斗：进入答题页（有已答后续题数可对照流失）
   useEffect(() => {
     if (definition) trackEvent('test_start', { testId: definition.id })
   }, [definition])
+
+  useEffect(() => {
+    if (!definition || resumeAskedRef.current) return
+    resumeAskedRef.current = true
+    const draft = getTestDraft(definition)
+    if (!draft) return
+    void offerResumeTestDraft(draft).then((resume) => {
+      if (resume) {
+        setAnswers(draft.answers)
+        setQIndex(draft.questionIndex)
+      } else {
+        clearTestDraft(definition.id)
+      }
+    })
+  }, [definition])
+
+  useEffect(() => {
+    if (answers.length === 0) return
+    return warnBeforeLeavingPlay()
+  }, [answers.length])
 
   if (!definition) {
     return (
@@ -32,9 +63,20 @@ export default function TestPlayPage() {
     )
   }
 
+  const persistDraft = (nextAnswers: number[], nextIndex: number) => {
+    saveTestDraft(definition, {
+      testId: definition.id,
+      contentSignature: getTestContentSignature(definition),
+      answers: nextAnswers,
+      questionIndex: nextIndex,
+      updatedAt: Date.now(),
+      expiresAt: Date.now(),
+    })
+  }
+
   const total = definition.questions.length
   const question = definition.questions[qIndex]
-  const progress = Math.round((answers.length / total) * 100)
+  const progress = Math.round(((qIndex + 1) / total) * 100)
   // 回退后题目与已选答案的联动：当前题已答则高亮已选项
   const chosen = answers[qIndex]
 
@@ -44,10 +86,13 @@ export default function TestPlayPage() {
         ? [...answers, optionIndex]
         : answers.map((value, index) => (index === qIndex ? optionIndex : value))
     setAnswers(nextAnswers)
+    tapFeedback()
+    trackEvent('test_answer', { testId: definition.id, qIndex, optionIndex })
     if (nextAnswers.length === total && qIndex === total - 1) {
       // 计分引擎抛错（如动态定义缺字段）不能断流程：捕获上报 + 提示重试
       try {
         const result = scoreTest(definition, nextAnswers)
+        clearTestDraft(definition.id)
         saveTestRecord(definition.id, result, {
           locked: isRewardedAdConfigured(),
           testTitle: definition.title,
@@ -56,23 +101,33 @@ export default function TestPlayPage() {
         trackEvent('test_complete', { testId: definition.id, reportId: result.reportId })
         wx.redirectTo({ url: `/pages/test-report/index?testId=${definition.id}` })
       } catch (err) {
+        persistDraft(nextAnswers, qIndex)
         captureError(err, 'score_test_failed')
         wx.showToast({ title: '报告生成失败，请重试', icon: 'none' })
       }
       return
     }
+    const nextIndex = qIndex === answers.length ? qIndex + 1 : qIndex
     if (qIndex === answers.length) {
-      setQIndex(qIndex + 1)
+      setQIndex(nextIndex)
     }
+    persistDraft(nextAnswers, nextIndex)
   }
 
   const goPrev = () => {
-    if (qIndex > 0) setQIndex(qIndex - 1)
+    if (qIndex <= 0) return
+    const nextIndex = qIndex - 1
+    setQIndex(nextIndex)
+    persistDraft(answers, nextIndex)
   }
 
   const goNext = () => {
     // 只允许在已答过题上前进（前进到已答的下一题或已答区的任意位置）
-    if (qIndex < answers.length && qIndex < total - 1) setQIndex(qIndex + 1)
+    if (qIndex < answers.length && qIndex < total - 1) {
+      const nextIndex = qIndex + 1
+      setQIndex(nextIndex)
+      persistDraft(answers, nextIndex)
+    }
   }
 
   return (
@@ -81,7 +136,7 @@ export default function TestPlayPage() {
         <View className="test-play__progress-fill" style={{ width: `${progress}%` }} />
       </View>
       <Text className="test-play__counter">{qIndex + 1}/{total}</Text>
-      <Text className="test-play__question">{qIndex + 1}. {question.text}</Text>
+      <Text key={qIndex} className="test-play__question">{qIndex + 1}. {question.text}</Text>
       {/* 2 选项（MBTI 型二分题）横排大卡；3+ 选项（长文本场景题）纵向堆叠全宽卡，避免文字挤压竖排 */}
       <View className={question.options.length > 2 ? 'test-play__options test-play__options--stack' : 'test-play__options'}>
         {question.options.map((option, optionIndex) => (

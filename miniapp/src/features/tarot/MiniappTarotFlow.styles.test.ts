@@ -105,6 +105,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     const cutStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotCutStage.tsx'), 'utf8')
 
     // the cut column shares the unified ritual rhythm (fixed title, auto-centered deck)
+    expect(cutStage).toContain('onSkip')
+    expect(cutStage).toContain('跳过切牌')
     expect(cutStage).toContain('miniapp-tarot__stage--cut')
     expect(cutStage).toContain('miniapp-tarot__stage--ritual')
 
@@ -207,10 +209,22 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(flowSource).toContain('loadError')
     expect(flowSource).toContain('failedUrls.length === 0')
     expect(flowSource).toContain('重新加载')
+    expect(flowSource).toContain('正在下载塔罗资源')
+    expect((flowSource.match(/miniapp-tarot__loading_exit/g) ?? []).length).toBeGreaterThanOrEqual(2)
     expect(styles).toContain('.miniapp-tarot__loading {')
     expect(styles).toContain('.miniapp-tarot__loading_ring')
     expect(styles).toContain('.miniapp-tarot__loading_retry')
     expect(styles).toContain('@keyframes tarot-loading-spin')
+  })
+
+  it('offers retry and exit controls inside the resource failure branch', () => {
+    const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+    const failureBranch = flowSource.match(/\{loadError \? \(([\s\S]*?)\) : \(/)?.[1]
+
+    expect(failureBranch).toBeDefined()
+    expect(failureBranch).toMatch(/<Button\b[^>]*onClick=\{loadResources\}[^>]*>重新加载<\/Button>/)
+    expect(failureBranch).toMatch(/<Button\b[^>]*aria-label="退出塔罗"[^>]*onClick=\{onClose\}[^>]*>退出塔罗<\/Button>/)
+    expect(failureBranch?.match(/退出塔罗/g)).toHaveLength(2)
   })
 
   it('scales single-card spreads up and wires the result share to friend invitations', () => {

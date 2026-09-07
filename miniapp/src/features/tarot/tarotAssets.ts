@@ -51,6 +51,25 @@ export interface TarotPreloadResult {
   total: number
 }
 
+/** 整批预加载上限：弱网挂起时让用户尽快看到失败重试，而不是一直转圈。 */
+export const TAROT_PRELOAD_TIMEOUT_MS = 20000
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('tarot_preload_timeout')), ms)
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
+
 /**
  * 下载全部塔罗资源，确认每张图片均可访问后才允许进入流程。
  * 使用并发 worker 模式，最多同时 4 个下载。
@@ -68,6 +87,7 @@ export async function preloadTarotResources(
   const Taro = await import('@tarojs/taro')
   let nextIndex = 0
   let completed = 0
+  const finished = new Set<string>()
   const failedUrls: string[] = []
 
   async function downloadOne(url: string): Promise<void> {
@@ -76,6 +96,8 @@ export async function preloadTarotResources(
       if (result.statusCode !== 200) failedUrls.push(url)
     } catch {
       failedUrls.push(url)
+    } finally {
+      finished.add(url)
     }
   }
 
@@ -90,6 +112,12 @@ export async function preloadTarotResources(
   }
 
   const concurrency = Math.min(4, urls.length)
-  await Promise.all(Array.from({ length: concurrency }, () => worker()))
+  try {
+    await withTimeout(Promise.all(Array.from({ length: concurrency }, () => worker())), TAROT_PRELOAD_TIMEOUT_MS)
+  } catch {
+    for (const url of urls) {
+      if (!finished.has(url) && !failedUrls.includes(url)) failedUrls.push(url)
+    }
+  }
   return { failedUrls, total: urls.length }
 }

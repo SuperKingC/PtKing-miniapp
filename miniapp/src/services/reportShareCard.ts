@@ -3,6 +3,7 @@
  * 绘制走页面隐藏 canvas（type=2d）；固定用品牌浅色设计——在会话消息里深浅主题下观感一致。
  * 任一步失败返回空串，转发回退微信默认截图，绝不阻断分享。
  */
+import { APP_SHARE_TITLE } from './brand'
 import { getWxGlobal } from './wxGlobal'
 
 export interface ShareCardData {
@@ -50,7 +51,7 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   // 品牌行
   ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
   ctx.font = '500 26px sans-serif'
-  ctx.fillText('PtKing · 测测你的隐藏人格', 48, 72)
+  ctx.fillText(APP_SHARE_TITLE, 48, 72)
 
   // 测试名
   ctx.fillStyle = 'rgba(255, 255, 255, 0.92)'
@@ -71,7 +72,7 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   // 底部引导
   ctx.fillStyle = 'rgba(255, 255, 255, 0.88)'
   ctx.font = '400 26px sans-serif'
-  ctx.fillText('来看看你的人格里藏着什么 →', 48, height - 64)
+  ctx.fillText('来测测子，看看你会测出什么 →', 48, height - 64)
 }
 
 interface CanvasNode {

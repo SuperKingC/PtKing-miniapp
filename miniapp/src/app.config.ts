@@ -43,7 +43,7 @@ export default defineAppConfig({
     ],
   },
   window: {
-    navigationBarTitleText: 'PtKing',
+    navigationBarTitleText: '测测子',
     navigationBarBackgroundColor: '@navBgColor',
     navigationBarTextStyle: '@navTxtStyle',
     backgroundColor: '@bgColor',

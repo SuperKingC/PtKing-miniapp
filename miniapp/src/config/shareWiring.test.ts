@@ -35,8 +35,10 @@ describe('share capability wiring', () => {
   it('wires the me-page entries: data management inline + contact sessions', () => {
     const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
 
-    // 数据管理直出我的页（清空测试记录），塔罗历史入口只在塔罗页内
+    // 数据管理直出我的页；未完成测试与塔罗历史也从这里回跳
     expect(me).toContain('clearTestRecords()')
+    expect(me).toContain('TAROT_HISTORY_OPEN_EVENT')
+    expect(me).toContain('未完成测试')
     // 联系/反馈走微信客服会话
     expect(me).toContain("openType={entry.contact ? 'contact' : undefined}")
   })

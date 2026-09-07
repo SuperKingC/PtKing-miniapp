@@ -10,6 +10,8 @@ describe('miniapp tarot shuffle stage contract', () => {
 
     expect(stage).toContain('const shuffleDurationMs = 3000')
     expect(stage).not.toContain('const shuffleDurationMs = 4000')
+    expect(stage).toContain('}, 90)')
+    expect(stage).not.toContain('}, 40)')
   })
 
   it('keeps shuffling allowed after progress reaches 100', () => {

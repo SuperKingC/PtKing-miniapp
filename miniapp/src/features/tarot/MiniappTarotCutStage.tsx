@@ -8,6 +8,7 @@ interface MiniappTarotCutStageProps {
   onStartCut(): void
   onFinishCut(): void
   onContinue(): void
+  onSkip(): void
 }
 
 function CutPile() {
@@ -29,6 +30,7 @@ export function MiniappTarotCutStage({
   onStartCut,
   onFinishCut,
   onContinue,
+  onSkip,
 }: MiniappTarotCutStageProps) {
   useEffect(() => {
     if (!cutting) return
@@ -59,6 +61,7 @@ export function MiniappTarotCutStage({
       <Button className="miniapp-tarot__next" disabled={cutCount === 0 || cutting} onClick={onContinue}>
         完成切牌 · 进入选牌
       </Button>
+      <Button className="miniapp-tarot__text-action" disabled={cutting} onClick={onSkip}>跳过切牌</Button>
     </View>
   )
 }

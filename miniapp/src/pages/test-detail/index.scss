@@ -91,16 +91,32 @@
   color: var(--color-ink-secondary);
 }
 
-.test-detail__start {
+.test-detail__disclaimer {
+  display: block;
+  margin-top: 28rpx;
+  font-size: var(--font-size-aux);
+  line-height: 1.6;
+  color: var(--color-ink-secondary);
+}
+
+.test-detail__start,
+.test-detail__restart {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 520rpx;
-  height: 104rpx;
+  min-height: 104rpx;
   margin: 64rpx auto 0;
   border-radius: 999rpx;
   background: var(--color-primary);
   color: #ffffff;
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
+}
+
+.test-detail__restart {
+  margin-top: 24rpx;
+  background: var(--color-card-bg);
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
 }

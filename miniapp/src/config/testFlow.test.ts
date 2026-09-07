@@ -42,6 +42,38 @@ describe('test flow pages (M1)', () => {
     expect(play).not.toMatch(/getStorageSync|setStorageSync/)
   })
 
+  it('gives conditional report radar canvases unique IDs and selects the matching chart', () => {
+    const report = readFileSync(resolve(miniappRoot(), 'src/pages/test-report/index.tsx'), 'utf8')
+    const canvasIds = [...report.matchAll(/<canvas\b[^>]*\bid="([^"]+)"/g)].map((match) => match[1])
+    const radarIds = canvasIds.filter((id) => id.endsWith('-radar'))
+
+    expect(radarIds).toHaveLength(2)
+    expect(new Set(radarIds).size).toBe(radarIds.length)
+    expect(radarIds).toContain('report-factor-radar')
+    expect(radarIds).toContain('report-archetype-radar')
+    expect(report).toMatch(/const radarCanvasId = factorScores\.length >= 3\s*\? 'report-factor-radar'\s*: 'report-archetype-radar'/)
+    expect(report).toContain('.select(`#${radarCanvasId}`)')
+    expect(report).toContain('[radarScores, radarCanvasId, darkTheme, locked]')
+    expect(report).toContain('if (locked || radarScores.length < 3) return')
+    expect(report).toContain('FoldPanel')
+    expect(report).toContain('这次可能更接近')
+    expect(report).toContain('可以先试这一步')
+    expect(report).toContain('APP_ENTERTAINMENT_DISCLAIMER')
+    expect(report).toContain('再看一个相关测试')
+    expect(report).toContain('先回测试中心')
+    expect(report).toContain('abortNote')
+  })
+
+  it('refreshes records on show and lets empty state jump back to tests', () => {
+    const records = readFileSync(resolve(miniappRoot(), 'src/pages/records/index.tsx'), 'utf8')
+    const detail = readFileSync(resolve(miniappRoot(), 'src/pages/test-detail/index.tsx'), 'utf8')
+    expect(records).toContain('useDidShow')
+    expect(records).toContain('setRecords(loadTestRecords())')
+    expect(records).toContain("wx.switchTab({ url: '/pages/test/index' })")
+    expect(detail).toContain('clearTestDraft')
+    expect(detail).toContain('重新开始')
+  })
+
   it('routes the me page records entry to the records tab', () => {
     const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
 
