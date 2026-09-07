@@ -57,3 +57,8 @@
 
 - 原因：把已写好的契约测试补成可运行实现，恢复被中断的体验修复。
 - 修改：`miniapp/src/pages/test/index.tsx` 订阅注册表并刷新卡片；`miniapp/src/services/testDrafts.ts` 落地草稿签名/过期/续答弹窗；`miniapp/src/pages/test-play/index.tsx` 逐题保存、完成后清理、进度按当前题号；`miniapp/src/pages/test-report/index.tsx` 拆分雷达 Canvas ID；`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 与 scss 增加失败态退出；`miniapp/src/services/wxGlobal.ts` 补充 showModal；`miniapp/src/pages/records/index.tsx` 更正清空入口文案。
+
+## 2026-09-07 15:32 (UTC+8)
+
+- 原因：并行整合后塔罗失败态出现两个退出按钮。
+- 修改：`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 只保留带 `miniapp-tarot__loading_exit` 的退出入口；`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 增加单一退出入口断言。

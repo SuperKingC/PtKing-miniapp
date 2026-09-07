@@ -220,6 +220,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(failureBranch).toBeDefined()
     expect(failureBranch).toMatch(/<Button\b[^>]*onClick=\{loadResources\}[^>]*>重新加载<\/Button>/)
     expect(failureBranch).toMatch(/<Button\b[^>]*aria-label="退出塔罗"[^>]*onClick=\{onClose\}[^>]*>退出塔罗<\/Button>/)
+    expect(failureBranch?.match(/退出塔罗/g)).toHaveLength(2)
   })
 
   it('scales single-card spreads up and wires the result share to friend invitations', () => {
