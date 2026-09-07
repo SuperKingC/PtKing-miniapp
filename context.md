@@ -46,3 +46,10 @@
 - 修改：从 `D:\Pet10\public\tarot` 拷贝 24 张到 `art/generated-art/tarot/`（不入库）；新增 `scripts/compress-art.mjs` 与 `npm run assets:compress`（默认只压 tarot，不降分辨率）；`docs/features/cos-assets.md` 补建桶、密钥、合法域名与画质说明。
 - 未修改：未配置 COS 密钥，未执行上传。首次压缩误扫到 `art/generated-art` 其它中间图，已立刻改回只压 tarot。
 - 验证：`assets:check` 24 张齐全；像素仍为 768×1152 / 900×1350；TinyPNG 共少约 460KB；`assetPublish.test.ts` 通过。
+
+## 2026-09-07 16:35 (UTC+8)
+
+- 原因：双击 `一键上传.cmd` 时 UTF-8 中文被 cmd 按系统编码拆坏，把 `COS_SECRET_ID` 当成命令执行。
+- 修改：`一键上传.cmd` 改为纯 ASCII；`assetPublish.test.ts` 锁定该文件不含非 ASCII；`docs/features/cos-assets.md` 注明原因。
+- 未修改：未再次执行真实 COS 上传。
+- 验证：`npm test -- src/config/assetPublish.test.ts` 通过。

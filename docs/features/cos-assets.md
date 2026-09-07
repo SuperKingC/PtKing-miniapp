@@ -82,8 +82,8 @@ art/generated-art/tarot/cards/the-world.jpg
 
 资源放进 `art/generated-art` 后，任选一种：
 
-- 资源管理器双击仓库根目录的 `一键上传.cmd`
-- 或在仓库根执行：`npm run assets`
+- 资源管理器双击仓库根目录的 `一键上传.cmd`（脚本正文是英文，避免 Windows 命令行把中文拆成乱码命令）
+- 或在仓库根 PowerShell 执行：`npm run assets`
 
 这一条会：检查 24 张塔罗图 → 真传到 COS → 写入 `.asset-base-url` → 重建 `miniapp/dist`。
 

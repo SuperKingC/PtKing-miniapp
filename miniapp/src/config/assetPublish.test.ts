@@ -21,7 +21,10 @@ describe('COS asset publish workflow', () => {
     expect(pkg.scripts['assets:publish']).toContain('publish-assets.mjs --yes')
     expect(pkg.scripts['build:weapp']).toContain('with-asset-env.mjs')
     expect(existsSync(resolve(root, 'scripts/with-asset-env.mjs'))).toBe(true)
+    const uploadCmd = readFileSync(resolve(root, '一键上传.cmd'), 'utf8')
     expect(existsSync(resolve(root, '一键上传.cmd'))).toBe(true)
+    expect(uploadCmd).toContain('call npm run assets')
+    expect(uploadCmd).toMatch(/^[\x00-\x7F]*$/)
     expect(existsSync(resolve(root, 'docs/features/cos-assets.md'))).toBe(true)
     expect(publishSource).toContain('--build')
 
