@@ -110,6 +110,17 @@
   box-shadow: var(--shadow-card);
 }
 
+.test-report__disclaimer {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: var(--font-size-aux);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
 .test-report__panel-title {
   display: block;
   margin-bottom: 28rpx;
@@ -118,6 +129,31 @@
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
   color: var(--color-ink);
+}
+
+.test-report__fold {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72rpx;
+}
+
+.test-report__fold .test-report__panel-title {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.test-report__fold-mark {
+  flex: none;
+  margin-left: 16rpx;
+  font-size: var(--font-size-aux);
+  color: var(--color-primary);
+}
+
+.test-report__next-action {
+  margin-top: 28rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--color-primary-soft);
 }
 
 /* ===== dimension 模式：双端标注维度条 ===== */
@@ -492,6 +528,21 @@
 /* 重置微信 button 默认伪元素边框 */
 .test-report__share::after {
   border: none;
+}
+
+.test-report__related {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 520rpx;
+  min-height: 88rpx;
+  margin: 24rpx auto 0;
+  padding: 16rpx 28rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-secondary);
+  text-align: center;
 }
 
 .test-report__back {

@@ -11,7 +11,7 @@ const SECTIONS: PolicySection[] = [
     paragraphs: [
       '本小程序不提供注册登录，不需要你填写姓名、手机号等个人信息。',
       '你的测试记录、塔罗历史等数据仅保存在你自己的设备（微信本地存储）中，不会上传到我们的服务器；卸载小程序或删除小程序数据后，这些数据随之删除。',
-      '当你要删除数据时，可在「我的 → 设置」中一键清空全部本地记录。',
+      '当你要删除数据时，可在「我的 → 清空测试记录」中一键清空全部本地记录。',
     ],
   },
   {
@@ -30,7 +30,7 @@ const SECTIONS: PolicySection[] = [
   {
     heading: '四、用户条款',
     paragraphs: [
-      '本小程序提供的人格测试、塔罗解读均为娱乐向内容，不构成医疗建议、心理诊断或专业咨询；如有相关需要，请咨询专业人士。',
+      '测测子提供的测试和塔罗解读均为娱乐化自我观察，不构成医疗建议、心理诊断、能力评估或专业咨询；如有相关需要，请咨询专业人士。',
       '请勿利用客服通道发布违法、侵权或骚扰内容。',
       '我们可能随产品迭代更新本页面内容，更新后将在页面内展示最新版本与日期。',
     ],
@@ -38,7 +38,7 @@ const SECTIONS: PolicySection[] = [
   {
     heading: '五、联系我们',
     paragraphs: [
-      '如对本页面内容有疑问，可通过「我的 → 联系作者」与我们联系。',
+      '如对本页面内容有疑问，可通过「我的 → 问题反馈」与我们联系。',
     ],
   },
 ]
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
   return (
     <View className={`privacy-page theme-${theme}`}>
       <Text className="privacy-page__title">隐私政策与用户条款</Text>
-      <Text className="privacy-page__updated">更新日期：2026-09-04</Text>
+      <Text className="privacy-page__updated">更新日期：2026-09-07</Text>
       {SECTIONS.map((section) => (
         <View key={section.heading} className="privacy-page__section">
           <Text className="privacy-page__heading">{section.heading}</Text>

@@ -55,3 +55,7 @@
 .tabbar--dark .tabbar__text--active {
   color: #e08a5c;
 }
+
+.tabbar--dark .tabbar__icon {
+  filter: brightness(1.18);
+}

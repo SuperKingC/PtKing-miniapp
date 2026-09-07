@@ -103,6 +103,19 @@ export function saveTestDraft(
   }
 }
 
+export function listActiveTestDrafts(
+  definitions: TestDefinition[],
+  now = Date.now(),
+): Array<{ definition: TestDefinition; draft: TestDraft }> {
+  return definitions
+    .map((definition) => {
+      const draft = getTestDraft(definition, now)
+      return draft ? { definition, draft } : null
+    })
+    .filter((item): item is { definition: TestDefinition; draft: TestDraft } => item !== null)
+    .sort((left, right) => right.draft.updatedAt - left.draft.updatedAt)
+}
+
 export function clearTestDraft(testId: string): void {
   try {
     getWxGlobal()?.removeStorageSync?.(storageKey(testId))

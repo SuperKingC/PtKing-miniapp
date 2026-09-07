@@ -2,7 +2,9 @@ import { useEffect, useMemo } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { APP_ENTERTAINMENT_DISCLAIMER } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
+import { getTestDraft } from '../../services/testDrafts'
 import { getTestDefinition } from '../../services/testRegistry'
 import './index.scss'
 
@@ -52,6 +54,7 @@ export default function TestDetailPage() {
           <Text className="test-detail__notice-title">注意：</Text>
           <Text className="test-detail__notice-body">{definition.notice}</Text>
         </View>
+        <Text className="test-detail__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
       </View>
       <View
         className="test-detail__start"
@@ -60,7 +63,7 @@ export default function TestDetailPage() {
           wx.navigateTo({ url: `/pages/test-play/index?testId=${definition.id}` })
         }}
       >
-        <Text>开始测试</Text>
+        <Text>{getTestDraft(definition) ? '继续测试' : '开始测试'}</Text>
       </View>
     </View>
   )

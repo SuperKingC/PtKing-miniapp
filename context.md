@@ -62,3 +62,15 @@
 
 - 原因：并行整合后塔罗失败态出现两个退出按钮。
 - 修改：`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 只保留带 `miniapp-tarot__loading_exit` 的退出入口；`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 增加单一退出入口断言。
+
+## 2026-09-07 15:36 (UTC+8)
+
+- 原因：复查剩余优化，并按正式名「测测子」校正品牌优先级。
+- 修改：更新 `C:\Users\admin\.cursor\projects\d-Mine-PtKing-miniapp\canvases\ptking-experience-review.canvas.tsx`，将对外品牌对齐列为 P0，区分用户可见文案与不可改动的 ptking 存储/COS 键，并刷新未落地优化清单。
+- 未修改：未改 `miniapp/` 业务代码。
+
+## 2026-09-07 15:50 (UTC+8)
+
+- 原因：按正式名测测子落地剩余可改优化，覆盖品牌、免责、首页续答推荐、报告分层、答题轻动效。
+- 修改：新增 `miniapp/src/services/brand.ts`；用户可见 PtKing 改为测测子；隐私页入口对齐；首页增加继续答题与推荐；详情/报告增加娱乐化免责；报告深度内容默认折叠；答题增加切题动效与选项分布埋点；暗色 TabBar 图标略提亮。
+- 未修改：未改存储键、COS 路径、仓库名；未重写整库题目；未走 kit 重出暗色 TabBar 资产。

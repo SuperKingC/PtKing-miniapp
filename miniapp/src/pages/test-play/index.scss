@@ -41,6 +41,12 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-ink);
   line-height: 1.6;
+  animation: test-play-swap 0.2s ease;
+}
+
+@keyframes test-play-swap {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
 }
 
 /* 二分题：横排大卡 */
@@ -67,6 +73,7 @@
   background: var(--color-card-bg);
   box-shadow: var(--shadow-card);
   text-align: center;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
   font-size: var(--font-size-card-title);
   color: var(--color-ink);
   line-height: 1.6;
@@ -135,4 +142,15 @@
 
 .test-play__nav-btn--disabled {
   opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .test-play__question {
+    animation: none;
+  }
+
+  .test-play__option,
+  .test-play__progress-fill {
+    transition-duration: 0.01ms;
+  }
 }

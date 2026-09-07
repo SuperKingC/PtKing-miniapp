@@ -55,6 +55,11 @@ describe('test flow pages (M1)', () => {
     expect(report).toContain('.select(`#${radarCanvasId}`)')
     expect(report).toContain('[radarScores, radarCanvasId, darkTheme, locked]')
     expect(report).toContain('if (locked || radarScores.length < 3) return')
+    expect(report).toContain('FoldPanel')
+    expect(report).toContain('这次可能更接近')
+    expect(report).toContain('可以先试这一步')
+    expect(report).toContain('APP_ENTERTAINMENT_DISCLAIMER')
+    expect(report).toContain('再看一个相关测试')
   })
 
   it('routes the me page records entry to the records tab', () => {

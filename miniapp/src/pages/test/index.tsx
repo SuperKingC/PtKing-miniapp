@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Image, Text, View } from '@tarojs/components'
-import { useShareAppMessage } from '@tarojs/taro'
+import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
+import { listActiveTestDrafts } from '../../services/testDrafts'
+import { APP_SHARE_TITLE } from '../../services/brand'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import heroImg from '../../assets/illus/hero-test-center.png'
@@ -12,8 +14,7 @@ import spotCareerImg from '../../assets/illus/spot-career.png'
 import spotFunImg from '../../assets/illus/spot-fun.png'
 import './index.scss'
 
-// 测试中心首页：分类 chips 筛选 + 注册表数据驱动卡片网格。
-// 卡片主题色按分类映射；COS 下发新测试后这里自动渲染，无需改页面
+// 测试中心：继续未完成 + 推荐 + 分类浏览。卡片主题色按分类映射。
 const CARD_THEME_BY_CATEGORY: Record<string, string> = {
   人格: 'violet',
   情感: 'rose',
@@ -21,7 +22,6 @@ const CARD_THEME_BY_CATEGORY: Record<string, string> = {
   趣味: 'amber',
 }
 
-// 分类配图（奶油扁平插画风，透明底，统一缩放贴卡片右下角）
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = {
   人格: spotPersonalityImg,
   情感: spotLoveImg,
@@ -29,24 +29,72 @@ const CARD_SPOT_BY_CATEGORY: Record<string, string> = {
   趣味: spotFunImg,
 }
 
+const RECOMMEND_COUNT = 4
+
 export default function TestPage() {
   useTabBarSelected(0)
   const theme = useAppTheme()
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
+  const [resume, setResume] = useState(() => listActiveTestDrafts(listTestDefinitions())[0] ?? null)
   const visible = useMemo(
     () => filterByCategory(definitions, activeCategory),
     [definitions, activeCategory],
   )
+  const recommended = useMemo(() => {
+    const skipId = resume?.definition.id
+    return definitions.filter((item) => item.id !== skipId).slice(0, RECOMMEND_COUNT)
+  }, [definitions, resume])
+  const browsing = useMemo(() => {
+    if (activeCategory !== 'all') return visible
+    const hidden = new Set(recommended.map((item) => item.id))
+    if (resume) hidden.add(resume.definition.id)
+    return visible.filter((item) => !hidden.has(item.id))
+  }, [activeCategory, visible, recommended, resume])
+
+  const refresh = () => {
+    const next = listTestDefinitions()
+    setDefinitions(next)
+    setResume(listActiveTestDrafts(next)[0] ?? null)
+  }
 
   useEffect(() => {
-    const refresh = () => setDefinitions(listTestDefinitions())
     const unsubscribe = subscribeTestRegistry(refresh)
     refresh()
     return unsubscribe
   }, [])
 
-  useShareAppMessage(() => ({ title: 'PtKing · 测测你的隐藏人格' }))
+  useDidShow(() => {
+    refresh()
+  })
+
+  useShareAppMessage(() => ({ title: APP_SHARE_TITLE }))
+
+  const openDetail = (testId: string) => {
+    wx.navigateTo({ url: `/pages/test-detail/index?testId=${testId}` })
+  }
+
+  const renderCard = (definition: typeof definitions[number], badge: string) => (
+    <View
+      key={definition.id}
+      className={`test-page__card test-page__card--${CARD_THEME_BY_CATEGORY[definition.category] ?? 'violet'}`}
+      hoverClass="none"
+      onClick={() => openDetail(definition.id)}
+    >
+      <Text className="test-page__card-category">{definition.category}</Text>
+      <Text className="test-page__card-title">{definition.title}</Text>
+      <Text className="test-page__card-meta">
+        {definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟
+      </Text>
+      <Image
+        className="test-page__card-spot"
+        src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg}
+        mode="aspectFit"
+        lazyLoad
+      />
+      <Text className="test-page__card-badge">{badge}</Text>
+    </View>
+  )
 
   return (
     <View className={`test-page theme-${theme}`}>
@@ -55,8 +103,34 @@ export default function TestPage() {
           <Text className="test-page__hero-title">发现你的另一面</Text>
           <Text className="test-page__hero-sub">{definitions.length} 个测试 · 持续上新</Text>
         </View>
-        <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" />
+        <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" lazyLoad />
       </View>
+
+      {resume && (
+        <View
+          className="test-page__resume"
+          hoverClass="none"
+          onClick={() => {
+            wx.navigateTo({ url: `/pages/test-play/index?testId=${resume.definition.id}` })
+          }}
+        >
+          <Text className="test-page__section-kicker">继续答题</Text>
+          <Text className="test-page__resume-title">{resume.definition.title}</Text>
+          <Text className="test-page__resume-meta">
+            已答到第 {resume.draft.questionIndex + 1}/{resume.definition.questions.length} 题
+          </Text>
+        </View>
+      )}
+
+      {activeCategory === 'all' && recommended.length > 0 && (
+        <View className="test-page__section">
+          <Text className="test-page__section-title">为你推荐</Text>
+          <View className="test-page__grid">
+            {recommended.map((definition) => renderCard(definition, '推荐'))}
+          </View>
+        </View>
+      )}
+
       <View className="test-page__chips">
         {TEST_CATEGORIES.map((category) => (
           <View
@@ -73,29 +147,11 @@ export default function TestPage() {
           </View>
         ))}
       </View>
+      <Text className="test-page__section-title">
+        {activeCategory === 'all' ? '全部分类' : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}
+      </Text>
       <View className="test-page__grid">
-        {visible.map((definition) => (
-          <View
-            key={definition.id}
-            className={`test-page__card test-page__card--${CARD_THEME_BY_CATEGORY[definition.category] ?? 'violet'}`}
-            hoverClass="none"
-            onClick={() => {
-              wx.navigateTo({ url: `/pages/test-detail/index?testId=${definition.id}` })
-            }}
-          >
-            <Text className="test-page__card-category">{definition.category}</Text>
-            <Text className="test-page__card-title">{definition.title}</Text>
-            <Text className="test-page__card-meta">
-              {definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟
-            </Text>
-            <Image
-              className="test-page__card-spot"
-              src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg}
-              mode="aspectFit"
-            />
-            <Text className="test-page__card-badge">可测试</Text>
-          </View>
-        ))}
+        {browsing.map((definition) => renderCard(definition, '可测试'))}
       </View>
     </View>
   )

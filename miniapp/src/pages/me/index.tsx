@@ -12,6 +12,7 @@ import {
   setThemePreference,
   type ThemePreference,
 } from '../../services/theme'
+import { APP_DISPLAY_NAME, APP_SHARE_TITLE, APP_TAGLINE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
 import meBannerImg from '../../assets/illus/me-banner.png'
 import './index.scss'
@@ -40,7 +41,7 @@ export default function MePage() {
   })
 
   // 转发小程序（openType=share 之外的手动兜底入口），标题与首页一致
-  useShareAppMessage(() => ({ title: 'PtKing · 测测你的隐藏人格' }))
+  useShareAppMessage(() => ({ title: APP_SHARE_TITLE }))
 
   const changeTheme = (pref: ThemePreference) => {
     setThemePref(pref)
@@ -84,8 +85,8 @@ export default function MePage() {
       <View className="me-page__banner">
         <Image className="me-page__banner-img" src={meBannerImg} mode="aspectFit" />
         <View className="me-page__banner-text">
-          <Text className="me-page__banner-title">PtKing</Text>
-          <Text className="me-page__banner-sub">测测你的隐藏人格</Text>
+          <Text className="me-page__banner-title">{APP_DISPLAY_NAME}</Text>
+          <Text className="me-page__banner-sub">{APP_TAGLINE}</Text>
           <Text className="me-page__banner-version">版本 {APP_VERSION}</Text>
         </View>
       </View>

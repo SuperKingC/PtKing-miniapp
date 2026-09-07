@@ -79,6 +79,7 @@ export default function TestPlayPage() {
         ? [...answers, optionIndex]
         : answers.map((value, index) => (index === qIndex ? optionIndex : value))
     setAnswers(nextAnswers)
+    trackEvent('test_answer', { testId: definition.id, qIndex, optionIndex })
     if (nextAnswers.length === total && qIndex === total - 1) {
       // 计分引擎抛错（如动态定义缺字段）不能断流程：捕获上报 + 提示重试
       try {
@@ -127,7 +128,7 @@ export default function TestPlayPage() {
         <View className="test-play__progress-fill" style={{ width: `${progress}%` }} />
       </View>
       <Text className="test-play__counter">{qIndex + 1}/{total}</Text>
-      <Text className="test-play__question">{qIndex + 1}. {question.text}</Text>
+      <Text key={qIndex} className="test-play__question">{qIndex + 1}. {question.text}</Text>
       {/* 2 选项（MBTI 型二分题）横排大卡；3+ 选项（长文本场景题）纵向堆叠全宽卡，避免文字挤压竖排 */}
       <View className={question.options.length > 2 ? 'test-play__options test-play__options--stack' : 'test-play__options'}>
         {question.options.map((option, optionIndex) => (

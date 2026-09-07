@@ -8,6 +8,7 @@ import {
   getTestDraft,
   getTestContentSignature,
   isTestDraftValid,
+  listActiveTestDrafts,
   offerResumeTestDraft,
   saveTestDraft,
   type TestDraft,
@@ -90,6 +91,21 @@ describe('testDrafts', () => {
     }
   })
 
+  it('lists valid drafts newest first and skips expired ones', () => {
+    const older = { ...definition, id: 'older', title: '旧草稿' }
+    const storage = new Map<string, unknown>()
+    mockWx(storage)
+    try {
+      saveTestDraft(older, { ...draft, testId: 'older', questionIndex: 0, answers: [0] }, 1_000)
+      saveTestDraft(definition, draft, 2_000)
+      const listed = listActiveTestDrafts([older, definition], 2_000)
+      expect(listed.map((item) => item.definition.id)).toEqual(['fixture', 'older'])
+      expect(listActiveTestDrafts([definition], 1_000 + 25 * 60 * 60 * 1000)).toEqual([])
+    } finally {
+      delete (globalThis as { wx?: unknown }).wx
+    }
+  })
+
   it('lets the user continue or restart a draft', async () => {
     const storage = new Map<string, unknown>()
     mockWx(storage, (options) => {
@@ -114,6 +130,7 @@ describe('testDrafts', () => {
     expect(play).toContain('clearTestDraft')
     expect(play).toContain('offerResumeTestDraft')
     expect(play).toContain('((qIndex + 1) / total) * 100')
+    expect(play).toContain("trackEvent('test_answer'")
     expect(play).not.toMatch(/getStorageSync|setStorageSync|showModal/)
   })
 })

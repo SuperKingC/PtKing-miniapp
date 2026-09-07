@@ -91,6 +91,14 @@
   color: var(--color-ink-secondary);
 }
 
+.test-detail__disclaimer {
+  display: block;
+  margin-top: 28rpx;
+  font-size: var(--font-size-aux);
+  line-height: 1.6;
+  color: var(--color-ink-secondary);
+}
+
 .test-detail__start {
   display: flex;
   align-items: center;
