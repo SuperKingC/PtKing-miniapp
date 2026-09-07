@@ -202,6 +202,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
               onStartCut={() => dispatch({ type: 'start-cut' })}
               onFinishCut={() => dispatch({ type: 'finish-cut' })}
               onContinue={() => dispatch({ type: 'enter-fan', candidates: createCandidates() })}
+              onSkip={() => dispatch({ type: 'skip-ritual', candidates: createCandidates() })}
             />
           )}
           {state.stage === 'fan' && (

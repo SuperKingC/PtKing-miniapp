@@ -154,6 +154,7 @@ export default function TestReportPage() {
   const [openStrengths, setOpenStrengths] = useState(false)
   const [openScenes, setOpenScenes] = useState(false)
   const [openHistory, setOpenHistory] = useState(false)
+  const [abortNote, setAbortNote] = useState('')
   const locked = record?.locked === true && !adUnlocked
   const related = useMemo(() => {
     if (!definition) return null
@@ -167,8 +168,10 @@ export default function TestReportPage() {
       const outcome = await showRewardedAd()
       trackEvent('report_unlock', { testId: definition?.id ?? '', outcome })
       if (outcome === 'aborted') {
+        setAbortNote('需要看完视频才能解锁报告。也可以先回测试中心，报告会留在记录里。')
         wx.showToast({ title: '看完视频才能解锁报告哦', icon: 'none' })
       } else {
+        setAbortNote('')
         unlockRecord(record.testId, record.finishedAt)
         setAdUnlocked(true)
       }
@@ -316,6 +319,16 @@ export default function TestReportPage() {
             <Text>{unlocking ? '正在打开视频…' : '观看视频解锁'}</Text>
           </View>
           <Text className="test-report__gate-note">视频由微信广告提供，看完自动解锁</Text>
+          {abortNote && <Text className="test-report__gate-abort">{abortNote}</Text>}
+          <View
+            className="test-report__gate-back"
+            hoverClass="none"
+            onClick={() => {
+              wx.switchTab({ url: '/pages/test/index' })
+            }}
+          >
+            <Text>先回测试中心</Text>
+          </View>
         </View>
       </View>
     )
@@ -369,6 +382,23 @@ export default function TestReportPage() {
         </View>
       </View>
 
+      <View className="test-report__panel">
+        <Text className="test-report__panel-title">这次可能更接近</Text>
+        <Text className="test-report__summary">{report.summary}</Text>
+        {report.detail.slice(0, 3).map((line) => (
+          <View key={line.slice(0, 10)} className="test-report__detail-item">
+            <Text className="test-report__detail-dot">·</Text>
+            <Text className="test-report__detail-text">{line}</Text>
+          </View>
+        ))}
+        {report.actions?.[0] && (
+          <View className="test-report__next-action">
+            <Text className="test-report__subhead test-report__subhead--on">可以先试这一步</Text>
+            <Text className="test-report__detail-text">{report.actions[0]}</Text>
+          </View>
+        )}
+      </View>
+
       {record.result.dimensionScores.length > 0 && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">维度倾向</Text>
@@ -416,7 +446,7 @@ export default function TestReportPage() {
 
       {votes && (
         <View className="test-report__panel">
-          <Text className="test-report__panel-title">人格倾向分布</Text>
+          <Text className="test-report__panel-title">倾向分布</Text>
           {votes.list.length >= 3 && (
             <View className="test-report__radar-wrap">
               <canvas type="2d" id="report-archetype-radar" className="test-report__radar" />
@@ -439,7 +469,7 @@ export default function TestReportPage() {
           })}
           {runnerUp && (
             <View className="test-report__runner">
-              <Text className="test-report__runner-chip">次人格</Text>
+              <Text className="test-report__runner-chip">也接近</Text>
               <Text className="test-report__runner-title">{runnerUp.title}（{runnerUp.count} 票）</Text>
               <Text className="test-report__runner-tagline">{runnerUp.tagline}——你身上也藏着这一面。</Text>
             </View>
@@ -467,23 +497,6 @@ export default function TestReportPage() {
           </View>
         </View>
       )}
-
-      <View className="test-report__panel">
-        <Text className="test-report__panel-title">这次可能更接近</Text>
-        <Text className="test-report__summary">{report.summary}</Text>
-        {report.detail.slice(0, 3).map((line) => (
-          <View key={line.slice(0, 10)} className="test-report__detail-item">
-            <Text className="test-report__detail-dot">·</Text>
-            <Text className="test-report__detail-text">{line}</Text>
-          </View>
-        ))}
-        {report.actions?.[0] && (
-          <View className="test-report__next-action">
-            <Text className="test-report__subhead test-report__subhead--on">可以先试这一步</Text>
-            <Text className="test-report__detail-text">{report.actions[0]}</Text>
-          </View>
-        )}
-      </View>
 
       {historyRows.length > 1 && (
         <FoldPanel

@@ -128,6 +128,7 @@ describe('dynamic content wiring', () => {
     expect(page).toContain('listActiveTestDrafts')
     expect(page).toContain('继续答题')
     expect(page).toContain('为你推荐')
+    expect(page).toContain('搜索测试名称')
     expect(page).toContain('setDefinitions(next)')
   })
 })

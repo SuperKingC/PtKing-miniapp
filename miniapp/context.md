@@ -12,3 +12,7 @@
 - 原因：落地测测子品牌与剩余体验优化。
 - 修改文件：`miniapp/src/services/brand.ts`、首页续答/推荐、详情免责、报告折叠、答题动效、隐私入口、暗色 TabBar 滤镜。
 
+- 时间：2026-09-07 16:05
+- 原因：继续完善记录刷新、解锁出口、搜索、切牌跳过与离开提示。
+- 修改文件：`pages/records`、`pages/test-detail`、`pages/test-report`、`pages/test`、`pages/test-play`、`features/tarot` 切牌跳过、`services/testDrafts.ts` 离开提示。
+

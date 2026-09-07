@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Image, Text, View } from '@tarojs/components'
+import { Image, Input, Text, View } from '@tarojs/components'
 import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
@@ -37,6 +37,8 @@ export default function TestPage() {
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
   const [resume, setResume] = useState(() => listActiveTestDrafts(listTestDefinitions())[0] ?? null)
+  const [query, setQuery] = useState('')
+  const keyword = query.trim()
   const visible = useMemo(
     () => filterByCategory(definitions, activeCategory),
     [definitions, activeCategory],
@@ -51,6 +53,10 @@ export default function TestPage() {
     if (resume) hidden.add(resume.definition.id)
     return visible.filter((item) => !hidden.has(item.id))
   }, [activeCategory, visible, recommended, resume])
+  const searched = useMemo(() => {
+    if (!keyword) return null
+    return visible.filter((item) => item.title.includes(keyword) || item.category.includes(keyword))
+  }, [keyword, visible])
 
   const refresh = () => {
     const next = listTestDefinitions()
@@ -106,6 +112,16 @@ export default function TestPage() {
         <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" lazyLoad />
       </View>
 
+      <View className="test-page__search">
+        <Input
+          className="test-page__search-input"
+          value={query}
+          placeholder="搜索测试名称"
+          confirmType="search"
+          onInput={(event) => setQuery(event.detail.value)}
+        />
+      </View>
+
       {resume && (
         <View
           className="test-page__resume"
@@ -122,7 +138,7 @@ export default function TestPage() {
         </View>
       )}
 
-      {activeCategory === 'all' && recommended.length > 0 && (
+      {!searched && activeCategory === 'all' && recommended.length > 0 && (
         <View className="test-page__section">
           <Text className="test-page__section-title">为你推荐</Text>
           <View className="test-page__grid">
@@ -148,11 +164,18 @@ export default function TestPage() {
         ))}
       </View>
       <Text className="test-page__section-title">
-        {activeCategory === 'all' ? '全部分类' : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}
+        {searched
+          ? `搜索结果 · ${searched.length}`
+          : activeCategory === 'all'
+            ? '全部分类'
+            : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}
       </Text>
       <View className="test-page__grid">
-        {browsing.map((definition) => renderCard(definition, '可测试'))}
+        {(searched ?? browsing).map((definition) => renderCard(definition, searched ? '搜索' : '可测试'))}
       </View>
+      {searched && searched.length === 0 && (
+        <Text className="test-page__search-empty">没有找到相关测试，换个词试试</Text>
+      )}
     </View>
   )
 }

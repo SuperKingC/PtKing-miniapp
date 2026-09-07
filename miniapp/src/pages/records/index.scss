@@ -24,6 +24,21 @@
   font-size: var(--font-size-body);
 }
 
+.records-page__empty-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 280rpx;
+  min-height: 80rpx;
+  margin-top: 32rpx;
+  padding: 0 36rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+}
+
 .records-page__stats {
   display: flex;
   gap: 16rpx;

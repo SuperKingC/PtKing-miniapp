@@ -39,6 +39,26 @@
   color: var(--color-ink-secondary);
 }
 
+.test-page__search {
+  margin-bottom: 24rpx;
+  padding: 8rpx 28rpx;
+  border-radius: 999rpx;
+  background: var(--color-card-bg);
+}
+
+.test-page__search-input {
+  height: 72rpx;
+  font-size: var(--font-size-body);
+  color: var(--color-ink);
+}
+
+.test-page__search-empty {
+  display: block;
+  margin: 12rpx 8rpx 0;
+  font-size: var(--font-size-secondary);
+  color: var(--color-ink-secondary);
+}
+
 .test-page__section {
   margin-bottom: 8rpx;
 }

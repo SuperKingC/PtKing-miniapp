@@ -11,6 +11,7 @@ import {
   listActiveTestDrafts,
   offerResumeTestDraft,
   saveTestDraft,
+  warnBeforeLeavingPlay,
   type TestDraft,
 } from './testDrafts'
 
@@ -106,6 +107,19 @@ describe('testDrafts', () => {
     }
   })
 
+  it('arms and disarms the leave warning without throwing', () => {
+    const calls: string[] = []
+    ;(globalThis as { wx?: unknown }).wx = {
+      enableAlertBeforeUnload: () => { calls.push('on') },
+      disableAlertBeforeUnload: () => { calls.push('off') },
+    }
+    const dispose = warnBeforeLeavingPlay()
+    dispose()
+    expect(calls).toEqual(['on', 'off'])
+    delete (globalThis as { wx?: unknown }).wx
+    expect(() => warnBeforeLeavingPlay()()).not.toThrow()
+  })
+
   it('lets the user continue or restart a draft', async () => {
     const storage = new Map<string, unknown>()
     mockWx(storage, (options) => {
@@ -129,6 +143,7 @@ describe('testDrafts', () => {
     expect(play).toContain('saveTestDraft')
     expect(play).toContain('clearTestDraft')
     expect(play).toContain('offerResumeTestDraft')
+    expect(play).toContain('warnBeforeLeavingPlay')
     expect(play).toContain('((qIndex + 1) / total) * 100')
     expect(play).toContain("trackEvent('test_answer'")
     expect(play).not.toMatch(/getStorageSync|setStorageSync|showModal/)

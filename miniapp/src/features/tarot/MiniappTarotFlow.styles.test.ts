@@ -105,6 +105,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     const cutStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotCutStage.tsx'), 'utf8')
 
     // the cut column shares the unified ritual rhythm (fixed title, auto-centered deck)
+    expect(cutStage).toContain('onSkip')
+    expect(cutStage).toContain('跳过切牌')
     expect(cutStage).toContain('miniapp-tarot__stage--cut')
     expect(cutStage).toContain('miniapp-tarot__stage--ritual')
 

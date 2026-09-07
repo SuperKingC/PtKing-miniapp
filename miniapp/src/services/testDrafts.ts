@@ -124,6 +124,24 @@ export function clearTestDraft(testId: string): void {
   }
 }
 
+/** 答题中途返回时提示进度已保存。环境不支持时静默跳过。 */
+export function warnBeforeLeavingPlay(): () => void {
+  try {
+    getWxGlobal()?.enableAlertBeforeUnload?.({
+      message: '进度已保存在本机，可从测测子首页继续。',
+    })
+  } catch {
+    // 开发者工具或旧基础库可能没有该接口
+  }
+  return () => {
+    try {
+      getWxGlobal()?.disableAlertBeforeUnload?.()
+    } catch {
+      // 离开时关闭失败不影响主流程
+    }
+  }
+}
+
 /** 平台弹窗：继续答题 / 重新开始。无法弹窗时默认续答，避免静默丢掉草稿。 */
 export function offerResumeTestDraft(draft: TestDraft): Promise<boolean> {
   return new Promise((resolve) => {

@@ -17,6 +17,8 @@ export interface WxLike {
     fail?: () => void
   }) => void
   showShareMenu?: (options?: Record<string, unknown>) => void
+  enableAlertBeforeUnload?: (options: { message: string }) => void
+  disableAlertBeforeUnload?: () => void
   request?: (options: Record<string, unknown>) => void
   getSystemInfoSync?: () => { platform?: string; theme?: string }
   getRealtimeLogManager?: () => unknown

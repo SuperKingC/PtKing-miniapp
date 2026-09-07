@@ -13,6 +13,7 @@ import {
   getTestDraft,
   offerResumeTestDraft,
   saveTestDraft,
+  warnBeforeLeavingPlay,
 } from '../../services/testDrafts'
 import './index.scss'
 
@@ -47,6 +48,11 @@ export default function TestPlayPage() {
       }
     })
   }, [definition])
+
+  useEffect(() => {
+    if (answers.length === 0) return
+    return warnBeforeLeavingPlay()
+  }, [answers.length])
 
   if (!definition) {
     return (

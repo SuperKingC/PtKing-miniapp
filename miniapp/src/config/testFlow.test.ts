@@ -60,6 +60,18 @@ describe('test flow pages (M1)', () => {
     expect(report).toContain('可以先试这一步')
     expect(report).toContain('APP_ENTERTAINMENT_DISCLAIMER')
     expect(report).toContain('再看一个相关测试')
+    expect(report).toContain('先回测试中心')
+    expect(report).toContain('abortNote')
+  })
+
+  it('refreshes records on show and lets empty state jump back to tests', () => {
+    const records = readFileSync(resolve(miniappRoot(), 'src/pages/records/index.tsx'), 'utf8')
+    const detail = readFileSync(resolve(miniappRoot(), 'src/pages/test-detail/index.tsx'), 'utf8')
+    expect(records).toContain('useDidShow')
+    expect(records).toContain('setRecords(loadTestRecords())')
+    expect(records).toContain("wx.switchTab({ url: '/pages/test/index' })")
+    expect(detail).toContain('clearTestDraft')
+    expect(detail).toContain('重新开始')
   })
 
   it('routes the me page records entry to the records tab', () => {

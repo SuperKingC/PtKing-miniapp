@@ -600,11 +600,28 @@
   box-shadow: 0 10rpx 28rpx rgba(192, 95, 53, 0.3);
 }
 
-.test-report__gate-note {
+.test-report__gate-note,
+.test-report__gate-abort {
   display: block;
   margin-top: 20rpx;
   font-size: var(--font-size-aux);
   color: var(--color-ink-secondary);
+}
+
+.test-report__gate-abort {
+  color: var(--color-primary);
+  line-height: 1.6;
+}
+
+.test-report__gate-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 520rpx;
+  min-height: 80rpx;
+  margin: 20rpx auto 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-secondary);
 }
 
 /* ===== 历史对比 ===== */
