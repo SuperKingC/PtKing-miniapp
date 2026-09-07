@@ -16,7 +16,7 @@ function formatTime(iso: string): string {
 
 // 记录页：顶部统计摘要（总次数/测过数/最新结果）+ 全部记录列表（按时间倒序，点击回看报告）。
 // 不过滤已下架测试：标题/结果优先取定义，缺失时回退落库快照——历史记录不随内容下架消失；
-// 达到存储上限时提示最早记录会被自动清理，可去设置页手动清空
+// 达到存储上限时提示最早记录会被自动清理，可去「我的」页手动清空
 export default function RecordsPage() {
   useTabBarSelected(2)
   const theme = useAppTheme()
@@ -41,7 +41,7 @@ export default function RecordsPage() {
           {records.length >= TEST_RECORDS_CAP && (
             <View className="records-page__cap">
               <Text className="records-page__cap-text">
-                记录已达 {TEST_RECORDS_CAP} 条上限，最早的记录会自动清理；可在「我的 → 设置」里清空全部记录。
+                记录已达 {TEST_RECORDS_CAP} 条上限，最早的记录会自动清理；可在「我的 → 清空测试记录」里清空全部记录。
               </Text>
             </View>
           )}

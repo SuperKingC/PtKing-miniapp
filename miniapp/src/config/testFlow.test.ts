@@ -42,6 +42,21 @@ describe('test flow pages (M1)', () => {
     expect(play).not.toMatch(/getStorageSync|setStorageSync/)
   })
 
+  it('gives conditional report radar canvases unique IDs and selects the matching chart', () => {
+    const report = readFileSync(resolve(miniappRoot(), 'src/pages/test-report/index.tsx'), 'utf8')
+    const canvasIds = [...report.matchAll(/<canvas\b[^>]*\bid="([^"]+)"/g)].map((match) => match[1])
+    const radarIds = canvasIds.filter((id) => id.endsWith('-radar'))
+
+    expect(radarIds).toHaveLength(2)
+    expect(new Set(radarIds).size).toBe(radarIds.length)
+    expect(radarIds).toContain('report-factor-radar')
+    expect(radarIds).toContain('report-archetype-radar')
+    expect(report).toMatch(/const radarCanvasId = factorScores\.length >= 3\s*\? 'report-factor-radar'\s*: 'report-archetype-radar'/)
+    expect(report).toContain('.select(`#${radarCanvasId}`)')
+    expect(report).toContain('[radarScores, radarCanvasId, darkTheme, locked]')
+    expect(report).toContain('if (locked || radarScores.length < 3) return')
+  })
+
   it('routes the me page records entry to the records tab', () => {
     const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
 

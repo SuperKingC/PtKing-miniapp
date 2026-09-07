@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 import { showShareMenu } from './services/shareMenu'
 import { installGlobalErrorHandlers } from './services/monitor'
+import { loadDynamicTests } from './services/dynamicTests'
+import { resolveAssetBaseUrl } from './services/assetBaseUrl'
 import './app.scss'
 
 function App({ children }: { children?: React.ReactNode }) {
@@ -9,6 +11,7 @@ function App({ children }: { children?: React.ReactNode }) {
   useEffect(() => {
     showShareMenu()
     installGlobalErrorHandlers()
+    void loadDynamicTests(resolveAssetBaseUrl())
   }, [])
   return children
 }

@@ -143,6 +143,8 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
               <Text className="miniapp-tarot__loading_title">资源加载失败</Text>
               <Text className="miniapp-tarot__loading_hint">请检查网络和资源服务后重新加载</Text>
               <Button className="miniapp-tarot__loading_retry" onClick={loadResources}>重新加载</Button>
+              <Button aria-label="退出塔罗" onClick={onClose}>退出塔罗</Button>
+              <Button className="miniapp-tarot__loading_exit" aria-label="退出塔罗" onClick={onClose}>退出塔罗</Button>
             </>
           ) : (
             <>

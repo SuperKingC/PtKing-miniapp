@@ -1682,6 +1682,20 @@
   border: 0;
 }
 
+.miniapp-tarot__loading_exit {
+  width: 300rpx;
+  margin: 8rpx 0 0;
+  border-radius: 28rpx;
+  color: rgba(240, 230, 255, .88);
+  font-size: var(--font-size-body);
+  background: transparent;
+  border: 2rpx solid rgba(216, 200, 245, .28);
+}
+
+.miniapp-tarot__loading_exit::after {
+  border: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .miniapp-tarot view,
   .miniapp-tarot text,

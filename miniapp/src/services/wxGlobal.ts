@@ -8,6 +8,14 @@ export interface WxLike {
   getStorageSync?: (key: string) => unknown
   setStorageSync?: (key: string, value: unknown) => void
   removeStorageSync?: (key: string) => void
+  showModal?: (options: {
+    title?: string
+    content?: string
+    confirmText?: string
+    cancelText?: string
+    success?: (result: { confirm?: boolean; cancel?: boolean }) => void
+    fail?: () => void
+  }) => void
   showShareMenu?: (options?: Record<string, unknown>) => void
   request?: (options: Record<string, unknown>) => void
   getSystemInfoSync?: () => { platform?: string; theme?: string }

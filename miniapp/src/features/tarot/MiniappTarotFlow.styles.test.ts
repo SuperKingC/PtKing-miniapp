@@ -213,6 +213,15 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('@keyframes tarot-loading-spin')
   })
 
+  it('offers retry and exit controls inside the resource failure branch', () => {
+    const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+    const failureBranch = flowSource.match(/\{loadError \? \(([\s\S]*?)\) : \(/)?.[1]
+
+    expect(failureBranch).toBeDefined()
+    expect(failureBranch).toMatch(/<Button\b[^>]*onClick=\{loadResources\}[^>]*>重新加载<\/Button>/)
+    expect(failureBranch).toMatch(/<Button\b[^>]*aria-label="退出塔罗"[^>]*onClick=\{onClose\}[^>]*>退出塔罗<\/Button>/)
+  })
+
   it('scales single-card spreads up and wires the result share to friend invitations', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const readingStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotReadingStage.tsx'), 'utf8')

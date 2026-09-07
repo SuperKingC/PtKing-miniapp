@@ -102,11 +102,19 @@ let listOrder: string[] = [
 
 let definitions: Record<string, TestDefinition> = { ...STATIC_DEFINITIONS }
 
-/** COS 动态测试合并入口：加载成功后调用，页面下次渲染即见新测试 */
+const listeners = new Set<() => void>()
+
+export function subscribeTestRegistry(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => { listeners.delete(listener) }
+}
+
+/** COS 动态测试合并入口：更新注册表后通知已挂载页面 */
 export function applyDynamicTestDefinitions(dynamic: TestDefinition[]): void {
   const merged = mergeTestDefinitions(definitions, listOrder, dynamic)
   definitions = merged.definitions
   listOrder = merged.order
+  listeners.forEach((listener) => listener())
 }
 
 export const TEST_LIST_ORDER: readonly string[] = listOrder

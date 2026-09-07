@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Image, Text, View } from '@tarojs/components'
 import { useShareAppMessage } from '@tarojs/taro'
-import { listTestDefinitions } from '../../services/testRegistry'
+import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -32,12 +32,19 @@ const CARD_SPOT_BY_CATEGORY: Record<string, string> = {
 export default function TestPage() {
   useTabBarSelected(0)
   const theme = useAppTheme()
-  const definitions = listTestDefinitions()
+  const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
   const visible = useMemo(
     () => filterByCategory(definitions, activeCategory),
     [definitions, activeCategory],
   )
+
+  useEffect(() => {
+    const refresh = () => setDefinitions(listTestDefinitions())
+    const unsubscribe = subscribeTestRegistry(refresh)
+    refresh()
+    return unsubscribe
+  }, [])
 
   useShareAppMessage(() => ({ title: 'PtKing · 测测你的隐藏人格' }))
 

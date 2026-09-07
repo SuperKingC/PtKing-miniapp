@@ -177,12 +177,16 @@ export default function TestReportPage() {
 
   // 暗色模式：统一由 useAppTheme 解析（偏好+系统），画布取色在 JS，无法用 CSS 变量
 
+  const radarCanvasId = factorScores.length >= 3
+    ? 'report-factor-radar'
+    : 'report-archetype-radar'
+
   // factor/archetype 模式雷达图：weapp canvas 2d 节点须经 createSelectorQuery 获取（ref 拿不到原生 node）
   useEffect(() => {
-    if (radarScores.length < 3) return
+    if (locked || radarScores.length < 3) return
     const query = Taro.createSelectorQuery()
     query
-      .select('#report-radar')
+      .select(`#${radarCanvasId}`)
       .fields({ node: true, size: true })
       .exec((res) => {
         const { node, width, height } = res?.[0] ?? {}
@@ -194,7 +198,7 @@ export default function TestReportPage() {
         ctx.scale(dpr, dpr)
         drawRadar(ctx, width, height, radarScores, darkTheme)
       })
-  }, [radarScores, darkTheme])
+  }, [radarScores, radarCanvasId, darkTheme, locked])
 
   // 分享卡片：报告就绪即预生成 5:4 卡片图（隐藏 canvas → 临时文件），转发时作 imageUrl
   const [shareImagePath, setShareImagePath] = useState('')
@@ -361,7 +365,7 @@ export default function TestReportPage() {
         <View className="test-report__panel">
           <Text className="test-report__panel-title">因素雷达</Text>
           <View className="test-report__radar-wrap">
-            <canvas type="2d" id="report-radar" className="test-report__radar" />
+            <canvas type="2d" id="report-factor-radar" className="test-report__radar" />
           </View>
           <View className="test-report__factor-list">
             {factorScores.map((factor) => (
@@ -382,7 +386,7 @@ export default function TestReportPage() {
           <Text className="test-report__panel-title">人格倾向分布</Text>
           {votes.list.length >= 3 && (
             <View className="test-report__radar-wrap">
-              <canvas type="2d" id="report-radar" className="test-report__radar" />
+              <canvas type="2d" id="report-archetype-radar" className="test-report__radar" />
             </View>
           )}
           {votes.list.map((vote) => {
