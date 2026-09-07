@@ -24,7 +24,7 @@ export function MiniappTarotFanStage({
 }: MiniappTarotFanStageProps) {
   useEffect(() => {
     if (flyingCard === undefined) return
-    const timer = setTimeout(() => onFinishPick(flyingCard), 900)
+    const timer = setTimeout(() => onFinishPick(flyingCard), 450)
     return () => clearTimeout(timer)
   }, [flyingCard, onFinishPick])
 

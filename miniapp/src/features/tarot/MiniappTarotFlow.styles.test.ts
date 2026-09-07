@@ -53,6 +53,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('@keyframes miniapp-tarot-orbit-spin')
     expect(styles).toContain('@keyframes miniapp-tarot-rune-spin')
     expect(styles).toContain('border: 2rpx dashed rgba(255, 222, 137, .75)')
+    expect(styles).toMatch(/\.miniapp-tarot__progress > view \{[\s\S]*?transition: width \.42s/)
     // rune circle is bigger than the card (226x356) so the arcane ring wraps the pile
     expect(styles).toContain('width: 430rpx')
     expect(styles).toContain('border-radius: 24rpx')
@@ -164,6 +165,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('animation-delay: var(--deal)')
     // flight arcs straight into the picked slot being filled, no ghost card left in the fan
     expect(styles).toContain('var(--fly-x, 0rpx)')
+    expect(styles).toContain('miniapp-tarot-card-flight .45s')
+    expect(fanStage).toContain('onFinishPick(flyingCard), 450')
     // at handoff kill every animation so dropping --flying never restarts fan-deal from the deck
     expect(styles).toMatch(/fan-card--picked \{[\s\S]*?animation: none/)
     expect(styles).toMatch(/fan-card--picked \{[\s\S]*?transition: none/)

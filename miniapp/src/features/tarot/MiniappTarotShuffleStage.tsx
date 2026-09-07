@@ -17,14 +17,14 @@ export function MiniappTarotShuffleStage({
   onContinue,
   onSkip,
 }: MiniappTarotShuffleStageProps) {
-  const timerRef = useRef<ReturnType<typeof setInterval>>()
+  const timerRef = useRef(0)
   const startTimeRef = useRef(0)
   const startProgressRef = useRef(0)
   const [isShuffling, setIsShuffling] = useState(false)
 
   const stop = () => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = undefined
+    if (timerRef.current) cancelAnimationFrame(timerRef.current)
+    timerRef.current = 0
     setIsShuffling(false)
   }
 
@@ -33,11 +33,13 @@ export function MiniappTarotShuffleStage({
     setIsShuffling(true)
     startTimeRef.current = Date.now()
     startProgressRef.current = progress
-    timerRef.current = setInterval(() => {
+    const tick = () => {
       const elapsed = Date.now() - startTimeRef.current
       const next = Math.min(100, startProgressRef.current + (elapsed / shuffleDurationMs) * 100)
       onProgress(next)
-    }, 90)
+      timerRef.current = requestAnimationFrame(tick)
+    }
+    timerRef.current = requestAnimationFrame(tick)
   }
 
   useEffect(() => stop, [])

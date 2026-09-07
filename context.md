@@ -135,3 +135,13 @@
   - `MiniappTarotReadingStage.tsx` 主按钮改为 `openType="share"`「分享给好友」，去掉复制解读。
 - 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
 - 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/config/testFlow.test.ts src/config/shareWiring.test.ts src/config/appConfig.test.ts` 通过（35 项）；`npm run build:weapp` 成功。未在开发者工具/真机点过底栏裁切、灰条和塔罗分享。
+
+## 2026-09-07 17:41 (UTC+8)
+
+- 原因：塔罗进度一卡一卡、抽牌飞上去偏慢；底栏预留裁切区仍切掉卡片，用户认为底栏在上层挡住即可。
+- 修改：
+  - 洗牌进度改 `requestAnimationFrame`；阶段条加 0.42s 过渡。
+  - 飞牌 900ms → 450ms。
+  - 去掉 `.tab-page` 底栏让位；内容仍可滑过底栏下方，栏本身盖住。
+- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
+- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/features/tarot/MiniappTarotShuffleStage.test.ts src/config/testFlow.test.ts` 通过（24 项）；`npm run build:weapp` 成功。未在开发者工具/真机点过洗牌、飞牌和底栏遮挡。

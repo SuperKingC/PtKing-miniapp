@@ -1,6 +1,6 @@
 .me-page {
   box-sizing: border-box;
-  padding: 32rpx;
+  padding: 32rpx 32rpx calc(140rpx + env(safe-area-inset-bottom));
 }
 
 .me-page__banner {

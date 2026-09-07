@@ -127,6 +127,7 @@
   height: 6rpx;
   border-radius: 99rpx;
   background: rgba(255, 255, 255, .12);
+  transition: width .42s cubic-bezier(.22, 1, .36, 1), background-color .42s ease;
 }
 
 .miniapp-tarot__progress > .miniapp-tarot__progress-active {
@@ -846,7 +847,6 @@
   border-radius: inherit;
   background: linear-gradient(90deg, #8667d0, #d8b966);
   box-shadow: 0 0 18rpx rgba(216, 185, 102, .48);
-  transition: width 40ms linear;
 }
 
 .miniapp-tarot__cut-deck {
@@ -1135,7 +1135,7 @@
 .miniapp-tarot__fan-card--flying {
   z-index: 20;
   filter: brightness(1.15) drop-shadow(0 0 24rpx rgba(169, 77, 255, .8));
-  animation: miniapp-tarot-card-flight .9s cubic-bezier(.18, .82, .26, 1) forwards;
+  animation: miniapp-tarot-card-flight .45s cubic-bezier(.2, .9, .28, 1) forwards;
 }
 
 // cards rise out of the deck position below and settle into their fan slot
