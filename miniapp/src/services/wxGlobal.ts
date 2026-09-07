@@ -37,6 +37,11 @@ export interface WxLike {
   }
   canvasToTempFilePath?: (options: Record<string, unknown>) => void
   vibrateShort?: (options?: { type?: 'heavy' | 'medium' | 'light' }) => void
+  downloadFile?: (options: {
+    url: string
+    success?: (result: { statusCode?: number; tempFilePath?: string }) => void
+    fail?: (error?: unknown) => void
+  }) => void
 }
 
 export function getWxGlobal(): WxLike | undefined {

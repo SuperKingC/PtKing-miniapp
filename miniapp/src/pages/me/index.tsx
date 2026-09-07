@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Image, Text, View } from '@tarojs/components'
+import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -95,7 +95,12 @@ export default function MePage() {
   ]
 
   return (
-    <View className={`me-page theme-${theme}`}>
+    <ScrollView
+      className={`me-page theme-${theme}`}
+      scrollY
+      enhanced
+      showScrollbar={false}
+    >
       <View className="me-page__banner">
         <Image className="me-page__banner-img" src={meBannerImg} mode="aspectFit" />
         <View className="me-page__banner-text">
@@ -150,6 +155,6 @@ export default function MePage() {
         </View>
       </View>
       <Text className="me-page__foot">测试记录仅保存在本机，清空后无法恢复。</Text>
-    </View>
+    </ScrollView>
   )
 }

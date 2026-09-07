@@ -17,17 +17,22 @@ import recordsActiveIcon from '../assets/tabbar/records-active-v2.png'
 import meIcon from '../assets/tabbar/me-v2.png'
 import meActiveIcon from '../assets/tabbar/me-active-v2.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
+import { TAROT_TAB_INDEX, TAROT_TAB_ROUTE, shouldHideCustomTabBar, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
 // 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；毛玻璃底+暖色选中态。
 // 选中态双保险：①点击时乐观置位（即时反馈）②各 tab 页 onShow 经 eventCenter 广播索引
 // （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
-const TAROT_TAB_INDEX = 1
-const TAROT_ROUTE = 'pages/tarot/index'
+
+type PageLike = { route?: string }
+
+function currentPage(): PageLike | undefined {
+  const pages = Taro.getCurrentPages()
+  return pages[pages.length - 1] as PageLike | undefined
+}
 
 function currentRoute(): string {
-  const pages = Taro.getCurrentPages()
-  return pages[pages.length - 1]?.route ?? ''
+  return currentPage()?.route ?? ''
 }
 
 const TABS = [
@@ -41,22 +46,33 @@ export default class CustomTabBar extends Component {
   ownRoute = currentRoute()
 
   state = {
-    selected: this.ownRoute === TAROT_ROUTE ? TAROT_TAB_INDEX : 0,
+    selected: this.ownRoute === TAROT_TAB_ROUTE ? TAROT_TAB_INDEX : 0,
     theme: 'light' as ResolvedTheme,
-    hidden: this.ownRoute === TAROT_ROUTE,
+    hidden: shouldHideCustomTabBar(
+      this.ownRoute,
+      this.ownRoute,
+      this.ownRoute === TAROT_TAB_ROUTE ? TAROT_TAB_INDEX : 0,
+    ),
+  }
+
+  applyVisibility(selected = this.state.selected) {
+    const webviewRoute = currentRoute() || this.ownRoute
+    this.ownRoute = webviewRoute
+    const selectedRoute = tabPathToRoute(TABS[selected]?.path ?? '')
+    this.setState({
+      selected,
+      hidden: shouldHideCustomTabBar(webviewRoute, selectedRoute, selected),
+    })
   }
 
   componentDidMount() {
-    this.ownRoute = currentRoute() || this.ownRoute
+    this.ownRoute = Taro.getCurrentInstance()?.page?.route || currentRoute() || this.ownRoute
     Taro.eventCenter.on(TABBAR_SELECT_EVENT, this.handleSelectEvent)
     Taro.eventCenter.on(THEME_CHANGE_EVENT, this.handleThemeEvent)
-    // 初始主题：跟随系统时读系统档（与 theme.json 初始值一致）
-    const onTarot = this.ownRoute === TAROT_ROUTE
     this.setState({
       theme: resolveTheme(getThemePreference(), currentSystemTheme()),
-      hidden: onTarot,
-      selected: onTarot ? TAROT_TAB_INDEX : this.state.selected,
     })
+    this.applyVisibility(this.ownRoute === TAROT_TAB_ROUTE ? TAROT_TAB_INDEX : this.state.selected)
     try {
       Taro.onThemeChange?.((res: { theme?: string }) => {
         this.setState({ theme: resolveTheme(getThemePreference(), res?.theme) })
@@ -72,10 +88,7 @@ export default class CustomTabBar extends Component {
   }
 
   handleSelectEvent = (index: number) => {
-    this.setState({
-      selected: index,
-      hidden: this.ownRoute === TAROT_ROUTE,
-    })
+    this.applyVisibility(index)
   }
 
   handleThemeEvent = () => {

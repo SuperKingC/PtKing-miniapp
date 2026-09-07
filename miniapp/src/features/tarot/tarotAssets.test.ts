@@ -1,13 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// URL 构建经 assetBaseUrl 读宿主平台；node 环境静态导入 @tarojs/taro 会崩，统一 mock 掉
-const downloadFile = vi.fn()
-
-vi.mock('@tarojs/taro', () => ({
-  default: {
-    getSystemInfoSync: () => ({ platform: 'devtools' }),
-    downloadFile,
-  },
+vi.mock('../../services/assetBaseUrl', () => ({
+  resolveAssetBaseUrl: () => 'https://cos.example.com/ptking/v1',
 }))
 
 import {
@@ -15,11 +9,32 @@ import {
   getTarotResourceUrls,
   getTarotSanctuaryBackground,
   getTarotArtworkUrl,
+  isTarotDownloadSuccess,
+  isUsableTarotAssetUrl,
   preloadTarotResources,
   TAROT_PRELOAD_TIMEOUT_MS,
 } from './tarotAssets'
 
+const downloadFile = vi.fn()
+
 describe('miniapp tarot assets', () => {
+  beforeEach(() => {
+    downloadFile.mockReset()
+    ;(globalThis as { wx?: { downloadFile: typeof downloadFile; getSystemInfoSync: () => { platform: string } } }).wx = {
+      downloadFile: (options: { url: string; success?: (result: unknown) => void; fail?: (error?: unknown) => void }) => {
+        Promise.resolve(downloadFile(options.url)).then(
+          (result) => options.success?.(result),
+          (error) => options.fail?.(error),
+        )
+      },
+      getSystemInfoSync: () => ({ platform: 'devtools' }),
+    }
+  })
+
+  afterEach(() => {
+    delete (globalThis as { wx?: unknown }).wx
+  })
+
   it('builds tarot URLs under the /tarot path of the resolved asset base', () => {
     expect(getTarotCardBack()).toContain('/tarot/ui/card-back.jpg')
     expect(getTarotSanctuaryBackground()).toContain('/tarot/ui/sanctuary-background.jpg')
@@ -40,8 +55,21 @@ describe('miniapp tarot assets', () => {
     expect(urls[23]).toContain('the-world.jpg')
   })
 
-  it('exports preloadTarotResources as an async function', () => {
-    expect(typeof preloadTarotResources).toBe('function')
+  it('rejects placeholder and non-https asset urls', () => {
+    expect(isUsableTarotAssetUrl('https://cos.example.com/tarot/ui/card-back.jpg')).toBe(true)
+    expect(isUsableTarotAssetUrl('http://127.0.0.1:8787/tarot/ui/card-back.jpg')).toBe(true)
+    expect(isUsableTarotAssetUrl('https://placeholder.cos.ap-guangzhou.myqcloud.com/ptking-web/local-dev/tarot/ui/card-back.jpg')).toBe(false)
+    expect(isUsableTarotAssetUrl('http://evil.example/tarot/ui/card-back.jpg')).toBe(false)
+    expect(isUsableTarotAssetUrl('')).toBe(false)
+  })
+
+  it('accepts 200 and temp-path downloads, rejects http errors', () => {
+    expect(isTarotDownloadSuccess({ statusCode: 200, tempFilePath: '/tmp/a' })).toBe(true)
+    expect(isTarotDownloadSuccess({ tempFilePath: '/tmp/a' })).toBe(true)
+    expect(isTarotDownloadSuccess({ statusCode: 0, tempFilePath: '/tmp/a' })).toBe(true)
+    expect(isTarotDownloadSuccess({ statusCode: 404 })).toBe(false)
+    expect(isTarotDownloadSuccess({ statusCode: 403, tempFilePath: '/tmp/a' })).toBe(false)
+    expect(isTarotDownloadSuccess({})).toBe(false)
   })
 
   it('reports every non-200 download as a failed resource', async () => {
@@ -51,6 +79,15 @@ describe('miniapp tarot assets', () => {
 
     expect(result.total).toBe(24)
     expect(result.failedUrls).toHaveLength(24)
+  })
+
+  it('accepts downloads that only return a temp file path', async () => {
+    downloadFile.mockResolvedValue({ tempFilePath: '/tmp/tarot.jpg' })
+
+    const result = await preloadTarotResources()
+
+    expect(result.failedUrls).toHaveLength(0)
+    expect(downloadFile).toHaveBeenCalled()
   })
 
   it('treats hung downloads as failed after the preload timeout', async () => {

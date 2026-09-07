@@ -74,10 +74,11 @@ button {
   box-sizing: border-box;
 }
 
-/* 全局隐藏滚动条（滚动能力保留） */
-page ::-webkit-scrollbar,
+/* 全局隐藏滚动条（滚动能力保留）。微信页滚动条要 width/color，单靠 display:none 真机仍会露灰条 */
 ::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  color: transparent;
+  background: transparent;
+  display: none !important;
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Image, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import { useDidShow } from '@tarojs/taro'
 import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
 import { listActiveTestDrafts } from '../../services/testDrafts'
@@ -61,7 +61,12 @@ export default function RecordsPage() {
   ) : null
 
   return (
-    <View className={`records-page theme-${theme}`}>
+    <ScrollView
+      className={`records-page theme-${theme}`}
+      scrollY
+      enhanced
+      showScrollbar={false}
+    >
       {resumeBanner}
       {records.length === 0 ? (
         <View className="records-page__empty">
@@ -130,6 +135,6 @@ export default function RecordsPage() {
           </View>
         </>
       )}
-    </View>
+    </ScrollView>
   )
 }

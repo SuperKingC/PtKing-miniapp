@@ -1,5 +1,6 @@
 .records-page {
-  min-height: 100vh;
+  height: 100vh;
+  box-sizing: border-box;
   padding: 32rpx 32rpx calc(140rpx + env(safe-area-inset-bottom));
 }
 

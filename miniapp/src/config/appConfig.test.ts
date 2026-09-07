@@ -91,12 +91,14 @@ describe('WeChat app config (M0 skeleton)', () => {
 
   it('hides the custom tab bar on the tarot tab without native hideTabBar', () => {
     const tabBarSource = readFileSync(resolve(miniappRoot(), 'src/custom-tab-bar/index.tsx'), 'utf8')
+    const tabBarVisibility = readFileSync(resolve(miniappRoot(), 'src/custom-tab-bar/tabBarVisibility.ts'), 'utf8')
     const tabBarStyles = readFileSync(resolve(miniappRoot(), 'src/custom-tab-bar/index.scss'), 'utf8')
     const tarotPage = readFileSync(resolve(miniappRoot(), 'src/pages/tarot/index.tsx'), 'utf8')
 
     expect(tarotPage).not.toContain('Taro.hideTabBar')
     expect(tarotPage).not.toContain('Taro.showTabBar')
-    expect(tabBarSource).toContain("pages/tarot/index")
+    expect(tabBarSource).toContain('shouldHideCustomTabBar')
+    expect(tabBarVisibility).toContain("pages/tarot/index")
     expect(tabBarSource).toContain('tabbar--hidden')
     expect(tabBarStyles).toContain('display: none')
   })

@@ -115,3 +115,13 @@
 - 修改：删除 `tabBarVisibility.ts` 与其测试；`custom-tab-bar` 恢复为仅在本页路由是塔罗时自隐；`.tabbar--hidden` 只保留 `display: none`。保留暗色图标提亮与塔罗可退出等后续体验改动。
 - 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；未再调用原生 hideTabBar。
 - 验证：`npm test -- src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（22 项）；`npm run build:weapp` 成功。未在微信开发者工具/真机点过双栏。
+
+## 2026-09-07 17:10 (UTC+8)
+
+- 原因：点「记录」后底栏消失；滑动右侧露出淡灰滚动条；真机塔罗停在「资源加载失败」。
+- 修改：
+  - `miniapp/src/custom-tab-bar/tabBarVisibility.ts` 按当前 webview 路由对选中 tab 路由判断显隐（不用页面对象身份），记录/测试/我的为当前 tab 时显示，塔罗与后台实例隐藏；`index.tsx` / `index.scss` 同步，隐藏态补 visibility/宽高。
+  - `miniapp/src/pages/{test,records,me}` 改为 `disableScroll` + `ScrollView showScrollbar={false}`；`app.scss` 按微信约定隐藏 `::-webkit-scrollbar`。
+  - `miniapp/src/features/tarot/tarotAssets.ts` 改走 `wx.downloadFile` 回调、接受 200 或临时路径、拒绝占位域名；超时 40s；`wxGlobal.ts` 补 downloadFile。
+- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；塔罗图仍走 COS，未进主包。
+- 验证：`npm test -- src/custom-tab-bar/tabBarVisibility.test.ts src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts src/features/tarot/tarotAssets.test.ts src/config/testFlow.test.ts` 通过（43 项）；`npm run build:weapp` 成功，产物已注入 `https://ptking-assets-1300973162.cos.ap-guangzhou.myqcloud.com/assets/ptking/06b0a05`。未在微信开发者工具/真机点过记录栏、滚动条和塔罗下载。真机仍需在公众平台把该 COS 主机名加入 downloadFile 合法域名。

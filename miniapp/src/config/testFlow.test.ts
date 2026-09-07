@@ -74,6 +74,21 @@ describe('test flow pages (M1)', () => {
     expect(detail).toContain('重新开始')
   })
 
+  it('hides native scrollbars on the scrolling tab pages', () => {
+    const records = readFileSync(resolve(miniappRoot(), 'src/pages/records/index.tsx'), 'utf8')
+    const testPage = readFileSync(resolve(miniappRoot(), 'src/pages/test/index.tsx'), 'utf8')
+    const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
+    const recordsConfig = readFileSync(resolve(miniappRoot(), 'src/pages/records/index.config.ts'), 'utf8')
+    const appStyles = readFileSync(resolve(miniappRoot(), 'src/app.scss'), 'utf8')
+
+    for (const source of [records, testPage, me]) {
+      expect(source).toContain('showScrollbar={false}')
+      expect(source).toContain('enhanced')
+    }
+    expect(recordsConfig).toContain('disableScroll: true')
+    expect(appStyles).toContain('::-webkit-scrollbar')
+  })
+
   it('routes the me page records entry to the records tab', () => {
     const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
 

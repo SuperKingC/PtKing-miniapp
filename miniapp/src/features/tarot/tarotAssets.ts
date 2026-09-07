@@ -1,4 +1,5 @@
 import { resolveAssetBaseUrl } from '../../services/assetBaseUrl'
+import { getWxGlobal } from '../../services/wxGlobal'
 
 const artworkFiles = [
   'the-fool.jpg',
@@ -52,7 +53,21 @@ export interface TarotPreloadResult {
 }
 
 /** 整批预加载上限：弱网挂起时让用户尽快看到失败重试，而不是一直转圈。 */
-export const TAROT_PRELOAD_TIMEOUT_MS = 20000
+export const TAROT_PRELOAD_TIMEOUT_MS = 40000
+
+export function isUsableTarotAssetUrl(url: string): boolean {
+  if (!url || url.includes('placeholder.cos.')) return false
+  if (/^https:\/\//.test(url)) return true
+  return /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(url)
+}
+
+/** 真机 downloadFile 偶发只给 tempFilePath、不回 200；4xx/5xx 仍算失败。 */
+export function isTarotDownloadSuccess(result: { statusCode?: number; tempFilePath?: string }): boolean {
+  const code = result.statusCode
+  if (code === 200) return true
+  if (typeof code === 'number' && code >= 400) return false
+  return Boolean(result.tempFilePath)
+}
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -70,8 +85,21 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   })
 }
 
+function downloadTarotFile(url: string): Promise<{ statusCode?: number; tempFilePath?: string }> {
+  const wxApi = getWxGlobal()
+  if (!wxApi?.downloadFile) return Promise.reject(new Error('downloadFile_unavailable'))
+  return new Promise((resolve, reject) => {
+    wxApi.downloadFile?.({
+      url,
+      success: resolve,
+      fail: reject,
+    })
+  })
+}
+
 /**
  * 下载全部塔罗资源，确认每张图片均可访问后才允许进入流程。
+ * 走 wx.downloadFile 回调式 API（真机 Taro 动态 import 不保证 Promise 化）。
  * 使用并发 worker 模式，最多同时 4 个下载。
  */
 export async function preloadTarotResources(
@@ -83,8 +111,12 @@ export async function preloadTarotResources(
     return { failedUrls: [], total: 0 }
   }
 
-  // 动态导入避免在非小程序环境报错
-  const Taro = await import('@tarojs/taro')
+  const unusable = urls.filter((url) => !isUsableTarotAssetUrl(url))
+  if (unusable.length > 0) {
+    onProgress(1)
+    return { failedUrls: unusable, total: urls.length }
+  }
+
   let nextIndex = 0
   let completed = 0
   const finished = new Set<string>()
@@ -92,8 +124,8 @@ export async function preloadTarotResources(
 
   async function downloadOne(url: string): Promise<void> {
     try {
-      const result = await Taro.downloadFile({ url })
-      if (result.statusCode !== 200) failedUrls.push(url)
+      const result = await downloadTarotFile(url)
+      if (!isTarotDownloadSuccess(result)) failedUrls.push(url)
     } catch {
       failedUrls.push(url)
     } finally {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Image, Input, Text, View } from '@tarojs/components'
+import { Image, Input, ScrollView, Text, View } from '@tarojs/components'
 import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
@@ -107,7 +107,12 @@ export default function TestPage() {
   )
 
   return (
-    <View className={`test-page theme-${theme}`}>
+    <ScrollView
+      className={`test-page theme-${theme}`}
+      scrollY
+      enhanced
+      showScrollbar={false}
+    >
       <View className="test-page__hero">
         <View className="test-page__hero-text">
           <Text className="test-page__hero-title">发现你的另一面</Text>
@@ -183,6 +188,6 @@ export default function TestPage() {
       {searched && searched.length === 0 && (
         <Text className="test-page__search-empty">没有找到相关测试，换个词试试</Text>
       )}
-    </View>
+    </ScrollView>
   )
 }
