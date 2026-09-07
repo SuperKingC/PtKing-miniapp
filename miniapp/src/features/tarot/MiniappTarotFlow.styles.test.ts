@@ -231,4 +231,13 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(tarotPageSource).toContain('tarotShareTitle')
     expect(tarotPageSource).toMatch(/if \(tarotShareTitle\)/)
   })
+
+  it('hides the custom tab bar while the tarot flow is visible', () => {
+    const tarotPageSource = fs.readFileSync(path.resolve(__dirname, '../../pages/tarot/index.tsx'), 'utf8')
+
+    expect(tarotPageSource).toContain('useDidShow')
+    expect(tarotPageSource).toContain('Taro.hideTabBar({ animation: false })')
+    expect(tarotPageSource).toContain('useDidHide')
+    expect(tarotPageSource).toContain('Taro.showTabBar({ animation: false })')
+  })
 })
