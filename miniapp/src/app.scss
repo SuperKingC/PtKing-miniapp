@@ -26,6 +26,22 @@ page {
   background: var(--color-page-bg);
   color: var(--color-ink);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  height: 100%;
+}
+
+/* tab 页：外层先给自定义底栏让位，避免 100vh 裁进底栏；滚动条加宽推出可视区 */
+.tab-page {
+  height: 100%;
+  box-sizing: border-box;
+  padding-bottom: calc(84rpx + env(safe-area-inset-bottom));
+  overflow: hidden;
+  background: var(--color-page-bg);
+}
+
+.tab-page__scroll {
+  height: 100%;
+  width: calc(100% + 20rpx);
+  box-sizing: border-box;
 }
 
 /* 暗色模式（跟随系统的初始值）：暖深棕底保持品牌温度，主色提亮一档保证对比度 */
@@ -75,7 +91,8 @@ button {
 }
 
 /* 全局隐藏滚动条（滚动能力保留）。微信页滚动条要 width/color，单靠 display:none 真机仍会露灰条 */
-::-webkit-scrollbar {
+::-webkit-scrollbar,
+scroll-view::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
   color: transparent;

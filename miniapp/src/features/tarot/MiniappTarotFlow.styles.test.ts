@@ -144,9 +144,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('.miniapp-tarot__fade')
     expect(styles).toMatch(/\.miniapp-tarot__fade \{[\s\S]*?transition: opacity/)
     expect(styles).toMatch(/\.miniapp-tarot--leaving \.miniapp-tarot__fade \{[\s\S]*?opacity: 1/)
-    // the sanctuary background stays clearly visible with a subdued dark veil
-    expect(styles).toMatch(/\.miniapp-tarot__background \{[\s\S]*?opacity: \.62/)
-    expect(styles).toContain('rgba(9, 5, 17, .8) 64%')
+    // the sanctuary background stays clearly visible with a light veil
+    expect(styles).toMatch(/\.miniapp-tarot__background \{[\s\S]*?opacity: \.88/)
+    expect(styles).toContain('rgba(9, 5, 17, .32) 64%')
   })
 
   it('deals the fan in with staggered rise-and-settle motion and a centered column', () => {
@@ -238,9 +238,10 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/picked-row--1 \.miniapp-tarot__picked-slot \{[\s\S]*?height: 276rpx/)
     expect(styles).toMatch(/fan--1 \.miniapp-tarot__fan-card \{[\s\S]*?width: 140rpx/)
 
-    // without a bound friend the result page offers a WeChat share invite
+    // 解读页用微信转发给好友，不再复制文案
     expect(readingStage).toContain('openType="share"')
-    expect(readingStage).toContain('分享塔罗结果 · 邀请好友')
+    expect(readingStage).toContain('分享给好友')
+    expect(readingStage).not.toContain('复制解读文案')
     expect(readingStage).not.toContain('绑定好友后可分享')
     // the flow registers a tarot-flavored share title while the reading shows
     expect(flowSource).toContain('buildTarotShareTitle')

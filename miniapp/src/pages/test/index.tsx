@@ -107,8 +107,9 @@ export default function TestPage() {
   )
 
   return (
+    <View className={`tab-page theme-${theme}`}>
     <ScrollView
-      className={`test-page theme-${theme}`}
+      className="tab-page__scroll test-page"
       scrollY
       enhanced
       showScrollbar={false}
@@ -189,5 +190,6 @@ export default function TestPage() {
         <Text className="test-page__search-empty">没有找到相关测试，换个词试试</Text>
       )}
     </ScrollView>
+    </View>
   )
 }

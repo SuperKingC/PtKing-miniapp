@@ -95,8 +95,9 @@ export default function MePage() {
   ]
 
   return (
+    <View className={`tab-page theme-${theme}`}>
     <ScrollView
-      className={`me-page theme-${theme}`}
+      className="tab-page__scroll me-page"
       scrollY
       enhanced
       showScrollbar={false}
@@ -156,5 +157,6 @@ export default function MePage() {
       </View>
       <Text className="me-page__foot">测试记录仅保存在本机，清空后无法恢复。</Text>
     </ScrollView>
+    </View>
   )
 }

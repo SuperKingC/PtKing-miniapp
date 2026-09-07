@@ -4,20 +4,12 @@ import type { TarotReading } from './tarotReading'
 
 interface MiniappTarotReadingStageProps {
   reading: TarotReading
-  sharing: boolean
-  shared: boolean
-  canShare: boolean
-  onShare(): void
   onRestart(): void
   onClose(): void
 }
 
 export function MiniappTarotReadingStage({
   reading,
-  sharing,
-  shared,
-  canShare,
-  onShare,
   onRestart,
   onClose,
 }: MiniappTarotReadingStageProps) {
@@ -73,13 +65,7 @@ export function MiniappTarotReadingStage({
         {reading.misreadings.map((item) => <Text key={item}>· {item}</Text>)}
       </View>
       <View className="miniapp-tarot__reading-actions">
-        {canShare ? (
-          <Button disabled={sharing || shared} onClick={onShare}>
-            {shared ? '已复制解读 ✓' : sharing ? '复制中…' : '复制解读文案'}
-          </Button>
-        ) : (
-          <Button openType="share">分享塔罗结果 · 邀请好友</Button>
-        )}
+        <Button openType="share">分享给好友</Button>
         <Button onClick={onRestart}>再占一次</Button>
         <Button onClick={onClose}>退出</Button>
       </View>

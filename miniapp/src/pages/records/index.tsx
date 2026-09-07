@@ -61,8 +61,9 @@ export default function RecordsPage() {
   ) : null
 
   return (
+    <View className={`tab-page theme-${theme}`}>
     <ScrollView
-      className={`records-page theme-${theme}`}
+      className="tab-page__scroll records-page"
       scrollY
       enhanced
       showScrollbar={false}
@@ -136,5 +137,6 @@ export default function RecordsPage() {
         </>
       )}
     </ScrollView>
+    </View>
   )
 }

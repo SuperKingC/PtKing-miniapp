@@ -13,7 +13,7 @@ import { getTarotSanctuaryBackground, preloadTarotResources } from './tarotAsset
 import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
 import { listTarotHistory, saveTarotReading, TAROT_HISTORY_OPEN_EVENT } from './tarotHistory'
-import { buildShareText, buildTarotReading, buildTarotShareTitle } from './tarotReading'
+import { buildTarotReading, buildTarotShareTitle } from './tarotReading'
 import { findTarotSpread, type MiniappTarotSpread } from './tarotSpreads'
 import './MiniappTarotFlow.scss'
 
@@ -27,7 +27,6 @@ const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 're
 export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFlowProps) {
   const [state, dispatch] = useReducer(tarotFlowReducer, undefined, createInitialTarotFlow)
   const [historyOpen, setHistoryOpen] = useState(false)
-  const [sharing, setSharing] = useState(false)
   const [leaving, setLeaving] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
   const [resourcesLoaded, setResourcesLoaded] = useState(false)
@@ -100,25 +99,9 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
     dispatch({ type: 'finish-reading', reading })
   }
 
-  const shareReading = async () => {
-    // 新产品没有聊天室：分享改为复制解读文本，用户可粘贴给好友
-    if (state.stage !== 'reading' || !state.reading || sharing || state.shared) return
-    setSharing(true)
-    try {
-      await Taro.setClipboardData({ data: buildShareText(state.reading) })
-      dispatch({ type: 'mark-shared' })
-      await Taro.showToast({ title: '解读已复制，去粘贴给好友吧', icon: 'none', duration: 1600 })
-    } catch {
-      await Taro.showToast({ title: '复制失败，请稍后重试', icon: 'none', duration: 1600 })
-    } finally {
-      setSharing(false)
-    }
-  }
-
   const restart = () => {
     leaveTimersRef.current.forEach((timer) => clearTimeout(timer))
     leaveTimersRef.current = []
-    setSharing(false)
     setHistoryOpen(false)
     setLeaving(false)
     dispatch({ type: 'restart' })
@@ -228,10 +211,6 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
           {state.stage === 'reading' && (
             <MiniappTarotReadingStage
               reading={state.reading}
-              sharing={sharing}
-              shared={state.shared}
-              canShare
-              onShare={() => void shareReading()}
               onRestart={restart}
               onClose={onClose}
             />

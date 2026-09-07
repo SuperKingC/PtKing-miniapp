@@ -84,9 +84,13 @@ describe('test flow pages (M1)', () => {
     for (const source of [records, testPage, me]) {
       expect(source).toContain('showScrollbar={false}')
       expect(source).toContain('enhanced')
+      expect(source).toContain('tab-page')
+      expect(source).toContain('tab-page__scroll')
     }
     expect(recordsConfig).toContain('disableScroll: true')
     expect(appStyles).toContain('::-webkit-scrollbar')
+    expect(appStyles).toContain('scroll-view::-webkit-scrollbar')
+    expect(appStyles).toContain('calc(100% + 20rpx)')
   })
 
   it('routes the me page records entry to the records tab', () => {

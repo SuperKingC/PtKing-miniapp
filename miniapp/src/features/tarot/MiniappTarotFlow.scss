@@ -7,9 +7,9 @@
   overflow: hidden;
   color: #e8e0f5;
   background:
-    radial-gradient(circle at 50% 68%, rgba(123, 88, 181, .34), transparent 28%),
-    radial-gradient(circle at 18% 24%, rgba(184, 156, 240, .16), transparent 18%),
-    linear-gradient(180deg, #171126 0%, #0d0917 58%, #07050d 100%);
+    radial-gradient(circle at 50% 68%, rgba(123, 88, 181, .18), transparent 28%),
+    radial-gradient(circle at 18% 24%, rgba(184, 156, 240, .1), transparent 18%),
+    linear-gradient(180deg, #2a1d3d 0%, #1a1328 58%, #120e1c 100%);
 }
 
 .miniapp-tarot--leaving {
@@ -42,14 +42,14 @@
 }
 
 .miniapp-tarot__background {
-  opacity: .62;
+  opacity: .88;
 }
 
 .miniapp-tarot__veil {
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 48%, rgba(54, 33, 86, .08), rgba(9, 5, 17, .8) 64%),
-    linear-gradient(180deg, rgba(11, 7, 20, .36), rgba(7, 4, 13, .9));
+    radial-gradient(circle at 50% 48%, rgba(54, 33, 86, .04), rgba(9, 5, 17, .32) 64%),
+    linear-gradient(180deg, rgba(11, 7, 20, .12), rgba(7, 4, 13, .4));
 }
 
 .miniapp-tarot__stars {

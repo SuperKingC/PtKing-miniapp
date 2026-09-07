@@ -125,3 +125,13 @@
   - `miniapp/src/features/tarot/tarotAssets.ts` 改走 `wx.downloadFile` 回调、接受 200 或临时路径、拒绝占位域名；超时 40s；`wxGlobal.ts` 补 downloadFile。
 - 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；塔罗图仍走 COS，未进主包。
 - 验证：`npm test -- src/custom-tab-bar/tabBarVisibility.test.ts src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts src/features/tarot/tarotAssets.test.ts src/config/testFlow.test.ts` 通过（43 项）；`npm run build:weapp` 成功，产物已注入 `https://ptking-assets-1300973162.cos.ap-guangzhou.myqcloud.com/assets/ptking/06b0a05`。未在微信开发者工具/真机点过记录栏、滚动条和塔罗下载。真机仍需在公众平台把该 COS 主机名加入 downloadFile 合法域名。
+
+## 2026-09-07 17:32 (UTC+8)
+
+- 原因：测试页底栏上方被 100vh 裁切；滑动仍露灰条；塔罗紫罩过深、解读按钮仍是复制文案。
+- 修改：
+  - `miniapp/src/app.scss` 增加 `.tab-page` 按底栏高度让位，`.tab-page__scroll` 加宽 20rpx 把滚动条推出可视区；测试/记录/我的去掉 100vh。
+  - `MiniappTarotFlow.scss` 背景图透明度 .62→.88，紫罩减淡。
+  - `MiniappTarotReadingStage.tsx` 主按钮改为 `openType="share"`「分享给好友」，去掉复制解读。
+- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
+- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/config/testFlow.test.ts src/config/shareWiring.test.ts src/config/appConfig.test.ts` 通过（35 项）；`npm run build:weapp` 成功。未在开发者工具/真机点过底栏裁切、灰条和塔罗分享。
