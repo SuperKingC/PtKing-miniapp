@@ -55,3 +55,8 @@
 .tabbar--dark .tabbar__text--active {
   color: #e08a5c;
 }
+
+/* 塔罗页全屏：只藏自定义栏，不调原生 hideTabBar，避免残留双栏 */
+.tabbar--hidden {
+  display: none;
+}

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import Taro, { useDidHide, useDidShow, useShareAppMessage } from '@tarojs/taro'
+import Taro, { useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
@@ -12,14 +12,8 @@ export default function TarotPage() {
   useTabBarSelected(1)
   const [tarotShareTitle, setTarotShareTitle] = useState('')
 
-  // 塔罗流程需要沉浸式画面；离开时立即恢复，避免影响其它 tab 页。
-  useDidShow(() => {
-    Taro.hideTabBar({ animation: false })
-  })
-
-  useDidHide(() => {
-    Taro.showTabBar({ animation: false })
-  })
+  // 全屏由 custom-tab-bar 在选中塔罗时自隐；不要调 hideTabBar/showTabBar，
+  // 自定义 tabBar 是 position:fixed，原生 hide/show 会留下残留实例，切 tab 出现双栏。
 
   useShareAppMessage(() => {
     if (tarotShareTitle) {

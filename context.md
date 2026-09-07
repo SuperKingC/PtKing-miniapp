@@ -25,3 +25,10 @@
 - 修改：`miniapp/src/features/tarot/tarotAssets.ts` 严格校验下载 HTTP 状态并返回失败资源；`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 增加失败闸门、重试和异步请求失效保护；`miniapp/src/features/tarot/MiniappTarotFlow.scss` 增加失败提示与重试按钮样式；`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 增加资源失败不放行契约断言；`miniapp/src/features/tarot/tarotAssets.test.ts` 覆盖非 200 响应必须被视为资源失败。
 - 未修改：塔罗资源仍放在 COS，未迁入本地包；COS 地址和资源路径未改变。
 - 验证：`npm test -- src/features/tarot/tarotAssets.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（18 项）；`npm run build:weapp` 成功，`miniapp/dist` 为 1.69 MiB，未包含塔罗资源。
+
+## 2026-09-07 15:00 (UTC+8)
+
+- 原因：塔罗资源失败后切到其他 tab 出现两条底部导航栏；同时需要可重复的 COS 发布步骤。
+- 修改：去掉塔罗页 `hideTabBar`/`showTabBar`；`custom-tab-bar` 在本页路由为塔罗时用 `tabbar--hidden` 自隐；新增 `scripts/publish-assets.mjs`、`scripts/with-asset-env.mjs`、`docs/features/cos-assets.md`；根 `package.json` 增加 `assets:check`/`assets:upload`/`assets:publish`，构建自动读 `.asset-base-url`。
+- 未修改：塔罗资源仍不进主包；未改 COS 密钥与真实上传。
+- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/config/appConfig.test.ts src/config/assetPublish.test.ts` 通过（22 项）；`npm run build:weapp` 成功。未在微信开发者工具真机点过双栏回归。

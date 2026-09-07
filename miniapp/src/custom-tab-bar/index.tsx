@@ -22,6 +22,14 @@ import './index.scss'
 // 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；毛玻璃底+暖色选中态。
 // 选中态双保险：①点击时乐观置位（即时反馈）②各 tab 页 onShow 经 eventCenter 广播索引
 // （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
+const TAROT_TAB_INDEX = 1
+const TAROT_ROUTE = 'pages/tarot/index'
+
+function currentRoute(): string {
+  const pages = Taro.getCurrentPages()
+  return pages[pages.length - 1]?.route ?? ''
+}
+
 const TABS = [
   { text: '测试', icon: testIcon, activeIcon: testActiveIcon, path: '/pages/test/index' },
   { text: '塔罗', icon: tarotIcon, activeIcon: tarotActiveIcon, path: '/pages/tarot/index' },
@@ -30,13 +38,25 @@ const TABS = [
 ]
 
 export default class CustomTabBar extends Component {
-  state = { selected: 0, theme: 'light' as ResolvedTheme }
+  ownRoute = currentRoute()
+
+  state = {
+    selected: this.ownRoute === TAROT_ROUTE ? TAROT_TAB_INDEX : 0,
+    theme: 'light' as ResolvedTheme,
+    hidden: this.ownRoute === TAROT_ROUTE,
+  }
 
   componentDidMount() {
+    this.ownRoute = currentRoute() || this.ownRoute
     Taro.eventCenter.on(TABBAR_SELECT_EVENT, this.handleSelectEvent)
     Taro.eventCenter.on(THEME_CHANGE_EVENT, this.handleThemeEvent)
     // 初始主题：跟随系统时读系统档（与 theme.json 初始值一致）
-    this.setState({ theme: resolveTheme(getThemePreference(), currentSystemTheme()) })
+    const onTarot = this.ownRoute === TAROT_ROUTE
+    this.setState({
+      theme: resolveTheme(getThemePreference(), currentSystemTheme()),
+      hidden: onTarot,
+      selected: onTarot ? TAROT_TAB_INDEX : this.state.selected,
+    })
     try {
       Taro.onThemeChange?.((res: { theme?: string }) => {
         this.setState({ theme: resolveTheme(getThemePreference(), res?.theme) })
@@ -52,7 +72,10 @@ export default class CustomTabBar extends Component {
   }
 
   handleSelectEvent = (index: number) => {
-    if (index !== this.state.selected) this.setState({ selected: index })
+    this.setState({
+      selected: index,
+      hidden: this.ownRoute === TAROT_ROUTE,
+    })
   }
 
   handleThemeEvent = () => {
@@ -65,9 +88,10 @@ export default class CustomTabBar extends Component {
   }
 
   render() {
-    const { selected, theme } = this.state
+    const { selected, theme, hidden } = this.state
+    const themeClass = theme === 'dark' ? 'tabbar tabbar--dark' : 'tabbar'
     return (
-      <View className={theme === 'dark' ? 'tabbar tabbar--dark' : 'tabbar'}>
+      <View className={hidden ? `${themeClass} tabbar--hidden` : themeClass}>
         {TABS.map((tab, index) => (
           <View
             key={tab.path}

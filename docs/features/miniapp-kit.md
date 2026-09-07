@@ -20,6 +20,9 @@ kit 侧模块现状：`art/`（生图流水线）、`matting/`（纯色底抠图
 | `npm run art:matting -- <图片> <输出目录>` | 纯色底抠图，默认 `--method ben2`（BEN2 实测首选） |
 | `npm run art:preview` | 本机静态服务模拟 COS（`http://127.0.0.1:8787/ptking-web/local-dev` → `art/generated-art/`） |
 | `npm run art:upload -- [--prefix <COS基础URL>] [--yes]` | COS 版本化上传，默认 dry-run；`--yes` 才真传（需 `COS_SECRET_ID/KEY/BUCKET/REGION` 四个环境变量） |
+| `npm run assets:check` | 检查 `art/generated-art/tarot/` 是否齐 24 张 |
+| `npm run assets:upload` | 资产 dry-run（塔罗+其它 generated-art） |
+| `npm run assets:publish` | 真传并写入 `.asset-base-url`，随后 `build:weapp` 自动注入 |
 
 ## 文件布局
 
@@ -37,7 +40,7 @@ kit 侧模块现状：`art/`（生图流水线）、`matting/`（纯色底抠图
 
 ## COS 上传
 
-`npm run art:upload` dry-run 打印上传计划；真实路径规则 `<prefix>/<git短SHA>/<相对路径>` + immutable 缓存头，发版即全量新 URL。`--prefix` 需与 `art.config.json` 的 `output.cos` 口径一致（当前约定 `assets/ptking`）。COS 凭据尚未配置，上传链路待真实凭据验证。
+日常发布用 `npm run assets:publish`（详见 `docs/features/cos-assets.md`）。底层仍是 kit `upload-cos.mjs`：路径 `<prefix>/<git短SHA>/<相对路径>` + immutable 缓存头。`--prefix` 与 `art.config.json` 的 `output.cos` 一致（当前约定 `assets/ptking`）。凭据在 kit `.env`。
 
 ## 约束
 

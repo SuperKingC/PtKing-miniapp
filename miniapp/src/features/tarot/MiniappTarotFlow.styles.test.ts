@@ -238,10 +238,14 @@ describe('miniapp tarot WXSS compatibility', () => {
 
   it('hides the custom tab bar while the tarot flow is visible', () => {
     const tarotPageSource = fs.readFileSync(path.resolve(__dirname, '../../pages/tarot/index.tsx'), 'utf8')
+    const tabBarSource = fs.readFileSync(path.resolve(__dirname, '../../custom-tab-bar/index.tsx'), 'utf8')
+    const tabBarStyles = fs.readFileSync(path.resolve(__dirname, '../../custom-tab-bar/index.scss'), 'utf8')
 
-    expect(tarotPageSource).toContain('useDidShow')
-    expect(tarotPageSource).toContain('Taro.hideTabBar({ animation: false })')
-    expect(tarotPageSource).toContain('useDidHide')
-    expect(tarotPageSource).toContain('Taro.showTabBar({ animation: false })')
+    expect(tarotPageSource).not.toContain('Taro.hideTabBar')
+    expect(tarotPageSource).not.toContain('Taro.showTabBar')
+    expect(tabBarSource).toContain("pages/tarot/index")
+    expect(tabBarSource).toContain('tabbar--hidden')
+    expect(tabBarStyles).toContain('.tabbar--hidden')
+    expect(tabBarStyles).toContain('display: none')
   })
 })
