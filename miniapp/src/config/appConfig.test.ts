@@ -96,8 +96,10 @@ describe('WeChat app config (M0 skeleton)', () => {
 
     expect(tarotPage).not.toContain('Taro.hideTabBar')
     expect(tarotPage).not.toContain('Taro.showTabBar')
-    expect(tabBarSource).toContain("pages/tarot/index")
+    expect(tabBarSource).toContain('shouldHideCustomTabBar')
+    expect(tabBarSource).toContain('isCurrentPage')
     expect(tabBarSource).toContain('tabbar--hidden')
     expect(tabBarStyles).toContain('display: none')
+    expect(tabBarStyles).toContain('pointer-events: none')
   })
 })

@@ -243,7 +243,7 @@ describe('miniapp tarot WXSS compatibility', () => {
 
     expect(tarotPageSource).not.toContain('Taro.hideTabBar')
     expect(tarotPageSource).not.toContain('Taro.showTabBar')
-    expect(tabBarSource).toContain("pages/tarot/index")
+    expect(tabBarSource).toContain('shouldHideCustomTabBar')
     expect(tabBarSource).toContain('tabbar--hidden')
     expect(tabBarStyles).toContain('.tabbar--hidden')
     expect(tabBarStyles).toContain('display: none')

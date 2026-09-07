@@ -56,7 +56,16 @@
   color: #e08a5c;
 }
 
-/* 塔罗页全屏：只藏自定义栏，不调原生 hideTabBar，避免残留双栏 */
+/* 后台页与塔罗页都必须卸掉固定栏，真机 switchTab 不会销毁旧实例 */
 .tabbar--hidden {
   display: none;
+  visibility: hidden;
+  pointer-events: none;
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }

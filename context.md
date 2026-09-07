@@ -53,3 +53,10 @@
 - 修改：`一键上传.cmd` 改为纯 ASCII；`assetPublish.test.ts` 锁定该文件不含非 ASCII；`docs/features/cos-assets.md` 注明原因。
 - 未修改：未再次执行真实 COS 上传。
 - 验证：`npm test -- src/config/assetPublish.test.ts` 通过。
+
+## 2026-09-07 16:40 (UTC+8)
+
+- 原因：真机资源加载失败后切到记录页仍叠两条自定义 tab 栏；后台 tab 页的 `position:fixed` 实例不会随 switchTab 销毁。
+- 修改：新增 `shouldHideCustomTabBar`，非当前页与塔罗页都隐藏；`custom-tab-bar` 用页面实例判断是否当前页；隐藏态补 visibility/宽高/pointer-events。
+- 未修改：未再调用原生 hideTabBar。
+- 验证：`npm test -- src/custom-tab-bar/tabBarVisibility.test.ts src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（25 项）；`npm run build:weapp` 成功。真机双栏需用本次 `miniapp/dist` 预览确认。
