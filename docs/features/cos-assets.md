@@ -58,22 +58,29 @@ art/generated-art/tarot/cards/the-world.jpg
 
 单图建议 JPEG、先降分辨率再压质量，尽量 ≤180KB。换图升文件名；塔罗这批文件名已与代码锁定，换内容覆盖同名即可（因上传带 git SHA 新目录，缓存自然失效）。
 
-## 日常更新（三步）
+## 日常更新（一键）
 
-在仓库根目录：
+资源放进 `art/generated-art` 后，任选一种：
+
+- 资源管理器双击仓库根目录的 `一键上传.cmd`
+- 或在仓库根执行：`npm run assets`
+
+这一条会：检查 24 张塔罗图 → 真传到 COS → 写入 `.asset-base-url` → 重建 `miniapp/dist`。
+
+只想预演或拆开跑：
 
 ```powershell
 npm run assets:check
 npm run assets:upload
 npm run assets:publish
-npm run build:weapp
 ```
 
 | 命令 | 作用 |
 |---|---|
-| `assets:check` | 检查 24 张塔罗是否都在 `art/generated-art` |
+| `assets` | 一键校验、上传并重建 |
+| `assets:check` | 只检查 24 张塔罗是否都在 `art/generated-art` |
 | `assets:upload` | dry-run，只打印将上传的 key |
-| `assets:publish` | 真传到 `assets/ptking/<SHA>/...`，并把完整根地址写入 `.asset-base-url` |
+| `assets:publish` | 只真传并写地址，不重建 |
 | `build:weapp` / `dev:weapp` | 自动读取 `.asset-base-url` 注入 `TARO_ASSET_BASE_URL` |
 
 `.asset-base-url` 已 gitignore，只服务本机构建。已手动设置环境变量时，脚本不会覆盖。

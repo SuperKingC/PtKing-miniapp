@@ -3,6 +3,7 @@
  * COS 资产发布：校验塔罗清单 → 调用 kit 版本化上传 → 写出本机构建地址。
  *
  * 用法:
+ *   npm run assets           一键：校验 → 真传 → 写地址 → 重建小程序
  *   npm run assets:check     只检查 art/generated-art 是否齐 24 张塔罗图
  *   npm run assets:upload    dry-run 打印上传计划
  *   npm run assets:publish   真传并写入 .asset-base-url
@@ -54,6 +55,7 @@ const TAROT_FILES = [
 const args = new Set(process.argv.slice(2))
 const checkOnly = args.has('--check')
 const yes = args.has('--yes')
+const alsoBuild = args.has('--build')
 
 function die(msg) {
   console.error(`[assets] ${msg}`)
@@ -108,6 +110,14 @@ if (checkOnly) {
 
 if (!fs.existsSync(uploadScript)) die(`找不到 kit 上传脚本: ${uploadScript}`)
 
+if (yes) {
+  const missingEnv = ['COS_SECRET_ID', 'COS_SECRET_KEY', 'COS_BUCKET', 'COS_REGION']
+    .filter((name) => !process.env[name]?.trim())
+  if (missingEnv.length) {
+    die(`kit .env 缺少 ${missingEnv.join('、')}。写在 D:\\Mine\\miniapp-kit\\.env，不要写进本仓库`)
+  }
+}
+
 const prefix = readPrefix()
 const version = gitShortSha()
 const base = publicBase()
@@ -131,10 +141,21 @@ if (result.status !== 0) die(`上传脚本退出码 ${result.status ?? 'null'}`)
 if (yes && assetBaseUrl) {
   fs.writeFileSync(envOut, `${assetBaseUrl}\n`, 'utf8')
   console.log(`[assets] 已写入 ${envOut}`)
+} else if (yes) {
+  console.log(`[assets] 上传完成。把 TARO_ASSET_BASE_URL 设为 https://<你的域名>/${prefix}/${version} 后重建`)
+}
+
+if (yes && alsoBuild) {
+  console.log('[assets] 开始重建小程序…')
+  const build = spawnSync(process.execPath, [
+    path.join(root, 'scripts', 'with-asset-env.mjs'),
+    'npm', '--prefix', 'miniapp', 'run', 'build:weapp',
+  ], { stdio: 'inherit', cwd: root, env: process.env })
+  if (build.status !== 0) die(`小程序构建退出码 ${build.status ?? 'null'}`)
+  console.log('[assets] 完成。微信开发者工具导入 miniapp 目录，清缓存后编译')
+} else if (yes) {
   console.log('[assets] 下一步：npm run build:weapp   （会自动读取该地址）')
   console.log('[assets] 微信公众平台 → 开发管理 → 开发设置 → downloadFile 合法域名，加入 COS/CDN 的 HTTPS 域名')
-} else if (yes) {
-  console.log(`[assets] 上传完成。把 TARO_ASSET_BASE_URL 设为 https://<你的域名>/${prefix}/${version} 后执行 npm run build:weapp`)
 } else {
-  console.log('[assets] dry-run 完成。确认清单后执行 npm run assets:publish')
+  console.log('[assets] dry-run 完成。确认清单后执行 npm run assets')
 }

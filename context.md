@@ -32,3 +32,10 @@
 - 修改：去掉塔罗页 `hideTabBar`/`showTabBar`；`custom-tab-bar` 在本页路由为塔罗时用 `tabbar--hidden` 自隐；新增 `scripts/publish-assets.mjs`、`scripts/with-asset-env.mjs`、`docs/features/cos-assets.md`；根 `package.json` 增加 `assets:check`/`assets:upload`/`assets:publish`，构建自动读 `.asset-base-url`。
 - 未修改：塔罗资源仍不进主包；未改 COS 密钥与真实上传。
 - 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/config/appConfig.test.ts src/config/assetPublish.test.ts` 通过（22 项）；`npm run build:weapp` 成功。未在微信开发者工具真机点过双栏回归。
+
+## 2026-09-07 15:10 (UTC+8)
+
+- 原因：需要一条命令完成 COS 校验、上传和重建，避免分步执行。
+- 修改：`scripts/publish-assets.mjs` 增加 `--build` 与 COS 凭据预检；根 `package.json` 增加 `assets`；新增 `一键上传.cmd`；更新 `docs/features/cos-assets.md`、`docs/features/miniapp-kit.md` 与 `assetPublish.test.ts`。
+- 未修改：未执行真实 COS 上传（本地 `art/generated-art/tarot` 仍缺 24 张）。
+- 验证：`npm test -- src/config/assetPublish.test.ts` 通过；`npm run assets:check` 按预期列出缺失 24 张并退出。未做真实 COS 上传。

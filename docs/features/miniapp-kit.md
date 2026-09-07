@@ -20,9 +20,10 @@ kit 侧模块现状：`art/`（生图流水线）、`matting/`（纯色底抠图
 | `npm run art:matting -- <图片> <输出目录>` | 纯色底抠图，默认 `--method ben2`（BEN2 实测首选） |
 | `npm run art:preview` | 本机静态服务模拟 COS（`http://127.0.0.1:8787/ptking-web/local-dev` → `art/generated-art/`） |
 | `npm run art:upload -- [--prefix <COS基础URL>] [--yes]` | COS 版本化上传，默认 dry-run；`--yes` 才真传（需 `COS_SECRET_ID/KEY/BUCKET/REGION` 四个环境变量） |
+| `npm run assets` / 双击 `一键上传.cmd` | 校验、真传 COS、写入地址并重建小程序 |
 | `npm run assets:check` | 检查 `art/generated-art/tarot/` 是否齐 24 张 |
 | `npm run assets:upload` | 资产 dry-run（塔罗+其它 generated-art） |
-| `npm run assets:publish` | 真传并写入 `.asset-base-url`，随后 `build:weapp` 自动注入 |
+| `npm run assets:publish` | 只真传并写入 `.asset-base-url` |
 
 ## 文件布局
 
