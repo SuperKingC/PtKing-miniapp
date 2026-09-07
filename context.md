@@ -108,3 +108,9 @@
 - 原因：把 `feat/experience-recovery` 合进 `main`，保留 COS 发布与真机双栏修复。
 - 修改：合并体验优化；`custom-tab-bar` 同时保留暗色图标提亮与 `--hidden` 卸栏。
 - 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
+
+## 2026-09-07 16:48 (UTC+8)
+
+- 原因：按用户要求还原「真机切离塔罗时隐藏后台 tab 栏」(`96f6b9e`)。
+- 修改：删除 `tabBarVisibility.ts` 与其测试；`custom-tab-bar` 恢复为仅在本页路由是塔罗时自隐；`.tabbar--hidden` 只保留 `display: none`。保留暗色图标提亮与塔罗可退出等后续体验改动。
+- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；未再调用原生 hideTabBar。
