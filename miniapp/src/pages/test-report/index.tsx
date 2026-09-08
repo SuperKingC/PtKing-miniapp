@@ -3,6 +3,7 @@ import { Button, Canvas, Input, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
 import { buildReportPresentation } from '../../domain/reportPresentation'
+import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from '../../domain/shareCopy'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_ENTERTAINMENT_DISCLAIMER, APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
@@ -258,6 +259,8 @@ export default function TestReportPage() {
       testTitle: definition.title,
       resultTitle: sharedReport.title,
       tagline: sharedReport.tagline,
+      hook: shareHookByCategory(definition.category),
+      disclaimer: shareCardDisclaimer(),
     }).then((path) => {
       if (!cancelled) setShareImagePath(path)
     })
@@ -272,7 +275,7 @@ export default function TestReportPage() {
     trackEvent('report_share', { testId: definition?.id ?? '' })
     return {
       title: sharedReport
-        ? `我在 ${definition!.title} 里测出了「${sharedReport.title}」，你也来试试`
+        ? buildReportShareTitle(definition!.category, definition!.title, sharedReport.title)
         : APP_SHARE_TITLE,
       path: definition ? `/pages/test-detail/index?testId=${definition.id}` : undefined,
       imageUrl: shareImagePath || undefined,
@@ -284,7 +287,7 @@ export default function TestReportPage() {
     const sharedReport = report
     return {
       title: sharedReport
-        ? `我在 ${definition!.title} 里测出了「${sharedReport.title}」`
+        ? buildReportShareTitle(definition!.category, definition!.title, sharedReport.title, true)
         : APP_SHARE_TITLE,
       imageUrl: shareImagePath || undefined,
     }
@@ -412,8 +415,7 @@ export default function TestReportPage() {
       <View className="test-report__panel">
         <Text className="test-report__panel-title">这次可能更接近</Text>
         <Text className="test-report__note">{presentation.typeNote}</Text>
-          <Text className="test-report__summary">{report.summary}</Text>
-        <Text className="test-report__explain">{presentation.scoreNote} {presentation.typeNote}</Text>
+        <Text className="test-report__summary">{report.summary}</Text>
         {report.detail.slice(0, 3).map((line) => (
           <View key={line.slice(0, 10)} className="test-report__detail-item">
             <Text className="test-report__detail-dot">·</Text>
@@ -457,7 +459,7 @@ export default function TestReportPage() {
       {factorScores.length >= 3 && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">因素雷达</Text>
-          <Text className="test-report__note">{presentation.scoreNote}</Text>
+          <Text className="test-report__note">{presentation.scoreNote} 雷达从正上方顺时针对应下方列表；越靠外，该维度本次得分越高。</Text>
           <View className="test-report__radar-wrap">
             <Canvas type="2d" id="report-factor-radar" className="test-report__radar" />
           </View>
@@ -535,7 +537,11 @@ export default function TestReportPage() {
         <FoldPanel
           title={`历史对比 · 共 ${history.length} 次`}
           open={openHistory}
-          onToggle={() => setOpenHistory((value) => !value)}
+          onToggle={() => {
+            const next = !openHistory
+            setOpenHistory(next)
+            trackEvent('report_fold', { testId: definition.id, section: 'history', open: next })
+          }}
         >
           {historyRows.map((row) => (
             <View
@@ -573,7 +579,15 @@ export default function TestReportPage() {
       )}
 
       {report.detail.length > 3 && (
-        <FoldPanel title="完整解读" open={openDetail} onToggle={() => setOpenDetail((value) => !value)}>
+        <FoldPanel
+          title="完整解读"
+          open={openDetail}
+          onToggle={() => {
+            const next = !openDetail
+            setOpenDetail(next)
+            trackEvent('report_fold', { testId: definition.id, section: 'detail', open: next })
+          }}
+        >
           {report.detail.map((line) => (
             <View key={line.slice(0, 10)} className="test-report__detail-item">
               <Text className="test-report__detail-dot">·</Text>
@@ -584,13 +598,29 @@ export default function TestReportPage() {
       )}
 
       {report.deep && (
-        <FoldPanel title="深度解读" open={openDeep} onToggle={() => setOpenDeep((value) => !value)}>
+        <FoldPanel
+          title="深度解读"
+          open={openDeep}
+          onToggle={() => {
+            const next = !openDeep
+            setOpenDeep(next)
+            trackEvent('report_fold', { testId: definition.id, section: 'deep', open: next })
+          }}
+        >
           <Text className="test-report__summary">{report.deep}</Text>
         </FoldPanel>
       )}
 
       {report.strengths && report.blindSpots && (
-        <FoldPanel title="优势与盲区" open={openStrengths} onToggle={() => setOpenStrengths((value) => !value)}>
+        <FoldPanel
+          title="优势与盲区"
+          open={openStrengths}
+          onToggle={() => {
+            const next = !openStrengths
+            setOpenStrengths(next)
+            trackEvent('report_fold', { testId: definition.id, section: 'strengths', open: next })
+          }}
+        >
           <Text className="test-report__subhead test-report__subhead--on">可能帮到你的地方</Text>
           {report.strengths.map((line) => (
             <View key={line.slice(0, 10)} className="test-report__detail-item">
@@ -609,7 +639,15 @@ export default function TestReportPage() {
       )}
 
       {report.scenes && report.scenes.length > 0 && (
-        <FoldPanel title="场景适配" open={openScenes} onToggle={() => setOpenScenes((value) => !value)}>
+        <FoldPanel
+          title="场景适配"
+          open={openScenes}
+          onToggle={() => {
+            const next = !openScenes
+            setOpenScenes(next)
+            trackEvent('report_fold', { testId: definition.id, section: 'scenes', open: next })
+          }}
+        >
           {report.scenes.map((item) => (
             <View key={item.scene} className="test-report__scene">
               <Text className="test-report__scene-chip">{item.scene}</Text>
@@ -635,6 +673,7 @@ export default function TestReportPage() {
         className="test-report__action"
         hoverClass="none"
         onClick={() => {
+          trackEvent('report_retest', { testId: definition.id })
           Taro.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
         }}
       >
@@ -645,6 +684,7 @@ export default function TestReportPage() {
           className="test-report__related"
           hoverClass="none"
           onClick={() => {
+            trackEvent('report_related', { testId: definition.id, relatedId: related.id })
             Taro.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
           }}
         >
@@ -690,7 +730,7 @@ export default function TestReportPage() {
         className="test-report__back"
         hoverClass="none"
         onClick={() => {
-          wx.switchTab({ url: '/pages/test/index' })
+          Taro.switchTab({ url: '/pages/test/index' })
         }}
       >
         <Text>回到测试中心</Text>

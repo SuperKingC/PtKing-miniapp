@@ -185,7 +185,7 @@ export const LOVE_TALK_TEST: TestDefinition = {
       ],
     },
     {
-      text: '你们的和好需要仪式感吗？你的版本是？',
+      text: '和好时，你更认哪一种仪式感？',
       options: [
         { text: '要有「结案陈词」：互相复述一遍结论，拉钩约定下次的流程', reportId: 'talk-resolve' },
         { text: '不需要仪式——能若无其事地一起看剧，就是最高级的和好', reportId: 'talk-freeze' },

@@ -39,6 +39,7 @@ export default function TestDetailPage() {
   ]
 
   const startPlay = (restart: boolean) => {
+    trackEvent('test_start_click', { testId: definition.id, restart })
     if (restart) clearTestDraft(definition.id)
     wx.navigateTo({ url: `/pages/test-play/index?testId=${definition.id}` })
   }

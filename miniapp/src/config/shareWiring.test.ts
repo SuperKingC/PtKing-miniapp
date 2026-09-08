@@ -18,7 +18,9 @@ describe('share capability wiring', () => {
     const report = readFileSync(resolve(miniappRoot(), 'src/pages/test-report/index.tsx'), 'utf8')
 
     expect(report).toContain('useShareAppMessage')
-    expect(report).toContain('你也来试试')
+    expect(report).toContain('buildReportShareTitle')
+    expect(report).toContain('shareHookByCategory')
+    expect(report).toContain('shareCardDisclaimer')
   })
 
   it('shares the report to moments and offers an in-page share button', () => {

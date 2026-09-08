@@ -3,6 +3,7 @@
  * 绘制走页面隐藏 canvas（type=2d）；固定用品牌浅色设计——在会话消息里深浅主题下观感一致。
  * 任一步失败返回空串，转发回退微信默认截图，绝不阻断分享。
  */
+import { shareCardDisclaimer } from '../domain/shareCopy'
 import { APP_SHARE_TITLE } from './brand'
 import { getWxGlobal } from './wxGlobal'
 
@@ -10,6 +11,8 @@ export interface ShareCardData {
   testTitle: string
   resultTitle: string
   tagline: string
+  hook?: string
+  disclaimer?: string
 }
 
 export const SHARE_CARD_WIDTH = 600
@@ -67,12 +70,17 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   // tagline
   ctx.fillStyle = 'rgba(255, 255, 255, 0.92)'
   ctx.font = '400 26px sans-serif'
-  ctx.fillText(clampText(data.tagline, 18), 48, 330)
+  ctx.fillText(clampText(data.tagline, 18), 48, 318)
 
-  // 底部引导
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.88)'
-  ctx.font = '400 26px sans-serif'
-  ctx.fillText('来测测子，看看你会测出什么 →', 48, height - 64)
+  if (data.hook) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.86)'
+    ctx.font = '400 24px sans-serif'
+    ctx.fillText(clampText(data.hook, 20), 48, 368)
+  }
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.72)'
+  ctx.font = '400 20px sans-serif'
+  ctx.fillText(clampText(data.disclaimer ?? shareCardDisclaimer(), 22), 48, height - 40)
 }
 
 interface CanvasNode {

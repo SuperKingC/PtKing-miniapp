@@ -1,5 +1,16 @@
 # 本轮工作记录
 
+## 2026-09-08 09:50 (UTC+8)
+- 原因：完成全库题目/文案精修、分享卡片分类语气、漏斗补全；塔罗资源未就绪不准进，不要纯文字模式。
+- 修改：
+  - 新增 `miniapp/src/domain/contentQuality.ts` 与测试：扫描定论句、重复题、双问号、临床/占卜词、声明口径。
+  - 软化 `unhinged`/`workRole`/`sarcastic`/`petPersona`/`goofy`/`loveTalk`/`sleep` 的定论句、双问号、治疗/处方与声明。
+  - 新增 `shareCopy.ts`：按人格/情感/职场/趣味写分享标题与卡片 hook；分享卡底部加「娱乐向自我观察，不是诊断」，不画分数。
+  - 详情 `test_start_click`、答题 `test_leave`（完测不记离开）、报告 `report_fold`/`report_retest`/`report_related`。
+  - 塔罗去掉「占卜」措辞；重试先 `setResourcesLoaded(false)`；失败只给重试/退出，不进七幕。
+- 验证：聚焦测试 14 文件 162 项通过（含体验契约 3 项）；`npm run build:weapp` 成功，产物 `D:/Mine/PtKing-polish/miniapp/dist`。未做微信开发者工具/真机验收；分享出图、塔罗下载、漏斗日志未点验。未发布 COS。
+- 未收编：`app.config.ts`、`custom-tab-bar/index.tsx`、`useTabBarSelected.ts`。
+
 ## 2026-09-08 09:35 (UTC+8)
 - 原因：补记验证。
 - 验证：聚焦测试 12 文件 146 项通过；`npm run build:weapp` 成功，产物 `D:/Mine/PtKing-polish/miniapp/dist`。未做微信开发者工具/真机验收，未发布 COS。

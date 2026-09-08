@@ -3,8 +3,10 @@
  * - 实时日志 wx.getRealtimeLogManager：小程序后台「开发-运维中心-实时日志」按时间/页面检索，
  *   零配置，是当前唯一的线上观测通道（错误搜「[err]」，漏斗事件搜「[evt]」）。
  * - 全局错误捕获 wx.onError / onUnhandledRejection / onPageNotFound，App 启动时 installGlobalErrorHandlers 注册一次。
- * - 关键漏斗事件 trackEvent：test_detail_view / test_start / test_complete / report_view / report_unlock，
- *   上线后据此统计完测率、解锁率与流失点。
+ * - 关键漏斗事件 trackEvent：test_detail_view / test_start_click / test_start / test_resume /
+ *   test_answer / test_leave / test_complete / report_view / report_unlock / report_fold /
+ *   report_retest / report_related / report_share / report_feedback，
+ *   上线后据此统计完测率、解锁率与流失点。不上传选项或答题原文。
  * wx 访问统一走 getWxGlobal：node/vitest 无 wx 时全部静默，绝不影响主流程。
  */
 import { getWxGlobal } from './wxGlobal'

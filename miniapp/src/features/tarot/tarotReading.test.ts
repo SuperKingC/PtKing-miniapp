@@ -16,6 +16,8 @@ describe('miniapp tarot reading', () => {
     expect(reading.next24Hours).toContain('出发')
     expect(reading.createdAt).toBe('2026-08-21T05:00:00.000Z')
     expect(buildShareText(reading)).toContain('愚者')
+    expect(buildShareText(reading)).toContain('塔罗解读')
+    expect(buildShareText(reading)).not.toMatch(/占卜|算命|改运/)
     // invite-friend share card title names the drawn cards
     expect(buildTarotShareTitle(reading)).toContain('愚者')
     expect(buildTarotShareTitle(reading)).toContain('想不想听听牌怎么说')

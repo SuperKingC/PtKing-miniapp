@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Text, View } from '@tarojs/components'
-import { useRouter } from '@tarojs/taro'
+import { useRouter, useUnload } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { scoreTest } from '../../domain/testEngine'
@@ -33,8 +33,11 @@ export default function TestPlayPage() {
   const [answers, setAnswers] = useState<number[]>([])
   const resumeAskedRef = useRef(false)
   const inputLockedRef = useRef(false)
+  const completedRef = useRef(false)
+  const answersRef = useRef<number[]>([])
   const releaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [restoring, setRestoring] = useState(true)
+  answersRef.current = answers
   useEffect(() => () => {
     if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current)
   }, [])
@@ -68,6 +71,15 @@ export default function TestPlayPage() {
     if (answers.length === 0) return
     return warnBeforeLeavingPlay()
   }, [answers.length])
+
+  useUnload(() => {
+    if (!definition || completedRef.current) return
+    trackEvent('test_leave', {
+      testId: definition.id,
+      answered: answersRef.current.length,
+      total: definition.questions.length,
+    })
+  })
 
   if (!definition) {
     return (
@@ -124,6 +136,7 @@ export default function TestPlayPage() {
         clearTestDraft(definition.id)
         if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current)
         inputLockedRef.current = true
+        completedRef.current = true
         trackEvent('test_complete', { testId: definition.id })
         wx.redirectTo({
           url: `/pages/test-report/index?testId=${encodeURIComponent(definition.id)}`,
