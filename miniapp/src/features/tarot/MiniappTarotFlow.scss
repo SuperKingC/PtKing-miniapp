@@ -1696,15 +1696,32 @@
   border: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .miniapp-tarot view,
-  .miniapp-tarot text,
-  .miniapp-tarot image,
-  .miniapp-tarot button,
-  .miniapp-tarot input,
-  .miniapp-tarot::before,
-  .miniapp-tarot::after {
+// Only visual durations change; stage timers and final animation poses stay intact.
+@mixin tarot-reduced-motion {
+  &,
+  view,
+  text,
+  image,
+  button,
+  input,
+  &::before,
+  &::after,
+  view::before,
+  view::after {
     animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
     transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+.miniapp-tarot.motion-reduced {
+  @include tarot-reduced-motion;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .miniapp-tarot:not(.motion-standard) {
+    @include tarot-reduced-motion;
   }
 }

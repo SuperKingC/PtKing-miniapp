@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Text, View } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { scoreTest } from '../../domain/testEngine'
 import { captureError, trackEvent } from '../../services/monitor'
 import { isRewardedAdConfigured } from '../../services/rewardedAd'
@@ -16,6 +17,7 @@ import {
   warnBeforeLeavingPlay,
 } from '../../services/testDrafts'
 import { tapFeedback } from '../../services/haptics'
+import { getPlayProgress, getTestPlayStage } from '../../domain/experience'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
@@ -25,10 +27,17 @@ import './index.scss'
 export default function TestPlayPage() {
   const router = useRouter()
   const theme = useAppTheme()
+  const motionPreference = useMotionPreference()
   const definition = useMemo(() => getTestDefinition(router.params.testId ?? ''), [router.params.testId])
   const [qIndex, setQIndex] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
   const resumeAskedRef = useRef(false)
+  const inputLockedRef = useRef(false)
+  const releaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [restoring, setRestoring] = useState(true)
+  useEffect(() => () => {
+    if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current)
+  }, [])
 
   // 答题漏斗：进入答题页（有已答后续题数可对照流失）
   useEffect(() => {
@@ -39,15 +48,20 @@ export default function TestPlayPage() {
     if (!definition || resumeAskedRef.current) return
     resumeAskedRef.current = true
     const draft = getTestDraft(definition)
-    if (!draft) return
+    if (!draft) { setRestoring(false); return }
+    let active = true
     void offerResumeTestDraft(draft).then((resume) => {
+      if (!active) return
       if (resume) {
         setAnswers(draft.answers)
         setQIndex(draft.questionIndex)
+        trackEvent('test_resume', { testId: definition.id, answered: draft.answers.length })
       } else {
         clearTestDraft(definition.id)
       }
+      setRestoring(false)
     })
+    return () => { active = false }
   }, [definition])
 
   useEffect(() => {
@@ -76,30 +90,48 @@ export default function TestPlayPage() {
 
   const total = definition.questions.length
   const question = definition.questions[qIndex]
-  const progress = Math.round(((qIndex + 1) / total) * 100)
+  const { percent: progress, remaining } = getPlayProgress(answers.length, total)
   // 回退后题目与已选答案的联动：当前题已答则高亮已选项
   const chosen = answers[qIndex]
 
   const choose = (optionIndex: number) => {
+    if (restoring || inputLockedRef.current) return
+    inputLockedRef.current = true
+    releaseTimerRef.current = setTimeout(() => { inputLockedRef.current = false }, 250)
     const nextAnswers =
       qIndex === answers.length
         ? [...answers, optionIndex]
         : answers.map((value, index) => (index === qIndex ? optionIndex : value))
     setAnswers(nextAnswers)
     tapFeedback()
-    trackEvent('test_answer', { testId: definition.id, qIndex, optionIndex })
+    trackEvent('test_answer', { testId: definition.id, qIndex })
     if (nextAnswers.length === total && qIndex === total - 1) {
       // 计分引擎抛错（如动态定义缺字段）不能断流程：捕获上报 + 提示重试
       try {
         const result = scoreTest(definition, nextAnswers)
-        clearTestDraft(definition.id)
-        saveTestRecord(definition.id, result, {
+        const saved = saveTestRecord(definition.id, result, {
           locked: isRewardedAdConfigured(),
           testTitle: definition.title,
           resultTitle: definition.reports[result.reportId]?.title,
+          contentSignature: getTestContentSignature(definition),
+          reportSnapshot: definition.reports[result.reportId],
         })
-        trackEvent('test_complete', { testId: definition.id, reportId: result.reportId })
-        wx.redirectTo({ url: `/pages/test-report/index?testId=${definition.id}` })
+        if (!saved) {
+          persistDraft(nextAnswers, qIndex)
+          wx.showToast({ title: '报告未保存，请检查空间后重试', icon: 'none' })
+          return
+        }
+        clearTestDraft(definition.id)
+        if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current)
+        inputLockedRef.current = true
+        trackEvent('test_complete', { testId: definition.id })
+        wx.redirectTo({
+          url: `/pages/test-report/index?testId=${encodeURIComponent(definition.id)}`,
+          fail: () => {
+            inputLockedRef.current = false
+            wx.showToast({ title: '报告已保存，可从记录页查看', icon: 'none' })
+          },
+        })
       } catch (err) {
         persistDraft(nextAnswers, qIndex)
         captureError(err, 'score_test_failed')
@@ -131,11 +163,14 @@ export default function TestPlayPage() {
   }
 
   return (
-    <View className={`test-play theme-${theme}`}>
+    <View className={`test-play theme-${theme} motion-${motionPreference}`}>
       <View className="test-play__progress-track">
         <View className="test-play__progress-fill" style={{ width: `${progress}%` }} />
       </View>
-      <Text className="test-play__counter">{qIndex + 1}/{total}</Text>
+      <View className="test-play__progress-copy">
+        <Text className="test-play__counter">{qIndex + 1}/{total}</Text>
+        <Text className="test-play__remaining">还剩 {remaining} 题 · {getTestPlayStage(answers.length, total)}</Text>
+      </View>
       <Text key={qIndex} className="test-play__question">{qIndex + 1}. {question.text}</Text>
       {/* 2 选项（MBTI 型二分题）横排大卡；3+ 选项（长文本场景题）纵向堆叠全宽卡，避免文字挤压竖排 */}
       <View className={question.options.length > 2 ? 'test-play__options test-play__options--stack' : 'test-play__options'}>

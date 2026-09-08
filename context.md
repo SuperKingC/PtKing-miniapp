@@ -1,147 +1,125 @@
-# 工作记录
+# 本轮工作记录
 
-## 2026-09-07 11:53 (UTC+8)
+## 2026-09-08 09:35 (UTC+8)
+- 原因：补记验证。
+- 验证：聚焦测试 12 文件 146 项通过；`npm run build:weapp` 成功，产物 `D:/Mine/PtKing-polish/miniapp/dist`。未做微信开发者工具/真机验收，未发布 COS。
 
-- 原因：塔罗页面作为 tab 页进入时仍显示底部自定义 tab 栏，影响沉浸式全屏体验。
-- 修改：`miniapp/src/pages/tarot/index.tsx` 在显示时隐藏 tabBar、离开时恢复 tabBar；`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 增加对应生命周期调用的契约测试。
-- 未修改：塔罗资源仍使用 COS 远程地址，本次未将资源迁入本地包。
-- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（13 项）；清理并执行 `npm run build:weapp` 成功，`miniapp/dist` 总计 1.69 MiB。
+## 2026-09-08 09:32 (UTC+8)
+- 原因：并行接入导致报告页重复声明 presentation/submitFeedback，构建失败。
+- 修改：miniapp/src/pages/test-report/index.tsx 删除重复声明，保留带原因字段的本地反馈保存。
 
-## 2026-09-07 11:58 (UTC+8)
+## 2026-09-08 09:28 (UTC+8)
+- 原因：SN 维度出现重复含义题，雷达契约未认 Taro Canvas，空态跳转改用 Taro API。
+- 修改：去掉重复 SN 题；testFlow 契约同时匹配 canvas/Canvas 与 Taro.switchTab。
 
-- 原因：完成小程序界面、问卷、文案、动效与体验韧性的静态评审，汇总可实施的优先级建议。
-- 新增：`C:\Users\admin\.cursor\projects\d-Mine-PtKing-miniapp\canvases\ptking-experience-review.canvas.tsx`，包含 P0/P1/P2 优化事项、相对投入与用户价值排序、问卷/文案/界面/动效建议及三阶段迭代路线。
-- 未修改：未修改 `miniapp/` 业务代码、题库定义或项目配置。
+## 2026-09-08 09:25 (UTC+8)
+- 原因：收口剩余体验优化：答题简洁动效、MBTI 44题、报告反馈、记录管理、内容导出。
+- 修改：答题页挂 motion 类并区分系统/标准/简洁；MBTI 补 2 题并同步 7 分钟文案；报告页展示解释与三档反馈；记录页增加筛选、中性趋势、单条删除与空态承接；新增单条删除与签名版本比较；新增 content/export-registry.mjs。
+- 未改：广告解锁、COS 发布、kit 出图、根微信工程配置。
 
-## 2026-09-07 12:09 (UTC+8)
+## 2026-09-07 20:41 (UTC+8)
+- 原因：跳转增加失败回调与参数编码后，不应被旧的单行源码断言误判。
+- 修改：miniapp/src/config/testFlow.test.ts 更新redirectTo接线断言，保留完整链路保障。
 
-- 原因：补充体验结构梳理中可从源码直接证实的验收风险。
-- 修改：更新 `C:\Users\admin\.cursor\projects\d-Mine-PtKing-miniapp\canvases\ptking-experience-review.canvas.tsx`，增加答题进度语义、报告 Canvas ID、塔罗资源失败恢复、记录页过期路径、测试数量口径和真机验收检查项。
-- 未修改：未修改 `miniapp/` 业务代码、题库定义或项目配置。
+## 2026-09-07 20:21 (UTC+8)
+- 原因：详情页需要在开始前说明报告收益与答题方式，减少用户盲点。
+- 修改：miniapp/src/pages/test-detail/index.tsx 增加按计分模式说明图表/结果展示与第一反应提示；index.scss 增加说明卡样式。
 
-## 2026-09-07 14:20 (UTC+8)
+## 2026-09-07 20:19 (UTC+8)
+- 原因：类型检查要求afterEach返回void。
+- 修改：miniapp/src/services/haptics.test.ts 清理回调改语句块。
 
-- 原因：记录容量提示仍指向已经移除的设置入口。
-- 修改：`miniapp/src/pages/records/index.tsx` 将清空指引改为「我的 → 清空测试记录」，同步注释。
+## 2026-09-07 19:57 (UTC+8)
+- 原因：清空测试报告不等于所有本地数据，补反馈与微信实时日志处理说明。
+- 修改：miniapp/src/pages/privacy/index.tsx 更正删除范围，说明本地反馈及客服/运行日志边界。
 
-## 2026-09-07 12:15 (UTC+8)
+## 2026-09-07 19:56 (UTC+8)
+- 原因：隐私页使用View/Text但缺少组件import，构建转译并不能捕获该运行时错误。
+- 修改：miniapp/src/pages/privacy/index.tsx 补Taro组件导入。
 
-- 原因：COS 未配置时塔罗页仍可进入，且下载失败被当作成功，导致手机端资源空白。
-- 修改：`miniapp/src/features/tarot/tarotAssets.ts` 严格校验下载 HTTP 状态并返回失败资源；`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 增加失败闸门、重试和异步请求失效保护；`miniapp/src/features/tarot/MiniappTarotFlow.scss` 增加失败提示与重试按钮样式；`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 增加资源失败不放行契约断言；`miniapp/src/features/tarot/tarotAssets.test.ts` 覆盖非 200 响应必须被视为资源失败。
-- 未修改：塔罗资源仍放在 COS，未迁入本地包；COS 地址和资源路径未改变。
-- 验证：`npm test -- src/features/tarot/tarotAssets.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（18 项）；`npm run build:weapp` 成功，`miniapp/dist` 为 1.69 MiB，未包含塔罗资源。
+## 2026-09-07 19:55 (UTC+8)
+- 原因：系统弹窗失败不等于用户要求重来。
+- 修改：miniapp/src/services/testDrafts.ts 弹窗fail或throw按继续处理，保留草稿。
 
-## 2026-09-07 14:28 (UTC+8)
+## 2026-09-07 19:54 (UTC+8)
+- 原因：防记录因全文题库签名膨胀，同时计分版本变化需可识别。
+- 修改：miniapp/src/services/testDrafts.ts 使用带长度的双非密码学hash v2签名，包含题目与scoring；旧草稿签名不兼容会失效，不影响已保存报告。
 
-- 原因：修复动态题库未在启动时加载、加载后首页不刷新，并确保 COS 故障静态兜底。
-- 修改：`miniapp/src/services/dynamicTests.ts` 实现 8 秒超时与 HTTP 200 校验；`testRegistry.ts` 增加订阅；`app.tsx` 启动加载；首页订阅刷新。
+## 2026-09-07 19:53 (UTC+8)
+- 原因：原草稿签名将完整题库字符串复制入每条记录，且计分变化不失效；弹窗异常会清空草稿。
+- 修改：miniapp/src/services/testDrafts.test.ts 增加紧凑签名、计分变化和弹窗失败保护测试。
 
-## 2026-09-07 14:33 (UTC+8)
+## 2026-09-07 19:51 (UTC+8)
+- 原因：防保存失败却删除草稿/进入空报告，绑定结果内容版本并避免热更改变旧报告。
+- 修改：miniapp/src/pages/test-play/index.tsx 保存成功才清草稿，失败保留重试；写入contentSignature/reportSnapshot，跳转失败说明已保存，完成日志不含类型结果。
 
-- 原因：先用回归契约锁定条件雷达 Canvas ID 冲突与解锁后的绘制触发。
-- 修改：`miniapp/src/config/testFlow.test.ts` 增加因素/人格雷达唯一 ID、选择器对应关系及锁定/解锁绘制依赖断言。
+## 2026-09-07 19:50 (UTC+8)
+- 原因：漏斗不需要上传具体选项，避免推导个人答案。
+- 修改：miniapp/src/pages/test-play/index.tsx test_answer只保留testId与题序。
 
-## 2026-09-07 14:34 (UTC+8)
+## 2026-09-07 19:49 (UTC+8)
+- 原因：阻止250ms内双击连续答两题。
+- 修改：miniapp/src/pages/test-play/index.tsx 在choose入口执行输入锁，保持正常自动切题。
 
-- 原因：保证塔罗资源加载失败时用户既能重试，也能离开全屏遮罩。
-- 修改：`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 新增失败分支内重新加载按钮、可访问退出按钮及 onClose 接线契约。
+## 2026-09-07 19:48 (UTC+8)
+- 原因：续答弹窗结束前不接受输入，离开页面不再异步恢复旧状态。
+- 修改：miniapp/src/pages/test-play/index.tsx 恢复过程加active保护、显式结束restoring并记录续答数量。
 
-## 2026-09-07 15:00 (UTC+8)
+## 2026-09-07 19:47 (UTC+8)
+- 原因：防快速连点跨题误选与续答对话尚未完成时答题。
+- 修改：miniapp/src/pages/test-play/index.tsx 增加输入锁、计时器清理与草稿恢复状态。
 
-- 原因：塔罗资源失败后切到其他 tab 出现两条底部导航栏；同时需要可重复的 COS 发布步骤。
-- 修改：去掉塔罗页 `hideTabBar`/`showTabBar`；`custom-tab-bar` 在本页路由为塔罗时用 `tabbar--hidden` 自隐；新增 `scripts/publish-assets.mjs`、`scripts/with-asset-env.mjs`、`docs/features/cos-assets.md`；根 `package.json` 增加 `assets:check`/`assets:upload`/`assets:publish`，构建自动读 `.asset-base-url`。
-- 未修改：塔罗资源仍不进主包；未改 COS 密钥与真实上传。
-- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/config/appConfig.test.ts src/config/assetPublish.test.ts` 通过（22 项）；`npm run build:weapp` 成功。未在微信开发者工具真机点过双栏回归。
+## 2026-09-07 19:45 (UTC+8)
+- 原因：剩余与阶段提示统一使用真实未答数量。
+- 修改：miniapp/src/pages/test-play/index.tsx 改正最后题还剩0和已过半却说快过半的问题。
 
-## 2026-09-07 15:10 (UTC+8)
+## 2026-09-07 19:44 (UTC+8)
+- 原因：最后题未答不能显示100%。
+- 修改：miniapp/src/pages/test-play/index.tsx 以answers.length计算进度和剩余题。
 
-- 原因：需要一条命令完成 COS 校验、上传和重建，避免分步执行。
-- 修改：`scripts/publish-assets.mjs` 增加 `--build` 与 COS 凭据预检；根 `package.json` 增加 `assets`；新增 `一键上传.cmd`；更新 `docs/features/cos-assets.md`、`docs/features/miniapp-kit.md` 与 `assetPublish.test.ts`。
-- 未修改：未执行真实 COS 上传（本地 `art/generated-art/tarot` 仍缺 24 张）。
-- 验证：`npm test -- src/config/assetPublish.test.ts` 通过；`npm run assets:check` 按预期列出缺失 24 张并退出。未做真实 COS 上传。
+## 2026-09-07 19:43 (UTC+8)
+- 原因：移除上一轮服务层纯算法放置。
+- 修改：miniapp/src/pages/test-play/index.tsx 改用domain/experience的进度与阶段函数；原工作区未跟踪testPlayStage文件不收编。
 
-## 2026-09-07 16:05 (UTC+8)
+## 2026-09-07 19:42 (UTC+8)
+- 原因：进度语义改为真实完成数量，不再以当前题页充作已完成。
+- 修改：miniapp/src/services/testDrafts.test.ts 更新对应契约。
 
-- 原因：需要可按的腾讯云建桶步骤，并把 Pet10 塔罗原图落到本地后只做一次 TinyPNG。
-- 修改：从 `D:\Pet10\public\tarot` 拷贝 24 张到 `art/generated-art/tarot/`（不入库）；新增 `scripts/compress-art.mjs` 与 `npm run assets:compress`（默认只压 tarot，不降分辨率）；`docs/features/cos-assets.md` 补建桶、密钥、合法域名与画质说明。
-- 未修改：未配置 COS 密钥，未执行上传。首次压缩误扫到 `art/generated-art` 其它中间图，已立刻改回只压 tarot。
-- 验证：`assets:check` 24 张齐全；像素仍为 768×1152 / 900×1350；TinyPNG 共少约 460KB；`assetPublish.test.ts` 通过。
+## 2026-09-07 19:40 (UTC+8)
+- 原因：为今日入口增加可点击暗示，卡片收益不压插图。
+- 修改：miniapp/src/pages/test/index.scss 增加hero-link、card-benefit与按压态样式。
 
-## 2026-09-07 16:35 (UTC+8)
+## 2026-09-07 19:39 (UTC+8)
+- 原因：保留原美术而给今日说明留足横向空间。
+- 修改：miniapp/src/pages/test/index.scss 将顶部插画缩到180rpx，未生成或改动图片。
 
-- 原因：双击 `一键上传.cmd` 时 UTF-8 中文被 cmd 按系统编码拆坏，把 `COS_SECRET_ID` 当成命令执行。
-- 修改：`一键上传.cmd` 改为纯 ASCII；`assetPublish.test.ts` 锁定该文件不含非 ASCII；`docs/features/cos-assets.md` 注明原因。
-- 未修改：未再次执行真实 COS 上传。
-- 验证：`npm test -- src/config/assetPublish.test.ts` 通过。
+## 2026-09-07 19:38 (UTC+8)
+- 原因：首页今日入口未覆盖职场、跨日不更新、筛选后结果在屏外，滚动视口padding可能形成底部空白裁切。
+- 修改：miniapp/src/pages/test/index.tsx 将间距放内部View，今日入口四类自然日轮换并在show时刷新、点击清空搜索且定位结果；增加卡片收益说明，续答显示已完成题数，补入口点击枚举埋点。
 
-## 2026-09-07 16:40 (UTC+8)
+## 2026-09-07 19:35 (UTC+8)
+- 原因：锁定滚动视口与内容分离、完成保存次序与埋点隐私。
+- 修改：新增 miniapp/src/config/experienceFlow.test.ts 页面契约测试。
 
-- 原因：真机资源加载失败后切到记录页仍叠两条自定义 tab 栏；后台 tab 页的 `position:fixed` 实例不会随 switchTab 销毁。
-- 修改：新增 `shouldHideCustomTabBar`，非当前页与塔罗页都隐藏；`custom-tab-bar` 用页面实例判断是否当前页；隐藏态补 visibility/宽高/pointer-events。
-- 未修改：未再调用原生 hideTabBar。
-- 验证：`npm test -- src/custom-tab-bar/tabBarVisibility.test.ts src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（25 项）；`npm run build:weapp` 成功。真机双栏需用本次 `miniapp/dist` 预览确认。
+## 2026-09-07 19:34 (UTC+8)
+- 原因：展示真实震动偏好保存状态。
+- 修改：miniapp/src/pages/me/index.tsx 仅保存成功更新选中态，失败提示重试。
 
-## 2026-09-07 15:10 (UTC+8)
+## 2026-09-07 19:33 (UTC+8)
+- 原因：设置不能在持久化失败时假报成功。
+- 修改：miniapp/src/services/haptics.ts 的 setHapticsEnabled 返回明确boolean，无API或异常为false。
 
-- 原因：把已写好的契约测试补成可运行实现，恢复被中断的体验修复。
-- 修改：`miniapp/src/pages/test/index.tsx` 订阅注册表并刷新卡片；`miniapp/src/services/testDrafts.ts` 落地草稿签名/过期/续答弹窗；`miniapp/src/pages/test-play/index.tsx` 逐题保存、完成后清理、进度按当前题号；`miniapp/src/pages/test-report/index.tsx` 拆分雷达 Canvas ID；`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 与 scss 增加失败态退出；`miniapp/src/services/wxGlobal.ts` 补充 showModal；`miniapp/src/pages/records/index.tsx` 更正清空入口文案。
+## 2026-09-07 19:32 (UTC+8)
+- 原因：新增回归测试先失败，落实确定性的进度与日期规则。
+- 修改：新增 miniapp/src/domain/experience.ts，已答数量计算剩余与百分比、修正过半提示、按连续自然日轮换四个主题。
 
-## 2026-09-07 15:32 (UTC+8)
+## 2026-09-07 19:31 (UTC+8)
+- 原因：补齐震动存储异常与无平台API的缺口。
+- 修改：新增 miniapp/src/services/haptics.test.ts，验证开关持久化、关闭后不震动以及存储失败返回false。
 
-- 原因：并行整合后塔罗失败态出现两个退出按钮。
-- 修改：`miniapp/src/features/tarot/MiniappTarotFlow.tsx` 只保留带 `miniapp-tarot__loading_exit` 的退出入口；`miniapp/src/features/tarot/MiniappTarotFlow.styles.test.ts` 增加单一退出入口断言。
+## 2026-09-07 19:30 (UTC+8)
 
-## 2026-09-07 15:50 (UTC+8)
-
-- 原因：按正式名测测子落地剩余可改优化，覆盖品牌、免责、首页续答推荐、报告分层、答题轻动效。
-- 修改：新增 `miniapp/src/services/brand.ts`；用户可见 PtKing 改为测测子；隐私页入口对齐；首页增加继续答题与推荐；详情/报告增加娱乐化免责；报告深度内容默认折叠；答题增加切题动效与选项分布埋点；暗色 TabBar 图标略提亮。
-- 未修改：未改存储键、COS 路径、仓库名；未重写整库题目；未走 kit 重出暗色 TabBar 资产。
-
-## 2026-09-07 16:24 (UTC+8)
-
-- 原因：继续优化发现效率与塔罗加载可逃。
-- 修改：新增 `testDiscovery` 按近期记录推荐；首页搜索可匹配简介并一键清空；塔罗加载中可退出、预加载 20s 超时、洗牌间隔 90ms；答题短震动；记录页与我的页续答/塔罗历史入口；详情浏览埋点只记进入一次。
-- 未修改：未改题库正文、存储键、kit 出图。
-
-## 2026-09-07 16:45 (UTC+8)
-
-- 原因：把 `feat/experience-recovery` 合进 `main`，保留 COS 发布与真机双栏修复。
-- 修改：合并体验优化；`custom-tab-bar` 同时保留暗色图标提亮与 `--hidden` 卸栏。
-- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
-
-## 2026-09-07 16:48 (UTC+8)
-
-- 原因：按用户要求还原「真机切离塔罗时隐藏后台 tab 栏」(`96f6b9e`)。
-- 修改：删除 `tabBarVisibility.ts` 与其测试；`custom-tab-bar` 恢复为仅在本页路由是塔罗时自隐；`.tabbar--hidden` 只保留 `display: none`。保留暗色图标提亮与塔罗可退出等后续体验改动。
-- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；未再调用原生 hideTabBar。
-- 验证：`npm test -- src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts` 通过（22 项）；`npm run build:weapp` 成功。未在微信开发者工具/真机点过双栏。
-
-## 2026-09-07 17:10 (UTC+8)
-
-- 原因：点「记录」后底栏消失；滑动右侧露出淡灰滚动条；真机塔罗停在「资源加载失败」。
-- 修改：
-  - `miniapp/src/custom-tab-bar/tabBarVisibility.ts` 按当前 webview 路由对选中 tab 路由判断显隐（不用页面对象身份），记录/测试/我的为当前 tab 时显示，塔罗与后台实例隐藏；`index.tsx` / `index.scss` 同步，隐藏态补 visibility/宽高。
-  - `miniapp/src/pages/{test,records,me}` 改为 `disableScroll` + `ScrollView showScrollbar={false}`；`app.scss` 按微信约定隐藏 `::-webkit-scrollbar`。
-  - `miniapp/src/features/tarot/tarotAssets.ts` 改走 `wx.downloadFile` 回调、接受 200 或临时路径、拒绝占位域名；超时 40s；`wxGlobal.ts` 补 downloadFile。
-- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件；塔罗图仍走 COS，未进主包。
-- 验证：`npm test -- src/custom-tab-bar/tabBarVisibility.test.ts src/config/appConfig.test.ts src/features/tarot/MiniappTarotFlow.styles.test.ts src/features/tarot/tarotAssets.test.ts src/config/testFlow.test.ts` 通过（43 项）；`npm run build:weapp` 成功，产物已注入 `https://ptking-assets-1300973162.cos.ap-guangzhou.myqcloud.com/assets/ptking/06b0a05`。未在微信开发者工具/真机点过记录栏、滚动条和塔罗下载。真机仍需在公众平台把该 COS 主机名加入 downloadFile 合法域名。
-
-## 2026-09-07 17:32 (UTC+8)
-
-- 原因：测试页底栏上方被 100vh 裁切；滑动仍露灰条；塔罗紫罩过深、解读按钮仍是复制文案。
-- 修改：
-  - `miniapp/src/app.scss` 增加 `.tab-page` 按底栏高度让位，`.tab-page__scroll` 加宽 20rpx 把滚动条推出可视区；测试/记录/我的去掉 100vh。
-  - `MiniappTarotFlow.scss` 背景图透明度 .62→.88，紫罩减淡。
-  - `MiniappTarotReadingStage.tsx` 主按钮改为 `openType="share"`「分享给好友」，去掉复制解读。
-- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
-- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/config/testFlow.test.ts src/config/shareWiring.test.ts src/config/appConfig.test.ts` 通过（35 项）；`npm run build:weapp` 成功。未在开发者工具/真机点过底栏裁切、灰条和塔罗分享。
-
-## 2026-09-07 17:41 (UTC+8)
-
-- 原因：塔罗进度一卡一卡、抽牌飞上去偏慢；底栏预留裁切区仍切掉卡片，用户认为底栏在上层挡住即可。
-- 修改：
-  - 洗牌进度改 `requestAnimationFrame`；阶段条加 0.42s 过渡。
-  - 飞牌 900ms → 450ms。
-  - 去掉 `.tab-page` 底栏让位；内容仍可滑过底栏下方，栏本身盖住。
-- 未修改：未收编本地 `project.config.json` / 根目录微信工程文件。
-- 验证：`npm test -- src/features/tarot/MiniappTarotFlow.styles.test.ts src/features/tarot/MiniappTarotShuffleStage.test.ts src/config/testFlow.test.ts` 通过（24 项）；`npm run build:weapp` 成功。未在开发者工具/真机点过洗牌、飞牌和底栏遮挡。
+- 原因：接续体验优化，原工作区保留配置与图标工具的无关改动；远端fetch因127.0.0.1:7897代理不可用失败，以本地main 3229b3d创建独立feat/experience-completion工作区。
+- 修改：接续上一轮首页、答题页、报告页、我的页与haptics未提交改动。新增miniapp/src/domain/experience.test.ts，先锁定未答题数量、过半语义、每日四分类轮换边界。
+- 非目标：不改广告，不改kit，不发布COS，不合main，不收编微信项目配置或make-tabbar-icons.cjs。
+- 说明：本文件记录当前独立工作区变更；原工作区context.md完整历史保留未动，提交前将恢复基线历史并追加本轮日志。

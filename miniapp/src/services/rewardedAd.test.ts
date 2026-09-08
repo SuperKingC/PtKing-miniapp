@@ -16,10 +16,10 @@ function makeWxMock(adBehavior: Partial<AdSpy>) {
     createRewardedVideoAd: () => ({
       show: adBehavior.show ?? (async () => {}),
       load: adBehavior.load ?? (async () => {}),
-      onClose: (cb) => {
+      onClose: (cb: Parameters<AdSpy['onClose']>[0]) => {
         closeCb = cb
       },
-      onError: (cb) => {
+      onError: (cb: Parameters<AdSpy['onError']>[0]) => {
         errorCb = cb
       },
     }),

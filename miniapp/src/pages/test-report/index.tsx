@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Button, Text, View } from '@tarojs/components'
+import { Button, Canvas, Input, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
+import { buildReportPresentation } from '../../domain/reportPresentation'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_ENTERTAINMENT_DISCLAIMER, APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
 import { renderShareCard } from '../../services/reportShareCard'
 import { showRewardedAd } from '../../services/rewardedAd'
+import { getReportFeedback, saveReportFeedback, type FeedbackLevel } from '../../services/reportFeedback'
 import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
 import { buildHistoryRows, loadTestRecords, unlockRecord, type TestRecord } from '../../services/testRecords'
 import './index.scss'
@@ -119,7 +121,7 @@ function FoldPanel({
 
 function formatDateLabel(iso: string): string {
   try {
-    return iso.slice(5, 10).replaceAll('-', '.')
+    return iso.slice(5, 10).replace(/-/g, '.')
   } catch {
     return iso
   }
@@ -155,7 +157,14 @@ export default function TestReportPage() {
   const [openScenes, setOpenScenes] = useState(false)
   const [openHistory, setOpenHistory] = useState(false)
   const [abortNote, setAbortNote] = useState('')
+  const [feedbackLevel, setFeedbackLevel] = useState<FeedbackLevel | null>(null)
+  const [feedbackNote, setFeedbackNote] = useState('')
+  const [feedbackReason, setFeedbackReason] = useState('')
   const locked = record?.locked === true && !adUnlocked
+  const report = useMemo(
+    () => (record && definition ? record.reportSnapshot ?? definition.reports[record.result.reportId] : undefined),
+    [definition, record],
+  )
   const related = useMemo(() => {
     if (!definition) return null
     return listTestDefinitions().find((item) => item.category === definition.category && item.id !== definition.id) ?? null
@@ -169,7 +178,7 @@ export default function TestReportPage() {
       trackEvent('report_unlock', { testId: definition?.id ?? '', outcome })
       if (outcome === 'aborted') {
         setAbortNote('需要看完视频才能解锁报告。也可以先回测试中心，报告会留在记录里。')
-        wx.showToast({ title: '看完视频才能解锁报告哦', icon: 'none' })
+        Taro.showToast({ title: '看完视频才能解锁报告哦', icon: 'none' })
       } else {
         setAbortNote('')
         unlockRecord(record.testId, record.finishedAt)
@@ -184,6 +193,9 @@ export default function TestReportPage() {
   useEffect(() => {
     if (definition && record) {
       trackEvent('report_view', { testId: definition.id, locked: record.locked === true })
+      const existing = getReportFeedback(record.testId, record.finishedAt)
+      setFeedbackLevel(existing?.level ?? null)
+      setFeedbackReason(existing?.reason ?? '')
     }
   }, [definition, record])
 
@@ -239,7 +251,7 @@ export default function TestReportPage() {
   const [shareImagePath, setShareImagePath] = useState('')
   useEffect(() => {
     if (!definition || !record) return
-    const sharedReport = definition.reports[record.result.reportId]
+    const sharedReport = report
     if (!sharedReport) return
     let cancelled = false
     renderShareCard('share-card-canvas', {
@@ -252,15 +264,15 @@ export default function TestReportPage() {
     return () => {
       cancelled = true
     }
-  }, [definition, record])
+  }, [definition, record, report])
 
   // 好友转发：结果型标题（不剧透具体题目）+ 结果卡片图 + 直达该测试详情页引导开测
   useShareAppMessage(() => {
-    const report = definition && record ? definition.reports[record.result.reportId] : null
+    const sharedReport = report
     trackEvent('report_share', { testId: definition?.id ?? '' })
     return {
-      title: report
-        ? `我在 ${definition!.title} 里测出了「${report.title}」，你也来试试`
+      title: sharedReport
+        ? `我在 ${definition!.title} 里测出了「${sharedReport.title}」，你也来试试`
         : APP_SHARE_TITLE,
       path: definition ? `/pages/test-detail/index?testId=${definition.id}` : undefined,
       imageUrl: shareImagePath || undefined,
@@ -269,10 +281,10 @@ export default function TestReportPage() {
 
   // 朋友圈分享：单页模式打开，仅带结果型标题
   useShareTimeline(() => {
-    const report = definition && record ? definition.reports[record.result.reportId] : null
+    const sharedReport = report
     return {
-      title: report
-        ? `我在 ${definition!.title} 里测出了「${report.title}」`
+      title: sharedReport
+        ? `我在 ${definition!.title} 里测出了「${sharedReport.title}」`
         : APP_SHARE_TITLE,
       imageUrl: shareImagePath || undefined,
     }
@@ -286,7 +298,7 @@ export default function TestReportPage() {
           className="test-report__action"
           hoverClass="none"
           onClick={() => {
-            wx.switchTab({ url: '/pages/test/index' })
+            Taro.switchTab({ url: '/pages/test/index' })
           }}
         >
           <Text>去测试中心</Text>
@@ -324,7 +336,7 @@ export default function TestReportPage() {
             className="test-report__gate-back"
             hoverClass="none"
             onClick={() => {
-              wx.switchTab({ url: '/pages/test/index' })
+              Taro.switchTab({ url: '/pages/test/index' })
             }}
           >
             <Text>先回测试中心</Text>
@@ -334,7 +346,6 @@ export default function TestReportPage() {
     )
   }
 
-  const report = definition.reports[record.result.reportId]
   if (!report) {
     return (
       <View className={`test-report theme-${theme}`}>
@@ -361,6 +372,22 @@ export default function TestReportPage() {
 
   // 历史对比：多测同测试时展示本次 + 往前最多 3 次，band 模式带与上一次的分差
   const historyRows = buildHistoryRows(history)
+  const presentation = buildReportPresentation({
+    score: bandScore,
+    top: report.title,
+    second: runnerUp?.title,
+    previous: history[1] ? history[1].reportSnapshot?.title ?? definition.reports[history[1].result.reportId]?.title ?? null : null,
+  })
+  const submitFeedback = (level: FeedbackLevel) => {
+    const saved = saveReportFeedback({ testId: record.testId, finishedAt: record.finishedAt, level, reason: feedbackReason.trim() })
+    if (!saved.ok) {
+      setFeedbackNote(saved.error ?? '保存失败，请稍后重试')
+      return
+    }
+    setFeedbackLevel(level)
+    setFeedbackNote('已保存在本机，不会上传你的答题内容。')
+    trackEvent('report_feedback', { testId: definition.id, level })
+  }
 
   return (
     <View className={`test-report theme-${theme}`}>
@@ -384,7 +411,9 @@ export default function TestReportPage() {
 
       <View className="test-report__panel">
         <Text className="test-report__panel-title">这次可能更接近</Text>
-        <Text className="test-report__summary">{report.summary}</Text>
+        <Text className="test-report__note">{presentation.typeNote}</Text>
+          <Text className="test-report__summary">{report.summary}</Text>
+        <Text className="test-report__explain">{presentation.scoreNote} {presentation.typeNote}</Text>
         {report.detail.slice(0, 3).map((line) => (
           <View key={line.slice(0, 10)} className="test-report__detail-item">
             <Text className="test-report__detail-dot">·</Text>
@@ -402,6 +431,7 @@ export default function TestReportPage() {
       {record.result.dimensionScores.length > 0 && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">维度倾向</Text>
+          <Text className="test-report__note">{presentation.scoreNote}</Text>
           {record.result.dimensionScores.map((dim) => {
             const [leftLabel, rightLabel] = dim.label.split(' ↔ ')
             const leaningLeft = dim.percent >= 50
@@ -427,8 +457,9 @@ export default function TestReportPage() {
       {factorScores.length >= 3 && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">因素雷达</Text>
+          <Text className="test-report__note">{presentation.scoreNote}</Text>
           <View className="test-report__radar-wrap">
-            <canvas type="2d" id="report-factor-radar" className="test-report__radar" />
+            <Canvas type="2d" id="report-factor-radar" className="test-report__radar" />
           </View>
           <View className="test-report__factor-list">
             {factorScores.map((factor) => (
@@ -447,9 +478,10 @@ export default function TestReportPage() {
       {votes && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">倾向分布</Text>
+          <Text className="test-report__note">{presentation.scoreNote}</Text>
           {votes.list.length >= 3 && (
             <View className="test-report__radar-wrap">
-              <canvas type="2d" id="report-archetype-radar" className="test-report__radar" />
+              <Canvas type="2d" id="report-archetype-radar" className="test-report__radar" />
             </View>
           )}
           {votes.list.map((vote) => {
@@ -480,6 +512,7 @@ export default function TestReportPage() {
       {bandScore !== null && bands.length > 0 && bandIndex !== null && (
         <View className="test-report__panel">
           <Text className="test-report__panel-title">分数刻度</Text>
+          <Text className="test-report__note">{presentation.scoreNote}</Text>
           <View className="test-report__band-score">
             <Text className="test-report__band-value">{bandScore}</Text>
             <Text className="test-report__band-unit">分 · {bandLabels[bandIndex]}</Text>
@@ -510,14 +543,14 @@ export default function TestReportPage() {
               className="test-report__history-row"
               hoverClass="none"
               onClick={() => {
-                wx.redirectTo({
+                Taro.redirectTo({
                   url: `/pages/test-report/index?testId=${definition.id}&finishedAt=${encodeURIComponent(row.record.finishedAt)}`,
                 })
               }}
             >
               <Text className="test-report__history-attempt">第 {row.attempt} 次</Text>
               <Text className="test-report__history-title">
-                {definition.reports[row.record.result.reportId]?.title ?? row.record.resultTitle ?? row.record.result.reportId}
+                {row.record.reportSnapshot?.title ?? definition.reports[row.record.result.reportId]?.title ?? row.record.result.reportId}
               </Text>
               <Text className="test-report__history-date">{formatDateLabel(row.record.finishedAt)}</Text>
               {typeof row.record.result.bandScore === 'number' && (
@@ -602,7 +635,7 @@ export default function TestReportPage() {
         className="test-report__action"
         hoverClass="none"
         onClick={() => {
-          wx.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
+          Taro.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
         }}
       >
         <Text>再测一次</Text>
@@ -612,15 +645,47 @@ export default function TestReportPage() {
           className="test-report__related"
           hoverClass="none"
           onClick={() => {
-            wx.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
+            Taro.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
           }}
         >
           <Text>再看一个相关测试 · {related.title}</Text>
         </View>
       )}
+      <View className="test-report__panel">
+        <Text className="test-report__panel-title">这份结果像你吗</Text>
+        <Text className="test-report__note">{presentation.retestNote}</Text>
+        <View className="test-report__feedback-row">
+          {([
+            ['like', '很像我'],
+            ['partial', '部分符合'],
+            ['unlike', '不太像'],
+          ] as Array<[FeedbackLevel, string]>).map(([level, label]) => (
+            <View
+              key={level}
+              className={feedbackLevel === level ? 'test-report__chip test-report__chip--on' : 'test-report__chip'}
+              hoverClass="none"
+              onClick={() => submitFeedback(level)}
+            >
+              <Text>{label}</Text>
+            </View>
+          ))}
+        </View>
+        <Input
+          className="test-report__feedback-input"
+          value={feedbackReason}
+          placeholder="可选：哪里不太像（保存在本机）"
+          maxlength={80}
+          onInput={(event) => setFeedbackReason(event.detail.value)}
+        />
+        {feedbackNote && <Text className="test-report__note">{feedbackNote}</Text>}
+      </View>
       <Button className="test-report__share" openType="share" hoverClass="none">
         分享给好友
       </Button>
+      <Button className="test-report__feedback" openType="contact" hoverClass="none">
+        结果不太像你？告诉我们
+      </Button>
+      <Text className="test-report__closing">这不是给你定型，只是帮助你看见一个当下的自己。如果没有共鸣，也不必勉强对号入座。</Text>
       <View
         className="test-report__back"
         hoverClass="none"
@@ -631,7 +696,7 @@ export default function TestReportPage() {
         <Text>回到测试中心</Text>
       </View>
       {/* 分享卡片绘制专用隐藏画布（5:4，导出临时图后由微信转存），不参与页面展示 */}
-      <canvas type="2d" id="share-card-canvas" className="test-report__share-canvas" />
+      <Canvas type="2d" id="share-card-canvas" className="test-report__share-canvas" />
     </View>
   )
 }

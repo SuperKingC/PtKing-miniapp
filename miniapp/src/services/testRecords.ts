@@ -1,4 +1,4 @@
-import type { TestResult } from '../domain/testEngine'
+import type { TestResult, TestReport } from '../domain/testEngine'
 import { isRewardedAdConfigured } from './rewardedAd'
 import { getWxGlobal } from './wxGlobal'
 
@@ -19,6 +19,10 @@ export interface TestRecord {
   result: TestResult
   /** 报告解锁状态：新完成的记录 locked=true，看完激励视频后置 false；undefined 视为已解锁（旧记录） */
   locked?: boolean
+  /** 内容版本签名 */
+  contentSignature?: string
+  /** 保存时报告快照，避免 COS 更新重解释旧记录 */
+  reportSnapshot?: TestReport
   /** 落库时的测试标题快照：测试下架后记录页仍可展示 */
   testTitle?: string
   /** 落库时的报告标题快照 */
@@ -39,12 +43,12 @@ function readStorage(): unknown {
   }
 }
 
-function writeStorage(payload: TestRecord[]): void {
+function writeStorage(payload: TestRecord[]): boolean {
   try {
-    // 读侧 parseTestRecords 只认 JSON 字符串，写侧必须同样序列化（保类型存数组会导致读永远为空）
     getWxGlobal()?.setStorageSync?.(STORAGE_KEY, JSON.stringify(payload))
+    return true
   } catch {
-    // 存储写入失败不阻断流程（记录是增强功能，不是主链路）
+    return false
   }
 }
 
@@ -91,12 +95,15 @@ export interface SaveRecordMeta {
   /** 测试标题快照 */
   testTitle?: string
   /** 报告标题快照 */
-  resultTitle?: string
-}
+  /** 报告快照 */
+  reportSnapshot?: TestReport
+  /** 内容签名 */
+  contentSignature?: string
+} 
 
-export function saveTestRecord(testId: string, result: TestResult, meta: SaveRecordMeta = {}): void {
+export function saveTestRecord(testId: string, result: TestResult, meta: SaveRecordMeta = {}): boolean {
   const record: TestRecord = { testId, finishedAt: new Date().toISOString(), result, ...meta }
-  writeStorage(appendRecord(loadTestRecords(), record))
+  return writeStorage(appendRecord(loadTestRecords(), record))
 }
 
 /** 纯函数核心（可单测）：按 testId+finishedAt 精确把一条记录标记为已解锁 */
@@ -108,6 +115,13 @@ export function markRecordUnlocked(records: TestRecord[], testId: string, finish
 
 export function unlockRecord(testId: string, finishedAt: string): void {
   writeStorage(markRecordUnlocked(loadTestRecords(), testId, finishedAt))
+}
+
+export function deleteTestRecord(testId: string, finishedAt: string): boolean {
+  const current = loadTestRecords()
+  const next = current.filter((item) => !(item.testId === testId && item.finishedAt === finishedAt))
+  if (next.length === current.length) return false
+  return writeStorage(next)
 }
 
 export function clearTestRecords(): void {
@@ -134,10 +148,14 @@ export function buildHistoryRows(history: TestRecord[], maxRows = 4): HistoryRow
     const older = history[index + 1]
     const currentScore = typeof record.result.bandScore === 'number' ? record.result.bandScore : null
     const olderScore = older && typeof older.result.bandScore === 'number' ? older.result.bandScore : null
+    const comparable = Boolean(
+      older
+      && (!record.contentSignature || !older.contentSignature || record.contentSignature === older.contentSignature),
+    )
     rows.push({
       attempt: history.length - index,
       record,
-      delta: currentScore !== null && olderScore !== null ? currentScore - olderScore : null,
+      delta: comparable && currentScore !== null && olderScore !== null ? currentScore - olderScore : null,
     })
   }
   return rows

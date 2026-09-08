@@ -18,12 +18,15 @@ export interface TestDraft {
 }
 
 export function getTestContentSignature(definition: TestDefinition): string {
-  return JSON.stringify(
-    definition.questions.map((question) => ({
-      text: question.text,
-      options: question.options.map((option) => option.text),
-    })),
-  )
+  // 仅用于内容版本识别，不作密码学或安全校验。包含计分权重，避免同文不同分。
+  const content = JSON.stringify({ questions: definition.questions, scoring: definition.scoring })
+  let first = 2166136261
+  let second = 5381
+  for (let i = 0; i < content.length; i += 1) {
+    first = Math.imul(first ^ content.charCodeAt(i), 16777619)
+    second = Math.imul(second, 33) ^ content.charCodeAt(i)
+  }
+  return `v2:${content.length}:${(first >>> 0).toString(16)}:${(second >>> 0).toString(16)}`
 }
 
 function storageKey(testId: string): string {
@@ -157,10 +160,10 @@ export function offerResumeTestDraft(draft: TestDraft): Promise<boolean> {
         confirmText: '继续答题',
         cancelText: '重新开始',
         success: (result) => resolve(result.confirm === true),
-        fail: () => resolve(false),
+        fail: () => resolve(true),
       })
     } catch {
-      resolve(false)
+      resolve(true)
     }
   })
 }

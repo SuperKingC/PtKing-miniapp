@@ -91,6 +91,30 @@
   color: var(--color-ink-secondary);
 }
 
+.test-detail__howto {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: var(--color-primary-soft);
+}
+
+.test-detail__howto-title,
+.test-detail__howto-text {
+  display: block;
+}
+
+.test-detail__howto-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.test-detail__howto-text {
+  margin-top: 10rpx;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-secondary);
+  line-height: 1.6;
+}
+
 .test-detail__disclaimer {
   display: block;
   margin-top: 28rpx;

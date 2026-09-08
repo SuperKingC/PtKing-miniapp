@@ -49,6 +49,17 @@ function mockWx(storage: Map<string, unknown>, showModal?: (options: Record<stri
 }
 
 describe('testDrafts', () => {
+  it('内容签名紧凑且计分改变会失效；报告措辞改变不影响答案', () => {
+    const signature = getTestContentSignature(definition)
+    expect(signature.length).toBeLessThan(40)
+    expect(getTestContentSignature({ ...definition, scoring: { ...definition.scoring, max: 3 } as TestDefinition['scoring'] })).not.toBe(signature)
+    expect(getTestContentSignature({ ...definition, notice: '新说明' })).toBe(signature)
+  })
+  it('弹窗调用失败不丢弃草稿', async () => {
+    ;(globalThis as { wx?: unknown }).wx = { showModal: () => { throw Error('unavailable') } }
+    await expect(offerResumeTestDraft(draft)).resolves.toBe(true)
+    delete (globalThis as { wx?: unknown }).wx
+  })
   it('round-trips a draft and rejects a changed question definition', () => {
     const storage = new Map<string, unknown>()
     mockWx(storage)
@@ -144,7 +155,7 @@ describe('testDrafts', () => {
     expect(play).toContain('clearTestDraft')
     expect(play).toContain('offerResumeTestDraft')
     expect(play).toContain('warnBeforeLeavingPlay')
-    expect(play).toContain('((qIndex + 1) / total) * 100')
+    expect(play).toContain('getPlayProgress(answers.length, total)')
     expect(play).toContain("trackEvent('test_answer'")
     expect(play).not.toMatch(/getStorageSync|setStorageSync|showModal/)
   })

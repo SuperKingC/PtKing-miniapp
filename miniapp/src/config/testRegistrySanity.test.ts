@@ -75,6 +75,8 @@ describe('test registry sanity (all published tests)', () => {
       expect(def.notice).toBeTruthy()
       // 产品基准（2026-09）：题太少用户会觉得「不准」，全部上架测试不得低于 MIN_QUESTIONS
       expect(def.questions.length).toBeGreaterThanOrEqual(MIN_QUESTIONS)
+      expect(def.meta.minutes).toBeGreaterThanOrEqual(Math.ceil(def.questions.length * 8 / 60))
+      expect(def.meta.minutes).toBeLessThanOrEqual(Math.ceil(def.questions.length * 20 / 60) + 1)
       // 题目选项齐全、无重复文案
       for (const question of def.questions) {
         expect(question.options.length).toBeGreaterThanOrEqual(2)

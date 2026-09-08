@@ -8,6 +8,7 @@ import { MiniappTarotCutStage } from './MiniappTarotCutStage'
 import { MiniappTarotFanStage } from './MiniappTarotFanStage'
 import { MiniappTarotRevealStage } from './MiniappTarotRevealStage'
 import { MiniappTarotReadingStage } from './MiniappTarotReadingStage'
+import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { MiniappTarotHistoryPanel } from './MiniappTarotHistoryPanel'
 import { getTarotSanctuaryBackground, preloadTarotResources } from './tarotAssets'
 import { createTarotCandidates } from './tarotCards'
@@ -26,6 +27,7 @@ const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 're
 
 export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFlowProps) {
   const [state, dispatch] = useReducer(tarotFlowReducer, undefined, createInitialTarotFlow)
+  const motionPreference = useMotionPreference()
   const [historyOpen, setHistoryOpen] = useState(false)
   const [leaving, setLeaving] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
@@ -108,7 +110,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
   }
 
   return (
-    <View className={['miniapp-tarot', leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')}>
+    <View className={['miniapp-tarot', `motion-${motionPreference}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')}>
       <Image
         className="miniapp-tarot__background"
         src={getTarotSanctuaryBackground()}

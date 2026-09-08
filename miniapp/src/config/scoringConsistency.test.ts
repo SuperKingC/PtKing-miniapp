@@ -35,6 +35,7 @@ function expectedArchetypeReport(def: TestDefinition, answers: number[]): string
   const counts = new Map<string, number>()
   answers.forEach((answer, qIndex) => {
     const reportId = def.questions[qIndex].options[answer].reportId
+    if (typeof reportId !== 'string') throw new Error('archetype option missing reportId')
     counts.set(reportId, (counts.get(reportId) ?? 0) + 1)
   })
   let best = -1

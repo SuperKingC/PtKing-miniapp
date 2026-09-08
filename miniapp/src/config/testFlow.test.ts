@@ -29,7 +29,8 @@ describe('test flow pages (M1)', () => {
     expect(detail).toContain('/pages/test-play/index?testId=')
     expect(play).toContain('scoreTest(')
     expect(play).toContain('saveTestRecord(')
-    expect(play).toContain('wx.redirectTo({ url: `/pages/test-report/index?testId=${definition.id}` })')
+    expect(play).toContain('wx.redirectTo({')
+    expect(play).toContain('/pages/test-report/index?testId=${encodeURIComponent(definition.id)}')
     expect(report).toContain('loadTestRecords()')
   })
 
@@ -44,7 +45,7 @@ describe('test flow pages (M1)', () => {
 
   it('gives conditional report radar canvases unique IDs and selects the matching chart', () => {
     const report = readFileSync(resolve(miniappRoot(), 'src/pages/test-report/index.tsx'), 'utf8')
-    const canvasIds = [...report.matchAll(/<canvas\b[^>]*\bid="([^"]+)"/g)].map((match) => match[1])
+    const canvasIds = [...report.matchAll(/<(?:canvas|Canvas)\b[^>]*\bid="([^"]+)"/g)].map((match) => match[1])
     const radarIds = canvasIds.filter((id) => id.endsWith('-radar'))
 
     expect(radarIds).toHaveLength(2)
@@ -69,7 +70,7 @@ describe('test flow pages (M1)', () => {
     const detail = readFileSync(resolve(miniappRoot(), 'src/pages/test-detail/index.tsx'), 'utf8')
     expect(records).toContain('useDidShow')
     expect(records).toContain('setRecords(loadTestRecords())')
-    expect(records).toContain("wx.switchTab({ url: '/pages/test/index' })")
+    expect(records).toMatch(/switchTab\(\{ url: '\/pages\/test\/index' \}\)/)
     expect(detail).toContain('clearTestDraft')
     expect(detail).toContain('重新开始')
   })

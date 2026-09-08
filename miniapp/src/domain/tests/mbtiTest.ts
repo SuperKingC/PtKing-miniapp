@@ -1,8 +1,8 @@
-import type { TestDefinition } from './testEngine'
+import type { TestDefinition } from '../testEngine'
 
 /**
  * MBTI 人格测试（M1 迁移自 Pet10 domain/mbtiTest.ts）：
- * 28 题（四维度各 7 题、二选一），dimension 计分多数票定四字母 → 16 型报告。
+ * 44 题（四维度各 11 题、二选一），dimension 计分多数票定四字母 → 16 型报告。
  * 迁移时对 3 处原 Pet10「小多利」品牌措辞做了中性化改写。
  * 深度解读（付费位）M2 后补；报告文案属产品内容资产，未来随题目一起迁 COS。
  */
@@ -16,7 +16,11 @@ const QUESTIONS: TestDefinition['questions'] = [
   { dim: 'EI', text: '参加聚会之后，你通常？', options: [{ text: '越聊越有精神' }, { text: '需要独处恢复能量' }] },
   { dim: 'EI', text: '遇到有趣的事，你会？', options: [{ text: '马上分享给别人' }, { text: '先自己慢慢消化' }] },
   { dim: 'EI', text: '表达想法时，你更喜欢？', options: [{ text: '边说边理清思路' }, { text: '想清楚后再开口' }] },
-  { dim: 'EI', text: '认识新朋友时，你通常？', options: [{ text: '主动找话题' }, { text: '等对方先靠近' }] },
+  { dim: 'EI', text: '需要做重要决定时，你倾向？', options: [{ text: '找人聊聊再定' }, { text: '独自想清楚再定' }] },
+  { dim: 'EI', text: '连续忙了一天后，你更想？', options: [{ text: '找朋友吃饭聊天' }, { text: '安静待着恢复电量' }] },
+  { dim: 'EI', text: '表达开心时，你通常？', options: [{ text: '会直接表现出来' }, { text: '心里开心但不一定说' }] },
+  { dim: 'EI', text: '新项目开始时，你更享受？', options: [{ text: '和大家一起热场' }, { text: '先独自打磨想法' }] },
+  { dim: 'EI', text: '休息日突然被邀请出门，你通常？', options: [{ text: '很乐意一起去' }, { text: '先想自己还能不能静一静' }] },
   { dim: 'SN', text: '看一幅画，你先注意到？', options: [{ text: '它让你联想到什么' }, { text: '它的颜色和线条本身' }] },
   { dim: 'SN', text: '朋友讲计划时，你更关心？', options: [{ text: '背后的可能性与愿景' }, { text: '具体怎么一步步落地' }] },
   { dim: 'SN', text: '你更相信？', options: [{ text: '直觉和第六感' }, { text: '亲眼所见的事实' }] },
@@ -37,7 +41,19 @@ const QUESTIONS: TestDefinition['questions'] = [
   { dim: 'JP', text: '桌面或房间的整洁度？', options: [{ text: '乱会让我烦躁' }, { text: '乱中有序挺好' }] },
   { dim: 'JP', text: '任务截止前，你的状态？', options: [{ text: '早就完成大部分' }, { text: '最后冲刺效率最高' }] },
   { dim: 'JP', text: '突然被打乱计划，你会？', options: [{ text: '有点烦躁' }, { text: '无所谓，随遇而安' }] },
-  { dim: 'JP', text: '养宠物这件事，你更偏向？', options: [{ text: '定时定点照顾' }, { text: '想起来就宠一下' }] },
+  { dim: 'SN', text: '学习新东西时，你更喜欢？', options: [{ text: '先理解整体概念' }, { text: '先照着实例练习' }] },
+  { dim: 'SN', text: '买东西时，你更在意？', options: [{ text: '它有没有独特巧思' }, { text: '它是否耐用实在' }] },
+  { dim: 'SN', text: '面对新规则，你会先？', options: [{ text: '想想有没有别的用法' }, { text: '确认具体要求是什么' }] },
+  { dim: 'SN', text: '面对一个陌生城市，你更想先？', options: [{ text: '想象它可能带给你什么感觉' }, { text: '先弄清路线、街区和必去地点' }] },
+  { dim: 'TF', text: '给朋友提建议时，你更重视？', options: [{ text: '方案是否有效' }, { text: '对方是否容易接受' }] },
+  { dim: 'TF', text: '团队意见不一时，你会？', options: [{ text: '比较证据和逻辑' }, { text: '先照顾每个人的感受' }] },
+  { dim: 'TF', text: '评价一部作品时，你更看重？', options: [{ text: '完成度和结构' }, { text: '它带来的共鸣' }] },
+  { dim: 'TF', text: '别人犯错时，你第一反应？', options: [{ text: '找出原因避免再犯' }, { text: '先确认对方是不是难受' }] },
+  { dim: 'JP', text: '开始一天时，你更喜欢？', options: [{ text: '先列出优先顺序' }, { text: '看当下最想做什么' }] },
+  { dim: 'JP', text: '买票或订房时，你通常？', options: [{ text: '提前安排好' }, { text: '临近再看也来得及' }] },
+  { dim: 'JP', text: '周末计划临时空出来，你会？', options: [{ text: '马上安排一件事' }, { text: '享受没有安排的自由' }] },
+  { dim: 'JP', text: '完成任务后，你更想？', options: [{ text: '顺手整理并规划下一步' }, { text: '先放下，等感觉来了再说' }] },
+  { dim: 'JP', text: '面对截止日期临近的任务，你更常？', options: [{ text: '再拆一次步骤，确保按计划收尾' }, { text: '先做最有感觉的部分，边做边调整' }] },
 ]
 
 interface MbtiDeepFields {
@@ -328,10 +344,10 @@ export const MBTI_TEST: TestDefinition = {
   id: 'mbti',
   title: 'MBTI 人格测试',
   category: '人格',
-  meta: { minutes: 5, resultLabel: '16 型 · 解析' },
+  meta: { minutes: 7, resultLabel: '16 型 · 解析' },
   intro: [
-    '你是天生的理想主义者、逻辑分析家，还是现实的执行者？该测试基于 MBTI 人格理论，采用 28 道精选题目，帮助你快速判断自己的性格偏好类型。',
-    '该测试仅需 3~5 分钟，涵盖外向/内向、直觉/实感、思考/情感、计划/随性四大维度，帮助你了解自己在社交、决策与生活节奏中的天然倾向。',
+    '你是天生的理想主义者、逻辑分析家，还是现实的执行者？该测试基于 MBTI 人格理论，采用 44 道精选题目，帮助你快速判断自己的性格偏好类型。',
+    '该测试约需 7 分钟，涵盖外向/内向、直觉/实感、思考/情感、计划/随性四大维度，帮助你了解自己在社交、决策与生活节奏中的天然倾向。题目比短测更多，方便观察四个维度的稳定倾向。',
   ],
   notice: '该测试为趣味向内容，包含个人类型、类型解析与建议。感谢你的理解与支持。',
   questions: QUESTIONS,

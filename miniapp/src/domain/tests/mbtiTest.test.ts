@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { MBTI_TEST } from './mbtiTest'
+
+describe('MBTI题库质量', () => {
+  it('四维各11题且题干不重复', () => {
+    expect(MBTI_TEST.questions).toHaveLength(44)
+    expect(new Set(MBTI_TEST.questions.map((q) => q.text)).size).toBe(44)
+    for (const dim of ['EI', 'SN', 'TF', 'JP']) {
+      expect(MBTI_TEST.questions.filter((q) => q.dim === dim)).toHaveLength(11)
+    }
+  })
+})
 import { scoreTest } from '../testEngine'
 
 const DIM_IDS = ['EI', 'SN', 'TF', 'JP'] as const
@@ -19,16 +29,16 @@ function answersFor(type: string): number[] {
 }
 
 describe('MBTI test definition', () => {
-  it('keeps the migrated 28-question structure with 2 options each', () => {
-    expect(MBTI_TEST.questions).toHaveLength(28)
+  it('keeps the migrated 44-question structure with 2 options each', () => {
+    expect(MBTI_TEST.questions).toHaveLength(44)
     for (const question of MBTI_TEST.questions) {
       expect(question.options).toHaveLength(2)
       expect(DIM_IDS).toContain(question.dim)
     }
-    expect(MBTI_TEST.questions.filter((q) => q.dim === 'EI')).toHaveLength(7)
-    expect(MBTI_TEST.questions.filter((q) => q.dim === 'SN')).toHaveLength(7)
-    expect(MBTI_TEST.questions.filter((q) => q.dim === 'TF')).toHaveLength(7)
-    expect(MBTI_TEST.questions.filter((q) => q.dim === 'JP')).toHaveLength(7)
+    expect(MBTI_TEST.questions.filter((q) => q.dim === 'EI')).toHaveLength(11)
+    expect(MBTI_TEST.questions.filter((q) => q.dim === 'SN')).toHaveLength(11)
+    expect(MBTI_TEST.questions.filter((q) => q.dim === 'TF')).toHaveLength(11)
+    expect(MBTI_TEST.questions.filter((q) => q.dim === 'JP')).toHaveLength(11)
   })
 
   it('defines all 16 reports with non-empty copy', () => {

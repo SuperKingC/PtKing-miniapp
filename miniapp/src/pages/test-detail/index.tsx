@@ -65,6 +65,11 @@ export default function TestDetailPage() {
           <Text className="test-detail__notice-body">{definition.notice}</Text>
         </View>
         <Text className="test-detail__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
+        <View className="test-detail__howto">
+          <Text className="test-detail__howto-title">你会看到</Text>
+          <Text className="test-detail__howto-text">{definition.scoring.type === 'factor' ? '维度雷达与倾向解读' : definition.scoring.type === 'dimension' ? '维度倾向与类型解读' : '结果类型、简要分析与行动建议'}</Text>
+          <Text className="test-detail__howto-text">没有标准答案，按最近的通常状态和第一反应选择即可。</Text>
+        </View>
       </View>
       <View
         className="test-detail__start"
