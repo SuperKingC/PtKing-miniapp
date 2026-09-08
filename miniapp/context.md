@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-08 10:26
+- 原因：按截图收口首页今日入口、报告底栏和我的页入口，并锁隐私页 View 导入。
+- 修改文件：`pages/test/index.tsx`/`index.scss`、`pages/test-report/index.tsx`/`index.scss`、`pages/me/index.tsx`、`config/shareWiring.test.ts`、`config/testFlow.test.ts`。
+
 - 时间：2026-09-08 10:01
 - 原因：收口 tsc 剩余错误。
 - 修改文件：`services/testRecords.ts`、`services/testRecords.test.ts`、`features/tarot/MiniappTarotFlow.tsx`、`MiniappTarotFanStage.tsx`、`tarotAssets.test.ts`。

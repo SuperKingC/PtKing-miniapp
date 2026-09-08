@@ -669,28 +669,6 @@ export default function TestReportPage() {
         </View>
       )}
 
-      <View
-        className="test-report__action"
-        hoverClass="none"
-        onClick={() => {
-          trackEvent('report_retest', { testId: definition.id })
-          Taro.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
-        }}
-      >
-        <Text>再测一次</Text>
-      </View>
-      {related && (
-        <View
-          className="test-report__related"
-          hoverClass="none"
-          onClick={() => {
-            trackEvent('report_related', { testId: definition.id, relatedId: related.id })
-            Taro.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
-          }}
-        >
-          <Text>再看一个相关测试 · {related.title}</Text>
-        </View>
-      )}
       <View className="test-report__panel">
         <Text className="test-report__panel-title">这份结果像你吗</Text>
         <Text className="test-report__note">{presentation.retestNote}</Text>
@@ -719,21 +697,46 @@ export default function TestReportPage() {
         />
         {feedbackNote && <Text className="test-report__note">{feedbackNote}</Text>}
       </View>
-      <Button className="test-report__share" openType="share" hoverClass="none">
-        分享给好友
-      </Button>
-      <Button className="test-report__feedback" openType="contact" hoverClass="none">
-        结果不太像你？告诉我们
-      </Button>
-      <Text className="test-report__closing">这不是给你定型，只是帮助你看见一个当下的自己。如果没有共鸣，也不必勉强对号入座。</Text>
-      <View
-        className="test-report__back"
-        hoverClass="none"
-        onClick={() => {
-          Taro.switchTab({ url: '/pages/test/index' })
-        }}
-      >
-        <Text>回到测试中心</Text>
+      <View className="test-report__footer">
+        <View
+          className="test-report__action"
+          hoverClass="none"
+          onClick={() => {
+            trackEvent('report_retest', { testId: definition.id })
+            Taro.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
+          }}
+        >
+          <Text>再测一次</Text>
+        </View>
+        {related && (
+          <View
+            className="test-report__related"
+            hoverClass="none"
+            onClick={() => {
+              trackEvent('report_related', { testId: definition.id, relatedId: related.id })
+              Taro.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
+            }}
+          >
+            <Text>再看一个相关测试 · {related.title}</Text>
+          </View>
+        )}
+        <View className="test-report__footer-row">
+          <Button className="test-report__share" openType="share" hoverClass="none">
+            分享给好友
+          </Button>
+          <View
+            className="test-report__back"
+            hoverClass="none"
+            onClick={() => {
+              Taro.switchTab({ url: '/pages/test/index' })
+            }}
+          >
+            <Text>回测试中心</Text>
+          </View>
+        </View>
+        <Button className="test-report__feedback" openType="contact" hoverClass="none">
+          结果不太像？告诉我们
+        </Button>
       </View>
       {/* 分享卡片绘制专用隐藏画布（5:4，导出临时图后由微信转存），不参与页面展示 */}
       <Canvas type="2d" id="share-card-canvas" className="test-report__share-canvas" />

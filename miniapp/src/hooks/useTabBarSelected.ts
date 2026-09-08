@@ -17,7 +17,7 @@ export function useTabBarSelected(index: number) {
   useDidShow(() => {
     Taro.eventCenter.trigger(TABBAR_SELECT_EVENT, index)
     const tabbar = (page as { getTabBar?: () => TabBarLike } | undefined)?.getTabBar?.()
-      ?? Taro.getCurrentInstance()?.page?.getTabBar?.()
+      ?? (Taro.getCurrentInstance()?.page?.getTabBar?.() as unknown as TabBarLike | undefined)
     tabbar?.setState?.({ selected: index })
   })
 }

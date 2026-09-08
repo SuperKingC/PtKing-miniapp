@@ -7,9 +7,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16rpx;
   margin-bottom: 24rpx;
-  padding: 32rpx 24rpx 32rpx 32rpx;
-  border-radius: 28rpx;
+  padding: 20rpx 16rpx 20rpx 28rpx;
+  border-radius: 24rpx;
   background: var(--color-card-bg);
   box-shadow: var(--shadow-card);
 }
@@ -21,8 +22,8 @@
 
 .test-page__hero-img {
   flex-shrink: 0;
-  width: 180rpx;
-  height: 180rpx;
+  width: 240rpx;
+  height: 240rpx;
 }
 
 .test-page__hero-kicker {
@@ -34,16 +35,10 @@
 
 .test-page__hero-title {
   display: block;
-  font-size: var(--font-size-page-title);
+  font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-bold);
+  line-height: 1.35;
   color: var(--color-ink);
-}
-
-.test-page__hero-link {
-  display: block;
-  margin-top: 16rpx;
-  color: var(--color-primary);
-  font-size: var(--font-size-secondary);
 }
 
 .test-page__card-benefit {

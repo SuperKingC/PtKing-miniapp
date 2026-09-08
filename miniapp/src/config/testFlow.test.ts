@@ -94,9 +94,9 @@ describe('test flow pages (M1)', () => {
     expect(appStyles).toContain('calc(100% + 20rpx)')
   })
 
-  it('routes the me page records entry to the records tab', () => {
-    const me = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.tsx'), 'utf8')
-
-    expect(me).toContain("wx.switchTab({ url: '/pages/records/index' })")
+  it('imports View on the privacy page so weapp runtime can render sections', () => {
+    const privacy = readFileSync(resolve(miniappRoot(), 'src/pages/privacy/index.tsx'), 'utf8')
+    expect(privacy).toContain("from '@tarojs/components'")
+    expect(privacy).toMatch(/import \{[^}]*\bView\b[^}]*\} from '@tarojs\/components'/)
   })
 })

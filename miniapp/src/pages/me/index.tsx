@@ -21,10 +21,7 @@ import {
   type ThemePreference,
 } from '../../services/theme'
 import { APP_DISPLAY_NAME, APP_SHARE_TITLE, APP_TAGLINE } from '../../services/brand'
-import { listActiveTestDrafts } from '../../services/testDrafts'
-import { listTestDefinitions } from '../../services/testRegistry'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
-import { TAROT_HISTORY_OPEN_EVENT } from '../../features/tarot/tarotHistory'
 import meBannerImg from '../../assets/illus/me-banner.png'
 import './index.scss'
 
@@ -44,7 +41,6 @@ export default function MePage() {
   useTabBarSelected(3)
   const theme = useAppTheme()
   const [recordCount, setRecordCount] = useState(() => loadTestRecords().length)
-  const [draftCount, setDraftCount] = useState(() => listActiveTestDrafts(listTestDefinitions()).length)
   const [themePref, setThemePref] = useState(() => getThemePreference())
   const [haptics, setHaptics] = useState(() => isHapticsEnabled())
   const [motionPref, setMotionPref] = useState<MotionPreference>(() => getMotionPreference())
@@ -52,7 +48,6 @@ export default function MePage() {
   // tab 页常驻：每次回到本页刷新计数（刚测完/刚清空后回来数字要准）
   useDidShow(() => {
     setRecordCount(loadTestRecords().length)
-    setDraftCount(listActiveTestDrafts(listTestDefinitions()).length)
   })
 
   // 转发小程序（openType=share 之外的手动兜底入口），标题与首页一致
@@ -92,17 +87,7 @@ export default function MePage() {
     })
   }
 
-  const openTarotHistory = () => {
-    wx.switchTab({ url: '/pages/tarot/index' })
-    setTimeout(() => Taro.eventCenter.trigger(TAROT_HISTORY_OPEN_EVENT), 400)
-  }
-
   const ENTRIES: MeEntry[] = [
-    ...(draftCount > 0
-      ? [{ label: `未完成测试（${draftCount}）`, onTap: () => { wx.switchTab({ url: '/pages/test/index' }) } }]
-      : []),
-    { label: '已做测试', onTap: () => { wx.switchTab({ url: '/pages/records/index' }) } },
-    { label: '塔罗历史', onTap: openTarotHistory },
     { label: `清空测试记录${recordCount > 0 ? `（${recordCount} 条）` : ''}`, onTap: clearRecords },
     { label: '隐私政策与用户条款', onTap: () => { wx.navigateTo({ url: '/pages/privacy/index' }) } },
     { label: '分享给好友', contact: false },

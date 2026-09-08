@@ -13,7 +13,7 @@ export default defineAppConfig({
     color: '@tabColor',
     selectedColor: '@tabSelectedColor',
     backgroundColor: '@tabBgColor',
-    borderStyle: '@tabBorderStyle',
+    borderStyle: 'black',
     custom: true,
     list: [
       {

@@ -66,7 +66,7 @@ export default class CustomTabBar extends Component {
   }
 
   componentDidMount() {
-    this.ownRoute = Taro.getCurrentInstance()?.page?.route || currentRoute() || this.ownRoute
+    this.ownRoute = Taro.getCurrentInstance()?.page?.path || currentRoute() || this.ownRoute
     Taro.eventCenter.on(TABBAR_SELECT_EVENT, this.handleSelectEvent)
     Taro.eventCenter.on(THEME_CHANGE_EVENT, this.handleThemeEvent)
     this.setState({
