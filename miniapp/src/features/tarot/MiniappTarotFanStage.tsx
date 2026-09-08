@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type CSSProperties } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
 import type { TarotCandidate } from './tarotCards'
 import { getTarotCardBack } from './tarotAssets'
@@ -56,7 +56,7 @@ export function MiniappTarotFanStage({
               picked.includes(index) ? 'miniapp-tarot__fan-card--picked' : '',
             ].filter(Boolean).join(' ')}
             style={flyingCard === index
-              ? { '--fly-x': `${(picked.length - (needCount - 1) / 2) * (needCount === 5 ? 94 : 158)}rpx` }
+              ? { '--fly-x': `${(picked.length - (needCount - 1) / 2) * (needCount === 5 ? 94 : 158)}rpx` } as CSSProperties
               : undefined}
             disabled={picked.includes(index) || flyingCard !== undefined}
             onClick={() => onPick(index)}

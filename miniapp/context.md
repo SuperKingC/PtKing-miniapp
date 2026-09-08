@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-08 10:01
+- 原因：收口 tsc 剩余错误。
+- 修改文件：`services/testRecords.ts`、`services/testRecords.test.ts`、`features/tarot/MiniappTarotFlow.tsx`、`MiniappTarotFanStage.tsx`、`tarotAssets.test.ts`。
+
 - 时间：2026-09-08 09:50
 - 原因：全库文案精修、分享卡片分类语气、漏斗补全；塔罗资源未就绪不准进。
 - 修改文件：`domain/contentQuality.ts`、`domain/shareCopy.ts`、若干 `domain/tests/*`、`pages/test-detail`、`pages/test-play`、`pages/test-report`、`services/reportShareCard.ts`、`services/monitor.ts`、塔罗流程/牌阵/解读/历史文案。

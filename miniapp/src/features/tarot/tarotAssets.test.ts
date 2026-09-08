@@ -20,7 +20,7 @@ const downloadFile = vi.fn()
 describe('miniapp tarot assets', () => {
   beforeEach(() => {
     downloadFile.mockReset()
-    ;(globalThis as { wx?: { downloadFile: typeof downloadFile; getSystemInfoSync: () => { platform: string } } }).wx = {
+    ;(globalThis as { wx?: { downloadFile: (options: { url: string; success?: (result: unknown) => void; fail?: (error?: unknown) => void }) => void; getSystemInfoSync: () => { platform: string } } }).wx = {
       downloadFile: (options: { url: string; success?: (result: unknown) => void; fail?: (error?: unknown) => void }) => {
         Promise.resolve(downloadFile(options.url)).then(
           (result) => options.success?.(result),

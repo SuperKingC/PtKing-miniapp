@@ -16,7 +16,7 @@ import {
 const sample: TestRecord = {
   testId: 'mbti',
   finishedAt: '2026-09-02T10:00:00.000Z',
-  result: { reportId: 'INTJ', dimensionScores: [], bandScore: null },
+  result: { reportId: 'INTJ', dimensionScores: [], bandScore: null, factorScores: [] },
 }
 
 /** 锁定语义依赖「广告位已配置」：断言 locked=true 落库读回的用例需先注入广告位常量 */

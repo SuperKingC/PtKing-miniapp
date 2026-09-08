@@ -95,6 +95,7 @@ export interface SaveRecordMeta {
   /** 测试标题快照 */
   testTitle?: string
   /** 报告标题快照 */
+  resultTitle?: string
   /** 报告快照 */
   reportSnapshot?: TestReport
   /** 内容签名 */

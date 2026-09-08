@@ -70,16 +70,19 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
   useEffect(() => {
     const openHistory = () => setHistoryOpen(true)
     Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)
-    return () => Taro.eventCenter.off(TAROT_HISTORY_OPEN_EVENT, openHistory)
+    return () => {
+      Taro.eventCenter.off(TAROT_HISTORY_OPEN_EVENT, openHistory)
+    }
   }, [])
 
   // while the reading is on screen, register a tarot-flavored share title so
   // the page-level useShareAppMessage can invite friends with the result card
+  const reading = state.stage === 'reading' ? state.reading : null
   useEffect(() => {
-    if (state.stage !== 'reading' || !state.reading) return
-    onShareTitleChange?.(buildTarotShareTitle(state.reading))
+    if (!reading) return
+    onShareTitleChange?.(buildTarotShareTitle(reading))
     return () => onShareTitleChange?.('')
-  }, [state.stage, state.reading, onShareTitleChange])
+  }, [reading, onShareTitleChange])
 
   const createCandidates = () => createTarotCandidates(10)
 
