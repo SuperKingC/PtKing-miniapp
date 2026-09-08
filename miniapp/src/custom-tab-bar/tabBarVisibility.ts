@@ -2,9 +2,8 @@ export const TAROT_TAB_ROUTE = 'pages/tarot/index'
 export const TAROT_TAB_INDEX = 1
 
 /**
- * 自定义 tabBar 在 iOS 常是单例、安卓常是每 tab 一份，且都是 position:fixed。
- * 用「当前 webview 栈顶路由」对「选中 tab 路由」判断，不用页面对象身份
- * （Taro 真机包装对象 !== 栈顶页，会把记录页误藏）。
+ * 栏在官方槽里（非 fixed），后台页实例不会叠到当前页上。
+ * 只在塔罗全屏时藏栏；空路由或后台页不要藏，否则会留下点不中的官方白槽。
  */
 export function shouldHideCustomTabBar(
   webviewRoute: string,
@@ -13,12 +12,25 @@ export function shouldHideCustomTabBar(
   tarotRoute = TAROT_TAB_ROUTE,
   tarotIndex = TAROT_TAB_INDEX,
 ): boolean {
-  if (webviewRoute === tarotRoute) return true
+  if (tabPathToRoute(webviewRoute) === tarotRoute) return true
   if (selectedIndex === tarotIndex) return true
-  if (selectedRoute === tarotRoute) return true
-  return !webviewRoute || webviewRoute !== selectedRoute
+  if (tabPathToRoute(selectedRoute) === tarotRoute) return true
+  return false
 }
 
 export function tabPathToRoute(path: string): string {
   return path.replace(/^\//, '')
+}
+
+const TAB_ROUTES = [
+  'pages/test/index',
+  'pages/tarot/index',
+  'pages/records/index',
+  'pages/me/index',
+] as const
+
+/** 按当前页路由给出 tab 索引，避免新实例默认停在「测试」再闪到目标 tab */
+export function tabIndexFromRoute(route: string): number {
+  const index = (TAB_ROUTES as readonly string[]).indexOf(tabPathToRoute(route))
+  return index >= 0 ? index : 0
 }

@@ -271,4 +271,36 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(tabBarStyles).toContain('.tabbar--hidden')
     expect(tabBarStyles).toContain('display: none')
   })
+
+  it('lets a stored reading open into the same reading body as the live result', () => {
+    const historyPanel = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotHistoryPanel.tsx'), 'utf8')
+    const readingBody = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotReadingBody.tsx'), 'utf8')
+    const readingStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotReadingStage.tsx'), 'utf8')
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    expect(historyPanel).toContain('setSelected(item)')
+    expect(historyPanel).toContain('MiniappTarotReadingBody')
+    expect(historyPanel).toContain('返回记录')
+    expect(historyPanel).toContain('查看详情')
+    expect(readingStage).toContain('MiniappTarotReadingBody')
+    expect(readingBody).toContain('核心结论')
+    expect(readingBody).toContain('牌阵之间的关系')
+    expect(readingBody).toContain('未来 24 小时')
+    expect(styles).toContain('.miniapp-tarot-history__item-more')
+    expect(styles).toContain('.miniapp-tarot-history__scroll')
+  })
+
+  it('wires ritual haptics through the shared service instead of calling wx directly', () => {
+    const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+    const shuffleStage = fs.readFileSync(shuffleStagePath, 'utf8')
+
+    expect(flowSource).toContain("from '../../services/haptics'")
+    expect(flowSource).toContain("impactFeedback('medium')")
+    expect(flowSource).toContain("impactFeedback('heavy')")
+    expect(flowSource).toContain('longFeedback()')
+    expect(flowSource).not.toContain('vibrateShort')
+    expect(shuffleStage).toContain('startPulseHaptics()')
+    expect(shuffleStage).toContain('stopPulseHaptics()')
+    expect(shuffleStage).toContain("impactFeedback('heavy')")
+  })
 })

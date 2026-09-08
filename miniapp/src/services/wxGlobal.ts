@@ -37,6 +37,8 @@ export interface WxLike {
   }
   canvasToTempFilePath?: (options: Record<string, unknown>) => void
   vibrateShort?: (options?: { type?: 'heavy' | 'medium' | 'light' }) => void
+  vibrateLong?: () => void
+  switchTab?: (options: { url: string; success?: () => void; fail?: (error?: unknown) => void }) => void
   downloadFile?: (options: {
     url: string
     success?: (result: { statusCode?: number; tempFilePath?: string }) => void

@@ -11,10 +11,10 @@ import {
 
 /**
  * 全局主题 hook（页面层接线用）：
- * 偏好（auto/light/dark，storage 持久化）+ 系统主题 → 最终主题。
+ * 偏好（light/dark，storage 持久化）→ 最终主题，不跟随系统。
  * - 主题偏好变更走 eventCenter 广播（tab 页常驻，切偏好时在页更新根类名）。
  * - 同时返回「最终主题」，页面根节点挂 theme-light / theme-dark 类名。
- * - 导航栏与窗口底色的动态覆盖在此统一执行（跟随系统时与 theme.json 同值）。
+ * - 导航栏与窗口底色的动态覆盖在此统一执行。
  * 塔罗页不接此 hook：沉浸式深色页面，不参与主题切换。
  */
 export function useAppTheme(): ResolvedTheme {

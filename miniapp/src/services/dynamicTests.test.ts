@@ -40,6 +40,12 @@ describe('dynamicTests loader', () => {
     expect(requestMock).not.toHaveBeenCalled()
   })
 
+  it('skips placeholder COS roots instead of issuing a 400 request', async () => {
+    const { loadDynamicTests } = await import('./dynamicTests')
+    await loadDynamicTests('https://placeholder.cos.ap-guangzhou.myqcloud.com/ptking-web/local-dev')
+    expect(requestMock).not.toHaveBeenCalled()
+  })
+
   it('fetches from the versioned asset root with a finite timeout and applies valid definitions', async () => {
     requestMock.mockImplementation(({ url, timeout, success }) => {
       expect(url).toBe('https://cos.example.com/assets/v2/tests/registry-v1.json')

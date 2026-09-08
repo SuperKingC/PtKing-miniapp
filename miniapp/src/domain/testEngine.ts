@@ -277,6 +277,14 @@ export function findBandIndex(def: TestDefinition, score: number): number | null
  * 雷达图几何纯函数（factor 模式报告页 canvas 用）：返回各顶点画布坐标（0-1 归一化，y 向下）。
  * 顶点顺序与 factors 一致、从正上方开始顺时针；axes 为空时返回空数组。
  */
+/** 雷达轴标签：精神年龄收成「16岁」，其余去空格并截到 6 字，避免画布挤成一团 */
+export function radarAxisLabel(label: string): string {
+  const age = label.match(/精神年龄\s*(\d+)\s*岁/)
+  if (age) return `${age[1]}岁`
+  const compact = label.replace(/\s+/g, '')
+  return compact.length <= 6 ? compact : `${compact.slice(0, 5)}…`
+}
+
 export function radarChartGeometry(axisCount: number, radius = 0.38, center = 0.5): Array<{ x: number; y: number }> {
   if (axisCount <= 0) return []
   if (axisCount < 3) {

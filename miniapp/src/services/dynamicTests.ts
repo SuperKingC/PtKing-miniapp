@@ -1,3 +1,4 @@
+import { isUsableAssetBaseUrl } from './assetBaseUrl'
 import { applyDynamicTestDefinitions } from './testRegistry'
 import { isValidTestDefinition } from './testRegistryMerge'
 import { getWxGlobal } from './wxGlobal'
@@ -20,7 +21,7 @@ type RequestOptions = {
 
 export async function loadDynamicTests(baseUrl: string): Promise<void> {
   const trimmed = baseUrl.replace(/\/$/, '')
-  if (!trimmed) return
+  if (!isUsableAssetBaseUrl(trimmed)) return
   const request = getWxGlobal()?.request as ((options: RequestOptions) => void) | undefined
   if (!request) return
 

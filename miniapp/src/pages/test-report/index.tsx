@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Button, Canvas, Input, Text, View } from '@tarojs/components'
+import { Button, Canvas, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
-import { findBandIndex, radarChartGeometry } from '../../domain/testEngine'
+import { findBandIndex, radarAxisLabel, radarChartGeometry } from '../../domain/testEngine'
 import { buildReportPresentation } from '../../domain/reportPresentation'
 import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from '../../domain/shareCopy'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -9,7 +9,6 @@ import { APP_ENTERTAINMENT_DISCLAIMER, APP_SHARE_TITLE } from '../../services/br
 import { trackEvent } from '../../services/monitor'
 import { renderShareCard } from '../../services/reportShareCard'
 import { showRewardedAd } from '../../services/rewardedAd'
-import { getReportFeedback, saveReportFeedback, type FeedbackLevel } from '../../services/reportFeedback'
 import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
 import { buildHistoryRows, loadTestRecords, unlockRecord, type TestRecord } from '../../services/testRecords'
 import './index.scss'
@@ -40,7 +39,7 @@ function drawRadar(
 ): void {
   const cx = width / 2
   const cy = height / 2
-  const radius = Math.min(cx, cy) * 0.74
+  const radius = Math.min(cx, cy) * 0.58
   const gridColor = dark ? 'rgba(224, 138, 92, 0.22)' : 'rgba(192, 95, 53, 0.16)'
   const lineColor = dark ? '#e08a5c' : '#c05f35'
   // 归一化几何（center 0.5 / radius 0.38）映射到画布像素空间
@@ -95,6 +94,20 @@ function drawRadar(
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, Math.PI * 2)
     ctx.fill()
+  })
+
+  const labelColor = dark ? '#d8cfc4' : '#6b5e52'
+  ctx.fillStyle = labelColor
+  ctx.font = `${Math.max(11, Math.round(width * 0.034))}px sans-serif`
+  scores.forEach((score, index) => {
+    const vertex = points[index]
+    const dx = vertex.x - cx
+    const dy = vertex.y - cy
+    const lx = cx + dx * 1.28
+    const ly = cy + dy * 1.28
+    ctx.textAlign = Math.abs(dx) < 8 ? 'center' : dx > 0 ? 'left' : 'right'
+    ctx.textBaseline = Math.abs(dy) < 8 ? 'middle' : dy < 0 ? 'bottom' : 'top'
+    ctx.fillText(radarAxisLabel(score.label), lx, ly)
   })
 }
 
@@ -158,9 +171,6 @@ export default function TestReportPage() {
   const [openScenes, setOpenScenes] = useState(false)
   const [openHistory, setOpenHistory] = useState(false)
   const [abortNote, setAbortNote] = useState('')
-  const [feedbackLevel, setFeedbackLevel] = useState<FeedbackLevel | null>(null)
-  const [feedbackNote, setFeedbackNote] = useState('')
-  const [feedbackReason, setFeedbackReason] = useState('')
   const locked = record?.locked === true && !adUnlocked
   const report = useMemo(
     () => (record && definition ? record.reportSnapshot ?? definition.reports[record.result.reportId] : undefined),
@@ -194,9 +204,6 @@ export default function TestReportPage() {
   useEffect(() => {
     if (definition && record) {
       trackEvent('report_view', { testId: definition.id, locked: record.locked === true })
-      const existing = getReportFeedback(record.testId, record.finishedAt)
-      setFeedbackLevel(existing?.level ?? null)
-      setFeedbackReason(existing?.reason ?? '')
     }
   }, [definition, record])
 
@@ -381,17 +388,6 @@ export default function TestReportPage() {
     second: runnerUp?.title,
     previous: history[1] ? history[1].reportSnapshot?.title ?? definition.reports[history[1].result.reportId]?.title ?? null : null,
   })
-  const submitFeedback = (level: FeedbackLevel) => {
-    const saved = saveReportFeedback({ testId: record.testId, finishedAt: record.finishedAt, level, reason: feedbackReason.trim() })
-    if (!saved.ok) {
-      setFeedbackNote(saved.error ?? '保存失败，请稍后重试')
-      return
-    }
-    setFeedbackLevel(level)
-    setFeedbackNote('已保存在本机，不会上传你的答题内容。')
-    trackEvent('report_feedback', { testId: definition.id, level })
-  }
-
   return (
     <View className={`test-report theme-${theme}`}>
       <View className="test-report__hero">
@@ -669,34 +665,6 @@ export default function TestReportPage() {
         </View>
       )}
 
-      <View className="test-report__panel">
-        <Text className="test-report__panel-title">这份结果像你吗</Text>
-        <Text className="test-report__note">{presentation.retestNote}</Text>
-        <View className="test-report__feedback-row">
-          {([
-            ['like', '很像我'],
-            ['partial', '部分符合'],
-            ['unlike', '不太像'],
-          ] as Array<[FeedbackLevel, string]>).map(([level, label]) => (
-            <View
-              key={level}
-              className={feedbackLevel === level ? 'test-report__chip test-report__chip--on' : 'test-report__chip'}
-              hoverClass="none"
-              onClick={() => submitFeedback(level)}
-            >
-              <Text>{label}</Text>
-            </View>
-          ))}
-        </View>
-        <Input
-          className="test-report__feedback-input"
-          value={feedbackReason}
-          placeholder="可选：哪里不太像（保存在本机）"
-          maxlength={80}
-          onInput={(event) => setFeedbackReason(event.detail.value)}
-        />
-        {feedbackNote && <Text className="test-report__note">{feedbackNote}</Text>}
-      </View>
       <View className="test-report__footer">
         <View
           className="test-report__action"

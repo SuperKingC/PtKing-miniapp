@@ -8,7 +8,7 @@ import { clearTestDraft, getTestDraft } from '../../services/testDrafts'
 import { getTestDefinition } from '../../services/testRegistry'
 import './index.scss'
 
-// 测试详情页：信息胶囊 + 介绍 + 注意卡 + 娱乐化免责 + 开始/继续/重开
+// 测试详情页：信息胶囊 + 介绍 + 注意（答题指引）+ 娱乐化免责 + 开始/继续/重开
 export default function TestDetailPage() {
   const router = useRouter()
   const theme = useAppTheme()
@@ -63,14 +63,9 @@ export default function TestDetailPage() {
         </View>
         <View className="test-detail__notice">
           <Text className="test-detail__notice-title">注意：</Text>
-          <Text className="test-detail__notice-body">{definition.notice}</Text>
+          <Text className="test-detail__notice-body">没有标准答案，按最近的通常状态和第一反应选择即可。</Text>
         </View>
         <Text className="test-detail__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
-        <View className="test-detail__howto">
-          <Text className="test-detail__howto-title">你会看到</Text>
-          <Text className="test-detail__howto-text">{definition.scoring.type === 'factor' ? '维度雷达与倾向解读' : definition.scoring.type === 'dimension' ? '维度倾向与类型解读' : '结果类型、简要分析与行动建议'}</Text>
-          <Text className="test-detail__howto-text">没有标准答案，按最近的通常状态和第一反应选择即可。</Text>
-        </View>
       </View>
       <View
         className="test-detail__start"

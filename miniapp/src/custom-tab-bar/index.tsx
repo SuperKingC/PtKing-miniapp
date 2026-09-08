@@ -8,16 +8,17 @@ import {
   resolveTheme,
   type ResolvedTheme,
 } from '../services/theme'
-import testIcon from '../assets/tabbar/test-v2.png'
-import testActiveIcon from '../assets/tabbar/test-active-v2.png'
-import tarotIcon from '../assets/tabbar/tarot-v2.png'
-import tarotActiveIcon from '../assets/tabbar/tarot-active-v2.png'
-import recordsIcon from '../assets/tabbar/records-v2.png'
-import recordsActiveIcon from '../assets/tabbar/records-active-v2.png'
-import meIcon from '../assets/tabbar/me-v2.png'
-import meActiveIcon from '../assets/tabbar/me-active-v2.png'
+import testIcon from '../assets/tabbar/test-v6.png'
+import testActiveIcon from '../assets/tabbar/test-active-v4.png'
+import tarotIcon from '../assets/tabbar/tarot-v5.png'
+import tarotActiveIcon from '../assets/tabbar/tarot-active-v5.png'
+import recordsIcon from '../assets/tabbar/records-v5.png'
+import recordsActiveIcon from '../assets/tabbar/records-active-v5.png'
+import meIcon from '../assets/tabbar/me-v4.png'
+import meActiveIcon from '../assets/tabbar/me-active-v4.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
-import { TAROT_TAB_INDEX, TAROT_TAB_ROUTE, shouldHideCustomTabBar, tabPathToRoute } from './tabBarVisibility'
+import { getWxGlobal } from '../services/wxGlobal'
+import { TAROT_TAB_INDEX, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
 // 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；毛玻璃底+暖色选中态。
@@ -32,7 +33,11 @@ function currentPage(): PageLike | undefined {
 }
 
 function currentRoute(): string {
-  return currentPage()?.route ?? ''
+  try {
+    return Taro.getCurrentInstance()?.page?.path || currentPage()?.route || ''
+  } catch {
+    return currentPage()?.route ?? ''
+  }
 }
 
 const TABS = [
@@ -46,22 +51,21 @@ export default class CustomTabBar extends Component {
   ownRoute = currentRoute()
 
   state = {
-    selected: this.ownRoute === TAROT_TAB_ROUTE ? TAROT_TAB_INDEX : 0,
+    selected: tabIndexFromRoute(this.ownRoute),
     theme: 'light' as ResolvedTheme,
     hidden: shouldHideCustomTabBar(
       this.ownRoute,
       this.ownRoute,
-      this.ownRoute === TAROT_TAB_ROUTE ? TAROT_TAB_INDEX : 0,
+      tabIndexFromRoute(this.ownRoute),
     ),
   }
 
   applyVisibility(selected = this.state.selected) {
-    const webviewRoute = currentRoute() || this.ownRoute
-    this.ownRoute = webviewRoute
+    // 用本实例挂载时的页面路由，不要改写成栈顶路由（自定义 tabBar 里 currentRoute 常为空，会把栏藏死）。
     const selectedRoute = tabPathToRoute(TABS[selected]?.path ?? '')
     this.setState({
       selected,
-      hidden: shouldHideCustomTabBar(webviewRoute, selectedRoute, selected),
+      hidden: shouldHideCustomTabBar(this.ownRoute, selectedRoute, selected),
     })
   }
 
@@ -72,7 +76,7 @@ export default class CustomTabBar extends Component {
     this.setState({
       theme: resolveTheme(getThemePreference(), currentSystemTheme()),
     })
-    this.applyVisibility(this.ownRoute === TAROT_TAB_ROUTE ? TAROT_TAB_INDEX : this.state.selected)
+    this.applyVisibility(tabIndexFromRoute(this.ownRoute))
     try {
       Taro.onThemeChange?.((res: { theme?: string }) => {
         this.setState({ theme: resolveTheme(getThemePreference(), res?.theme) })
@@ -95,33 +99,48 @@ export default class CustomTabBar extends Component {
     this.setState({ theme: resolveTheme(getThemePreference(), currentSystemTheme()) })
   }
 
-  handleSwitch = (index: number) => {
-    this.handleSelectEvent(index)
-    Taro.switchTab({ url: TABS[index].path })
+  switchTo = (index: number) => {
+    const url = TABS[index]?.path
+    if (!url) return
+    const wxApi = getWxGlobal()
+    if (wxApi?.switchTab) {
+      wxApi.switchTab({ url })
+    } else {
+      Taro.switchTab({ url })
+    }
+    this.setState({
+      selected: index,
+      hidden: index === TAROT_TAB_INDEX,
+    })
   }
 
   render() {
     const { selected, theme, hidden } = this.state
     const themeClass = theme === 'dark' ? 'tabbar tabbar--dark' : 'tabbar'
     return (
-      <View className={hidden ? `${themeClass} tabbar--hidden` : themeClass}>
-        {TABS.map((tab, index) => (
-          <View
-            key={tab.path}
-            className="tabbar__item"
-            hoverClass="none"
-            onClick={() => this.handleSwitch(index)}
-          >
-            <Image
-              className="tabbar__icon"
-              src={selected === index ? tab.activeIcon : tab.icon}
-              mode="aspectFit"
-            />
-            <Text className={selected === index ? 'tabbar__text tabbar__text--active' : 'tabbar__text'}>
-              {tab.text}
-            </Text>
-          </View>
-        ))}
+      <View
+        className={hidden ? `${themeClass} tabbar--hidden` : themeClass}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <View className="tabbar__dock">
+          {TABS.map((tab, index) => (
+            <View
+              key={tab.path}
+              className="tabbar__item"
+              hoverClass="none"
+              onClick={() => this.switchTo(index)}
+            >
+              <Image
+                className="tabbar__icon"
+                src={selected === index ? tab.activeIcon : tab.icon}
+                mode="aspectFit"
+              />
+              <Text className={selected === index ? 'tabbar__text tabbar__text--active' : 'tabbar__text'}>
+                {tab.text}
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
     )
   }

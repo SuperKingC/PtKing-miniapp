@@ -12,6 +12,8 @@ describe('miniapp tarot shuffle stage contract', () => {
     expect(stage).not.toContain('const shuffleDurationMs = 4000')
     expect(stage).toContain('requestAnimationFrame(tick)')
     expect(stage).not.toContain('setInterval')
+    expect(stage).toContain('startPulseHaptics()')
+    expect(stage).toContain('stopPulseHaptics()')
   })
 
   it('keeps shuffling allowed after progress reaches 100', () => {

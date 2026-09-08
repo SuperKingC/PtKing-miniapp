@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import {
   THEME_PREFERENCE_ORDER,
   applyThemeChrome,
   getThemePreference,
+  resetThemeChromeForTests,
   resolveTheme,
   setThemePreference,
 } from './theme'
@@ -28,35 +29,34 @@ describe('resolveTheme (pure)', () => {
     expect(resolveTheme('dark', 'light')).toBe('dark')
   })
 
-  it('exposes the preference order shown on the me page', () => {
-    expect(THEME_PREFERENCE_ORDER).toEqual(['auto', 'light', 'dark'])
+  it('exposes only light/dark for the me-page switch', () => {
+    expect(THEME_PREFERENCE_ORDER).toEqual(['light', 'dark'])
   })
 })
 
 describe('preference storage round-trip', () => {
-  it('defaults to auto and round-trips explicit choices', () => {
+  it('defaults to light and round-trips explicit choices', () => {
     const { wx } = makeStorageMock()
     ;(globalThis as { wx?: unknown }).wx = wx
     try {
-      expect(getThemePreference()).toBe('auto')
+      expect(getThemePreference()).toBe('light')
       setThemePreference('dark')
       expect(getThemePreference()).toBe('dark')
       setThemePreference('light')
       expect(getThemePreference()).toBe('light')
-      // 回到跟随系统 = 清掉存储值
-      setThemePreference('auto')
-      expect(getThemePreference()).toBe('auto')
     } finally {
       delete (globalThis as { wx?: unknown }).wx
     }
   })
 
-  it('falls back to auto on corrupted storage values', () => {
+  it('maps legacy auto and corrupted values to light', () => {
     const { wx } = makeStorageMock()
     ;(globalThis as { wx?: unknown }).wx = wx
-    wx.getStorageSync = () => 'banana'
     try {
-      expect(getThemePreference()).toBe('auto')
+      wx.getStorageSync = () => 'auto'
+      expect(getThemePreference()).toBe('light')
+      wx.getStorageSync = () => 'banana'
+      expect(getThemePreference()).toBe('light')
     } finally {
       delete (globalThis as { wx?: unknown }).wx
     }
@@ -64,6 +64,10 @@ describe('preference storage round-trip', () => {
 })
 
 describe('applyThemeChrome', () => {
+  afterEach(() => {
+    resetThemeChromeForTests()
+  })
+
   it('sets navigation bar and window colors per resolved theme', () => {
     const calls: Record<string, unknown>[] = []
     ;(globalThis as { wx?: unknown }).wx = {
@@ -85,5 +89,22 @@ describe('applyThemeChrome', () => {
 
   it('stays silent without wx', () => {
     expect(() => applyThemeChrome('dark')).not.toThrow()
+  })
+
+  it('skips repeating the same theme so tab switches do not flash chrome', () => {
+    const calls: Record<string, unknown>[] = []
+    ;(globalThis as { wx?: unknown }).wx = {
+      setNavigationBarColor: (o: Record<string, unknown>) => void calls.push(o),
+      setBackgroundColor: (o: Record<string, unknown>) => void calls.push(o),
+    }
+    try {
+      applyThemeChrome('light')
+      applyThemeChrome('light')
+      expect(calls).toHaveLength(2)
+      applyThemeChrome('dark')
+      expect(calls).toHaveLength(4)
+    } finally {
+      delete (globalThis as { wx?: unknown }).wx
+    }
   })
 })

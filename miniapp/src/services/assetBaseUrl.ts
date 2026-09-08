@@ -29,6 +29,14 @@ export function resolveAssetBaseUrlForPlatform(
   return prod
 }
 
+/** 占位 COS 域名不是真机地址，发起请求只会 400 刷控制台，各功能应跳过。 */
+export function isUsableAssetBaseUrl(url: string): boolean {
+  const trimmed = url.replace(/\/$/, '')
+  if (!trimmed) return false
+  if (trimmed.includes('placeholder.cos.')) return false
+  return /^https?:\/\//i.test(trimmed)
+}
+
 function currentPlatform(): string {
   try {
     const wxApi = getWxGlobal()

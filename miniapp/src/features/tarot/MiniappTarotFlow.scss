@@ -1499,12 +1499,45 @@
   width: 100%;
   max-height: 78vh;
   padding: 34rpx 30rpx;
-  overflow-y: auto;
+  overflow: hidden;
   border: 2rpx solid rgba(216, 185, 102, .38);
   border-radius: 34rpx;
   background: linear-gradient(180deg, #231733, #100b19);
   box-shadow: 0 24rpx 64rpx rgba(0, 0, 0, .46);
   animation: miniapp-tarot-history-pop .24s ease-out;
+}
+
+.miniapp-tarot-history__panel--detail {
+  max-height: 86vh;
+  padding: 28rpx 22rpx;
+}
+
+.miniapp-tarot-history__scroll {
+  box-sizing: border-box;
+  width: 100%;
+  height: 56vh;
+  max-height: 56vh;
+}
+
+.miniapp-tarot-history__panel--detail .miniapp-tarot-history__scroll {
+  height: 64vh;
+  max-height: 64vh;
+}
+
+.miniapp-tarot-history__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding-bottom: 12rpx;
+}
+
+.miniapp-tarot-history__detail .miniapp-tarot__reading-card {
+  grid-template-columns: 132rpx minmax(0, 1fr);
+}
+
+.miniapp-tarot-history__detail .miniapp-tarot__reading-art {
+  width: 132rpx;
+  height: 210rpx;
 }
 
 @keyframes miniapp-tarot-history-pop {
@@ -1533,7 +1566,7 @@
   background: rgba(255, 255, 255, .05);
 }
 
-.miniapp-tarot-history__item > view {
+.miniapp-tarot-history__item-meta {
   display: flex;
   justify-content: space-between;
   gap: 20rpx;
@@ -1541,16 +1574,21 @@
   font-size: var(--font-size-aux);
 }
 
-.miniapp-tarot-history__item > text:nth-child(2) {
+.miniapp-tarot-history__item-question {
   color: #f1e4c0;
   font-size: var(--font-size-secondary);
   font-weight: var(--font-weight-semibold);
 }
 
-.miniapp-tarot-history__item > text:last-child {
+.miniapp-tarot-history__item-cards {
   color: #bfb1c9;
   font-size: var(--font-size-aux);
   line-height: 1.5;
+}
+
+.miniapp-tarot-history__item-more {
+  color: #d8b966;
+  font-size: var(--font-size-aux);
 }
 
 .miniapp-tarot-history__panel > button {

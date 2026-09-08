@@ -15,6 +15,7 @@ import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
 import { listTarotHistory, saveTarotReading, TAROT_HISTORY_OPEN_EVENT } from './tarotHistory'
 import { buildTarotReading, buildTarotShareTitle } from './tarotReading'
+import { impactFeedback, longFeedback, tapFeedback } from '../../services/haptics'
 import { findTarotSpread, type MiniappTarotSpread } from './tarotSpreads'
 import './MiniappTarotFlow.scss'
 
@@ -88,6 +89,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
 
   const selectSpread = (spread: MiniappTarotSpread) => {
     if (leaving || state.stage !== 'spread') return
+    impactFeedback('medium')
     dispatch({ type: 'set-spread', spread })
     leaveTimersRef.current.push(
       setTimeout(() => setLeaving(true), 220),
@@ -100,6 +102,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
 
   const finishReading = () => {
     if (state.stage !== 'reveal' || !state.flipped.every(Boolean)) return
+    longFeedback()
     const reading = buildTarotReading(state.question, state.spread, state.drawn)
     saveTarotReading(reading)
     dispatch({ type: 'finish-reading', reading })
@@ -153,7 +156,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
               <Text>塔罗密室</Text>
               <Text>{state.stage === 'question' ? '聆听内心的提问' : findTarotSpread(state.spread).label}</Text>
             </View>
-            <Button aria-label="查看解读历史" onClick={() => setHistoryOpen(true)}>⌛</Button>
+            <Button aria-label="查看解读历史" onClick={() => { tapFeedback(); setHistoryOpen(true) }}>⌛</Button>
           </View>
           <View className="miniapp-tarot__progress" aria-hidden>
             {stageOrder.map((stage, index) => (
@@ -168,7 +171,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
             <MiniappTarotQuestionStage
               question={state.question}
               onQuestionChange={(question) => dispatch({ type: 'set-question', question })}
-              onContinue={() => dispatch({ type: 'continue' })}
+              onContinue={() => { tapFeedback(); dispatch({ type: 'continue' }) }}
             />
           )}
           {state.stage === 'spread' && (
@@ -181,18 +184,18 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
             <MiniappTarotShuffleStage
               progress={state.progress}
               onProgress={(progress) => dispatch({ type: 'set-shuffle-progress', progress })}
-              onContinue={() => dispatch({ type: 'continue' })}
-              onSkip={() => dispatch({ type: 'skip-ritual', candidates: createCandidates() })}
+              onContinue={() => { tapFeedback(); dispatch({ type: 'continue' }) }}
+              onSkip={() => { tapFeedback(); dispatch({ type: 'skip-ritual', candidates: createCandidates() }) }}
             />
           )}
           {state.stage === 'cut' && (
             <MiniappTarotCutStage
               cutCount={state.cutCount}
               cutting={state.cutting}
-              onStartCut={() => dispatch({ type: 'start-cut' })}
+              onStartCut={() => { impactFeedback('medium'); dispatch({ type: 'start-cut' }) }}
               onFinishCut={() => dispatch({ type: 'finish-cut' })}
-              onContinue={() => dispatch({ type: 'enter-fan', candidates: createCandidates() })}
-              onSkip={() => dispatch({ type: 'skip-ritual', candidates: createCandidates() })}
+              onContinue={() => { tapFeedback(); dispatch({ type: 'enter-fan', candidates: createCandidates() }) }}
+              onSkip={() => { tapFeedback(); dispatch({ type: 'skip-ritual', candidates: createCandidates() }) }}
             />
           )}
           {state.stage === 'fan' && (
@@ -201,16 +204,16 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
               picked={state.picked}
               flyingCard={state.flyingCard}
               needCount={findTarotSpread(state.spread).count}
-              onPick={(index) => dispatch({ type: 'pick-card', index })}
+              onPick={(index) => { impactFeedback('medium'); dispatch({ type: 'pick-card', index }) }}
               onFinishPick={(index) => dispatch({ type: 'finish-pick', index })}
-              onContinue={() => dispatch({ type: 'enter-reveal' })}
+              onContinue={() => { tapFeedback(); dispatch({ type: 'enter-reveal' }) }}
             />
           )}
           {state.stage === 'reveal' && (
             <MiniappTarotRevealStage
               drawn={state.drawn}
               flipped={state.flipped}
-              onFlip={(index) => dispatch({ type: 'flip-card', index })}
+              onFlip={(index) => { impactFeedback('heavy'); dispatch({ type: 'flip-card', index }) }}
               onContinue={finishReading}
             />
           )}

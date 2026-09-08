@@ -11,6 +11,27 @@ describe('体验入口契约', () => {
     expect(home).toContain('className="tab-page__scroll"')
     expect(home).toContain('<View className="test-page">')
     expect(home).toContain('scrollIntoView={scrollTarget}')
+    expect(home).not.toContain('card-benefit')
+    expect(home).not.toContain('观察关系里的相处方式')
+  })
+
+  it('fills the official tab slot and switches tabs with a native switchTab', () => {
+    const styles = source('custom-tab-bar/index.scss')
+    const appStyles = source('app.scss')
+    const tabBar = source('custom-tab-bar/index.tsx')
+    expect(tabBar).toContain('tabbar__dock')
+    expect(tabBar).not.toContain('tabbar__safe')
+    expect(styles).toContain('height: 100%')
+    expect(styles).toContain('min-height: 160rpx')
+    expect(styles).not.toContain('position: fixed')
+    expect(styles).toContain('width: 72rpx')
+    expect(styles).toContain('font-size: 24rpx')
+    expect(styles).toContain('justify-content: center')
+    expect(styles).toContain('background: rgba(255, 255, 255, 0.94)')
+    expect(appStyles).toContain('custom-tab-bar')
+    expect(tabBar).toContain('onClick={() => this.switchTo(index)}')
+    expect(tabBar).toMatch(/switchTo = \(index: number\) => \{[\s\S]*?switchTab\(\{ url \}\)/)
+    expect(tabBar).not.toMatch(/switchTo = [\s\S]*?applyVisibility/)
   })
 
   it('答题剩余按已答统计，保存成功才清草稿，不上报具体选项', () => {
@@ -29,6 +50,8 @@ describe('体验入口契约', () => {
     const report = source('pages/test-report/index.tsx')
 
     expect(detail).toContain("trackEvent('test_start_click'")
+    expect(detail).toContain('没有标准答案，按最近的通常状态和第一反应选择即可。')
+    expect(detail).not.toContain('你会看到')
     expect(play).toContain("trackEvent('test_leave'")
     expect(play).toContain('useUnload')
     expect(play).toContain('completedRef.current = true')
@@ -36,5 +59,15 @@ describe('体验入口契约', () => {
     expect(report).toContain("trackEvent('report_fold'")
     expect(report).toContain("trackEvent('report_retest'")
     expect(report).toContain("trackEvent('report_related'")
+    expect(report).not.toContain('这份结果像你吗')
+    expect(report).not.toContain('saveReportFeedback')
+  })
+
+  it('keeps the privacy page left-aligned with a separate header', () => {
+    const page = source('pages/privacy/index.tsx')
+    const styles = source('pages/privacy/index.scss')
+    expect(page).toContain('privacy-page__header')
+    expect(styles).toContain('text-align: left')
+    expect(styles).not.toContain('text-align: justify')
   })
 })

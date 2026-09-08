@@ -63,6 +63,8 @@ describe('test flow pages (M1)', () => {
     expect(report).toContain('再看一个相关测试')
     expect(report).toContain('先回测试中心')
     expect(report).toContain('abortNote')
+    expect(report).toContain('radarAxisLabel')
+    expect(report).toContain('fillText')
   })
 
   it('refreshes records on show and lets empty state jump back to tests', () => {
@@ -91,7 +93,8 @@ describe('test flow pages (M1)', () => {
     expect(recordsConfig).toContain('disableScroll: true')
     expect(appStyles).toContain('::-webkit-scrollbar')
     expect(appStyles).toContain('scroll-view::-webkit-scrollbar')
-    expect(appStyles).toContain('calc(100% + 20rpx)')
+    expect(appStyles).toContain('width: 100%')
+    expect(appStyles).not.toContain('calc(100% + 20rpx)')
   })
 
   it('imports View on the privacy page so weapp runtime can render sections', () => {

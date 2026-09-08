@@ -1,21 +1,12 @@
 import { useState } from 'react'
-import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
+import { Button, Image, ScrollView, Switch, Text, View } from '@tarojs/components'
 import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { trackEvent } from '../../services/monitor'
 import { isHapticsEnabled, setHapticsEnabled } from '../../services/haptics'
 import {
-  MOTION_PREFERENCE_LABELS,
-  MOTION_PREFERENCE_ORDER,
-  getMotionPreference,
-  setMotionPreference,
-  type MotionPreference,
-} from '../../services/motionPreference'
-import {
   THEME_CHANGE_EVENT,
-  THEME_PREFERENCE_LABELS,
-  THEME_PREFERENCE_ORDER,
   getThemePreference,
   setThemePreference,
   type ThemePreference,
@@ -35,15 +26,15 @@ interface MeEntry {
   contact?: boolean
 }
 
-// 我的页：数据管理直出（清空测试记录，二次确认）+ 主题切换 + 隐私条款 + 分享 + 问题反馈。
-// 原独立设置页已并入本页（版本号在 banner 下）
+const SWITCH_COLOR = '#c05f35'
+
+// 我的页：数据管理直出（清空测试记录，二次确认）+ 主题/震动开关 + 隐私条款 + 分享 + 问题反馈。
 export default function MePage() {
   useTabBarSelected(3)
   const theme = useAppTheme()
   const [recordCount, setRecordCount] = useState(() => loadTestRecords().length)
   const [themePref, setThemePref] = useState(() => getThemePreference())
   const [haptics, setHaptics] = useState(() => isHapticsEnabled())
-  const [motionPref, setMotionPref] = useState<MotionPreference>(() => getMotionPreference())
 
   // tab 页常驻：每次回到本页刷新计数（刚测完/刚清空后回来数字要准）
   useDidShow(() => {
@@ -61,8 +52,8 @@ export default function MePage() {
     Taro.eventCenter.trigger(THEME_CHANGE_EVENT)
   }
 
-  const changeMotionPreference = (pref: MotionPreference) => {
-    if (setMotionPreference(pref)) setMotionPref(pref)
+  const changeHaptics = (enabled: boolean) => {
+    if (setHapticsEnabled(enabled)) setHaptics(enabled)
     else void Taro.showToast({ title: '设置未保存，请重试', icon: 'none' })
   }
 
@@ -136,58 +127,22 @@ export default function MePage() {
           ),
         )}
       </View>
-      <View className="me-page__theme">
-        <Text className="me-page__theme-title">主题</Text>
-        <View className="me-page__theme-options">
-          {THEME_PREFERENCE_ORDER.map((pref) => (
-            <View
-              key={pref}
-              className={
-                themePref === pref
-                  ? 'me-page__theme-option me-page__theme-option--active'
-                  : 'me-page__theme-option'
-              }
-              hoverClass="none"
-              onClick={() => changeTheme(pref)}
-            >
-              <Text>{THEME_PREFERENCE_LABELS[pref]}</Text>
-            </View>
-          ))}
+      <View className="me-page__prefs">
+        <View className="me-page__switch-row">
+          <Text className="me-page__switch-label">深色模式</Text>
+          <Switch
+            checked={themePref === 'dark'}
+            color={SWITCH_COLOR}
+            onChange={(event) => changeTheme(event.detail.value ? 'dark' : 'light')}
+          />
         </View>
-      </View>
-      <View className="me-page__theme">
-        <Text className="me-page__theme-title">动效</Text>
-        <View className="me-page__theme-options">
-          {MOTION_PREFERENCE_ORDER.map((pref) => (
-            <View
-              key={pref}
-              className={motionPref === pref ? 'me-page__theme-option me-page__theme-option--active' : 'me-page__theme-option'}
-              onClick={() => changeMotionPreference(pref)}
-            >
-              <Text>{MOTION_PREFERENCE_LABELS[pref]}</Text>
-            </View>
-          ))}
-        </View>
-        <Text className="me-page__foot">简洁仅减少动效，不减少塔罗流程</Text>
-      </View>
-      <View className="me-page__theme">
-        <Text className="me-page__theme-title">震动反馈</Text>
-        <View className="me-page__theme-options">
-          {[true, false].map((enabled) => (
-            <View
-              key={String(enabled)}
-              className={haptics === enabled ? 'me-page__theme-option me-page__theme-option--active' : 'me-page__theme-option'}
-              onClick={() => {
-                if (setHapticsEnabled(enabled)) {
-                  setHaptics(enabled)
-                } else {
-                  void Taro.showToast({ title: '设置未保存，请重试', icon: 'none' })
-                }
-              }}
-            >
-              <Text>{enabled ? '开启' : '关闭'}</Text>
-            </View>
-          ))}
+        <View className="me-page__switch-row">
+          <Text className="me-page__switch-label">震动反馈</Text>
+          <Switch
+            checked={haptics}
+            color={SWITCH_COLOR}
+            onChange={(event) => changeHaptics(!!event.detail.value)}
+          />
         </View>
       </View>
       <Text className="me-page__foot">测试记录仅保存在本机，清空后无法恢复。</Text>

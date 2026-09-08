@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "ptking-miniapp",
   "description": "测测子：趣味测试与塔罗微信小程序",
-  "appid": "touristappid",
+  "appid": "wx256eabae9087a324",
   "setting": {
     "urlCheck": false,
     "es6": false,

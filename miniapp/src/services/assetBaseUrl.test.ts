@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveAssetBaseUrlForPlatform } from './assetBaseUrl'
+import { isUsableAssetBaseUrl, resolveAssetBaseUrlForPlatform } from './assetBaseUrl'
 
 describe('asset base url resolution', () => {
   it('uses the local mock base for the devtools simulator when a dev url is injected', () => {
@@ -27,5 +27,14 @@ describe('asset base url resolution', () => {
     expect(resolveAssetBaseUrlForPlatform('devtools', 'https://cos.example.com/ptking-web/v1/', '')).toBe(
       'https://cos.example.com/ptking-web/v1',
     )
+  })
+
+  it('rejects empty and placeholder COS roots so loaders skip the 400 request', () => {
+    expect(isUsableAssetBaseUrl('')).toBe(false)
+    expect(isUsableAssetBaseUrl('https://placeholder.cos.ap-guangzhou.myqcloud.com/ptking-web/local-dev')).toBe(
+      false,
+    )
+    expect(isUsableAssetBaseUrl('https://cos.example.com/ptking-web/v1/')).toBe(true)
+    expect(isUsableAssetBaseUrl('http://127.0.0.1:8787/ptking-web/local-dev')).toBe(true)
   })
 })

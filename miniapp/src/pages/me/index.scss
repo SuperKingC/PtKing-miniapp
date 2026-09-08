@@ -1,6 +1,6 @@
 .me-page {
   box-sizing: border-box;
-  padding: 32rpx 32rpx calc(140rpx + env(safe-area-inset-bottom));
+  padding: 32rpx 32rpx calc(220rpx + env(safe-area-inset-bottom));
 }
 
 .me-page__banner {
@@ -16,8 +16,8 @@
 
 .me-page__banner-img {
   flex-shrink: 0;
-  width: 300rpx;
-  height: 200rpx;
+  width: 380rpx;
+  height: 252rpx;
 }
 
 .me-page__banner-title {
@@ -87,43 +87,26 @@
   color: var(--color-ink-secondary);
 }
 
-/* 主题选择器：三档胶囊（跟随系统/浅色/深色） */
-.me-page__theme {
+.me-page__prefs {
   margin-top: 24rpx;
-  padding: 28rpx 32rpx;
+  padding: 12rpx 32rpx;
   border-radius: 28rpx;
   background: var(--color-card-bg);
   box-shadow: var(--shadow-card);
 }
 
-.me-page__theme-title {
-  display: block;
+.me-page__switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 88rpx;
+}
+
+.me-page__switch-row + .me-page__switch-row {
+  border-top: 1rpx solid var(--color-primary-soft);
+}
+
+.me-page__switch-label {
   font-size: var(--font-size-body);
   color: var(--color-ink);
-}
-
-.me-page__theme-options {
-  display: flex;
-  gap: 16rpx;
-  margin-top: 20rpx;
-}
-
-.me-page__theme-option {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  padding: 16rpx 0;
-  border-radius: 999rpx;
-  border: 2rpx solid var(--color-primary-soft);
-  background: transparent;
-  font-size: var(--font-size-secondary);
-  color: var(--color-ink-secondary);
-}
-
-.me-page__theme-option--active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
 }

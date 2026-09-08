@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
+import { impactFeedback, startPulseHaptics, stopPulseHaptics } from '../../services/haptics'
 import { getTarotCardBack } from './tarotAssets'
 
 interface MiniappTarotShuffleStageProps {
@@ -20,22 +21,29 @@ export function MiniappTarotShuffleStage({
   const timerRef = useRef(0)
   const startTimeRef = useRef(0)
   const startProgressRef = useRef(0)
+  const completedRef = useRef(progress >= 100)
   const [isShuffling, setIsShuffling] = useState(false)
 
   const stop = () => {
     if (timerRef.current) cancelAnimationFrame(timerRef.current)
     timerRef.current = 0
     setIsShuffling(false)
+    stopPulseHaptics()
   }
 
   const start = () => {
     if (timerRef.current) return
     setIsShuffling(true)
+    startPulseHaptics()
     startTimeRef.current = Date.now()
     startProgressRef.current = progress
     const tick = () => {
       const elapsed = Date.now() - startTimeRef.current
       const next = Math.min(100, startProgressRef.current + (elapsed / shuffleDurationMs) * 100)
+      if (next >= 100 && !completedRef.current) {
+        completedRef.current = true
+        impactFeedback('heavy')
+      }
       onProgress(next)
       timerRef.current = requestAnimationFrame(tick)
     }

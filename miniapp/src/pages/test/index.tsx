@@ -21,10 +21,10 @@ import './index.scss'
 const CARD_THEME_BY_CATEGORY: Record<string, string> = { 人格: 'violet', 情感: 'rose', 职场: 'blue', 趣味: 'amber' }
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: spotPersonalityImg, 情感: spotLoveImg, 职场: spotCareerImg, 趣味: spotFunImg }
 const TODAY_COPY = {
-  人格: { title: '认识自己的另一面', sub: '看看习惯的思考和选择', benefit: '认识自己的偏好与倾向' },
-  情感: { title: '关系里你更在意什么', sub: '从相处方式出发看一看', benefit: '观察关系里的相处方式' },
-  职场: { title: '给忙碌的自己一点关注', sub: '看看优势和消耗从哪来', benefit: '发现工作中的优势与消耗' },
-  趣味: { title: '今天轻松玩个小测试', sub: '按第一反应选就好', benefit: '换个轻松角度了解自己' },
+  人格: { title: '认识自己的另一面', sub: '看看习惯的思考和选择' },
+  情感: { title: '关系里你更在意什么', sub: '从相处方式出发看一看' },
+  职场: { title: '给忙碌的自己一点关注', sub: '看看优势和消耗从哪来' },
+  趣味: { title: '今天轻松玩个小测试', sub: '按第一反应选就好' },
 }
 function todayCategory() {
   const now = new Date()
@@ -77,7 +77,6 @@ export default function TestPage() {
       <Text className="test-page__card-category">{definition.category}</Text>
       <Text className="test-page__card-title">{definition.title}</Text>
       <Text className="test-page__card-meta">{definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟</Text>
-      <Text className="test-page__card-benefit">{TODAY_COPY[definition.category]?.benefit}</Text>
       <Image className="test-page__card-spot" src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg} mode="aspectFit" lazyLoad />
       <Text className="test-page__card-badge">{badge}</Text>
     </View>

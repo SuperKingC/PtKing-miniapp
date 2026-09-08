@@ -1,6 +1,7 @@
 .test-report {
+  box-sizing: border-box;
   min-height: 100vh;
-  padding: 32rpx 40rpx calc(80rpx + env(safe-area-inset-bottom));
+  padding: 32rpx 40rpx calc(24rpx + env(safe-area-inset-bottom));
 }
 
 .test-report__missing {
@@ -357,35 +358,6 @@
   color: var(--color-ink-secondary);
   font-size: var(--font-size-aux);
   line-height: 1.6;
-}
-
-.test-report__feedback-row {
-  display: flex;
-  gap: 16rpx;
-  margin: 16rpx 0;
-}
-
-.test-report__chip {
-  flex: 1;
-  padding: 16rpx 0;
-  border-radius: 999rpx;
-  background: var(--color-primary-soft);
-  color: var(--color-ink);
-  text-align: center;
-  font-size: var(--font-size-secondary);
-}
-
-.test-report__chip--on {
-  background: var(--color-primary);
-  color: #ffffff;
-}
-
-.test-report__feedback-input {
-  width: 100%;
-  min-height: 72rpx;
-  padding: 0 8rpx;
-  font-size: var(--font-size-secondary);
-  color: var(--color-ink);
 }
 
 .test-report__feedback {

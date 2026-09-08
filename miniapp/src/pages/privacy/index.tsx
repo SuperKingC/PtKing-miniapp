@@ -11,10 +11,11 @@ const SECTIONS: PolicySection[] = [
     heading: '一、我们如何处理你的信息',
     paragraphs: [
       '本小程序不提供注册登录，不需要你填写姓名、手机号等个人信息。',
-      '你的测试记录、塔罗历史等数据仅保存在你自己的设备（微信本地存储）中，不会上传到我们的服务器；卸载小程序或删除小程序数据后，这些数据随之删除。',
+      '你的测试记录、答题草稿、塔罗历史，以及主题、震动等偏好，仅保存在你自己的设备（微信本地存储）中，不会上传到我们的服务器；卸载小程序或删除小程序数据后，这些数据随之删除。',
       '可在记录页删除单条测试记录，或在「我的 → 清空测试记录」中清空测试报告；此操作不等于清除塔罗历史、草稿和偏好。清除全部本地数据可使用微信的小程序数据管理功能。',
-      '报告符合度反馈默认保存在本机。点击微信客服后，你主动发送的内容由微信客服系统处理。',
-      '为排查异常和改善流程，我们使用微信实时日志记录页面、测试标识和流程事件等信息，不记录姓名、联系方式或逐题选项。日志由微信平台按其规则处理。',
+      '点击微信客服后，你主动发送的内容由微信客服系统处理。',
+      '为展示测试与塔罗内容，我们会从对象存储拉取公开的题库、文案和图片资源；该过程不上传你的个人信息。',
+      '为排查异常和改善流程，我们使用微信实时日志记录页面路径、测试标识、题目序号和流程事件，不记录姓名、联系方式或选项原文。日志由微信平台按其规则处理。',
     ],
   },
   {
@@ -51,8 +52,10 @@ export default function PrivacyPage() {
   const theme = useAppTheme()
   return (
     <View className={`privacy-page theme-${theme}`}>
-      <Text className="privacy-page__title">隐私政策与用户条款</Text>
-      <Text className="privacy-page__updated">更新日期：2026-09-07</Text>
+      <View className="privacy-page__header">
+        <Text className="privacy-page__title">隐私政策与用户条款</Text>
+        <Text className="privacy-page__updated">更新日期：2026-09-08</Text>
+      </View>
       {SECTIONS.map((section) => (
         <View key={section.heading} className="privacy-page__section">
           <Text className="privacy-page__heading">{section.heading}</Text>

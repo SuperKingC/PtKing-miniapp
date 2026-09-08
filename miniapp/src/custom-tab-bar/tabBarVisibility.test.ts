@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { shouldHideCustomTabBar, tabPathToRoute } from './tabBarVisibility'
+import { shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 
 describe('custom tab bar visibility', () => {
   it('hides the tarot page instance even when that page is current', () => {
@@ -11,9 +11,10 @@ describe('custom tab bar visibility', () => {
     expect(shouldHideCustomTabBar('', 'pages/tarot/index', 1)).toBe(true)
   })
 
-  it('hides a background tab instance after switching to records', () => {
-    expect(shouldHideCustomTabBar('pages/test/index', 'pages/records/index', 2)).toBe(true)
-    expect(shouldHideCustomTabBar('pages/me/index', 'pages/records/index', 2)).toBe(true)
+  it('keeps a background tab instance visible when it is not tarot', () => {
+    expect(shouldHideCustomTabBar('pages/test/index', 'pages/records/index', 2)).toBe(false)
+    expect(shouldHideCustomTabBar('pages/me/index', 'pages/records/index', 2)).toBe(false)
+    expect(shouldHideCustomTabBar('', 'pages/test/index', 0)).toBe(false)
   })
 
   it('shows the records tab instance when records is selected', () => {
@@ -25,5 +26,13 @@ describe('custom tab bar visibility', () => {
   it('normalizes tab paths to routes', () => {
     expect(tabPathToRoute('/pages/records/index')).toBe('pages/records/index')
     expect(tabPathToRoute('pages/records/index')).toBe('pages/records/index')
+  })
+
+  it('resolves the selected tab from the current route', () => {
+    expect(tabIndexFromRoute('pages/test/index')).toBe(0)
+    expect(tabIndexFromRoute('/pages/tarot/index')).toBe(1)
+    expect(tabIndexFromRoute('pages/records/index')).toBe(2)
+    expect(tabIndexFromRoute('/pages/me/index')).toBe(3)
+    expect(tabIndexFromRoute('')).toBe(0)
   })
 })

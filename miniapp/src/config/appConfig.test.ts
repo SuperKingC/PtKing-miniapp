@@ -5,17 +5,23 @@ import { miniappRoot } from './testPaths'
 
 const TAB_PAGES = ['pages/test/index', 'pages/tarot/index', 'pages/records/index', 'pages/me/index'] as const
 const TAB_ICONS = [
-  'test-v2.png',
-  'test-active-v2.png',
-  'tarot-v2.png',
-  'tarot-active-v2.png',
-  'records-v2.png',
-  'records-active-v2.png',
-  'me-v2.png',
-  'me-active-v2.png',
+  'test-v6.png',
+  'test-active-v4.png',
+  'tarot-v5.png',
+  'tarot-active-v5.png',
+  'records-v5.png',
+  'records-active-v5.png',
+  'me-v4.png',
+  'me-active-v4.png',
 ] as const
 
 describe('WeChat app config (M0 skeleton)', () => {
+  it('reads the local COS address file so device builds are not stuck on the placeholder host', () => {
+    const taroConfig = readFileSync(resolve(miniappRoot(), 'config/index.ts'), 'utf8')
+    expect(taroConfig).toContain('.asset-base-url')
+    expect(taroConfig).toContain('readLocalAssetBaseUrl')
+  })
+
   it('declares exactly the four tab pages and enables required component injection', () => {
     const configSource = readFileSync(resolve(miniappRoot(), 'src/app.config.ts'), 'utf8')
 

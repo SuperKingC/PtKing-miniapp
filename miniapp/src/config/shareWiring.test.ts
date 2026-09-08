@@ -43,6 +43,10 @@ describe('share capability wiring', () => {
     expect(me).not.toContain('塔罗历史')
     expect(me).toContain('/pages/privacy/index')
     expect(me).toContain("openType={entry.contact ? 'contact' : undefined}")
+    expect(me).toContain('<Switch')
+    expect(me).toContain("changeTheme(event.detail.value ? 'dark' : 'light')")
+    expect(me).not.toContain('跟随系统')
+    expect(me).not.toContain('动效')
   })
 
   it('keeps the tarot page share title wiring from Pet10', () => {

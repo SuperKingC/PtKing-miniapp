@@ -1,5 +1,80 @@
 # 本轮工作记录
 
+## 2026-09-08 18:11 (UTC+8)
+- 原因：测试未选中要用 `review-test-idle-c.png`，上次误用了同名 jpg。
+- 修改：抠图升名落包 `test-v6.png` 并改引用。
+- 验证：`appConfig.test.ts` 9 项通过。清 `miniapp/dist` 后根目录 `npm run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`，看测试未选中。记录图标仍未换。
+
+## 2026-09-08 18:10 (UTC+8)
+- 原因：塔罗解读记录要点进详情；塔罗仪式补震动。
+- 修改：历史面板点进复用解读正文；haptics 增加脉冲/强度/长震并接到洗牌、抽牌、切牌、翻牌与出解读。
+- 验证：聚焦 5 文件 27 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`：点解读记录看详情；真机感受洗牌连续震与抽/翻牌触感。开发者工具震动可能不明显。未改「我的」页。
+
+## 2026-09-08 17:56 (UTC+8)
+- 原因：测试未选中用 review-test-idle-c；记录两态重出审核稿、不换线上图。
+- 修改：落包 `test-v5.png`；记录新稿 `art/generated-art/review2-records-*.jpg`。
+- 验证：`appConfig.test.ts` 9 项通过。清 `miniapp/dist` 后根目录 `npm run build:weapp` 成功。记录图标未换，请在开发者工具看测试未选中；记录新稿只在 `art/generated-art/review2-records-*.jpg`。未做真机点验。
+
+## 2026-09-08 15:02 (UTC+8)
+- 原因：白底再降一点（不透明、item 居中）；点 tab 整栏会藏一下再出现。
+- 修改：栏高改为 `88rpx + 安全区`；点击只改选中态，不再按旧路由误藏。
+- 验证：聚焦 4 文件 33 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 14:42 (UTC+8)
+- 原因：白条下面空出一块米色。
+- 修改：去掉透明安全区垫层；白底按 `96rpx + 安全区` 铺到屏幕底，图标在整条白底里居中。
+- 验证：聚焦 2 文件 13 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 14:38 (UTC+8)
+- 原因：白底再压低一点。
+- 修改：白底 dock 收到 76rpx 并居中；安全区改透明垫层，不再把白底拉高。
+- 验证：聚焦 2 文件 13 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 14:35 (UTC+8)
+- 原因：降高后 tab 又没居中——官方槽比内容区高，图标沉底。
+- 修改：铺满官方槽；白底只画在底部 dock 并在其中居中；`tabBgColor` 改成页面底色，避免官方槽再铺一层白。
+- 验证：聚焦 3 文件 27 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 14:30 (UTC+8)
+- 原因：tab 已居中但白底偏高。
+- 修改：内容区降到 88rpx 并在其中居中；安全区只垫底；页面底边距 148→132rpx。
+- 验证：聚焦 2 文件 13 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 14:24 (UTC+8)
+- 原因：tab item 仍未上下居中——安全区被垫在内容下方。
+- 修改：去掉容器底 padding；item 在 `102rpx + 安全区` 的整条白底里垂直居中，总高度不变。
+- 验证：聚焦 3 文件 27 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 14:16 (UTC+8)
+- 原因：测试卡拥挤来自介绍行；tab item 要居中但不能抬高白底。
+- 修改：去掉卡片 benefit；spot 还原 `right: 10rpx`；tab item 在 102rpx 内容区垂直居中，安全区改到容器底 padding。
+- 验证：聚焦 3 文件 27 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 12:45 (UTC+8)
+- 原因：按截图收口隐私页拥挤、雷达无维度、测试卡图标贴字、tab 白底过高且点「我的」闪一下、选中态只换色/旋转、报告底空白过大。
+- 修改：隐私页标题与日期拆开并左对齐加疏朗间距；雷达顶点画轴标签；测试卡 spot 右移 6rpx；tab 栏内容区 102rpx 且图标靠上；按路由初始化选中态并缓存主题 chrome；kit 重生 8 枚 v4 图标（合上/摊开、牌背/牌面、坐姿/招手）；报告页 border-box 并收紧底边距。
+- 验证：聚焦 6 文件 55 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 11:40 (UTC+8)
+- 原因：底部 tab 图标和文字再大一点。
+- 修改：图标 68rpx、文字 24rpx、栏高 120rpx；测试/记录/我的底边距 168rpx。
+- 验证：聚焦 2 文件 22 项通过。清 `miniapp/dist` 后 `npm run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。
+
+## 2026-09-08 11:35 (UTC+8)
+- 原因：详情去掉「你会看到」并把注意改成答题指引；「像你吗」只存本机无产品价值故下线；卡片右侧比左侧更贴边。
+- 修改：注意文案改为「没有标准答案…」；报告去掉符合度栏；`tab-page__scroll` 改回 `width: 100%`。
+- 验证：聚焦 4 文件 18 项通过。清 `miniapp/dist` 后 `npm run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 11:25 (UTC+8)
+- 原因：今日入口再高一点、右侧图标缩小；底部 tab 图标太简陋，走 kit 重生。
+- 修改：hero 280rpx 插画、栏高约 216rpx；8 枚 tab 图标 kit 生图 + 泛洪抠图后落包 `*-v3.png`（162px，约 18–26KB），展示 56rpx。
+- 验证：聚焦 2 文件 22 项通过。清 `miniapp/dist` 后 `npm run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
+## 2026-09-08 10:48 (UTC+8)
+- 原因：今日入口要更矮、右侧图标更大；我的页测测子图标放大；去掉动效栏；震动/主题改开关且主题不跟随系统；评估隐私政策。
+- 修改：今日入口插画 360rpx 溢出裁切；我的 banner 380×252rpx；设置改为深色模式/震动两个 Switch；主题默认浅色，旧 auto 当浅色；隐私页补 COS 与日志口径并更新日期。
+- 验证：聚焦 6 文件 33 项通过。清 `miniapp/dist` 后 `npm run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。
+
 ## 2026-09-08 10:30 (UTC+8)
 - 原因：`feat/experience-completion` 已快进合并到 `main`（`e84bd45`）。
 - 验证：在 `D:/Mine/PtKing-miniapp/miniapp` 清缓存后 `npm run build:weapp` 成功。请用该目录最新 `dist` 预览。未推远程。

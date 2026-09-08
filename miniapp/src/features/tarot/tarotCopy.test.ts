@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 const USER_FACING = [
   'MiniappTarotFlow.tsx',
   'MiniappTarotHistoryPanel.tsx',
+  'MiniappTarotReadingBody.tsx',
   'tarotSpreads.ts',
   'tarotReading.ts',
 ]

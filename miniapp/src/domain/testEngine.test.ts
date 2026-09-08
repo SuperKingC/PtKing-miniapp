@@ -4,6 +4,7 @@ import {
   resolveReportTitle,
   findBandIndex,
   radarChartGeometry,
+  radarAxisLabel,
   MIN_QUESTIONS,
   type TestDefinition,
 } from './testEngine'
@@ -259,6 +260,15 @@ describe('findBandIndex', () => {
     expect(findBandIndex(bandFixture(), 0)).toBeNull()
     expect(findBandIndex(bandFixture(), 99)).toBeNull()
     expect(findBandIndex(dimensionFixture(), 3)).toBeNull()
+  })
+})
+
+describe('radarAxisLabel', () => {
+  it('shortens mental-age titles and keeps short factor names', () => {
+    expect(radarAxisLabel('精神年龄 16 岁')).toBe('16岁')
+    expect(radarAxisLabel('精神年龄 60 岁')).toBe('60岁')
+    expect(radarAxisLabel('开放性')).toBe('开放性')
+    expect(radarAxisLabel('特别长的人格倾向名称')).toBe('特别长的人…')
   })
 })
 
