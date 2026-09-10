@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-10 17:30
+- 原因：底栏图标已放大到 96rpx，补同步契约断言。
+- 修改：`experienceFlow.test.ts` 底栏断言 `width: 72rpx` 改为 `width: 96rpx`。
+
 - 时间：2026-09-09 18:23
 - 原因：投影加厚换令牌，测试同步。
 - 修改：`shareWiring.test.ts` 改断言 me scss 三处 `box-shadow: var(--shadow-slab)` 且 app.scss 定义 `--shadow-slab:`；`testFlow.test.ts` 对齐我的页去 `enhanced` 的既成事实（records/test 仍要求）。

@@ -28,7 +28,7 @@ describe('体验入口契约', () => {
     expect(styles).toContain('height: 100%')
     expect(styles).toContain('min-height: 160rpx')
     expect(styles).not.toContain('position: fixed')
-    expect(styles).toContain('width: 72rpx')
+    expect(styles).toContain('width: 96rpx')
     expect(styles).toContain('font-size: 24rpx')
     expect(styles).toContain('justify-content: center')
     expect(styles).toContain('background: #f7f4ee')
