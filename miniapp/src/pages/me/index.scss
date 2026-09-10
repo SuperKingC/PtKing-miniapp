@@ -23,8 +23,8 @@
   display: block;
   width: 100%;
   height: auto;
-  /* 抠图素材偏暗：浅色下提亮并保留雾蓝饱和（1.14/0.75，比参考稿采样值再亮半档防「发闷」） */
-  filter: brightness(1.14) saturate(0.75) var(--shadow-image);
+  /* 用户拍板：用原图效果，不加调色滤镜，只保留轮廓投影 */
+  filter: var(--shadow-image);
 }
 
 /* 保留暗色图像调色，同时避免全局 image 规则覆盖轮廓投影。 */
