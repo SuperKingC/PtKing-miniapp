@@ -12,17 +12,17 @@ for (const line of fs.readFileSync('D:/Mine/miniapp-kit/.env', 'utf8').split(/\r
 }
 const keys = ['TINYPNG_API_KEY', 'TINYPNG_API_KEY_2', 'TINYPNG_API_KEY_3'].map(name => process.env[name]).filter(Boolean)
 const jobs = [
-  { name: 'test-hero-clay-v2.png', source: 'test-hero-clay-v1.png' },
-  { name: 'tile-mbti-v2.png', source: 'tile-mbti-v1.png' },
-  { name: 'tile-personality-v2.png', source: 'tile-personality-v1.png' },
-  { name: 'tile-love-v2.png', source: 'tile-love-v1.png' },
-  { name: 'tile-career-v2.png', source: 'tile-career-v1.png' },
-  { name: 'tile-fun-v2.png', source: 'tile-fun-v1.png' },
-  { name: 'icon-bell-v2.png', source: 'icon-bell-v1.png' },
-  { name: 'tarot-hero-v3.jpg', source: 'tarot-hero-v2.png', convert: true },
-  { name: 'tarot-card-single-v2.png', source: 'tarot-card-single-v1.png' },
-  { name: 'tarot-cards-fan-v2.png', source: 'tarot-cards-fan-v1.png' },
-  { name: 'records-book-v3.png', source: 'records-book-v2.png' },
+  { name: 'hero-card-v2.png', source: 'hero-card-v1.png' },
+  { name: 'tile-mbti-v3.png' },
+  { name: 'tile-love-v3.png' },
+  { name: 'tile-star-v1.png' },
+  { name: 'tile-career-v2.png' },
+  { name: 'tile-fun-v2.png' },
+  { name: 'icon-bell-v2.png' },
+  { name: 'tarot-panel-v2.jpg', source: 'tarot-panel-v1.png', convert: true },
+  { name: 'tarot-card-single-v3.png' },
+  { name: 'tarot-cards-fan-v3.png' },
+  { name: 'records-book-v4.png' },
 ]
 const statePath = path.join(root, 'compression-state.local.json')
 const state = fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath)) : {}
@@ -44,7 +44,7 @@ function download(url, auth, convert) {
 for (const job of jobs) {
   if (state[job.name]?.completed) { console.log(`${job.name}: already completed`); continue }
   const sourceName = job.source ?? job.name
-  const input = fs.readFileSync(path.join(root, 'prepared', sourceName.startsWith('tarot-hero') ? sourceName.replace('-v3.jpg','-v2.png') : path.join('ben2', sourceName)))
+  const input = fs.readFileSync(path.join(root, 'prepared', sourceName.startsWith('tarot-panel') ? path.join('refcrop', sourceName.replace('-v2.jpg','-v1.png')) : path.join('refcrop', sourceName.replace('-v2.png','-v1.png').replace('-v3.png','-v1.png').replace('-v4.png','-v2.png'))))
   let auth
   if (!state[job.name]) {
     for (let index = 0; index < keys.length; index++) {
