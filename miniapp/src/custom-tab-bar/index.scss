@@ -70,10 +70,13 @@
 
 .tabbar--dark .tabbar__dock {
   background: #2c241e;
+  /* 与 --shadow-slab 暗色同构：内高光 + 实色侧壁 + 宽软影 */
   box-shadow:
-    -2rpx 4rpx 5rpx rgba(0, 0, 0, 0.32),
-    -5rpx 12rpx 16rpx rgba(0, 0, 0, 0.26),
-    -7rpx 22rpx 30rpx rgba(0, 0, 0, 0.18);
+    inset 0 3rpx 8rpx rgba(255, 240, 220, 0.08),
+    0 6rpx 0 rgba(0, 0, 0, 0.5),
+    -2rpx 8rpx 10rpx rgba(0, 0, 0, 0.30),
+    -6rpx 18rpx 26rpx rgba(0, 0, 0, 0.24),
+    -8rpx 30rpx 44rpx rgba(0, 0, 0, 0.18);
 }
 
 .tabbar--dark .tabbar__text {

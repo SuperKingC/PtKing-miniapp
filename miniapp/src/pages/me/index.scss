@@ -1,7 +1,7 @@
 .me-page {
   box-sizing: border-box;
 
-  padding: 40rpx 40rpx 56rpx;
+  padding: 40rpx 40rpx 40rpx;
 }
 
 /* 透明素材自适应原始宽高，完整展示卡面、云朵与边缘，不再放大裁切。 */
@@ -9,7 +9,7 @@
   /* 736px 画布两侧各 8px 透明安全边；只补偿留白，不裁卡面。 */
   width: 102.222222%;
   margin-left: -1.111111%;
-  margin-bottom: 48rpx;
+  margin-bottom: 24rpx;
   overflow: visible;
 }
 
@@ -55,7 +55,7 @@
   align-items: center;
   justify-content: space-between;
   margin: 0;
-  padding: 12rpx 24rpx;
+  padding: 8rpx 24rpx;
   border-radius: 0;
   background: transparent;
   font-size: var(--font-size-body);
@@ -105,8 +105,8 @@
 .me-page__foot {
   display: flex;
   justify-content: center;
-  margin-top: 24rpx;
-  padding: 0 8rpx 12rpx;
+  margin-top: 20rpx;
+  padding: 0 8rpx 8rpx;
 }
 
 .me-page__foot-version {
@@ -117,7 +117,7 @@
 }
 
 .me-page__prefs {
-  margin-top: 48rpx;
+  margin-top: 24rpx;
   overflow: visible;
   border-radius: 44rpx;
   background: #faf6ee;
@@ -141,7 +141,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 100rpx;
+  min-height: 96rpx;
 }
 
 .me-page__switch {
