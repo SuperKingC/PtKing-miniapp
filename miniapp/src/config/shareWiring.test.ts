@@ -86,9 +86,10 @@ describe('share capability wiring', () => {
     expect(styles).toMatch(/\.theme-dark \.me-page__banner-img \{[^}]*var\(--shadow-image\)/)
     const slabTokens = [...appStyles.matchAll(/--shadow-slab:([^;]+);/g)]
     expect(slabTokens).toHaveLength(4)
-    // 厚毡立体：顶部内高光 + 实色米棕侧壁厚度层 + 宽软影，四处令牌同构。
+    // 厚毡枕头感：顶部内高光 + 底部内软影（阴影包进卡面）+ 实色侧壁，四处令牌同构。
     for (const [, value] of slabTokens) {
-      expect(value).toContain('inset 0 3rpx 8rpx')
+      expect(value).toContain('inset 0 2rpx 3rpx')
+      expect(value).toContain('inset 0 -12rpx 20rpx')
       expect(value).toContain('0 6rpx 0')
     }
     expect(slabTokens[0][1]).toBe(slabTokens[2][1])

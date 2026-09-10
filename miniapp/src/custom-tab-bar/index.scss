@@ -24,6 +24,8 @@
   overflow: visible;
   border-radius: 48rpx;
   background: #e9dfd0;
+  /* 枕头感：与我的页卡片同款微渐变，配合令牌内阴影 */
+  background-image: linear-gradient(180deg, #ece3d4 0%, #e3d6c1 100%);
   /* page 级 --shadow-slab（浅色）；手动/跟随深色由 .tabbar--dark 覆写 */
   box-shadow: var(--shadow-slab);
 }
@@ -70,9 +72,11 @@
 
 .tabbar--dark .tabbar__dock {
   background: #2c241e;
-  /* 与 --shadow-slab 暗色同构：内高光 + 实色侧壁 + 宽软影 */
+  /* 与 --shadow-slab 暗色同构：内高光 + 底部内软影 + 实色侧壁 + 宽软影 */
   box-shadow:
-    inset 0 3rpx 8rpx rgba(255, 240, 220, 0.08),
+    inset 0 2rpx 3rpx rgba(255, 240, 220, 0.10),
+    inset 0 6rpx 14rpx rgba(255, 240, 220, 0.05),
+    inset 0 -12rpx 20rpx rgba(0, 0, 0, 0.30),
     0 6rpx 0 rgba(0, 0, 0, 0.5),
     -2rpx 8rpx 10rpx rgba(0, 0, 0, 0.30),
     -6rpx 18rpx 26rpx rgba(0, 0, 0, 0.24),

@@ -22,8 +22,10 @@ page {
   --color-page-bg: #f7f4ee;
   --color-card-bg: #ffffff;
   --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
-  /* 厚毡立体：顶部内高光 + 实色米棕侧壁（厚度）+ 接触影 + 偏左下宽软影。 */
-  --shadow-slab: inset 0 3rpx 8rpx rgba(255, 252, 244, 0.9),
+  /* 厚毡枕头感：顶部内高光 + 底部内软影（阴影包进卡面）+ 实色米棕侧壁 + 宽软影。 */
+  --shadow-slab: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95),
+    inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
+    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.16),
     0 6rpx 0 #e3d3b6,
     -2rpx 8rpx 10rpx rgba(116, 86, 55, 0.22),
     -6rpx 18rpx 26rpx rgba(116, 86, 55, 0.16),
@@ -69,7 +71,9 @@ page {
     --color-page-bg: #191411;
     --color-card-bg: #262019;
     --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
-    --shadow-slab: inset 0 3rpx 8rpx rgba(255, 240, 220, 0.08),
+    --shadow-slab: inset 0 2rpx 3rpx rgba(255, 240, 220, 0.10),
+      inset 0 6rpx 14rpx rgba(255, 240, 220, 0.05),
+      inset 0 -12rpx 20rpx rgba(0, 0, 0, 0.30),
       0 6rpx 0 rgba(0, 0, 0, 0.5),
       -2rpx 8rpx 10rpx rgba(0, 0, 0, 0.30),
       -6rpx 18rpx 26rpx rgba(0, 0, 0, 0.24),
@@ -96,7 +100,9 @@ page {
   --color-page-bg: #f7f4ee;
   --color-card-bg: #ffffff;
   --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
-  --shadow-slab: inset 0 3rpx 8rpx rgba(255, 252, 244, 0.9),
+  --shadow-slab: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95),
+    inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
+    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.16),
     0 6rpx 0 #e3d3b6,
     -2rpx 8rpx 10rpx rgba(116, 86, 55, 0.22),
     -6rpx 18rpx 26rpx rgba(116, 86, 55, 0.16),
@@ -120,7 +126,9 @@ page {
   --color-page-bg: #191411;
   --color-card-bg: #262019;
   --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
-  --shadow-slab: inset 0 3rpx 8rpx rgba(255, 240, 220, 0.08),
+  --shadow-slab: inset 0 2rpx 3rpx rgba(255, 240, 220, 0.10),
+    inset 0 6rpx 14rpx rgba(255, 240, 220, 0.05),
+    inset 0 -12rpx 20rpx rgba(0, 0, 0, 0.30),
     0 6rpx 0 rgba(0, 0, 0, 0.5),
     -2rpx 8rpx 10rpx rgba(0, 0, 0, 0.30),
     -6rpx 18rpx 26rpx rgba(0, 0, 0, 0.24),
