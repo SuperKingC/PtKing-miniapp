@@ -9,6 +9,26 @@ export interface RecordInsight {
   message: string
 }
 
+export function shortenLabel(text: string, max = 6): string {
+  const value = text.trim()
+  if (!value) return '—'
+  return value.length > max ? `${value.slice(0, max)}…` : value
+}
+
+export const RECORD_CATEGORY_TONE: Record<Exclude<RecordCategory, '全部'>, string> = {
+  人格: 'violet',
+  情感: 'rose',
+  职场: 'blue',
+  趣味: 'amber',
+}
+
+export function recordCategoryTone(category: string | undefined): string {
+  if (category === '情感' || category === '职场' || category === '趣味' || category === '人格') {
+    return RECORD_CATEGORY_TONE[category]
+  }
+  return 'violet'
+}
+
 export function filterRecords(records: TestRecord[], category: RecordCategory, categories: Record<string, RecordCategory>): TestRecord[] {
   if (category === '全部') return records
   return records.filter((record) => categories[record.testId] === category)

@@ -21,3 +21,18 @@ export function pickDailyCategory(year: number, month: number, day: number): Tes
   const ordinal = Math.floor(Date.UTC(year, month - 1, day) / 86400000)
   return categories[((ordinal % categories.length) + categories.length) % categories.length]
 }
+
+/** 今日入口钉死一支测试：先落在当日分类，再按日期在该分类里轮换。 */
+export function pickDailyTest<T extends { id: string; category: TestDefinition['category'] }>(
+  definitions: T[],
+  year: number,
+  month: number,
+  day: number,
+): T | null {
+  if (definitions.length === 0) return null
+  const category = pickDailyCategory(year, month, day)
+  const pool = definitions.filter((item) => item.category === category)
+  const list = pool.length > 0 ? pool : definitions
+  const ordinal = Math.floor(Date.UTC(year, month - 1, day) / 86400000)
+  return list[((ordinal % list.length) + list.length) % list.length]
+}

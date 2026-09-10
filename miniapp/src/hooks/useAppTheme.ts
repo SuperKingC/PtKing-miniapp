@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import {
   THEME_CHANGE_EVENT,
   applyThemeChrome,
@@ -48,6 +48,11 @@ export function useAppTheme(): ResolvedTheme {
   useEffect(() => {
     applyThemeChrome(theme)
   }, [theme])
+
+  // 每页导航栏独立：回到本页时强制重刷，避免切 tab 后标题栏仍是浅色
+  useDidShow(() => {
+    applyThemeChrome(resolveTheme(getThemePreference(), currentSystemTheme()), true)
+  })
 
   return theme
 }

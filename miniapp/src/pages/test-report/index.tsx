@@ -124,7 +124,7 @@ function FoldPanel({
 }) {
   return (
     <View className="test-report__panel">
-      <View className="test-report__fold" hoverClass="none" onClick={onToggle}>
+      <View className="test-report__fold" hoverClass="pressable--pressed" onClick={onToggle}>
         <Text className="test-report__panel-title">{title}</Text>
         <Text className="test-report__fold-mark">{open ? '收起' : '展开'}</Text>
       </View>
@@ -165,7 +165,7 @@ export default function TestReportPage() {
   // 广告位未配置或 SDK 异常时 showRewardedAd 返回 unavailable，同样直接解锁（降级不阻断）
   const [adUnlocked, setAdUnlocked] = useState(false)
   const [unlocking, setUnlocking] = useState(false)
-  const [openDetail, setOpenDetail] = useState(false)
+  const [openDetail, setOpenDetail] = useState(true)
   const [openDeep, setOpenDeep] = useState(false)
   const [openStrengths, setOpenStrengths] = useState(false)
   const [openScenes, setOpenScenes] = useState(false)
@@ -268,6 +268,7 @@ export default function TestReportPage() {
       tagline: sharedReport.tagline,
       hook: shareHookByCategory(definition.category),
       disclaimer: shareCardDisclaimer(),
+      category: definition.category,
     }).then((path) => {
       if (!cancelled) setShareImagePath(path)
     })
@@ -306,7 +307,7 @@ export default function TestReportPage() {
         <Text className="test-report__missing">还没有该测试的报告，先去完成一次测试吧。</Text>
         <View
           className="test-report__action"
-          hoverClass="none"
+          hoverClass="pressable--pressed"
           onClick={() => {
             Taro.switchTab({ url: '/pages/test/index' })
           }}
@@ -333,7 +334,7 @@ export default function TestReportPage() {
           </Text>
           <View
             className="test-report__gate-btn"
-            hoverClass="none"
+            hoverClass="pressable--pressed"
             onClick={() => {
               void handleUnlock()
             }}
@@ -344,7 +345,7 @@ export default function TestReportPage() {
           {abortNote && <Text className="test-report__gate-abort">{abortNote}</Text>}
           <View
             className="test-report__gate-back"
-            hoverClass="none"
+            hoverClass="pressable--pressed"
             onClick={() => {
               Taro.switchTab({ url: '/pages/test/index' })
             }}
@@ -543,7 +544,7 @@ export default function TestReportPage() {
             <View
               key={row.record.finishedAt}
               className="test-report__history-row"
-              hoverClass="none"
+              hoverClass="pressable--pressed"
               onClick={() => {
                 Taro.redirectTo({
                   url: `/pages/test-report/index?testId=${definition.id}&finishedAt=${encodeURIComponent(row.record.finishedAt)}`,
@@ -658,7 +659,7 @@ export default function TestReportPage() {
           <Text className="test-report__panel-title">更多可以试的事</Text>
           {report.actions.slice(1).map((line, index) => (
             <View key={line.slice(0, 10)} className="test-report__action-item">
-              <Text className="test-report__action-num">{index + 2}</Text>
+              <Text className="test-report__action-num">{index + 1}</Text>
               <Text className="test-report__detail-text">{line}</Text>
             </View>
           ))}
@@ -668,7 +669,7 @@ export default function TestReportPage() {
       <View className="test-report__footer">
         <View
           className="test-report__action"
-          hoverClass="none"
+          hoverClass="pressable--pressed"
           onClick={() => {
             trackEvent('report_retest', { testId: definition.id })
             Taro.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
@@ -676,10 +677,13 @@ export default function TestReportPage() {
         >
           <Text>再测一次</Text>
         </View>
+        <Button className="test-report__share test-report__share--solo" openType="share" hoverClass="pressable--pressed">
+          分享给好友
+        </Button>
         {related && (
           <View
             className="test-report__related"
-            hoverClass="none"
+            hoverClass="pressable--pressed"
             onClick={() => {
               trackEvent('report_related', { testId: definition.id, relatedId: related.id })
               Taro.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
@@ -688,21 +692,16 @@ export default function TestReportPage() {
             <Text>再看一个相关测试 · {related.title}</Text>
           </View>
         )}
-        <View className="test-report__footer-row">
-          <Button className="test-report__share" openType="share" hoverClass="none">
-            分享给好友
-          </Button>
-          <View
-            className="test-report__back"
-            hoverClass="none"
-            onClick={() => {
-              Taro.switchTab({ url: '/pages/test/index' })
-            }}
-          >
-            <Text>回测试中心</Text>
-          </View>
+        <View
+          className="test-report__back"
+          hoverClass="pressable--pressed"
+          onClick={() => {
+            Taro.switchTab({ url: '/pages/test/index' })
+          }}
+        >
+          <Text>回测试中心</Text>
         </View>
-        <Button className="test-report__feedback" openType="contact" hoverClass="none">
+        <Button className="test-report__feedback" openType="contact" hoverClass="pressable--pressed">
           结果不太像？告诉我们
         </Button>
       </View>

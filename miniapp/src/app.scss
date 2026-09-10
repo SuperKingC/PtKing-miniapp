@@ -21,7 +21,16 @@ page {
   --color-ink-secondary: #8a7f72;
   --color-page-bg: #f7f4ee;
   --color-card-bg: #ffffff;
-  --shadow-card: 0 6rpx 24rpx rgba(80, 62, 44, 0.07);
+  --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
+  /* 我的页软陶投影：近处接触影 + 中距离落影 + 远距离暖雾，避免单一黑雾感 */
+  --shadow-slab: 0 2rpx 4rpx rgba(126, 96, 67, 0.14), 0 9rpx 16rpx rgba(126, 96, 67, 0.12),
+    0 22rpx 32rpx rgba(126, 96, 67, 0.09);
+  --color-track-bg: #ecdfca;
+  --color-track-ring: #e3d2b8;
+  --color-notice-bg: #f7f5fb;
+  --color-soft-panel: #f8f3ec;
+  --color-runner-bg: #fdf8f2;
+  --color-runner-border: #e8c9ae;
 
   background: var(--color-page-bg);
   color: var(--color-ink);
@@ -54,7 +63,14 @@ page {
     --color-ink-secondary: #a39486;
     --color-page-bg: #191411;
     --color-card-bg: #262019;
-    --shadow-card: 0 6rpx 24rpx rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
+    --shadow-slab: 0 8rpx 18rpx rgba(0, 0, 0, 0.4), 0 28rpx 60rpx 10rpx rgba(0, 0, 0, 0.46);
+    --color-track-bg: #332a22;
+    --color-track-ring: #3f352b;
+    --color-notice-bg: #2e2720;
+    --color-soft-panel: #2e2720;
+    --color-runner-bg: #2e2720;
+    --color-runner-border: #4a3a2c;
   }
 }
 
@@ -68,7 +84,15 @@ page {
   --color-ink-secondary: #8a7f72;
   --color-page-bg: #f7f4ee;
   --color-card-bg: #ffffff;
-  --shadow-card: 0 6rpx 24rpx rgba(80, 62, 44, 0.07);
+  --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
+  --shadow-slab: 0 2rpx 4rpx rgba(126, 96, 67, 0.14), 0 9rpx 16rpx rgba(126, 96, 67, 0.12),
+    0 22rpx 32rpx rgba(126, 96, 67, 0.09);
+  --color-track-bg: #ecdfca;
+  --color-track-ring: #e3d2b8;
+  --color-notice-bg: #f7f5fb;
+  --color-soft-panel: #f8f3ec;
+  --color-runner-bg: #fdf8f2;
+  --color-runner-border: #e8c9ae;
 }
 
 .theme-dark {
@@ -79,9 +103,29 @@ page {
   --color-ink-secondary: #a39486;
   --color-page-bg: #191411;
   --color-card-bg: #262019;
-  --shadow-card: 0 6rpx 24rpx rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
+  --shadow-slab: 0 8rpx 18rpx rgba(0, 0, 0, 0.4), 0 28rpx 60rpx 10rpx rgba(0, 0, 0, 0.46);
+  --color-track-bg: #332a22;
+  --color-track-ring: #3f352b;
+  --color-notice-bg: #2e2720;
+  --color-soft-panel: #2e2720;
+  --color-runner-bg: #2e2720;
+  --color-runner-border: #4a3a2c;
   background: var(--color-page-bg);
   color: var(--color-ink);
+}
+
+.pressable--pressed {
+  opacity: 0.72;
+}
+
+.theme-dark image {
+  filter: brightness(0.88) saturate(0.92);
+}
+
+.tabbar image,
+.tabbar__icon {
+  filter: none;
 }
 
 view,

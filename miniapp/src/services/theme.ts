@@ -56,6 +56,22 @@ export function currentSystemTheme(): ResolvedTheme {
   }
 }
 
+/** 导航栏底色：与页面 `--color-page-bg` 同色，避免标题栏和内容接缝 */
+export const THEME_NAV_BG: Record<ResolvedTheme, string> = {
+  light: '#f7f4ee',
+  dark: '#191411',
+}
+
+export const THEME_NAV_FRONT: Record<ResolvedTheme, string> = {
+  light: '#000000',
+  dark: '#ffffff',
+}
+
+export const THEME_WINDOW_BG: Record<ResolvedTheme, string> = {
+  light: '#f7f4ee',
+  dark: '#191411',
+}
+
 let appliedThemeChrome: ResolvedTheme | null = null
 
 /** 测试用：清掉导航底色缓存，避免用例互相污染 */
@@ -63,21 +79,24 @@ export function resetThemeChromeForTests(): void {
   appliedThemeChrome = null
 }
 
-/** 导航栏 + 窗口底色随主题动态覆盖（theme.json 提供双套色值，手动切换由此接管） */
-export function applyThemeChrome(theme: ResolvedTheme): void {
-  if (appliedThemeChrome === theme) return
+/**
+ * 导航栏 + 窗口底色随主题动态覆盖（theme.json 提供双套色值，手动切换由此接管）。
+ * setNavigationBarColor 只作用于当前页：切 tab 时必须 force 再刷一次，否则新页仍用浅色配置。
+ */
+export function applyThemeChrome(theme: ResolvedTheme, force = false): void {
+  if (!force && appliedThemeChrome === theme) return
   appliedThemeChrome = theme
   try {
     getWxGlobal()?.setNavigationBarColor?.({
-      frontColor: theme === 'dark' ? '#ffffff' : '#000000',
-      backgroundColor: theme === 'dark' ? '#211b16' : '#f7f4ee',
+      frontColor: THEME_NAV_FRONT[theme],
+      backgroundColor: THEME_NAV_BG[theme],
     })
   } catch {
     // 个别环境不支持时由 theme.json 兜底
   }
   try {
     getWxGlobal()?.setBackgroundColor?.({
-      backgroundColor: theme === 'dark' ? '#191411' : '#f7f4ee',
+      backgroundColor: THEME_WINDOW_BG[theme],
     })
   } catch {
     // 忽略

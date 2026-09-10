@@ -10,7 +10,11 @@ describe('体验入口契约', () => {
     const home = source('pages/test/index.tsx')
     expect(home).toContain('className="tab-page__scroll"')
     expect(home).toContain('<View className="test-page">')
-    expect(home).toContain('scrollIntoView={scrollTarget}')
+    expect(home).toContain('pickDailyTest')
+    expect(home).toContain('openDetail(daily.id)')
+    expect(home).toContain('测测 ›')
+    expect(home).not.toContain('去测 ›')
+    expect(home).not.toContain('scrollIntoView')
     expect(home).not.toContain('card-benefit')
     expect(home).not.toContain('观察关系里的相处方式')
   })
@@ -27,7 +31,9 @@ describe('体验入口契约', () => {
     expect(styles).toContain('width: 72rpx')
     expect(styles).toContain('font-size: 24rpx')
     expect(styles).toContain('justify-content: center')
-    expect(styles).toContain('background: rgba(255, 255, 255, 0.94)')
+    expect(styles).toContain('background: #f7f4ee')
+    expect(styles).toContain('background: #e9dfd0')
+    expect(styles).not.toContain('rgba(255, 255, 255')
     expect(appStyles).toContain('custom-tab-bar')
     expect(tabBar).toContain('onClick={() => this.switchTo(index)}')
     expect(tabBar).toMatch(/switchTo = \(index: number\) => \{[\s\S]*?switchTab\(\{ url \}\)/)
@@ -42,6 +48,8 @@ describe('体验入口契约', () => {
     expect(play.indexOf('if (!saved)')).toBeLessThan(play.indexOf('clearTestDraft(definition.id)', play.indexOf('const result = scoreTest')))
     expect(play).toContain('reportSnapshot:')
     expect(play).toContain('motion-${motionPreference}')
+    expect(play).not.toContain('PLAY_CONFIRM_MS')
+    expect(play).toContain('test-play__restoring')
   })
 
   it('详情、答题、报告补齐开始、离开、展开、再测和相关测试', () => {
@@ -59,8 +67,25 @@ describe('体验入口契约', () => {
     expect(report).toContain("trackEvent('report_fold'")
     expect(report).toContain("trackEvent('report_retest'")
     expect(report).toContain("trackEvent('report_related'")
+    expect(report).toContain('const [openDetail, setOpenDetail] = useState(true)')
     expect(report).not.toContain('这份结果像你吗')
     expect(report).not.toContain('saveReportFeedback')
+  })
+
+  it('interactive surfaces use a shared press class instead of hover none', () => {
+    const files = [
+      'pages/test/index.tsx',
+      'pages/test-detail/index.tsx',
+      'pages/test-play/index.tsx',
+      'pages/test-report/index.tsx',
+      'pages/records/index.tsx',
+      'custom-tab-bar/index.tsx',
+    ]
+    for (const file of files) {
+      const text = source(file)
+      expect(text).toContain('pressable--pressed')
+    }
+    expect(source('app.scss')).toContain('.pressable--pressed')
   })
 
   it('keeps the privacy page left-aligned with a separate header', () => {

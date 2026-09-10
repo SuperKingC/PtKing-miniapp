@@ -1,5 +1,85 @@
 # 工作记录
 
+- 时间：2026-09-09 18:23
+- 原因：投影加厚换令牌，测试同步。
+- 修改：`shareWiring.test.ts` 改断言 me scss 三处 `box-shadow: var(--shadow-slab)` 且 app.scss 定义 `--shadow-slab:`；`testFlow.test.ts` 对齐我的页去 `enhanced` 的既成事实（records/test 仍要求）。
+
+- 时间：2026-09-09 18:09
+- 原因：PNG 栅格阴影翻车（不透明色块盖住卡面），回退为 CSS 投影。
+- 修改：`shareWiring.test.ts` 改断言：me 页不含 `shadow-slab-v1`/`slab-shadow`/`slab`；`.me-page__icon` 带 `drop-shadow`；版本号 `justify-content/text-align: center`。
+
+- 时间：2026-09-09 17:40
+- 原因：锁定栅格毡面阴影和月亮下移裁切。
+- 修改：`shareWiring.test.ts` 断言 `shadow-slab-v1.png`、banner 图高 480rpx / bottom -160rpx。
+
+- 时间：2026-09-09 17:30
+- 原因：锁定品牌栏变矮和厚毡块投影结构。
+- 修改：`shareWiring.test.ts` 断言 banner 320rpx、`.me-page__slab`、ScrollView 不再 enhanced。
+
+- 时间：2026-09-09 17:20
+- 原因：锁定抠干净的 v4 图标、卡片外层投影与 clip 结构。
+- 修改：`shareWiring.test.ts` 禁止 v5、断言 banner/entries/prefs clip 与 `--shadow-card`；`appConfig.test.ts` 底栏仍为 `*-v7.png`。
+
+- 时间：2026-09-09 17:05
+- 原因：锁定从 ui-4 裁切的图标文件名。
+- 修改：`appConfig.test.ts` 底栏 `*-v8.png`；`shareWiring.test.ts` 列表 `icon-me-*-v5.png`。
+
+- 时间：2026-09-09 17:00
+- 原因：锁定 ui-4 全包资产文件名。
+- 修改：`appConfig.test.ts` 底栏改为 `*-v7.png`；`shareWiring.test.ts` 锁定 `me-banner-v4.jpg`、禁止 CSS 叠字。
+
+- 时间：2026-09-09 16:35
+- 原因：锁定今日入口按钮为「测测」。
+- 修改：`experienceFlow.test.ts` 断言 `测测 ›`，禁止 `去测 ›`。
+
+- 时间：2026-09-09 16:30
+- 原因：锁定各页导航标题为测测子，且深色标题栏与页面同色。
+- 修改：`appConfig.test.ts` 断言全部 page config 标题、禁止硬编码导航色、深色 `navBgColor` 为 `#191411`。
+
+- 时间：2026-09-09 16:30
+- 原因：锁定 ui-4 图标与米色胶囊底栏。
+- 修改：`shareWiring.test.ts` 改为 `icon-me-*-v4.png`；`experienceFlow.test.ts` 断言 `#e9dfd0`。
+
+- 时间：2026-09-09 15:55
+- 原因：锁定列表图标升到 v3。
+- 修改：`shareWiring.test.ts` 改为 `icon-me-*-v3.png`。
+
+- 时间：2026-09-09 15:15
+- 原因：锁定 ui-1 图标文件名与底栏不再白底。
+- 修改：`shareWiring.test.ts` 改为 `icon-me-*-v2.png`；`experienceFlow.test.ts` 断言米白槽/燕麦浮岛；`appConfig.test.ts` 断言 `tabBgColor === bgColor`。
+
+- 时间：2026-09-09 12:20
+- 原因：锁定我的页图标放大与自绘开关尺寸。
+- 修改：`shareWiring.test.ts` 改为断言 `me-page__switch`、图标 72rpx、开关 100×52rpx。
+
+- 时间：2026-09-09 12:05
+- 原因：锁定「我的」页列表/开关图标接线。
+- 修改：`shareWiring.test.ts` 要求 `icon-me-clear-v1.png`、主题/震动图标和 `me-page__icon`。
+
+- 时间：2026-09-09 11:20
+- 原因：还原答题立即切题，并锁定报告行动项从 1 编号。
+- 修改：`experienceFlow.test.ts` 不再要求 `PLAY_CONFIRM_MS`；`testFlow.test.ts` 锁定 `{index + 1}`。
+
+- 时间：2026-09-09 11:20
+- 原因：锁定今日入口直达、答题确认停顿、报告默认展开、按压态和分享卡分类。
+- 修改：`experienceFlow.test.ts`、`testFlow.test.ts`、`shareWiring.test.ts`。
+
+- 时间：2026-09-08 19:22
+- 原因：品牌卡底图下移一点。
+- 修改：`shareWiring.test.ts` 锁定 banner 图 `top: -40rpx` / `height: 456rpx`。
+
+- 时间：2026-09-08 19:06
+- 原因：我的页去掉 tab 预留底边距，压低品牌卡。
+- 修改：`shareWiring.test.ts` 锁定卡高 300rpx、页面底边距 32rpx。
+
+- 时间：2026-09-08 19:00
+- 原因：品牌卡换 v3，页脚只留右对齐版本。
+- 修改：`shareWiring.test.ts` 锁定 `me-banner-v3.jpg`、卡高 456rpx、底边距 280rpx、版本右对齐，并禁止本机说明文案。
+
+- 时间：2026-09-08 18:50
+- 原因：我的页品牌卡铺满、版本进页脚。
+- 修改：`shareWiring.test.ts` 锁定 `me-banner-v2.jpg`、`aspectFill`、页脚版本，并禁止品牌卡点击跳转。
+
 - 时间：2026-09-08 18:08
 - 原因：测试未选中改为 PNG 那张并升到 v6。
 - 修改：`appConfig.test.ts` 锁定 `test-v6.png`。

@@ -12,13 +12,22 @@
 }
 
 .test-detail__card {
+  overflow: hidden;
   border-radius: 32rpx;
   background: var(--color-card-bg);
-  padding: 48rpx 40rpx;
+  padding: 0 40rpx 40rpx;
+}
+
+.test-detail__cover {
+  display: block;
+  width: 220rpx;
+  height: 220rpx;
+  margin: 8rpx auto 0;
 }
 
 .test-detail__title {
   display: block;
+  margin-top: 8rpx;
   text-align: center;
   font-size: var(--font-size-overlay-title);
   font-weight: var(--font-weight-bold);
@@ -68,15 +77,13 @@
 }
 
 .test-detail__notice {
-  margin-top: 44rpx;
-  padding: 24rpx;
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  margin-top: 32rpx;
+  padding: 20rpx 24rpx;
   border-radius: 16rpx;
-  background: #f7f5fb;
-}
-
-/* 暗色：注意卡底色 */
-.theme-dark .test-detail__notice {
-  background: #2e2720;
+  background: var(--color-notice-bg);
 }
 
 .test-detail__notice-title {
@@ -93,7 +100,7 @@
 
 .test-detail__disclaimer {
   display: block;
-  margin-top: 28rpx;
+  margin: 24rpx 8rpx 0;
   font-size: var(--font-size-aux);
   line-height: 1.6;
   color: var(--color-ink-secondary);
@@ -106,7 +113,7 @@
   justify-content: center;
   width: 520rpx;
   min-height: 104rpx;
-  margin: 64rpx auto 0;
+  margin: 28rpx auto 0;
   border-radius: 999rpx;
   background: var(--color-primary);
   color: #ffffff;

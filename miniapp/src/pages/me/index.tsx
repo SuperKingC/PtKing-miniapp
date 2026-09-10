@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Image, ScrollView, Switch, Text, View } from '@tarojs/components'
+import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -11,22 +11,45 @@ import {
   setThemePreference,
   type ThemePreference,
 } from '../../services/theme'
-import { APP_DISPLAY_NAME, APP_SHARE_TITLE, APP_TAGLINE } from '../../services/brand'
+import { APP_SHARE_TITLE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
-import meBannerImg from '../../assets/illus/me-banner.png'
+import meBannerImg from '../../assets/illus/me-banner-transparent-v2.png'
+import iconClear from '../../assets/illus/icon-me-clear-v4.png'
+import iconPrivacy from '../../assets/illus/icon-me-privacy-v4.png'
+import iconShare from '../../assets/illus/icon-me-share-v4.png'
+import iconFeedback from '../../assets/illus/icon-me-feedback-v4.png'
+import iconTheme from '../../assets/illus/icon-me-theme-v4.png'
+import iconHaptics from '../../assets/illus/icon-me-haptics-v4.png'
 import './index.scss'
 
 /** 与 miniapp/package.json 的 version 保持一致（无后端，版本号本地维护） */
 export const APP_VERSION = '0.1.0'
 
 interface MeEntry {
+  id: string
   label: string
+  icon: string
   onTap?: () => void
   /** 微信客服会话（openType=contact，需小程序后台配置客服人员） */
   contact?: boolean
 }
 
-const SWITCH_COLOR = '#c05f35'
+function SlimSwitch({
+  checked,
+  onChange,
+}: {
+  checked: boolean
+  onChange: (on: boolean) => void
+}) {
+  return (
+    <View
+      className={`me-page__switch${checked ? ' me-page__switch--on' : ''}`}
+      onClick={() => onChange(!checked)}
+    >
+      <View className="me-page__switch-knob" />
+    </View>
+  )
+}
 
 // 我的页：数据管理直出（清空测试记录，二次确认）+ 主题/震动开关 + 隐私条款 + 分享 + 问题反馈。
 export default function MePage() {
@@ -79,73 +102,79 @@ export default function MePage() {
   }
 
   const ENTRIES: MeEntry[] = [
-    { label: `清空测试记录${recordCount > 0 ? `（${recordCount} 条）` : ''}`, onTap: clearRecords },
-    { label: '隐私政策与用户条款', onTap: () => { wx.navigateTo({ url: '/pages/privacy/index' }) } },
-    { label: '分享给好友', contact: false },
-    { label: '问题反馈', contact: true },
+    { id: 'clear', label: `清空测试记录${recordCount > 0 ? `（${recordCount} 条）` : ''}`, icon: iconClear, onTap: clearRecords },
+    { id: 'privacy', label: '隐私政策与用户条款', icon: iconPrivacy, onTap: () => { wx.navigateTo({ url: '/pages/privacy/index' }) } },
+    { id: 'share', label: '分享给好友', icon: iconShare, contact: false },
+    { id: 'feedback', label: '问题反馈', icon: iconFeedback, contact: true },
   ]
 
   return (
     <View className={`tab-page theme-${theme}`}>
     <ScrollView
-      className="tab-page__scroll me-page"
+      className="tab-page__scroll"
       scrollY
-      enhanced
       showScrollbar={false}
     >
+      <View className="me-page">
       <View className="me-page__banner">
-        <Image className="me-page__banner-img" src={meBannerImg} mode="aspectFit" />
-        <View className="me-page__banner-text">
-          <Text className="me-page__banner-title">{APP_DISPLAY_NAME}</Text>
-          <Text className="me-page__banner-sub">{APP_TAGLINE}</Text>
-          <Text className="me-page__banner-version">版本 {APP_VERSION}</Text>
+        <View className="me-page__banner-clip">
+          <Image className="me-page__banner-img" src={meBannerImg} mode="widthFix" />
         </View>
       </View>
       <View className="me-page__entries">
+        <View className="me-page__entries-clip">
         {ENTRIES.map((entry) =>
-          entry.label === '分享给好友' ? (
+          entry.id === 'share' ? (
             <Button
-              key={entry.label}
+              key={entry.id}
               className="me-page__entry"
-              hoverClass="none"
+              hoverClass="pressable--pressed"
               openType="share"
             >
-              <Text>{entry.label}</Text>
+              <Image className="me-page__icon" src={entry.icon} mode="aspectFit" />
+              <Text className="me-page__entry-label">{entry.label}</Text>
               <Text className="me-page__arrow">›</Text>
             </Button>
           ) : (
             <Button
-              key={entry.label}
+              key={entry.id}
               className="me-page__entry"
-              hoverClass="none"
+              hoverClass="pressable--pressed"
               openType={entry.contact ? 'contact' : undefined}
               onClick={entry.onTap}
             >
-              <Text>{entry.label}</Text>
+              <Image className="me-page__icon" src={entry.icon} mode="aspectFit" />
+              <Text className="me-page__entry-label">{entry.label}</Text>
               <Text className="me-page__arrow">›</Text>
             </Button>
           ),
         )}
+        </View>
       </View>
       <View className="me-page__prefs">
+        <View className="me-page__prefs-clip">
         <View className="me-page__switch-row">
+          <Image className="me-page__icon" src={iconTheme} mode="aspectFit" />
           <Text className="me-page__switch-label">深色模式</Text>
-          <Switch
+          <SlimSwitch
             checked={themePref === 'dark'}
-            color={SWITCH_COLOR}
-            onChange={(event) => changeTheme(event.detail.value ? 'dark' : 'light')}
+            onChange={(on) => changeTheme(on ? 'dark' : 'light')}
           />
         </View>
         <View className="me-page__switch-row">
+          <Image className="me-page__icon" src={iconHaptics} mode="aspectFit" />
           <Text className="me-page__switch-label">震动反馈</Text>
-          <Switch
+          <SlimSwitch
             checked={haptics}
-            color={SWITCH_COLOR}
-            onChange={(event) => changeHaptics(!!event.detail.value)}
+            onChange={changeHaptics}
           />
+        </View>
         </View>
       </View>
-      <Text className="me-page__foot">测试记录仅保存在本机，清空后无法恢复。</Text>
+      <View className="me-page__foot">
+        <Text className="me-page__foot-version">版本 {APP_VERSION}</Text>
+      </View>
+      </View>
     </ScrollView>
     </View>
   )

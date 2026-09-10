@@ -62,6 +62,9 @@ describe('test flow pages (M1)', () => {
     expect(report).toContain('APP_ENTERTAINMENT_DISCLAIMER')
     expect(report).toContain('再看一个相关测试')
     expect(report).toContain('先回测试中心')
+    expect(report).toContain('useState(true)')
+    expect(report).toContain('{index + 1}')
+    expect(report).not.toContain('{index + 2}')
     expect(report).toContain('abortNote')
     expect(report).toContain('radarAxisLabel')
     expect(report).toContain('fillText')
@@ -84,12 +87,17 @@ describe('test flow pages (M1)', () => {
     const recordsConfig = readFileSync(resolve(miniappRoot(), 'src/pages/records/index.config.ts'), 'utf8')
     const appStyles = readFileSync(resolve(miniappRoot(), 'src/app.scss'), 'utf8')
 
-    for (const source of [records, testPage, me]) {
+    for (const source of [records, testPage]) {
       expect(source).toContain('showScrollbar={false}')
       expect(source).toContain('enhanced')
       expect(source).toContain('tab-page')
       expect(source).toContain('tab-page__scroll')
     }
+    // 我的页去掉 enhanced（避免 ScrollView 裁投影），滚动条由全局 CSS 兜底
+    expect(me).toContain('showScrollbar={false}')
+    expect(me).not.toContain('enhanced')
+    expect(me).toContain('tab-page')
+    expect(me).toContain('tab-page__scroll')
     expect(recordsConfig).toContain('disableScroll: true')
     expect(appStyles).toContain('::-webkit-scrollbar')
     expect(appStyles).toContain('scroll-view::-webkit-scrollbar')

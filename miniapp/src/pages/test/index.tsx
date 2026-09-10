@@ -8,14 +8,14 @@ import { listActiveTestDrafts } from '../../services/testDrafts'
 import { loadTestRecords } from '../../services/testRecords'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
-import { pickDailyCategory } from '../../domain/experience'
+import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
-import heroImg from '../../assets/illus/hero-test-center.png'
-import spotPersonalityImg from '../../assets/illus/spot-personality.png'
-import spotLoveImg from '../../assets/illus/spot-love.png'
-import spotCareerImg from '../../assets/illus/spot-career.png'
-import spotFunImg from '../../assets/illus/spot-fun.png'
+import heroImg from '../../assets/illus/hero-test-center-v2.png'
+import spotPersonalityImg from '../../assets/illus/spot-personality-v2.png'
+import spotLoveImg from '../../assets/illus/spot-love-v2.png'
+import spotCareerImg from '../../assets/illus/spot-career-v2.png'
+import spotFunImg from '../../assets/illus/spot-fun-v2.png'
 import './index.scss'
 
 const CARD_THEME_BY_CATEGORY: Record<string, string> = { 人格: 'violet', 情感: 'rose', 职场: 'blue', 趣味: 'amber' }
@@ -40,8 +40,11 @@ export default function TestPage() {
   const [query, setQuery] = useState('')
   const [recentIds, setRecentIds] = useState(() => loadTestRecords().map((record) => record.testId))
   const [dailyCategory, setDailyCategory] = useState(todayCategory)
-  const [scrollTarget, setScrollTarget] = useState('')
   const today = TODAY_COPY[dailyCategory]
+  const daily = useMemo(() => {
+    const now = new Date()
+    return pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())
+  }, [definitions, dailyCategory])
   const keyword = query.trim()
   const visible = useMemo(() => filterByCategory(definitions, activeCategory), [definitions, activeCategory])
   const recommended = useMemo(() => pickRecommendedTests(definitions, recentIds, resume?.definition.id, 4), [definitions, recentIds, resume])
@@ -73,7 +76,7 @@ export default function TestPage() {
     wx.navigateTo({ url: `/pages/test-detail/index?testId=${encodeURIComponent(testId)}` })
   }
   const renderCard = (definition: typeof definitions[number], badge: string) => (
-    <View key={definition.id} className={`test-page__card test-page__card--${CARD_THEME_BY_CATEGORY[definition.category] ?? 'violet'}`} hoverClass="test-page__card--pressed" onClick={() => openDetail(definition.id)}>
+    <View key={definition.id} className={`test-page__card test-page__card--${CARD_THEME_BY_CATEGORY[definition.category] ?? 'violet'}`} hoverClass="pressable--pressed" onClick={() => openDetail(definition.id)}>
       <Text className="test-page__card-category">{definition.category}</Text>
       <Text className="test-page__card-title">{definition.title}</Text>
       <Text className="test-page__card-meta">{definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟</Text>
@@ -84,26 +87,25 @@ export default function TestPage() {
 
   return (
     <View className={`tab-page theme-${theme}`}>
-      <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false} scrollIntoView={scrollTarget} onScroll={() => { if (scrollTarget) setScrollTarget('') }}>
+      <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
         <View className="test-page">
-          <View className="test-page__hero" hoverClass="test-page__card--pressed" onClick={() => {
-            setQuery('')
-            setActiveCategory(dailyCategory)
-            setScrollTarget('test-category-results')
-            trackEvent('today_entry_open', { category: dailyCategory })
+          {daily && <View className="test-page__hero" hoverClass="pressable--pressed" onClick={() => {
+            trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
+            openDetail(daily.id)
           }}>
             <View className="test-page__hero-text">
               <Text className="test-page__hero-kicker">今日入口 · {dailyCategory}</Text>
-              <Text className="test-page__hero-title">{today.title}</Text>
-              <Text className="test-page__hero-sub">{today.sub}</Text>
+              <Text className="test-page__hero-title">{daily.title}</Text>
+              <Text className="test-page__hero-sub">{today.sub} · {daily.questions.length} 题 · 约 {daily.meta.minutes} 分钟</Text>
+              <Text className="test-page__hero-go">测测 ›</Text>
             </View>
             <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" lazyLoad />
-          </View>
+          </View>}
           <View className="test-page__search">
             <Input className="test-page__search-input" value={query} placeholder="搜索名称、分类或简介" confirmType="search" onInput={(event) => setQuery(event.detail.value)} />
             {keyword ? <Text className="test-page__search-clear" onClick={() => setQuery('')}>清空</Text> : null}
           </View>
-          {resume && <View className="test-page__resume" hoverClass="none" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
+          {resume && <View className="test-page__resume" hoverClass="pressable--pressed" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
             <Text className="test-page__section-kicker">继续答题</Text>
             <Text className="test-page__resume-title">{resume.definition.title}</Text>
             <Text className="test-page__resume-meta">已完成 {resume.draft.answers.length}/{resume.definition.questions.length} 题</Text>
@@ -113,7 +115,7 @@ export default function TestPage() {
             <View className="test-page__grid">{recommended.map((definition) => renderCard(definition, '推荐'))}</View>
           </View>}
           <View id="test-category-results" className="test-page__chips">
-            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="none" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
+            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="pressable--pressed" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
           </View>
           <Text className="test-page__section-title">{searched ? `搜索结果 · ${searched.length}` : activeCategory === 'all' ? '更多测试' : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}</Text>
           <View className="test-page__grid">{(searched ?? browsing).map((definition) => renderCard(definition, searched ? '搜索' : '可测试'))}</View>

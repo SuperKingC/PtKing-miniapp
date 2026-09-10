@@ -1,5 +1,129 @@
 # 本轮工作记录
 
+## 2026-09-09 17:40 (UTC+8)
+- 原因：参考图立体感是画进去的毡面柔光；月亮应靠下被品牌栏裁掉一截。
+- 修改：新增 `shadow-slab-v1.png` 垫在卡片/底栏后；卡面毡色+内凹光；banner 图下移裁月亮。
+- 验证：`shareWiring` + `appConfig` + `experienceFlow` 共 22 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看月亮是否被品牌栏下沿裁掉、卡片四周是否有毡面柔光。未做真机点验。未 commit。
+
+## 2026-09-09 17:30 (UTC+8)
+- 原因：对照 ui-4，品牌栏过高，卡片四周仍没有厚毡块立体感。
+- 修改：banner 320rpx；`.me-page__slab` 三层暖棕扩散投影；滚动 padding 改到内部容器，去掉 enhanced 以免裁阴影。底栏 dock 同步加厚。
+- 验证：`shareWiring` + `appConfig` + `experienceFlow` 共 22 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」品牌栏是否变矮、三块卡和底栏四周是否有厚毡块投影。未做真机点验。未 commit。
+
+## 2026-09-09 17:20 (UTC+8)
+- 原因：图一米色方底是从 ui-4 整页裁切带了卡底；用户要的阴影是每块卡片周围的宽软投影，不是图标脚下。
+- 修改：列表改回透明底 `icon-me-*-v4.png`，底栏改回 `*-v7.png`。`AGENTS.md` / `miniapp-kit.md` 纠正为白底泛洪抠图标、卡片用 CSS `--shadow-card`。品牌栏/列表/开关卡外层投影内层裁圆角；底栏胶囊同样用宽软投影。
+- 验证：`shareWiring` + `appConfig` + `experienceFlow` 共 22 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」三块卡和底栏胶囊是否浮起来、列表图标是否无米色方底。未做真机点验。未 commit。
+
+## 2026-09-09 17:05 (UTC+8)
+- 原因：用户觉得当前图标没有 ui-4 质感，缺阴影，要求直接从 ui-4 抠。
+- 修改：列表 `icon-me-*-v5.png`、底栏 `*-v8.png` 均从 `ui-4.png` 裁切并保留软投影，不再泛洪抠白底。
+- 验证：`shareWiring` + `appConfig` 共 16 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」列表图标和底栏是否带 ui-4 那层软投影。未做真机点验。品牌栏仍用 `me-banner-v4.jpg`。
+
+## 2026-09-09 17:00 (UTC+8)
+- 原因：用户选定 heal-preview ui-4，要把「我的」、底栏和其它插画都换成这套软陶毡面；测测子栏文字画进图。
+- 修改：风格写入 `AGENTS.md`、`docs/features/miniapp-kit.md`、`art.config.json` 的 `style` 与 `art/prompts.txt`。品牌栏换成 `me-banner-v4.jpg`（字在图里，去掉 CSS 叠字）。底栏八枚换成 `*-v7.png`。测试中心 hero/分类点/记录空态升到 v2。列表图标沿用已接的 `icon-me-*-v4.png`。
+- 验证：`shareWiring` + `appConfig` + `experienceFlow` 共 22 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」品牌栏是否自带「测测子」字、底栏四枚是否为软陶探头猫/扇形牌/爪印本/坐姿猫、测试中心和记录空态是否同一套。未做真机点验。COS 热更未传。塔罗 COS 题图未改。
+
+## 2026-09-09 16:36 (UTC+8)
+- 原因：今日入口按钮要更像品牌语气。
+- 修改：`pages/test/index.tsx`「去测 ›」改为「测测 ›」；`experienceFlow.test.ts` 锁定。
+- 验证：`experienceFlow.test.ts` 6 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看测试中心今日入口按钮是否为「测测 ›」。未做真机点验。记录页空态「去测 xxx」、报告页「去测试中心」未改。
+
+## 2026-09-09 16:35 (UTC+8)
+- 原因：用户选定 heal-preview ui-4。
+- 修改：6 枚 `icon-me-*-v4.png` 落包；底栏改米色胶囊（`#e9dfd0`、更大圆角、两侧留空）。tab 四套插画未换。
+- 验证：`shareWiring` + `experienceFlow` 共 12 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」页左侧软陶图标，以及底栏米色胶囊（两侧留空）。未做真机点验。tab 四套插画未换。
+
+## 2026-09-09 16:30 (UTC+8)
+- 原因：各页顶部标题不统一；切深色后标题栏颜色不跟。
+- 修改：8 个 page config 标题改为「测测子」；深色导航栏改为 `#191411`；切页 force 重刷 `setNavigationBarColor`。
+- 验证：`theme.test.ts` + `appConfig.test.ts` 共 17 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看四 tab 与子页顶栏是否都是「测测子」；在「我的」开深色后顶栏是否跟页面同为暖深棕，再切测试/记录/塔罗顶栏是否仍是深色。未做真机点验。底栏文案、塔罗流程配色、分享标题未改。
+
+## 2026-09-09 16:14 (UTC+8)
+- 原因：左侧图标不好看，要先出几版预览再接线；底栏背景同样先预览。
+- 修改：`art:ui` 出 `art/generated-art/me-heal-preview-ui/ui-1.png`～`ui-5.png`。未改小程序代码，未换现有 `icon-me-*-v3.png`。
+- 验证：未改页面，无需构建。请看这 5 张选列表图标和底栏背景。未做真机点验。
+
+## 2026-09-09 15:55 (UTC+8)
+- 原因：我的页左侧图标要治愈风，并和底栏插画同一套。
+- 修改：6 枚 `icon-me-*-v3.png` 落包；`pages/me` 引用 v3。底栏四套图标未换。
+- 验证：`shareWiring.test.ts` 6 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」页左侧图标是否和底栏探头猫/本子同一套治愈奶油扁平。未做真机点验。底栏四套图标未换。
+
+## 2026-09-09 15:15 (UTC+8)
+- 原因：用 ui-1 列表图标，同时换掉底栏白底；tab 图标不改。
+- 修改：6 枚 `icon-me-*-v2.png` 落包；`pages/me` 引用 v2；底栏槽底跟页面米白，中间燕麦圆角浮岛。`theme.json` 浅色 tab 底改为 `#f7f4ee`。
+- 验证：`shareWiring` + `experienceFlow` + `appConfig` 共 21 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/`，清缓存后看「我的」页左侧手绘图标，以及四 tab 底栏是否不再是白条。未做真机点验。tab 四套插画图标未换。
+
+## 2026-09-09 14:53 (UTC+8)
+- 原因：用户要看提示词，并纠正：不改 tab 图标；列表风格不要原本扁平色块。
+- 修改：改正后 `art:ui` 出 `art/generated-art/me-newstyle-keep-tabicons-ui/ui-1.png`～`ui-5.png`。未改小程序代码。
+- 验证：未改页面，无需构建。请看这 5 张。未做真机点验。
+
+## 2026-09-09 14:36 (UTC+8)
+- 原因：按原本奶油扁平风重设计「我的」页，底栏不要白长条。
+- 修改：`art:ui` 1K 出 `art/generated-art/me-creamflat-tab-ui/ui-1.png`～`ui-5.png`。未改小程序代码。
+- 验证：未改页面，无需构建。请看这 5 张选图标和底栏方向。未做真机点验。
+
+## 2026-09-09 13:17 (UTC+8)
+- 原因：再出几张手绘风「我的」页参考，不要求极简。
+- 修改：2K 整页接口 terminated，改 1K 逐张 `art:ui`。成稿 `art/generated-art/me-row-icons-handdrawn-rich-ui/ui-1.png`～`ui-5.png`。未改小程序代码。
+- 验证：未改页面，无需构建。请看这 5 张选图标方向。未做真机点验。
+
+## 2026-09-09 12:50 (UTC+8)
+- 原因：「我的」页左侧图标要改手绘简洁风，先出整页参考。
+- 修改：`art:ui` 出稿 `art/generated-art/me-row-icons-handdrawn-ui/ui-3.png`、`ui-5.png`。其余 8 张接口 terminated，未再盲重试。未改小程序代码。
+- 验证：未改页面，无需构建。请看上述 2 张稿选方向。未做真机点验。
+
+## 2026-09-09 12:20 (UTC+8)
+- 原因：我的页图标偏小，原生开关偏胖短。
+- 修改：图标 48rpx→72rpx；深色/震动改为自绘瘦长开关 100×52rpx。未改 banner。
+- 验证：`shareWiring` + `motionPreference` 共 10 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 看「我的」页图标是否更大、开关是否更瘦长。未做真机点验。未改 banner。
+
+## 2026-09-09 12:05 (UTC+8)
+- 原因：按 ui-3 给「我的」页四行入口和深色/震动开关加统一陶土橘图标。
+- 修改：kit 出 6 枚图标，抠图后落包；`pages/me` 列表与开关行左侧加 48rpx 图标。未改 banner。
+- 验证：`shareWiring.test.ts` 6 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 看「我的」页：清理/隐私/分享/反馈四行，以及深色模式、震动反馈两行，左侧都应有统一陶土橘图标。未做真机点验。未改 banner。
+
+## 2026-09-09 11:44 (UTC+8)
+- 原因：用户对照现「我的」页，问图标颜色统一是否更好看，要再生图参考。
+- 修改：`art:ui` 统一陶土橘图标稿，成 3 张：`art/generated-art/me-entry-icons-unified-ui/ui-1.png`、`ui-3.png`、`ui-4.png`。`ui-2`/`ui-5` 中途失败未重试。未改小程序代码。
+
+## 2026-09-09 11:20 (UTC+8)
+- 原因：答题停顿要还原；报告「更多可以试的事」从 2 起编；我的页 item 先出带图标设计稿。
+- 修改：去掉答题 `PLAY_CONFIRM_MS`；报告编号改为 `index + 1`；`art:ui` 出「我的」页带行首图标的 5 张稿。
+- 验证：聚焦 3 文件 18 项通过。清 `miniapp/dist` 后 `build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 看答题立即切题、报告行动项从 1 编号。「我的」页 5 张稿在 `art/generated-art/me-entry-icons-ui/`，未改该页代码。未做真机点验。
+
+## 2026-09-09 11:20 (UTC+8)
+- 原因：收口 8 处表现：今日入口直达、答题确认节奏、报告展开与底栏、按压态、暗色补丁、记录可扫、详情封面、分享卡分类标记。
+- 修改：`miniapp/src` 下 experience/recordInsights/reportShareCard 与测试中心、答题、报告、记录、详情、底栏、app.scss。
+- 验证：聚焦 6 文件 28 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`。未做真机点验。未改塔罗流程。
+
+## 2026-09-08 19:22 (UTC+8)
+- 原因：测测子底图月亮和猫偏上。
+- 修改：品牌卡底图裁切上移，主体在框里略靠下。未重出图。
+- 验证：`shareWiring.test.ts` 6 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 看月亮和猫是否略靠下。未做真机点验。
+
+## 2026-09-08 19:06 (UTC+8)
+- 原因：我的页底部空白太大，测测子栏过高。
+- 修改：去掉 tab 预留底边距；品牌卡 456rpx→300rpx。
+- 验证：`shareWiring.test.ts` 6 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 看「我的」页卡高与底部空白。未做真机点验。
+
+## 2026-09-08 19:00 (UTC+8)
+- 原因：测测子栏底图不像参考；页脚被 tab 裁切；去掉本机说明；版本右对齐。
+- 修改：按 ui-1 重生并落包 `me-banner-v3.jpg`；卡高 456rpx；底边距 280rpx；页脚只留右对齐版本号。
+- 验证：`shareWiring.test.ts` 6 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`，看「我的」页底图、页脚版本是否完整露出。未做真机点验。
+
+## 2026-09-08 18:50 (UTC+8)
+- 原因：按选定稿把「我的」页测测子栏改成铺满插画，版本号收到页脚。
+- 修改：品牌卡 360rpx 铺满 `me-banner-v2.jpg`，左侧叠店名和 slogan，不可跳转；版本移到页脚。
+- 验证：`shareWiring.test.ts` 6 项通过。清 `miniapp/dist` 后 `npm --prefix miniapp run build:weapp` 成功。请用微信开发者工具导入 `miniapp/` 预览最新 `dist`，看「我的」页品牌卡与页脚版本。未改设置列表，未做真机点验。
+
+## 2026-09-08 18:40 (UTC+8)
+- 原因：「我的」页测测子栏要插画铺满、不要测试入口；先出设计稿不改代码。
+- 修改：`art:ui` 5 张整页稿在 `art/generated-art/me-banner-ui/`；铺满插画目前只有 `me-banner-horizon.png`。
+- 验证：未改 `miniapp/` 代码，未构建。请直接看上述 PNG 选方向。
+
 ## 2026-09-08 18:11 (UTC+8)
 - 原因：测试未选中要用 `review-test-idle-c.png`，上次误用了同名 jpg。
 - 修改：抠图升名落包 `test-v6.png` 并改引用。

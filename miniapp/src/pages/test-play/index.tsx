@@ -118,7 +118,6 @@ export default function TestPlayPage() {
     tapFeedback()
     trackEvent('test_answer', { testId: definition.id, qIndex })
     if (nextAnswers.length === total && qIndex === total - 1) {
-      // 计分引擎抛错（如动态定义缺字段）不能断流程：捕获上报 + 提示重试
       try {
         const result = scoreTest(definition, nextAnswers)
         const saved = saveTestRecord(definition.id, result, {
@@ -177,6 +176,11 @@ export default function TestPlayPage() {
 
   return (
     <View className={`test-play theme-${theme} motion-${motionPreference}`}>
+      {restoring && (
+        <View className="test-play__restoring">
+          <Text>正在恢复进度…</Text>
+        </View>
+      )}
       <View className="test-play__progress-track">
         <View className="test-play__progress-fill" style={{ width: `${progress}%` }} />
       </View>
@@ -195,7 +199,7 @@ export default function TestPlayPage() {
                 ? 'test-play__option test-play__option--active'
                 : 'test-play__option'
             }
-            hoverClass="none"
+            hoverClass="pressable--pressed"
             onClick={() => choose(optionIndex)}
           >
             {question.options.length > 2 && (
@@ -210,7 +214,7 @@ export default function TestPlayPage() {
       <View className="test-play__nav">
         <View
           className={qIndex > 0 ? 'test-play__nav-btn' : 'test-play__nav-btn test-play__nav-btn--disabled'}
-          hoverClass="none"
+          hoverClass={qIndex > 0 ? 'pressable--pressed' : 'none'}
           onClick={goPrev}
         >
           <Text>←</Text>
@@ -221,7 +225,7 @@ export default function TestPlayPage() {
               ? 'test-play__nav-btn'
               : 'test-play__nav-btn test-play__nav-btn--disabled'
           }
-          hoverClass="none"
+          hoverClass={qIndex < answers.length && qIndex < total - 1 ? 'pressable--pressed' : 'none'}
           onClick={goNext}
         >
           <Text>→</Text>

@@ -57,6 +57,14 @@
   color: var(--color-ink-secondary);
 }
 
+.test-page__hero-go {
+  display: block;
+  margin-top: 16rpx;
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
 .test-page__search {
   display: flex;
   align-items: center;

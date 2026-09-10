@@ -7,28 +7,37 @@
   left: 0;
   display: flex;
   align-items: stretch;
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
   min-height: 160rpx;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(20rpx);
-  border-top: 1rpx solid rgba(80, 62, 44, 0.06);
+  padding: 18rpx 22rpx 22rpx;
+  background: #f7f4ee;
+  border-top: none;
 }
 
 .tabbar__dock {
+  position: relative;
   display: flex;
   width: 100%;
   height: 100%;
+  overflow: visible;
+  border-radius: 48rpx;
+  background: #e9dfd0;
+  /* page 级 --shadow-slab（浅色）；手动/跟随深色由 .tabbar--dark 覆写 */
+  box-shadow: var(--shadow-slab);
 }
 
 .tabbar__item {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
-  min-height: 160rpx;
+  min-height: 140rpx;
   gap: 4rpx;
 }
 
@@ -36,6 +45,9 @@
   width: 72rpx;
   height: 72rpx;
   pointer-events: none;
+  /* 与我的页列表图标同一双层软投影，四个 tab 一致 */
+  filter: drop-shadow(0 3rpx 5rpx rgba(146, 106, 66, 0.32))
+    drop-shadow(0 12rpx 16rpx rgba(146, 106, 66, 0.28));
 }
 
 .tabbar__text {
@@ -50,10 +62,16 @@
   font-weight: 500;
 }
 
-/* 暗色（tabbar--dark 类由组件按主题偏好挂载）：毛玻璃底转暖深棕 */
+/* 暗色：槽底跟页面暖深棕，浮岛略亮一档 */
 .tabbar--dark {
-  background: rgba(33, 27, 22, 0.94);
-  border-top-color: rgba(255, 255, 255, 0.08);
+  background: #211b16;
+}
+
+.tabbar--dark .tabbar__dock {
+  background: #2c241e;
+  box-shadow:
+    0 8rpx 18rpx rgba(0, 0, 0, 0.4),
+    0 28rpx 60rpx 10rpx rgba(0, 0, 0, 0.46);
 }
 
 .tabbar--dark .tabbar__text {
@@ -65,7 +83,8 @@
 }
 
 .tabbar--dark .tabbar__icon {
-  filter: brightness(1.18);
+  filter: brightness(1.22) saturate(0.95) drop-shadow(0 3rpx 5rpx rgba(0, 0, 0, 0.45))
+    drop-shadow(0 12rpx 16rpx rgba(0, 0, 0, 0.4));
 }
 
 /* 塔罗全屏：卸掉本实例，官方槽仍在，由白底铺满后不再叠一层 fixed 栏 */

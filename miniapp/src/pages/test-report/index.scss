@@ -186,8 +186,8 @@
 .test-report__dim-track {
   height: 20rpx;
   border-radius: 999rpx;
-  background: #ecdfca;
-  box-shadow: inset 0 0 0 2rpx #e3d2b8;
+  background: var(--color-track-bg);
+  box-shadow: inset 0 0 0 2rpx var(--color-track-ring);
   overflow: hidden;
 }
 
@@ -231,8 +231,8 @@
   flex: 1;
   height: 20rpx;
   border-radius: 999rpx;
-  background: #ecdfca;
-  box-shadow: inset 0 0 0 2rpx #e3d2b8;
+  background: var(--color-track-bg);
+  box-shadow: inset 0 0 0 2rpx var(--color-track-ring);
   overflow: hidden;
 }
 
@@ -281,8 +281,8 @@
   flex: 1;
   height: 20rpx;
   border-radius: 999rpx;
-  background: #ecdfca;
-  box-shadow: inset 0 0 0 2rpx #e3d2b8;
+  background: var(--color-track-bg);
+  box-shadow: inset 0 0 0 2rpx var(--color-track-ring);
   overflow: hidden;
 }
 
@@ -308,8 +308,8 @@
   margin-top: 28rpx;
   padding: 24rpx 28rpx;
   border-radius: 20rpx;
-  border: 2rpx dashed #e8c9ae;
-  background: #fdf8f2;
+  border: 2rpx dashed var(--color-runner-border);
+  background: var(--color-runner-bg);
 }
 
 .test-report__runner-chip {
@@ -400,7 +400,7 @@
   gap: 8rpx;
   padding: 18rpx 8rpx 14rpx;
   border-radius: 16rpx;
-  background: #f8f3ec;
+  background: var(--color-soft-panel);
 }
 
 .test-report__band-seg--on {
@@ -550,30 +550,26 @@
   text-align: center;
 }
 
-.test-report__footer-row {
-  display: flex;
-  gap: 16rpx;
-  margin-top: 24rpx;
-}
-
 .test-report__share,
 .test-report__back {
   display: flex;
-  flex: 1;
   align-items: center;
   justify-content: center;
-  height: 80rpx;
   margin: 0;
   padding: 0;
-  border-radius: 999rpx;
-  background: var(--color-card-bg);
+  background: transparent;
   font-size: var(--font-size-secondary);
   font-weight: var(--font-weight-semibold);
   line-height: 1.4;
 }
 
-.test-report__share {
+.test-report__share--solo {
+  width: 100%;
+  height: 80rpx;
+  margin-top: 20rpx;
+  border-radius: 999rpx;
   border: 2rpx solid var(--color-primary);
+  background: var(--color-card-bg);
   color: var(--color-primary);
 }
 
@@ -582,7 +578,8 @@
 }
 
 .test-report__back {
-  border: 2rpx solid var(--color-primary-soft);
+  margin-top: 16rpx;
+  min-height: 64rpx;
   color: var(--color-ink-secondary);
 }
 
@@ -721,22 +718,6 @@
 }
 
 /* ===== 暗色：CSS 变量覆盖不到的底色补丁（类名由 useAppTheme 驱动） ===== */
-.theme-dark .test-report__dim-track,
-.theme-dark .test-report__factor-track,
-.theme-dark .test-report__vote-track {
-  background: #332a22;
-  box-shadow: inset 0 0 0 2rpx #3f352b;
-}
-
-.theme-dark .test-report__band-seg {
-  background: #2e2720;
-}
-
 .theme-dark .test-report__band-seg--on {
   background: linear-gradient(160deg, #3a2c22, #33261c);
-}
-
-.theme-dark .test-report__runner {
-  border-color: #4a3a2c;
-  background: #2e2720;
 }

@@ -1,5 +1,17 @@
 # 工作记录
 
+- 时间：2026-09-09 16:30
+- 原因：深色模式标题栏要和页面同色，切 tab 也要跟上。
+- 修改：`theme.ts` 深色导航/窗口底改为 `#191411`；`applyThemeChrome` 支持 force 重刷。`theme.test.ts` 同步。
+
+- 时间：2026-09-09 12:20
+- 原因：我的页开关改为自绘拨杆。
+- 修改：`motionPreference.test.ts` 断言改为 `me-page__switch`。
+
+- 时间：2026-09-09 11:20
+- 原因：分享卡只有渐变和字。
+- 修改：`reportShareCard.ts` 按分类画色块并写分类标签；`ShareCardData` 增加 `category`。
+
 - 时间：2026-09-08 18:10
 - 原因：塔罗仪式需要连续洗牌震动和不同强度触感。
 - 修改：`haptics.ts` 增加 `impactFeedback` / `longFeedback` / `startPulseHaptics` / `stopPulseHaptics`，`tapFeedback` 复用轻震；`wxGlobal.ts` 补 `vibrateLong`；`haptics.test.ts` 覆盖强度、长震、脉冲启停与关闭偏好。

@@ -60,7 +60,7 @@ describe('motion preference', () => {
     expect(hook).toContain('subscribeMotionPreference')
     expect(me).not.toContain('setMotionPreference')
     expect(me).not.toContain('动效')
-    expect(me).toContain('<Switch')
+    expect(me).toContain('me-page__switch')
     expect(me).toContain('if (setHapticsEnabled(enabled))')
   })
 })

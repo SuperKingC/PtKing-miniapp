@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getPlayProgress, getTestPlayStage, pickDailyCategory } from './experience'
+import { getPlayProgress, getTestPlayStage, pickDailyCategory, pickDailyTest } from './experience'
 
 describe('答题进度与今日入口', () => {
   it('剩余题数按未答题计算，含当前题，回退不增加', () => {
@@ -20,5 +20,18 @@ describe('答题进度与今日入口', () => {
     expect(new Set(categories).size).toBe(4)
     expect(pickDailyCategory(2026, 9, 7)).toBe(pickDailyCategory(2026, 9, 7))
     expect(pickDailyCategory(2026, 9, 30)).not.toBe(pickDailyCategory(2026, 10, 1))
+  })
+  it('今日入口按分类池轮换具体测试，空列表返回 null', () => {
+    const definitions = [
+      { id: 'a', category: '人格' as const },
+      { id: 'b', category: '人格' as const },
+      { id: 'c', category: '情感' as const },
+    ]
+    const category = pickDailyCategory(2026, 9, 9)
+    const picked = pickDailyTest(definitions, 2026, 9, 9)
+    expect(picked).toBeTruthy()
+    expect(picked?.category).toBe(category)
+    expect(pickDailyTest(definitions, 2026, 9, 9)?.id).toBe(picked?.id)
+    expect(pickDailyTest([], 2026, 9, 9)).toBeNull()
   })
 })

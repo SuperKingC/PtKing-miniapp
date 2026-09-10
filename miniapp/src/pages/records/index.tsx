@@ -4,11 +4,11 @@ import Taro, { useDidShow } from '@tarojs/taro'
 import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
 import { listActiveTestDrafts } from '../../services/testDrafts'
 import { deleteTestRecord, loadTestRecords, TEST_RECORDS_CAP, type TestRecord } from '../../services/testRecords'
-import { buildRecordInsight, filterRecords, type RecordCategory } from '../../domain/recordInsights'
+import { buildRecordInsight, filterRecords, recordCategoryTone, shortenLabel, type RecordCategory } from '../../domain/recordInsights'
 import { pickRecommendedTests } from '../../services/testDiscovery'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
-import emptyRecordsImg from '../../assets/illus/empty-records.png'
+import emptyRecordsImg from '../../assets/illus/empty-records-v2.png'
 import './index.scss'
 
 const CATEGORIES: RecordCategory[] = ['全部', '人格', '情感', '职场', '趣味']
@@ -87,7 +87,7 @@ export default function RecordsPage() {
   const resumeBanner = resume ? (
     <View
       className="records-page__resume"
-      hoverClass="none"
+      hoverClass="pressable--pressed"
       onClick={() => {
         Taro.navigateTo({ url: `/pages/test-play/index?testId=${resume.definition.id}` })
       }}
@@ -111,7 +111,7 @@ export default function RecordsPage() {
           <Text className="records-page__empty-text">还没有测试记录，先从推荐测试开始。</Text>
           <View
             className="records-page__empty-btn"
-            hoverClass="none"
+            hoverClass="pressable--pressed"
             onClick={() => {
               if (firstTest) {
                 Taro.navigateTo({ url: `/pages/test-detail/index?testId=${firstTest.id}` })
@@ -150,7 +150,7 @@ export default function RecordsPage() {
               <Text className="records-page__stat-label">测过项目</Text>
             </View>
             <View className="records-page__stat">
-              <Text className="records-page__stat-value">{latestLabel}</Text>
+              <Text className="records-page__stat-value">{shortenLabel(latestLabel)}</Text>
               <Text className="records-page__stat-label">最新结果</Text>
             </View>
           </View>
@@ -159,7 +159,7 @@ export default function RecordsPage() {
               <View
                 key={item}
                 className={category === item ? 'records-page__chip records-page__chip--on' : 'records-page__chip'}
-                hoverClass="none"
+                hoverClass="pressable--pressed"
                 onClick={() => setCategory(item)}
               >
                 <Text>{item}</Text>
@@ -174,21 +174,26 @@ export default function RecordsPage() {
                 ?? definition?.reports[record.result.reportId]?.title
                 ?? record.resultTitle
                 ?? record.result.reportId
+              const tone = recordCategoryTone(definition?.category ?? categories[record.testId])
               return (
-                <View key={`${record.testId}-${record.finishedAt}`} className="records-page__item">
+                <View key={`${record.testId}-${record.finishedAt}`} className={`records-page__item records-page__item--${tone}`}>
+                  <View className="records-page__item-bar" />
                   <View
                     className="records-page__item-main"
-                    hoverClass="none"
+                    hoverClass="pressable--pressed"
                     onClick={() => {
                       Taro.navigateTo({
                         url: `/pages/test-report/index?testId=${record.testId}&finishedAt=${encodeURIComponent(record.finishedAt)}`,
                       })
                     }}
                   >
+                    <View className="records-page__item-head">
+                      <Text className="records-page__item-cat">{definition?.category ?? '测试'}</Text>
+                      <Text className="records-page__item-time">{formatTime(record.finishedAt)}</Text>
+                    </View>
                     <Text className="records-page__item-title">{title}</Text>
                     <Text className="records-page__item-result">{result}</Text>
                     {record.locked === true && <Text className="records-page__item-lock">待解锁</Text>}
-                    <Text className="records-page__item-time">{formatTime(record.finishedAt)}</Text>
                   </View>
                   <Text className="records-page__item-delete" onClick={() => removeRecord(record)}>删除</Text>
                 </View>

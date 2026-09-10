@@ -1,4 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: '测试',
+  navigationBarTitleText: '测测子',
   disableScroll: true,
 })

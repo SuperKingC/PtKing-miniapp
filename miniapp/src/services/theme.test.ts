@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import {
+  THEME_NAV_BG,
+  THEME_NAV_FRONT,
   THEME_PREFERENCE_ORDER,
+  THEME_WINDOW_BG,
   applyThemeChrome,
   getThemePreference,
   resetThemeChromeForTests,
@@ -76,12 +79,19 @@ describe('applyThemeChrome', () => {
     }
     try {
       applyThemeChrome('dark')
-      expect(calls[0]).toMatchObject({ frontColor: '#ffffff', backgroundColor: '#211b16' })
-      expect(calls[1]).toMatchObject({ backgroundColor: '#191411' })
+      expect(calls[0]).toMatchObject({
+        frontColor: THEME_NAV_FRONT.dark,
+        backgroundColor: THEME_NAV_BG.dark,
+      })
+      expect(calls[1]).toMatchObject({ backgroundColor: THEME_WINDOW_BG.dark })
+      expect(THEME_NAV_BG.dark).toBe(THEME_WINDOW_BG.dark)
       calls.length = 0
       applyThemeChrome('light')
-      expect(calls[0]).toMatchObject({ frontColor: '#000000', backgroundColor: '#f7f4ee' })
-      expect(calls[1]).toMatchObject({ backgroundColor: '#f7f4ee' })
+      expect(calls[0]).toMatchObject({
+        frontColor: THEME_NAV_FRONT.light,
+        backgroundColor: THEME_NAV_BG.light,
+      })
+      expect(calls[1]).toMatchObject({ backgroundColor: THEME_WINDOW_BG.light })
     } finally {
       delete (globalThis as { wx?: unknown }).wx
     }
@@ -101,8 +111,10 @@ describe('applyThemeChrome', () => {
       applyThemeChrome('light')
       applyThemeChrome('light')
       expect(calls).toHaveLength(2)
-      applyThemeChrome('dark')
+      applyThemeChrome('light', true)
       expect(calls).toHaveLength(4)
+      applyThemeChrome('dark')
+      expect(calls).toHaveLength(6)
     } finally {
       delete (globalThis as { wx?: unknown }).wx
     }

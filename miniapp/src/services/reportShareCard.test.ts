@@ -27,11 +27,13 @@ describe('分享卡片绘制', () => {
       tagline: '这是一次自我观察',
       hook: '这是一次自我观察，不是定论',
       disclaimer: shareCardDisclaimer(),
+      category: '人格',
     }
     const { ctx, texts } = createMockContext()
     drawShareCard(ctx, data)
     expect(texts.join(' ')).toContain('不是诊断')
     expect(texts.join(' ')).toContain('不是定论')
+    expect(texts.join(' ')).toContain('人格')
     expect(texts.some((text) => /\d+分/.test(text))).toBe(false)
   })
 })

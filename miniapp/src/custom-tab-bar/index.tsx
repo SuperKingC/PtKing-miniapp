@@ -8,20 +8,19 @@ import {
   resolveTheme,
   type ResolvedTheme,
 } from '../services/theme'
-import testIcon from '../assets/tabbar/test-v6.png'
-import testActiveIcon from '../assets/tabbar/test-active-v4.png'
-import tarotIcon from '../assets/tabbar/tarot-v5.png'
-import tarotActiveIcon from '../assets/tabbar/tarot-active-v5.png'
-import recordsIcon from '../assets/tabbar/records-v5.png'
-import recordsActiveIcon from '../assets/tabbar/records-active-v5.png'
-import meIcon from '../assets/tabbar/me-v4.png'
-import meActiveIcon from '../assets/tabbar/me-active-v4.png'
+import testIcon from '../assets/tabbar/test-v9.png'
+import testActiveIcon from '../assets/tabbar/test-active-v9.png'
+import tarotIcon from '../assets/tabbar/tarot-active-v7.png'
+import recordsIcon from '../assets/tabbar/records-v7.png'
+import recordsActiveIcon from '../assets/tabbar/records-active-v9.png'
+import meIcon from '../assets/tabbar/me-v7.png'
+import meActiveIcon from '../assets/tabbar/me-active-v7.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
 import { getWxGlobal } from '../services/wxGlobal'
 import { TAROT_TAB_INDEX, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
-// 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；毛玻璃底+暖色选中态。
+// 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；米白槽底+ui-4 米色胶囊，软陶毡面插画图标。
 // 选中态双保险：①点击时乐观置位（即时反馈）②各 tab 页 onShow 经 eventCenter 广播索引
 // （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
 
@@ -42,7 +41,7 @@ function currentRoute(): string {
 
 const TABS = [
   { text: '测试', icon: testIcon, activeIcon: testActiveIcon, path: '/pages/test/index' },
-  { text: '塔罗', icon: tarotIcon, activeIcon: tarotActiveIcon, path: '/pages/tarot/index' },
+  { text: '塔罗', icon: tarotIcon, activeIcon: tarotIcon, path: '/pages/tarot/index' },
   { text: '记录', icon: recordsIcon, activeIcon: recordsActiveIcon, path: '/pages/records/index' },
   { text: '我的', icon: meIcon, activeIcon: meActiveIcon, path: '/pages/me/index' },
 ]
@@ -127,7 +126,7 @@ export default class CustomTabBar extends Component {
             <View
               key={tab.path}
               className="tabbar__item"
-              hoverClass="none"
+              hoverClass="pressable--pressed"
               onClick={() => this.switchTo(index)}
             >
               <Image

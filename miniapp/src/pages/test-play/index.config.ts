@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '答题中',
+  navigationBarTitleText: '测测子',
 })

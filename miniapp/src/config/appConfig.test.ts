@@ -5,14 +5,13 @@ import { miniappRoot } from './testPaths'
 
 const TAB_PAGES = ['pages/test/index', 'pages/tarot/index', 'pages/records/index', 'pages/me/index'] as const
 const TAB_ICONS = [
-  'test-v6.png',
-  'test-active-v4.png',
-  'tarot-v5.png',
-  'tarot-active-v5.png',
-  'records-v5.png',
-  'records-active-v5.png',
-  'me-v4.png',
-  'me-active-v4.png',
+  'test-v9.png',
+  'test-active-v9.png',
+  'tarot-active-v7.png',
+  'records-v7.png',
+  'records-active-v9.png',
+  'me-v7.png',
+  'me-active-v7.png',
 ] as const
 
 describe('WeChat app config (M0 skeleton)', () => {
@@ -93,6 +92,36 @@ describe('WeChat app config (M0 skeleton)', () => {
         expect(typeof theme[variant][key]).toBe('string')
       }
     }
+    expect(theme.light.tabBgColor).toBe(theme.light.bgColor)
+    expect(theme.dark.tabBgColor).toBe(theme.dark.bgColor)
+    expect(theme.light.navBgColor).toBe(theme.light.bgColor)
+    expect(theme.dark.navBgColor).toBe(theme.dark.bgColor)
+    expect(theme.dark.navBgColor).toBe('#191411')
+  })
+
+  it('uses 测测子 as the navigation title on every page and does not hardcode nav colors', () => {
+    const pageConfigs = [
+      'pages/test/index.config.ts',
+      'pages/tarot/index.config.ts',
+      'pages/records/index.config.ts',
+      'pages/me/index.config.ts',
+      'pages/test-detail/index.config.ts',
+      'pages/test-play/index.config.ts',
+      'pages/test-report/index.config.ts',
+      'pages/privacy/index.config.ts',
+    ] as const
+
+    for (const file of pageConfigs) {
+      const src = readFileSync(resolve(miniappRoot(), 'src', file), 'utf8')
+      expect(src).toContain("navigationBarTitleText: '测测子'")
+      expect(src).not.toMatch(/navigationBarBackgroundColor:\s*'#/)
+    }
+
+    const themeHook = readFileSync(resolve(miniappRoot(), 'src/hooks/useAppTheme.ts'), 'utf8')
+    const tarotPage = readFileSync(resolve(miniappRoot(), 'src/pages/tarot/index.tsx'), 'utf8')
+    expect(themeHook).toContain('useDidShow')
+    expect(themeHook).toContain('applyThemeChrome')
+    expect(tarotPage).toContain('applyThemeChrome')
   })
 
   it('hides the custom tab bar on the tarot tab without native hideTabBar', () => {

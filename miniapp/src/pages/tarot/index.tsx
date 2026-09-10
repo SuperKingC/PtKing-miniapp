@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
-import Taro, { useShareAppMessage } from '@tarojs/taro'
+import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { APP_TAROT_SHARE_TITLE } from '../../services/brand'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
+import { applyThemeChrome, currentSystemTheme, getThemePreference, resolveTheme } from '../../services/theme'
 import './index.scss'
 
 // 塔罗页：平移自 Pet10 的完整解读流程（问题→牌阵→洗牌→切牌→扇形→翻牌→解读→历史）。
@@ -12,6 +13,11 @@ import './index.scss'
 export default function TarotPage() {
   useTabBarSelected(1)
   const [tarotShareTitle, setTarotShareTitle] = useState('')
+
+  // 不挂 theme-light/dark（流程自带深色），只同步导航栏标题底色
+  useDidShow(() => {
+    applyThemeChrome(resolveTheme(getThemePreference(), currentSystemTheme()), true)
+  })
 
   // 全屏由 custom-tab-bar 在选中塔罗时自隐；不要调 hideTabBar/showTabBar，
   // 自定义 tabBar 是 position:fixed，原生 hide/show 会留下残留实例，切 tab 出现双栏。

@@ -13,6 +13,18 @@ export interface ShareCardData {
   tagline: string
   hook?: string
   disclaimer?: string
+  category?: string
+}
+
+const CATEGORY_MARK: Record<string, { fill: string; chip: string }> = {
+  人格: { fill: 'rgba(236, 231, 255, 0.28)', chip: '#ece7ff' },
+  情感: { fill: 'rgba(255, 232, 236, 0.32)', chip: '#ffe8ec' },
+  职场: { fill: 'rgba(226, 238, 255, 0.32)', chip: '#e2eeff' },
+  趣味: { fill: 'rgba(255, 241, 220, 0.34)', chip: '#fff1dc' },
+}
+
+export function shareCardMarkColor(category?: string): { fill: string; chip: string } {
+  return CATEGORY_MARK[category ?? ''] ?? CATEGORY_MARK.人格
 }
 
 export const SHARE_CARD_WIDTH = 600
@@ -51,10 +63,26 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   ctx.arc(40, height - 30, 90, 0, Math.PI * 2)
   ctx.fill()
 
+  const mark = shareCardMarkColor(data.category)
+  ctx.fillStyle = mark.fill
+  ctx.beginPath()
+  ctx.arc(width - 88, 168, 78, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = mark.chip
+  ctx.beginPath()
+  ctx.arc(width - 88, 168, 36, 0, Math.PI * 2)
+  ctx.fill()
+
   // 品牌行
   ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
   ctx.font = '500 26px sans-serif'
   ctx.fillText(APP_SHARE_TITLE, 48, 72)
+
+  if (data.category) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.92)'
+    ctx.font = '600 22px sans-serif'
+    ctx.fillText(clampText(data.category, 4), width - 168, 86)
+  }
 
   // 测试名
   ctx.fillStyle = 'rgba(255, 255, 255, 0.92)'
@@ -64,7 +92,7 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   // 结果大标题：先截断再按字数自适应缩小
   const displayTitle = clampText(data.resultTitle, 12)
   ctx.fillStyle = '#ffffff'
-  ctx.font = `700 ${fitTitleFontSize(displayTitle, width - 96)}px sans-serif`
+  ctx.font = `700 ${fitTitleFontSize(displayTitle, width - 220)}px sans-serif`
   ctx.fillText(displayTitle, 48, 262)
 
   // tagline
