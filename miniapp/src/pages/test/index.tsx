@@ -18,7 +18,6 @@ import spotCareerImg from '../../assets/illus/spot-career-v2.png'
 import spotFunImg from '../../assets/illus/spot-fun-v2.png'
 import './index.scss'
 
-const CARD_THEME_BY_CATEGORY: Record<string, string> = { 人格: 'violet', 情感: 'rose', 职场: 'blue', 趣味: 'amber' }
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: spotPersonalityImg, 情感: spotLoveImg, 职场: spotCareerImg, 趣味: spotFunImg }
 const TODAY_COPY = {
   人格: { title: '认识自己的另一面', sub: '看看习惯的思考和选择' },
@@ -76,25 +75,31 @@ export default function TestPage() {
     wx.navigateTo({ url: `/pages/test-detail/index?testId=${encodeURIComponent(testId)}` })
   }
   const renderCard = (definition: typeof definitions[number], badge: string) => (
-    <View key={definition.id} className={`test-page__card test-page__card--${CARD_THEME_BY_CATEGORY[definition.category] ?? 'violet'}`} hoverClass="pressable--pressed" onClick={() => openDetail(definition.id)}>
-      <Text className="test-page__card-category">{definition.category}</Text>
-      <Text className="test-page__card-title">{definition.title}</Text>
-      <Text className="test-page__card-meta">{definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟</Text>
+    <View key={definition.id} className="test-page__card" hoverClass="pressable--pressed" onClick={() => openDetail(definition.id)}>
       <Image className="test-page__card-spot" src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg} mode="aspectFit" lazyLoad />
-      <Text className="test-page__card-badge">{badge}</Text>
+      <View className="test-page__card-content">
+        <Text className="test-page__card-title">{definition.title}</Text>
+        <Text className="test-page__card-meta">{definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟</Text>
+        <Text className="test-page__card-category">{definition.category} · {badge}</Text>
+      </View>
+      <Text className="test-page__card-go">开始测试</Text>
     </View>
   )
 
   return (
-    <View className={`tab-page theme-${theme}`}>
+    <View className={`tab-page test-page-shell theme-${theme}`}>
       <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
         <View className="test-page">
+          <View className="test-page__brand">
+            <Text className="test-page__brand-title">测测子</Text>
+            <Text className="test-page__brand-sub">来测测你的另一面</Text>
+          </View>
           {daily && <View className="test-page__hero" hoverClass="pressable--pressed" onClick={() => {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
             <View className="test-page__hero-text">
-              <Text className="test-page__hero-kicker">今日入口 · {dailyCategory}</Text>
+              <Text className="test-page__hero-kicker">今日推荐 · {dailyCategory}</Text>
               <Text className="test-page__hero-title">{daily.title}</Text>
               <Text className="test-page__hero-sub">{today.sub} · {daily.questions.length} 题 · 约 {daily.meta.minutes} 分钟</Text>
               <Text className="test-page__hero-go">测测 ›</Text>
@@ -110,13 +115,13 @@ export default function TestPage() {
             <Text className="test-page__resume-title">{resume.definition.title}</Text>
             <Text className="test-page__resume-meta">已完成 {resume.draft.answers.length}/{resume.definition.questions.length} 题</Text>
           </View>}
+          <View id="test-category-results" className="test-page__chips">
+            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="pressable--pressed" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
+          </View>
           {!searched && activeCategory === 'all' && recommended.length > 0 && <View className="test-page__section">
             <Text className="test-page__section-title">为你推荐</Text>
             <View className="test-page__grid">{recommended.map((definition) => renderCard(definition, '推荐'))}</View>
           </View>}
-          <View id="test-category-results" className="test-page__chips">
-            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="pressable--pressed" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
-          </View>
           <Text className="test-page__section-title">{searched ? `搜索结果 · ${searched.length}` : activeCategory === 'all' ? '更多测试' : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}</Text>
           <View className="test-page__grid">{(searched ?? browsing).map((definition) => renderCard(definition, searched ? '搜索' : '可测试'))}</View>
           {searched && searched.length === 0 && <Text className="test-page__search-empty">当前分类没有相关测试，试试切换「全部」或换个词。</Text>}

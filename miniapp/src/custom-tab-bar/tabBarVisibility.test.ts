@@ -2,13 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 
 describe('custom tab bar visibility', () => {
-  it('hides the tarot page instance even when that page is current', () => {
-    expect(shouldHideCustomTabBar('pages/tarot/index', 'pages/tarot/index', 1)).toBe(true)
+  it('shows the bright tarot home', () => {
+    expect(shouldHideCustomTabBar('pages/tarot/index', 'pages/tarot/index', 1)).toBe(false)
   })
 
-  it('hides when the selected tab is tarot', () => {
-    expect(shouldHideCustomTabBar('pages/test/index', 'pages/tarot/index', 1)).toBe(true)
-    expect(shouldHideCustomTabBar('', 'pages/tarot/index', 1)).toBe(true)
+  it('hides only while the selected tarot tab has an open flow', () => {
+    expect(shouldHideCustomTabBar('', 'pages/tarot/index', 1, true)).toBe(true)
+    expect(shouldHideCustomTabBar('pages/tarot/index', 'pages/records/index', 2, true)).toBe(false)
+    expect(shouldHideCustomTabBar('', 'pages/tarot/index', 1, false)).toBe(false)
   })
 
   it('keeps a background tab instance visible when it is not tarot', () => {

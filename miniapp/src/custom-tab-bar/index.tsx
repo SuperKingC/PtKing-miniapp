@@ -17,7 +17,7 @@ import meIcon from '../assets/tabbar/me-v7.png'
 import meActiveIcon from '../assets/tabbar/me-active-v7.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
 import { getWxGlobal } from '../services/wxGlobal'
-import { TAROT_TAB_INDEX, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
+import { TAROT_TAB_INDEX, TAROT_FLOW_VISIBILITY_EVENT, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
 // 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；米白槽底+ui-4 米色胶囊，软陶毡面插画图标。
@@ -48,6 +48,7 @@ const TABS = [
 
 export default class CustomTabBar extends Component {
   ownRoute = currentRoute()
+  tarotFlowOpen = false
 
   state = {
     selected: tabIndexFromRoute(this.ownRoute),
@@ -64,13 +65,14 @@ export default class CustomTabBar extends Component {
     const selectedRoute = tabPathToRoute(TABS[selected]?.path ?? '')
     this.setState({
       selected,
-      hidden: shouldHideCustomTabBar(this.ownRoute, selectedRoute, selected),
+      hidden: shouldHideCustomTabBar(this.ownRoute, selectedRoute, selected, this.tarotFlowOpen),
     })
   }
 
   componentDidMount() {
     this.ownRoute = Taro.getCurrentInstance()?.page?.path || currentRoute() || this.ownRoute
     Taro.eventCenter.on(TABBAR_SELECT_EVENT, this.handleSelectEvent)
+    Taro.eventCenter.on(TAROT_FLOW_VISIBILITY_EVENT, this.handleFlowVisibility)
     Taro.eventCenter.on(THEME_CHANGE_EVENT, this.handleThemeEvent)
     this.setState({
       theme: resolveTheme(getThemePreference(), currentSystemTheme()),
@@ -87,7 +89,13 @@ export default class CustomTabBar extends Component {
 
   componentWillUnmount() {
     Taro.eventCenter.off(TABBAR_SELECT_EVENT, this.handleSelectEvent)
+    Taro.eventCenter.off(TAROT_FLOW_VISIBILITY_EVENT, this.handleFlowVisibility)
     Taro.eventCenter.off(THEME_CHANGE_EVENT, this.handleThemeEvent)
+  }
+
+  handleFlowVisibility = (open: boolean) => {
+    this.tarotFlowOpen = open
+    this.applyVisibility()
   }
 
   handleSelectEvent = (index: number) => {
@@ -109,7 +117,7 @@ export default class CustomTabBar extends Component {
     }
     this.setState({
       selected: index,
-      hidden: index === TAROT_TAB_INDEX,
+      hidden: index === TAROT_TAB_INDEX && this.tarotFlowOpen,
     })
   }
 

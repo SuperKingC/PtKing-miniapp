@@ -121,7 +121,7 @@ describe('WeChat app config (M0 skeleton)', () => {
     const tarotPage = readFileSync(resolve(miniappRoot(), 'src/pages/tarot/index.tsx'), 'utf8')
     expect(themeHook).toContain('useDidShow')
     expect(themeHook).toContain('applyThemeChrome')
-    expect(tarotPage).toContain('applyThemeChrome')
+    expect(tarotPage).toContain('useAppTheme')
   })
 
   it('hides the custom tab bar on the tarot tab without native hideTabBar', () => {
