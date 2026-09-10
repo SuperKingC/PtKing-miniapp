@@ -13,7 +13,7 @@ import { MiniappTarotHistoryPanel } from './MiniappTarotHistoryPanel'
 import { getTarotSanctuaryBackground, preloadTarotResources } from './tarotAssets'
 import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
-import { listTarotHistory, saveTarotReading, TAROT_HISTORY_OPEN_EVENT } from './tarotHistory'
+import { listTarotHistory, saveTarotReading } from './tarotHistory'
 import { buildTarotReading, buildTarotShareTitle } from './tarotReading'
 import { impactFeedback, longFeedback, tapFeedback } from '../../services/haptics'
 import { findTarotSpread, type MiniappTarotSpread } from './tarotSpreads'
@@ -22,12 +22,14 @@ import './MiniappTarotFlow.scss'
 interface MiniappTarotFlowProps {
   onClose(): void
   onShareTitleChange?(title: string): void
+  initialSpread?: MiniappTarotSpread
+  historyRequest?: number
 }
 
 const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 'reading'] as const
 
-export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFlowProps) {
-  const [state, dispatch] = useReducer(tarotFlowReducer, undefined, createInitialTarotFlow)
+export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', historyRequest = 0 }: MiniappTarotFlowProps) {
+  const [state, dispatch] = useReducer(tarotFlowReducer, initialSpread, (spread) => ({ ...createInitialTarotFlow(), spread }))
   const motionPreference = useMotionPreference()
   const [historyOpen, setHistoryOpen] = useState(false)
   const [leaving, setLeaving] = useState(false)
@@ -67,14 +69,10 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange }: MiniappTarotFl
     leaveTimersRef.current = []
   }, [])
 
-  // 我的页「塔罗历史」入口跨页打开历史面板（tab 页常驻，eventCenter 监听常驻有效）
+  // 跨页请求由常驻页面接收，流程按需挂载后仍能打开历史。
   useEffect(() => {
-    const openHistory = () => setHistoryOpen(true)
-    Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)
-    return () => {
-      Taro.eventCenter.off(TAROT_HISTORY_OPEN_EVENT, openHistory)
-    }
-  }, [])
+    if (historyRequest > 0) setHistoryOpen(true)
+  }, [historyRequest])
 
   // while the reading is on screen, register a tarot-flavored share title so
   // the page-level useShareAppMessage can invite friends with the result card

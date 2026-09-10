@@ -1,44 +1,87 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
 import { APP_TAROT_SHARE_TITLE } from '../../services/brand'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
+import { TAROT_HISTORY_OPEN_EVENT } from '../../features/tarot/tarotHistory'
+import type { MiniappTarotSpread } from '../../features/tarot/tarotSpreads'
+import { TAROT_FLOW_VISIBILITY_EVENT } from '../../custom-tab-bar/tabBarVisibility'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
-import { applyThemeChrome, currentSystemTheme, getThemePreference, resolveTheme } from '../../services/theme'
+import { useAppTheme } from '../../hooks/useAppTheme'
+import { tapFeedback } from '../../services/haptics'
+import heroImage from '../../assets/illus/tarot-home-clay-v1.jpg'
+import cardsImage from '../../assets/tabbar/tarot-active-v7.png'
 import './index.scss'
 
-// 塔罗页：平移自 Pet10 的完整解读流程（问题→牌阵→洗牌→切牌→扇形→翻牌→解读→历史）。
-// 资产走 COS {根}/tarot/ 前缀（与 Pet10 同一资产约定）；解读阶段的分享标题由此页注册。
-// 流程内的「退出」在小程序页面形态下回到测试中心 tab
 export default function TarotPage() {
   useTabBarSelected(1)
+  const theme = useAppTheme()
+  const [flowOpen, setFlowOpen] = useState(false)
+  const [spread, setSpread] = useState<MiniappTarotSpread>('single')
+  const [historyRequest, setHistoryRequest] = useState(0)
   const [tarotShareTitle, setTarotShareTitle] = useState('')
 
-  // 不挂 theme-light/dark（流程自带深色），只同步导航栏标题底色
   useDidShow(() => {
-    applyThemeChrome(resolveTheme(getThemePreference(), currentSystemTheme()), true)
+    Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, flowOpen)
   })
-
-  // 全屏由 custom-tab-bar 在选中塔罗时自隐；不要调 hideTabBar/showTabBar，
-  // 自定义 tabBar 是 position:fixed，原生 hide/show 会留下残留实例，切 tab 出现双栏。
-
-  useShareAppMessage(() => {
-    if (tarotShareTitle) {
-      return { title: tarotShareTitle }
+  useEffect(() => {
+    Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, flowOpen)
+    return () => { Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, false) }
+  }, [flowOpen])
+  useEffect(() => {
+    const openHistory = () => {
+      setHistoryRequest((request) => request + 1)
+      setFlowOpen(true)
     }
+    Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)
+    return () => { Taro.eventCenter.off(TAROT_HISTORY_OPEN_EVENT, openHistory) }
+  }, [])
+  useShareAppMessage(() => {
+    if (tarotShareTitle) return { title: tarotShareTitle }
     return { title: APP_TAROT_SHARE_TITLE }
   })
+  const handleShareTitleChange = useCallback((title: string) => setTarotShareTitle(title), [])
+  const startFlow = (selected: MiniappTarotSpread) => {
+    tapFeedback()
+    setSpread(selected)
+    setHistoryRequest(0)
+    setFlowOpen(true)
+  }
+  const closeFlow = () => {
+    setFlowOpen(false)
+    setHistoryRequest(0)
+    setTarotShareTitle('')
+  }
 
-  const handleShareTitleChange = useCallback((title: string) => {
-    setTarotShareTitle(title)
-  }, [])
-
-  return (
+  return flowOpen ? (
     <View className="tarot-page">
-      <MiniappTarotFlow
-        onClose={() => Taro.switchTab({ url: '/pages/test/index' })}
-        onShareTitleChange={handleShareTitleChange}
-      />
+      <MiniappTarotFlow initialSpread={spread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} />
+    </View>
+  ) : (
+    <View className={`tab-page tarot-home-shell theme-${theme}`}>
+      <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
+        <View className="tarot-home">
+          <View className="tarot-home__heading">
+            <Text className="tarot-home__title">塔罗时光</Text>
+            <Text className="tarot-home__subtitle">给此刻的自己一点启发</Text>
+          </View>
+          <Image className="tarot-home__hero" src={heroImage} mode="aspectFit" />
+          <Button className="tarot-home__draw" onClick={() => startFlow('single')}>抽取今日指引</Button>
+          <View className="tarot-home__entries">
+            <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('single')}>
+              <Text className="tarot-home__entry-title">单张指引</Text>
+              <Text className="tarot-home__entry-sub">留一点时间，听听自己</Text>
+              <View className="tarot-home__single-card"><Text>✧</Text></View>
+            </View>
+            <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('triple')}>
+              <Text className="tarot-home__entry-title">三牌牌阵</Text>
+              <Text className="tarot-home__entry-sub">换个角度，探索当下</Text>
+              <Image className="tarot-home__cards" src={cardsImage} mode="aspectFit" />
+            </View>
+          </View>
+          <Text className="tarot-home__notice">仅供娱乐与自我探索</Text>
+        </View>
+      </ScrollView>
     </View>
   )
 }

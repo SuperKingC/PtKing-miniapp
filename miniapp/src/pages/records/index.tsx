@@ -9,6 +9,11 @@ import { pickRecommendedTests } from '../../services/testDiscovery'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import emptyRecordsImg from '../../assets/illus/empty-records-v2.png'
+import bookImage from '../../assets/illus/records-book-clay-v1.png'
+import personalityIcon from '../../assets/illus/spot-personality-v2.png'
+import loveIcon from '../../assets/illus/spot-love-v2.png'
+import careerIcon from '../../assets/illus/spot-career-v2.png'
+import funIcon from '../../assets/illus/spot-fun-v2.png'
 import './index.scss'
 
 const CATEGORIES: RecordCategory[] = ['全部', '人格', '情感', '职场', '趣味']
@@ -101,9 +106,17 @@ export default function RecordsPage() {
   ) : null
 
   return (
-    <View className={`tab-page theme-${theme}`}>
+    <View className={`tab-page records-page-shell theme-${theme}`}>
     <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
       <View className="records-page">
+      <View className="records-page__hero">
+        <View className="records-page__heading">
+          <Text className="records-page__title">我的记录</Text>
+          <Text className="records-page__subtitle">收好每一次发现</Text>
+          <Text className="records-page__count">已探索 {records.length} 次</Text>
+        </View>
+        <Image className="records-page__book" src={bookImage} mode="aspectFit" />
+      </View>
       {resumeBanner}
       {records.length === 0 ? (
         <View className="records-page__empty">
@@ -167,7 +180,7 @@ export default function RecordsPage() {
             ))}
           </View>
           <View className="records-page__list">
-            {visible.map((record) => {
+            {visible.map((record, index) => {
               const definition = getTestDefinition(record.testId)
               const title = definition?.title ?? record.testTitle ?? record.testId
               const result = record.reportSnapshot?.title
@@ -175,9 +188,13 @@ export default function RecordsPage() {
                 ?? record.resultTitle
                 ?? record.result.reportId
               const tone = recordCategoryTone(definition?.category ?? categories[record.testId])
+              const icon = tone === 'rose' ? loveIcon : tone === 'blue' ? careerIcon : tone === 'amber' ? funIcon : personalityIcon
+              const showDate = index === 0 || formatTime(visible[index - 1].finishedAt) !== formatTime(record.finishedAt)
               return (
-                <View key={`${record.testId}-${record.finishedAt}`} className={`records-page__item records-page__item--${tone}`}>
-                  <View className="records-page__item-bar" />
+                <View key={`${record.testId}-${record.finishedAt}`}>
+                  {showDate && <Text className="records-page__date-group">{formatTime(record.finishedAt)}</Text>}
+                <View className={`records-page__item records-page__item--${tone}`}>
+                  <Image className="records-page__item-icon" src={icon} mode="aspectFit" />
                   <View
                     className="records-page__item-main"
                     hoverClass="pressable--pressed"
@@ -196,6 +213,7 @@ export default function RecordsPage() {
                     {record.locked === true && <Text className="records-page__item-lock">待解锁</Text>}
                   </View>
                   <Text className="records-page__item-delete" onClick={() => removeRecord(record)}>删除</Text>
+                </View>
                 </View>
               )
             })}

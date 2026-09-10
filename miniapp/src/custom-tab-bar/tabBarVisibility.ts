@@ -9,14 +9,14 @@ export function shouldHideCustomTabBar(
   webviewRoute: string,
   selectedRoute: string,
   selectedIndex = -1,
-  tarotRoute = TAROT_TAB_ROUTE,
-  tarotIndex = TAROT_TAB_INDEX,
+  flowOpen = false,
 ): boolean {
-  if (tabPathToRoute(webviewRoute) === tarotRoute) return true
-  if (selectedIndex === tarotIndex) return true
-  if (tabPathToRoute(selectedRoute) === tarotRoute) return true
-  return false
+  if (!flowOpen) return false
+  if (selectedIndex >= 0) return selectedIndex === TAROT_TAB_INDEX
+  return tabPathToRoute(selectedRoute || webviewRoute) === TAROT_TAB_ROUTE
 }
+
+export const TAROT_FLOW_VISIBILITY_EVENT = 'ptking:tarot-flow-visibility'
 
 export function tabPathToRoute(path: string): string {
   return path.replace(/^\//, '')
