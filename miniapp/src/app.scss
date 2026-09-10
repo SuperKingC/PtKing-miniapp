@@ -22,9 +22,12 @@ page {
   --color-page-bg: #f7f4ee;
   --color-card-bg: #ffffff;
   --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
-  /* 我的页软陶投影：近处接触影 + 中距离落影 + 远距离暖雾，避免单一黑雾感 */
-  --shadow-slab: 0 2rpx 4rpx rgba(126, 96, 67, 0.14), 0 9rpx 16rpx rgba(126, 96, 67, 0.12),
-    0 22rpx 32rpx rgba(126, 96, 67, 0.09);
+  /* 仅外投影：接触影 + 偏左下柔影，不增加卡面内阴影或硬侧壁。 */
+  --shadow-slab: -2rpx 4rpx 5rpx rgba(116, 86, 55, 0.24),
+    -5rpx 12rpx 16rpx rgba(116, 86, 55, 0.18),
+    -7rpx 22rpx 30rpx rgba(116, 86, 55, 0.10);
+  --shadow-image: drop-shadow(-2rpx 4rpx 3rpx rgba(116, 86, 55, 0.26))
+    drop-shadow(-3rpx 8rpx 8rpx rgba(116, 86, 55, 0.16));
   --color-track-bg: #ecdfca;
   --color-track-ring: #e3d2b8;
   --color-notice-bg: #f7f5fb;
@@ -64,7 +67,11 @@ page {
     --color-page-bg: #191411;
     --color-card-bg: #262019;
     --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
-    --shadow-slab: 0 8rpx 18rpx rgba(0, 0, 0, 0.4), 0 28rpx 60rpx 10rpx rgba(0, 0, 0, 0.46);
+    --shadow-slab: -2rpx 4rpx 5rpx rgba(0, 0, 0, 0.32),
+      -5rpx 12rpx 16rpx rgba(0, 0, 0, 0.26),
+      -7rpx 22rpx 30rpx rgba(0, 0, 0, 0.18);
+    --shadow-image: drop-shadow(-2rpx 4rpx 3rpx rgba(0, 0, 0, 0.30))
+      drop-shadow(-3rpx 8rpx 8rpx rgba(0, 0, 0, 0.20));
     --color-track-bg: #332a22;
     --color-track-ring: #3f352b;
     --color-notice-bg: #2e2720;
@@ -85,8 +92,11 @@ page {
   --color-page-bg: #f7f4ee;
   --color-card-bg: #ffffff;
   --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
-  --shadow-slab: 0 2rpx 4rpx rgba(126, 96, 67, 0.14), 0 9rpx 16rpx rgba(126, 96, 67, 0.12),
-    0 22rpx 32rpx rgba(126, 96, 67, 0.09);
+  --shadow-slab: -2rpx 4rpx 5rpx rgba(116, 86, 55, 0.24),
+    -5rpx 12rpx 16rpx rgba(116, 86, 55, 0.18),
+    -7rpx 22rpx 30rpx rgba(116, 86, 55, 0.10);
+  --shadow-image: drop-shadow(-2rpx 4rpx 3rpx rgba(116, 86, 55, 0.26))
+    drop-shadow(-3rpx 8rpx 8rpx rgba(116, 86, 55, 0.16));
   --color-track-bg: #ecdfca;
   --color-track-ring: #e3d2b8;
   --color-notice-bg: #f7f5fb;
@@ -104,7 +114,11 @@ page {
   --color-page-bg: #191411;
   --color-card-bg: #262019;
   --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
-  --shadow-slab: 0 8rpx 18rpx rgba(0, 0, 0, 0.4), 0 28rpx 60rpx 10rpx rgba(0, 0, 0, 0.46);
+  --shadow-slab: -2rpx 4rpx 5rpx rgba(0, 0, 0, 0.32),
+    -5rpx 12rpx 16rpx rgba(0, 0, 0, 0.26),
+    -7rpx 22rpx 30rpx rgba(0, 0, 0, 0.18);
+  --shadow-image: drop-shadow(-2rpx 4rpx 3rpx rgba(0, 0, 0, 0.30))
+    drop-shadow(-3rpx 8rpx 8rpx rgba(0, 0, 0, 0.20));
   --color-track-bg: #332a22;
   --color-track-ring: #3f352b;
   --color-notice-bg: #2e2720;

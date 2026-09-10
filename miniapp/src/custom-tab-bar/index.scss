@@ -70,8 +70,9 @@
 .tabbar--dark .tabbar__dock {
   background: #2c241e;
   box-shadow:
-    0 8rpx 18rpx rgba(0, 0, 0, 0.4),
-    0 28rpx 60rpx 10rpx rgba(0, 0, 0, 0.46);
+    -2rpx 4rpx 5rpx rgba(0, 0, 0, 0.32),
+    -5rpx 12rpx 16rpx rgba(0, 0, 0, 0.26),
+    -7rpx 22rpx 30rpx rgba(0, 0, 0, 0.18);
 }
 
 .tabbar--dark .tabbar__text {
