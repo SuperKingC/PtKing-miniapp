@@ -80,7 +80,7 @@ describe('share capability wiring', () => {
     const appStyles = readFileSync(resolve(miniappRoot(), 'src/app.scss'), 'utf8')
     expect(styles).toMatch(/\.me-page__banner \{[^}]*overflow: visible/)
     expect(styles).toMatch(/\.me-page__banner-clip \{[^}]*overflow: visible/)
-    expect(styles).toMatch(/\.me-page__banner-img \{[^}]*width: 100%;[^}]*height: auto;[^}]*filter: var\(--shadow-image\)/)
+    expect(styles).toMatch(/\.me-page__banner-img \{[^}]*width: 100%;[^}]*height: auto;[^}]*filter: [^}]*var\(--shadow-image\)/)
     // 横幅不画 box-shadow 内阴影（透明轮廓图走 drop-shadow）；safe-area/padding 的 inset 字样不在此限
     expect(styles).not.toMatch(/box-shadow:[^;]*inset/)
     expect(styles).not.toContain('width: 134%')

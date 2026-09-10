@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-10 18:42
+- 原因：横幅比 ui-4 参考稿暗（采样：素材蓝 136/153/161 vs 参考 155/166/168）；问题反馈与深色模式两卡间距偏近。
+- 修改：浅色横幅滤镜改 `brightness(1.09) saturate(0.55)`（Python 采样模拟滤镜组合校准，误差 <1）；prefs 上距 24→40rpx；shareWiring banner-img filter 断言放宽为 `filter: [^}]*var(--shadow-image)`。开发者工具 18:40 fresh dist 预览：横幅亮度与参考稿一致，卡间距舒适。
+
 - 时间：2026-09-10 18:32
 - 原因：用户要求全部界面去掉屏幕最上面的「测测子」系统标题栏，内容整体上移。
 - 修改：app.config 全局 `navigationStyle: 'custom'`；新增 `services/navMetrics.ts`（胶囊底边+8px → CSS 变量 `--page-top-inset`，兜底 88px，单测 4 例）接线四 tab 页根节点 style；八个页面 padding-top 改 `calc(var(--page-top-inset) + 8rpx)`（test/records/tarot/me/test-detail/test-play/test-report/privacy）；shareWiring 契约同步（inset 断言收窄到 box-shadow、me padding 更新）。automator 验证：胶囊底边 83px→根节点注入 91px，四 tab+详情页 fresh dist 布局正确。
