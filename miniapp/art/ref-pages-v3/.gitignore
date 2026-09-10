@@ -1,0 +1,5 @@
+generated/
+prepared/
+*.local.*
+compression-state.local.json
+reference-ui.png
