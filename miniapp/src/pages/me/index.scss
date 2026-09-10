@@ -23,8 +23,8 @@
   display: block;
   width: 100%;
   height: auto;
-  /* 抠图素材比 ui-4 参考稿暗且艳，浅色下提亮降饱和校准（采样对齐 155/166/168） */
-  filter: brightness(1.09) saturate(0.55) var(--shadow-image);
+  /* 抠图素材偏暗：浅色下提亮并保留雾蓝饱和（1.14/0.75，比参考稿采样值再亮半档防「发闷」） */
+  filter: brightness(1.14) saturate(0.75) var(--shadow-image);
 }
 
 /* 保留暗色图像调色，同时避免全局 image 规则覆盖轮廓投影。 */

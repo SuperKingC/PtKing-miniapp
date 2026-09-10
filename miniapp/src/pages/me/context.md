@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-10 19:00
+- 原因：用户反馈横幅仍偏暗；列表卡阴影带明显宽于横幅（slab 最宽 44rpx 模糊 vs image 仅 8rpx，差 4 倍）。
+- 修改：`--shadow-image` 四处（page/媒体查询/theme-light/theme-dark）改三层 drop-shadow（-2/5/4 → -4/12/14 → -7/24/30，宽度节奏对齐 --shadow-slab）；浅色横幅滤镜 1.09/0.55 → 1.14/0.75（保饱和提亮，防「发闷」）。另：工作区有三条未完成美术线的半成品改动（tarot/test/records 页引用未生成素材）阻塞构建，已 stash 暂存（stash@{0..2}），待素材生成后恢复。开发者工具 18:59 fresh dist 预览：横幅亮度舒适、上下阴影宽度一致。
+
 - 时间：2026-09-10 18:42
 - 原因：横幅比 ui-4 参考稿暗（采样：素材蓝 136/153/161 vs 参考 155/166/168）；问题反馈与深色模式两卡间距偏近。
 - 修改：浅色横幅滤镜改 `brightness(1.09) saturate(0.55)`（Python 采样模拟滤镜组合校准，误差 <1）；prefs 上距 24→40rpx；shareWiring banner-img filter 断言放宽为 `filter: [^}]*var(--shadow-image)`。开发者工具 18:40 fresh dist 预览：横幅亮度与参考稿一致，卡间距舒适。
