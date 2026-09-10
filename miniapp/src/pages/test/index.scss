@@ -4,13 +4,19 @@
   --color-ink: #4c4237;
   --color-ink-secondary: #8d8072;
   --color-primary: #c4713f;
-  --test-hero-bg: linear-gradient(172deg, #d5e3f1, #c9dcec);
+  --test-hero-bg: linear-gradient(180deg, #e3edf7 0%, #cdddf0 100%);
   --test-capsule-bg: #f3ecdd;
   --test-action-bg: linear-gradient(165deg, #edb98e, #dc9a6c);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
-  --test-shadow: inset 0 2rpx 0 rgba(255, 255, 255, 0.9), 0 3rpx 0 #eae1d2,
-    0 12rpx 24rpx rgba(114, 92, 68, 0.08), 0 22rpx 36rpx rgba(114, 92, 68, 0.04);
+  /* 厚毡枕头感（与我的页 --shadow-slab 同配方）：顶内高光 + 底部内软影 + 实色米棕侧壁 + 宽软影 */
+  --test-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95),
+    inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
+    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.16),
+    0 6rpx 0 #e3d3b6,
+    -2rpx 8rpx 10rpx rgba(116, 86, 55, 0.22),
+    -6rpx 18rpx 26rpx rgba(116, 86, 55, 0.16),
+    -8rpx 30rpx 44rpx rgba(116, 86, 55, 0.1);
 }
 
 .test-page-shell.theme-dark {
@@ -184,7 +190,7 @@
   padding: 24rpx 28rpx;
   border: 2rpx solid var(--test-highlight);
   border-radius: 24rpx;
-  background: var(--color-card-bg);
+  background: linear-gradient(180deg, #fffef9 0%, #fdf8ec 100%);
   box-shadow: var(--test-shadow);
 }
 
@@ -211,7 +217,7 @@
   padding: 8rpx;
   border: 2rpx solid var(--test-highlight);
   border-radius: 999rpx;
-  background: var(--test-capsule-bg);
+  background: linear-gradient(180deg, #f7f1e2 0%, #eee5d1 100%);
   box-shadow: var(--test-shadow);
 }
 
@@ -227,8 +233,8 @@
 }
 
 .test-page__chip--active {
-  background: var(--test-action-bg);
-  box-shadow: inset 0 2rpx 0 rgba(255, 255, 255, 0.55), inset 0 -3rpx 6rpx rgba(140, 84, 45, 0.18), 0 4rpx 8rpx rgba(133, 84, 45, 0.22);
+  background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
+  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.2), 0 4rpx 0 #cf9464, -2rpx 6rpx 8rpx rgba(116, 86, 55, 0.18);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
 }
@@ -248,7 +254,8 @@
   padding: 26rpx 22rpx;
   border: 2rpx solid var(--test-highlight);
   border-radius: 28rpx;
-  background: var(--color-card-bg);
+  /* 枕头感：卡面上亮下沉微渐变，配合 --test-shadow 底部内软影 */
+  background: linear-gradient(180deg, #fffef9 0%, #fdf8ec 100%);
   box-shadow: var(--test-shadow);
 }
 
@@ -294,8 +301,8 @@
   flex-shrink: 0;
   padding: 14rpx 22rpx;
   border-radius: 999rpx;
-  background: var(--test-action-bg);
-  box-shadow: inset 0 2rpx 0 rgba(255, 255, 255, 0.55), inset 0 -3rpx 6rpx rgba(140, 84, 45, 0.18), 0 4rpx 8rpx rgba(133, 84, 45, 0.22);
+  background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
+  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.2), 0 4rpx 0 #cf9464, -2rpx 6rpx 8rpx rgba(116, 86, 55, 0.18);
   font-size: 24rpx;
   font-weight: var(--font-weight-semibold);
   line-height: 1.4;

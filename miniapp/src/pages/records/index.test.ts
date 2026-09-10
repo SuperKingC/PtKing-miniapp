@@ -5,7 +5,7 @@ const source = readFileSync(require('node:path').resolve(__dirname, 'index.tsx')
 describe('bright records layout', () => {
   it('uses real counts, a standalone book and date groups', () => {
     expect(source).toContain('我的记录')
-    expect(source).toContain('records-book-v2.png')
+    expect(source).toContain('records-book-v3.png')
     expect(source).toContain('已探索 ')
     expect(source).toContain('{records.length}')
     expect(source).toContain('records-page__date-group')

@@ -52,8 +52,8 @@ describe('测试首页软陶单列布局', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
     expect(source).toContain('今日推荐')
-    expect(source).toContain('test-hero-clay-v1.png')
-    expect(source).toContain('icon-bell-v1.png')
+    expect(source).toContain('test-hero-clay-v2.png')
+    expect(source).toContain('icon-bell-v2.png')
     expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')
     expect(source).toContain('openDetail(daily.id)')
   })
@@ -98,7 +98,7 @@ describe('测试首页软陶单列布局', () => {
 
   it('分类共享胶囊底，各分类等分宽度且无需横向滚动', () => {
     const chips = styleBlock('.test-page__chips')
-    expect(chips).toContain('background: var(--test-capsule-bg)')
+    expect(chips).toContain('background: linear-gradient(180deg, #f7f1e2 0%, #eee5d1 100%)')
     expect(chips).toContain('border-radius: 999rpx')
     expect(chips).not.toContain('overflow-x: auto')
     expect(styleBlock('.test-page__chip')).toContain('flex: 1')
@@ -117,15 +117,15 @@ describe('测试首页软陶单列布局', () => {
     expect(source).toContain('test-page-shell theme-${theme}')
   })
 
-  it('卡片和横幅使用高光、厚度侧影、柔软投影，不裁切阴影', () => {
-    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 3rpx 0[^;]+0 12rpx 24rpx/)
+  it('卡片和横幅使用厚毡枕头感阴影（与我的页 slab 同配方），不裁切阴影', () => {
+    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 6rpx 0 #e3d3b6/)
     for (const selector of ['.test-page__card', '.test-page__hero']) {
       const block = styleBlock(selector)
       expect(block).toContain('border: 2rpx solid var(--test-highlight)')
       expect(block).toContain('box-shadow: var(--test-shadow)')
       expect(block).not.toContain('overflow: hidden')
     }
-    expect(styleBlock('.test-page__card-go')).toContain('background: var(--test-action-bg)')
-    expect(styleBlock('.test-page__card-go')).toContain('inset 0 2rpx 0')
+    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%)')
+    expect(styleBlock('.test-page__card-go')).toContain('inset 0 3rpx 4rpx')
   })
 })

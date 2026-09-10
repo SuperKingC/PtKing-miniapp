@@ -10,9 +10,9 @@ import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
 import { tapFeedback } from '../../services/haptics'
-import heroImage from '../../assets/illus/tarot-hero-v2.jpg'
-import singleCardImage from '../../assets/illus/tarot-card-single-v1.png'
-import cardsFanImage from '../../assets/illus/tarot-cards-fan-v1.png'
+import heroImage from '../../assets/illus/tarot-hero-v3.jpg'
+import singleCardImage from '../../assets/illus/tarot-card-single-v2.png'
+import cardsFanImage from '../../assets/illus/tarot-cards-fan-v2.png'
 import './index.scss'
 
 export default function TarotPage() {
