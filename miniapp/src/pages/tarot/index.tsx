@@ -10,8 +10,9 @@ import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
 import { tapFeedback } from '../../services/haptics'
-import heroImage from '../../assets/illus/tarot-home-clay-v1.jpg'
-import cardsImage from '../../assets/tabbar/tarot-active-v7.png'
+import heroImage from '../../assets/illus/tarot-hero-v2.jpg'
+import singleCardImage from '../../assets/illus/tarot-card-single-v1.png'
+import cardsFanImage from '../../assets/illus/tarot-cards-fan-v1.png'
 import './index.scss'
 
 export default function TarotPage() {
@@ -67,17 +68,20 @@ export default function TarotPage() {
             <Text className="tarot-home__subtitle">给此刻的自己一点启发</Text>
           </View>
           <Image className="tarot-home__hero" src={heroImage} mode="aspectFit" />
-          <Button className="tarot-home__draw" onClick={() => startFlow('single')}>抽取今日指引</Button>
+          <Button className="tarot-home__draw" onClick={() => startFlow('single')}>
+            <Text className="tarot-home__draw-star">✦</Text>
+            <Text className="tarot-home__draw-text">抽取今日指引</Text>
+          </Button>
           <View className="tarot-home__entries">
             <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('single')}>
               <Text className="tarot-home__entry-title">单张指引</Text>
-              <Text className="tarot-home__entry-sub">留一点时间，听听自己</Text>
-              <View className="tarot-home__single-card"><Text>✧</Text></View>
+              <Text className="tarot-home__entry-sub">快速获得指引</Text>
+              <Image className="tarot-home__single-card" src={singleCardImage} mode="aspectFit" />
             </View>
             <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('triple')}>
               <Text className="tarot-home__entry-title">三牌牌阵</Text>
-              <Text className="tarot-home__entry-sub">换个角度，探索当下</Text>
-              <Image className="tarot-home__cards" src={cardsImage} mode="aspectFit" />
+              <Text className="tarot-home__entry-sub">深度探索指引</Text>
+              <Image className="tarot-home__cards" src={cardsFanImage} mode="aspectFit" />
             </View>
           </View>
           <Text className="tarot-home__notice">仅供娱乐与自我探索</Text>

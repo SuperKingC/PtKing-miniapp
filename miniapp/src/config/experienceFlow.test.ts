@@ -12,7 +12,7 @@ describe('体验入口契约', () => {
     expect(home).toContain('<View className="test-page">')
     expect(home).toContain('pickDailyTest')
     expect(home).toContain('openDetail(daily.id)')
-    expect(home).toContain('测测 ›')
+    expect(home).toContain('今日推荐')
     expect(home).not.toContain('去测 ›')
     expect(home).not.toContain('scrollIntoView')
     expect(home).not.toContain('card-benefit')

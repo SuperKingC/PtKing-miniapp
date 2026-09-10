@@ -6,6 +6,11 @@ describe('bright tarot entry wiring', () => {
   it('keeps the existing flow behind a light home and returns home on close', () => {
     const page = source('./index.tsx')
     expect(page).toContain('塔罗时光')
+    expect(page).toContain('tarot-hero-v2.jpg')
+    expect(page).toContain('tarot-card-single-v1.png')
+    expect(page).toContain('tarot-cards-fan-v1.png')
+    expect(page).toContain('快速获得指引')
+    expect(page).toContain('深度探索指引')
     expect(page).toContain("startFlow('single')")
     expect(page).toContain("startFlow('triple')")
     expect(page).toContain('flowOpen ?')

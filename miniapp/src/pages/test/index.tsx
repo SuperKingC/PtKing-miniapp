@@ -12,23 +12,25 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroImg from '../../assets/illus/hero-test-center-v2.png'
-import spotPersonalityImg from '../../assets/illus/spot-personality-v2.png'
-import spotLoveImg from '../../assets/illus/spot-love-v2.png'
-import spotCareerImg from '../../assets/illus/spot-career-v2.png'
-import spotFunImg from '../../assets/illus/spot-fun-v2.png'
+import heroCatImg from '../../assets/illus/test-hero-clay-v1.png'
+import tileMbtiImg from '../../assets/illus/tile-mbti-v1.png'
+import tilePersonalityImg from '../../assets/illus/tile-personality-v1.png'
+import tileLoveImg from '../../assets/illus/tile-love-v1.png'
+import tileCareerImg from '../../assets/illus/tile-career-v1.png'
+import tileFunImg from '../../assets/illus/tile-fun-v1.png'
+import bellImg from '../../assets/illus/icon-bell-v1.png'
 import './index.scss'
 
-const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: spotPersonalityImg, 情感: spotLoveImg, 职场: spotCareerImg, 趣味: spotFunImg }
-const TODAY_COPY = {
-  人格: { title: '认识自己的另一面', sub: '看看习惯的思考和选择' },
-  情感: { title: '关系里你更在意什么', sub: '从相处方式出发看一看' },
-  职场: { title: '给忙碌的自己一点关注', sub: '看看优势和消耗从哪来' },
-  趣味: { title: '今天轻松玩个小测试', sub: '按第一反应选就好' },
-}
+const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tilePersonalityImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
+
 function todayCategory() {
   const now = new Date()
   return pickDailyCategory(now.getFullYear(), now.getMonth() + 1, now.getDate())
+}
+
+function cardSpot(definition: typeof listTestDefinitions[number]): string {
+  if (definition.id === 'mbti') return tileMbtiImg
+  return CARD_SPOT_BY_CATEGORY[definition.category] ?? tilePersonalityImg
 }
 
 export default function TestPage() {
@@ -40,7 +42,6 @@ export default function TestPage() {
   const [query, setQuery] = useState('')
   const [recentIds, setRecentIds] = useState(() => loadTestRecords().map((record) => record.testId))
   const [dailyCategory, setDailyCategory] = useState(todayCategory)
-  const today = TODAY_COPY[dailyCategory]
   const daily = useMemo(() => {
     const now = new Date()
     return pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())
@@ -77,11 +78,11 @@ export default function TestPage() {
   }
   const renderCard = (definition: typeof definitions[number], badge: string) => (
     <View key={definition.id} className="test-page__card" hoverClass="pressable--pressed" onClick={() => openDetail(definition.id)}>
-      <Image className="test-page__card-spot" src={CARD_SPOT_BY_CATEGORY[definition.category] ?? spotPersonalityImg} mode="aspectFit" lazyLoad />
+      <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" lazyLoad />
       <View className="test-page__card-content">
         <Text className="test-page__card-title">{definition.title}</Text>
-        <Text className="test-page__card-meta">{definition.questions.length} 题 · 约 {definition.meta.minutes} 分钟</Text>
-        <Text className="test-page__card-category">{definition.category} · {badge}</Text>
+        <Text className="test-page__card-sub">{definition.intro[0]}</Text>
+        <Text className="test-page__card-meta">约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {badge}</Text>
       </View>
       <Text className="test-page__card-go">开始测试</Text>
     </View>
@@ -92,20 +93,22 @@ export default function TestPage() {
       <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
         <View className="test-page">
           <View className="test-page__brand">
-            <Text className="test-page__brand-title">测测子</Text>
-            <Text className="test-page__brand-sub">来测测你的另一面</Text>
+            <View className="test-page__brand-text">
+              <Text className="test-page__brand-title">测测子</Text>
+              <Text className="test-page__brand-sub">来测测你的另一面</Text>
+            </View>
+            <Image className="test-page__bell" src={bellImg} mode="aspectFit" />
           </View>
           {daily && <View className="test-page__hero" hoverClass="pressable--pressed" onClick={() => {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
             <View className="test-page__hero-text">
-              <Text className="test-page__hero-kicker">今日推荐 · {dailyCategory}</Text>
-              <Text className="test-page__hero-title">{daily.title}</Text>
-              <Text className="test-page__hero-sub">{today.sub} · {daily.questions.length} 题 · 约 {daily.meta.minutes} 分钟</Text>
-              <Text className="test-page__hero-go">测测 ›</Text>
+              <Text className="test-page__hero-title">今日推荐</Text>
+              <Text className="test-page__hero-sub">发现更真实的自己</Text>
+              <Text className="test-page__hero-meta">{daily.title} · {daily.questions.length} 题 · 约 {daily.meta.minutes} 分钟</Text>
             </View>
-            <Image className="test-page__hero-img" src={heroImg} mode="aspectFit" lazyLoad />
+            <Image className="test-page__hero-img" src={heroCatImg} mode="aspectFit" lazyLoad />
           </View>}
           <View className="test-page__search">
             <Input className="test-page__search-input" value={query} placeholder="搜索名称、分类或简介" confirmType="search" onInput={(event) => setQuery(event.detail.value)} />

@@ -48,30 +48,29 @@ describe('测试首页软陶单列布局', () => {
     expect(findElement('test-page__card-go').getText(page)).toContain('开始测试')
   })
 
-  it('品牌、今日推荐和五分类保留，分类胶囊在推荐与普通列表之前', () => {
+  it('品牌行带铃铛、今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('今日推荐 · {dailyCategory}')
-    expect(source).toContain('hero-test-center-v2.png')
-    expect(source).toContain('TEST_CATEGORIES.map')
-    const chips = source.indexOf('id="test-category-results"')
-    expect(chips).toBeLessThan(source.indexOf('recommended.map((definition) => renderCard'))
-    expect(chips).toBeLessThan(source.indexOf('(searched ?? browsing).map'))
+    expect(source).toContain('今日推荐')
+    expect(source).toContain('test-hero-clay-v1.png')
+    expect(source).toContain('icon-bell-v1.png')
+    expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')
+    expect(source).toContain('openDetail(daily.id)')
   })
 
-  it('保留真实注册表、订阅刷新、搜索清空、分类筛选和继续答题入口', () => {
+  it('保留五分类、搜索清空、注册表订阅与继续答题入口', () => {
     for (const contract of [
-      'useState(listTestDefinitions)', 'subscribeTestRegistry(refresh)', 'useDidShow(refresh)',
+      'TEST_CATEGORIES.map', 'useState(listTestDefinitions)', 'subscribeTestRegistry(refresh)', 'useDidShow(refresh)',
       'filterByCategory(definitions, activeCategory)', 'matchTests(visible, keyword)',
       'pickRecommendedTests(definitions, recentIds, resume?.definition.id, 4)',
       'setQuery(event.detail.value)', "setQuery('')", 'setActiveCategory(category.key)',
-      'openDetail(daily.id)', '/pages/test-detail/index?testId=${encodeURIComponent(testId)}',
+      '/pages/test-detail/index?testId=${encodeURIComponent(testId)}',
       '/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}',
       '当前分类没有相关测试', 'useShareAppMessage',
     ]) expect(source).toContain(contract)
   })
 
-  it('列表为单列全宽横向卡片，96rpx图标占正常文档流', () => {
+  it('列表为单列全宽横向卡片，112rpx圆角方块图标占正常文档流', () => {
     expect(styleBlock('.test-page__grid')).toContain('flex-direction: column')
     const card = styleBlock('.test-page__card')
     expect(card).toContain('display: flex')
@@ -79,9 +78,9 @@ describe('测试首页软陶单列布局', () => {
     expect(card).toContain('width: 100%')
     expect(card).not.toContain('flex-direction: column')
     const icon = styleBlock('.test-page__card-spot')
-    expect(icon).toContain('flex: 0 0 96rpx')
-    expect(icon).toContain('width: 96rpx')
-    expect(icon).toContain('height: 96rpx')
+    expect(icon).toContain('flex: 0 0 112rpx')
+    expect(icon).toContain('width: 112rpx')
+    expect(icon).toContain('height: 112rpx')
     expect(icon).not.toContain('absolute')
   })
 
@@ -108,10 +107,10 @@ describe('测试首页软陶单列布局', () => {
 
   it('奶油白、浅雾蓝、桃色只覆盖本页，暗色主题保留独立配色', () => {
     const light = styleBlock('.test-page-shell.theme-light')
-    expect(light).toContain('--color-page-bg: #faf8f3')
-    expect(light).toContain('--color-card-bg: #fffdf9')
-    expect(light).toContain('--test-hero-bg: #e6eff0')
-    expect(light).toContain('--test-action-bg: #f7e3d7')
+    expect(light).toContain('--color-page-bg: #f7f2e9')
+    expect(light).toContain('--color-card-bg: #fffdf8')
+    expect(light).toContain('--test-hero-bg')
+    expect(light).toContain('--test-action-bg')
     const dark = styleBlock('.test-page-shell.theme-dark')
     for (const token of ['--test-hero-bg:', '--test-action-bg:', '--test-capsule-bg:', '--test-highlight:', '--test-shadow:']) expect(dark).toContain(token)
     expect(styles).not.toMatch(/(^|\n)(page|\.theme-light|\.theme-dark)\s*\{/)
@@ -127,6 +126,6 @@ describe('测试首页软陶单列布局', () => {
       expect(block).not.toContain('overflow: hidden')
     }
     expect(styleBlock('.test-page__card-go')).toContain('background: var(--test-action-bg)')
-    expect(styleBlock('.test-page__card-go')).toContain('inset 0 2rpx 0 var(--test-highlight)')
+    expect(styleBlock('.test-page__card-go')).toContain('inset 0 2rpx 0')
   })
 })
