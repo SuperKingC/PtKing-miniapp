@@ -12,16 +12,16 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroCatImg from '../../assets/illus/test-hero-clay-v2.png'
-import tileMbtiImg from '../../assets/illus/tile-mbti-v2.png'
-import tilePersonalityImg from '../../assets/illus/tile-personality-v2.png'
-import tileLoveImg from '../../assets/illus/tile-love-v2.png'
+import heroCardImg from '../../assets/illus/hero-card-v2.png'
+import tileMbtiImg from '../../assets/illus/tile-mbti-v3.png'
+import tileStarImg from '../../assets/illus/tile-star-v1.png'
+import tileLoveImg from '../../assets/illus/tile-love-v3.png'
 import tileCareerImg from '../../assets/illus/tile-career-v2.png'
 import tileFunImg from '../../assets/illus/tile-fun-v2.png'
 import bellImg from '../../assets/illus/icon-bell-v2.png'
 import './index.scss'
 
-const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tilePersonalityImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
+const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tileStarImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
 
 function todayCategory() {
   const now = new Date()
@@ -30,7 +30,7 @@ function todayCategory() {
 
 function cardSpot(definition: typeof listTestDefinitions[number]): string {
   if (definition.id === 'mbti') return tileMbtiImg
-  return CARD_SPOT_BY_CATEGORY[definition.category] ?? tilePersonalityImg
+  return CARD_SPOT_BY_CATEGORY[definition.category] ?? tileStarImg
 }
 
 export default function TestPage() {
@@ -103,12 +103,8 @@ export default function TestPage() {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
-            <View className="test-page__hero-text">
-              <Text className="test-page__hero-title">今日推荐</Text>
-              <Text className="test-page__hero-sub">发现更真实的自己</Text>
-              <Text className="test-page__hero-meta">{daily.title} · {daily.questions.length} 题 · 约 {daily.meta.minutes} 分钟</Text>
-            </View>
-            <Image className="test-page__hero-img" src={heroCatImg} mode="aspectFit" lazyLoad />
+            {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满 */}
+            <Image className="test-page__hero-img" src={heroCardImg} mode="widthFix" lazyLoad />
           </View>}
           <View className="test-page__search">
             <Input className="test-page__search-input" value={query} placeholder="搜索名称、分类或简介" confirmType="search" onInput={(event) => setQuery(event.detail.value)} />

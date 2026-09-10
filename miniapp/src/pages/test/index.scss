@@ -84,27 +84,16 @@
 }
 
 .test-page__hero {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
   margin-bottom: 28rpx;
-  padding: 34rpx 24rpx 34rpx 32rpx;
-  border: 2rpx solid var(--test-highlight);
   border-radius: 32rpx;
-  background: var(--test-hero-bg);
+  /* 参考图整卡（文字烘焙在图内），容器只做枕头感投影不裁切 */
   box-shadow: var(--test-shadow);
 }
 
-.test-page__hero-text {
-  flex: 1;
-  min-width: 0;
-}
-
 .test-page__hero-img {
-  flex: 0 0 216rpx;
-  width: 216rpx;
-  height: 236rpx;
-  margin-top: -40rpx;
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .test-page__hero-title {
@@ -260,9 +249,9 @@
 }
 
 .test-page__card-spot {
-  flex: 0 0 112rpx;
-  width: 112rpx;
-  height: 112rpx;
+  flex: 0 0 136rpx;
+  width: 136rpx;
+  height: 136rpx;
 }
 
 .test-page__card-content {

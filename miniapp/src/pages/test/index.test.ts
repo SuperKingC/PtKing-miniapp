@@ -51,8 +51,8 @@ describe('测试首页软陶单列布局', () => {
   it('品牌行带铃铛、今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('今日推荐')
-    expect(source).toContain('test-hero-clay-v2.png')
+    expect(source).toContain('hero-card-v2.png')
+    expect(source).toContain('hero-card-v2.png')
     expect(source).toContain('icon-bell-v2.png')
     expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')
     expect(source).toContain('openDetail(daily.id)')
@@ -70,7 +70,7 @@ describe('测试首页软陶单列布局', () => {
     ]) expect(source).toContain(contract)
   })
 
-  it('列表为单列全宽横向卡片，112rpx圆角方块图标占正常文档流', () => {
+  it('列表为单列全宽横向卡片，136rpx参考图方块图标占正常文档流', () => {
     expect(styleBlock('.test-page__grid')).toContain('flex-direction: column')
     const card = styleBlock('.test-page__card')
     expect(card).toContain('display: flex')
@@ -78,9 +78,9 @@ describe('测试首页软陶单列布局', () => {
     expect(card).toContain('width: 100%')
     expect(card).not.toContain('flex-direction: column')
     const icon = styleBlock('.test-page__card-spot')
-    expect(icon).toContain('flex: 0 0 112rpx')
-    expect(icon).toContain('width: 112rpx')
-    expect(icon).toContain('height: 112rpx')
+    expect(icon).toContain('flex: 0 0 136rpx')
+    expect(icon).toContain('width: 136rpx')
+    expect(icon).toContain('height: 136rpx')
     expect(icon).not.toContain('absolute')
   })
 
@@ -119,12 +119,13 @@ describe('测试首页软陶单列布局', () => {
 
   it('卡片和横幅使用厚毡枕头感阴影（与我的页 slab 同配方），不裁切阴影', () => {
     expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 6rpx 0 #e3d3b6/)
-    for (const selector of ['.test-page__card', '.test-page__hero']) {
-      const block = styleBlock(selector)
-      expect(block).toContain('border: 2rpx solid var(--test-highlight)')
-      expect(block).toContain('box-shadow: var(--test-shadow)')
-      expect(block).not.toContain('overflow: hidden')
-    }
+    const hero = styleBlock('.test-page__hero')
+    expect(hero).toContain('box-shadow: var(--test-shadow)')
+    expect(hero).not.toContain('overflow: hidden')
+    const card = styleBlock('.test-page__card')
+    expect(card).toContain('border: 2rpx solid var(--test-highlight)')
+    expect(card).toContain('box-shadow: var(--test-shadow)')
+    expect(card).not.toContain('overflow: hidden')
     expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%)')
     expect(styleBlock('.test-page__card-go')).toContain('inset 0 3rpx 4rpx')
   })

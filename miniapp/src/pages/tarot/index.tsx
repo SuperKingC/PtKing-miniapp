@@ -10,9 +10,9 @@ import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
 import { tapFeedback } from '../../services/haptics'
-import heroImage from '../../assets/illus/tarot-hero-v3.jpg'
-import singleCardImage from '../../assets/illus/tarot-card-single-v2.png'
-import cardsFanImage from '../../assets/illus/tarot-cards-fan-v2.png'
+import heroImage from '../../assets/illus/tarot-panel-v2.jpg'
+import singleCardImage from '../../assets/illus/tarot-card-single-v3.png'
+import cardsFanImage from '../../assets/illus/tarot-cards-fan-v3.png'
 import './index.scss'
 
 export default function TarotPage() {
@@ -63,11 +63,8 @@ export default function TarotPage() {
     <View className={`tab-page tarot-home-shell theme-${theme}`} style={topInsetStyle()}>
       <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
         <View className="tarot-home">
-          <View className="tarot-home__heading">
-            <Text className="tarot-home__title">塔罗时光</Text>
-            <Text className="tarot-home__subtitle">给此刻的自己一点启发</Text>
-          </View>
-          <Image className="tarot-home__hero" src={heroImage} mode="aspectFit" />
+          {/* 参考图整面板：标题/副标题/月牙云朵三牌猫全部烘焙在图内 */}
+          <Image className="tarot-home__hero" src={heroImage} mode="widthFix" />
           <Button className="tarot-home__draw" onClick={() => startFlow('single')}>
             <Text className="tarot-home__draw-star">✦</Text>
             <Text className="tarot-home__draw-text">抽取今日指引</Text>
