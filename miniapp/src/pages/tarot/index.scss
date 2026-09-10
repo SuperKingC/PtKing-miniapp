@@ -11,7 +11,7 @@
 }
 
 .tarot-home-shell.theme-light { background: #faf8f3; }
-.tarot-home { padding: 32rpx 36rpx calc(220rpx + env(safe-area-inset-bottom)); }
+.tarot-home { padding: calc(var(--page-top-inset, 88px) + 8rpx) 36rpx calc(220rpx + env(safe-area-inset-bottom)); }
 .tarot-home__heading { padding: 8rpx 12rpx 0; }
 .tarot-home__title { display: block; color: var(--color-ink); font-size: 46rpx; font-weight: 700; letter-spacing: 3rpx; }
 .tarot-home__subtitle { display: block; margin-top: 12rpx; font-size: 24rpx; color: var(--color-ink-secondary); letter-spacing: 2rpx; }

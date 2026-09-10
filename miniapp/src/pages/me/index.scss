@@ -1,7 +1,8 @@
 .me-page {
   box-sizing: border-box;
 
-  padding: 40rpx 40rpx 40rpx;
+  /* 无系统标题栏：顶部留胶囊安全距离 */
+  padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx 40rpx;
 }
 
 /* 透明素材自适应原始宽高，完整展示卡面、云朵与边缘，不再放大裁切。 */

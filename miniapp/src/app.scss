@@ -39,6 +39,9 @@ page {
   --color-runner-bg: #fdf8f2;
   --color-runner-border: #e8c9ae;
 
+  /* 自定义导航（无系统标题栏）：内容起始 y，由 navMetrics 按胶囊底边写入页面根节点；此为兜底 */
+  --page-top-inset: 88px;
+
   background: var(--color-page-bg);
   color: var(--color-ink);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -115,6 +118,7 @@ page {
   --color-soft-panel: #f8f3ec;
   --color-runner-bg: #fdf8f2;
   --color-runner-border: #e8c9ae;
+  --page-top-inset: 88px;
 }
 
 .theme-dark {

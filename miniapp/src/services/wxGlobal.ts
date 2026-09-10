@@ -21,6 +21,8 @@ export interface WxLike {
   disableAlertBeforeUnload?: () => void
   request?: (options: Record<string, unknown>) => void
   getSystemInfoSync?: () => { platform?: string; theme?: string }
+  getWindowInfo?: () => { statusBarHeight?: number }
+  getMenuButtonBoundingClientRect?: () => { top?: number; bottom?: number; height?: number }
   getRealtimeLogManager?: () => unknown
   onError?: (callback: (error: unknown) => void) => void
   onUnhandledRejection?: (callback: (res: { reason?: unknown }) => void) => void

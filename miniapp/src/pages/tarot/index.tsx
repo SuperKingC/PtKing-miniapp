@@ -8,6 +8,7 @@ import type { MiniappTarotSpread } from '../../features/tarot/tarotSpreads'
 import { TAROT_FLOW_VISIBILITY_EVENT } from '../../custom-tab-bar/tabBarVisibility'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { topInsetStyle } from '../../services/navMetrics'
 import { tapFeedback } from '../../services/haptics'
 import heroImage from '../../assets/illus/tarot-home-clay-v1.jpg'
 import cardsImage from '../../assets/tabbar/tarot-active-v7.png'
@@ -58,7 +59,7 @@ export default function TarotPage() {
       <MiniappTarotFlow initialSpread={spread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} />
     </View>
   ) : (
-    <View className={`tab-page tarot-home-shell theme-${theme}`}>
+    <View className={`tab-page tarot-home-shell theme-${theme}`} style={topInsetStyle()}>
       <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
         <View className="tarot-home">
           <View className="tarot-home__heading">

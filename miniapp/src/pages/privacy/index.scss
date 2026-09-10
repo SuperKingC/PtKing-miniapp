@@ -1,7 +1,8 @@
 .privacy-page {
   box-sizing: border-box;
   min-height: 100vh;
-  padding: 48rpx 48rpx calc(72rpx + env(safe-area-inset-bottom));
+  /* 无系统标题栏：顶部留胶囊安全距离 */
+  padding: calc(var(--page-top-inset, 88px) + 8rpx) 48rpx calc(72rpx + env(safe-area-inset-bottom));
 }
 
 .privacy-page__header {

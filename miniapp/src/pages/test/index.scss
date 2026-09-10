@@ -25,7 +25,8 @@
 
 .test-page {
   box-sizing: border-box;
-  padding: 28rpx 32rpx calc(220rpx + env(safe-area-inset-bottom));
+  /* 无系统标题栏：顶部留胶囊安全距离，下垫内容呼吸感 */
+  padding: calc(var(--page-top-inset, 88px) + 8rpx) 32rpx calc(220rpx + env(safe-area-inset-bottom));
   color: var(--color-ink);
   letter-spacing: 0;
 }

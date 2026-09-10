@@ -11,6 +11,7 @@ import { trackEvent } from '../../services/monitor'
 import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { topInsetStyle } from '../../services/navMetrics'
 import heroImg from '../../assets/illus/hero-test-center-v2.png'
 import spotPersonalityImg from '../../assets/illus/spot-personality-v2.png'
 import spotLoveImg from '../../assets/illus/spot-love-v2.png'
@@ -87,7 +88,7 @@ export default function TestPage() {
   )
 
   return (
-    <View className={`tab-page test-page-shell theme-${theme}`}>
+    <View className={`tab-page test-page-shell theme-${theme}`} style={topInsetStyle()}>
       <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
         <View className="test-page">
           <View className="test-page__brand">

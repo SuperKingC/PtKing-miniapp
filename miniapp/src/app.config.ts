@@ -44,6 +44,8 @@ export default defineAppConfig({
   },
   window: {
     navigationBarTitleText: '测测子',
+    // 全局沉浸式：去掉系统标题栏，页面自行留出状态栏+胶囊安全距离（ui-4 参考稿无标题栏）
+    navigationStyle: 'custom',
     navigationBarBackgroundColor: '@navBgColor',
     navigationBarTextStyle: '@navTxtStyle',
     backgroundColor: '@bgColor',

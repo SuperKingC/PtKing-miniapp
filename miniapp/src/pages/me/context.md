@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-10 18:32
+- 原因：用户要求全部界面去掉屏幕最上面的「测测子」系统标题栏，内容整体上移。
+- 修改：app.config 全局 `navigationStyle: 'custom'`；新增 `services/navMetrics.ts`（胶囊底边+8px → CSS 变量 `--page-top-inset`，兜底 88px，单测 4 例）接线四 tab 页根节点 style；八个页面 padding-top 改 `calc(var(--page-top-inset) + 8rpx)`（test/records/tarot/me/test-detail/test-play/test-report/privacy）；shareWiring 契约同步（inset 断言收窄到 box-shadow、me padding 更新）。automator 验证：胶囊底边 83px→根节点注入 91px，四 tab+详情页 fresh dist 布局正确。
+
 - 时间：2026-09-10 18:12
 - 原因：对照参考稿卡面还是「薄片」：阴影只朝外垫，没有包进卡面，缺枕头感。
 - 修改：`--shadow-slab` 再加两层内阴影（顶部内高光提纯 + `inset 0 -12rpx 20rpx` 底部内软影，浅/深四处）；entries/prefs 卡与底栏 dock 加 `linear-gradient(180deg)` 上亮下沉微渐变；暗色 dock 硬编码投影同步。shareWiring 契约同步内阴影断言。开发者工具 18:10 fresh dist 预览：卡面底部有向内包的软影，鼓起感接近参考稿。

@@ -1,6 +1,7 @@
 .records-page {
   box-sizing: border-box;
-  padding: 32rpx 32rpx calc(220rpx + env(safe-area-inset-bottom));
+  /* 无系统标题栏：顶部留胶囊安全距离 */
+  padding: calc(var(--page-top-inset, 88px) + 8rpx) 32rpx calc(220rpx + env(safe-area-inset-bottom));
 }
 
 .records-page-shell.theme-light { background: #faf8f3; }

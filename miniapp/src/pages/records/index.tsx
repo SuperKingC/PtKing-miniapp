@@ -8,6 +8,7 @@ import { buildRecordInsight, filterRecords, recordCategoryTone, shortenLabel, ty
 import { pickRecommendedTests } from '../../services/testDiscovery'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { topInsetStyle } from '../../services/navMetrics'
 import emptyRecordsImg from '../../assets/illus/empty-records-v2.png'
 import bookImage from '../../assets/illus/records-book-clay-v1.png'
 import personalityIcon from '../../assets/illus/spot-personality-v2.png'
@@ -106,7 +107,7 @@ export default function RecordsPage() {
   ) : null
 
   return (
-    <View className={`tab-page records-page-shell theme-${theme}`}>
+    <View className={`tab-page records-page-shell theme-${theme}`} style={topInsetStyle()}>
     <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
       <View className="records-page">
       <View className="records-page__hero">

@@ -3,6 +3,7 @@ import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { topInsetStyle } from '../../services/navMetrics'
 import { trackEvent } from '../../services/monitor'
 import { isHapticsEnabled, setHapticsEnabled } from '../../services/haptics'
 import {
@@ -109,7 +110,7 @@ export default function MePage() {
   ]
 
   return (
-    <View className={`tab-page theme-${theme}`}>
+    <View className={`tab-page theme-${theme}`} style={topInsetStyle()}>
     <ScrollView
       className="tab-page__scroll"
       scrollY
