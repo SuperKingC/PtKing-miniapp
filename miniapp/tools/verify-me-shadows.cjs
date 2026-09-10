@@ -12,8 +12,9 @@ async function main() {
     console.log('Banner filter:', await banner.style('filter'))
     const entries = await page.$('.me-page__entries')
     console.log('Entries shadow:', await entries.style('box-shadow'))
-    await mini.screenshot({ path: path.resolve(__dirname, '../me-shadow-acceptance.png') })
-    console.log('Screenshot: miniapp/me-shadow-acceptance.png')
+    const screenshotPath = path.resolve(__dirname, '..', process.argv[2] || 'me-shadow-acceptance.png')
+    await mini.screenshot({ path: screenshotPath })
+    console.log('Screenshot:', screenshotPath)
   } finally {
     await mini.disconnect()
   }

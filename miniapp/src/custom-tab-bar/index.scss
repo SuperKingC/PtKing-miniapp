@@ -42,8 +42,9 @@
 }
 
 .tabbar__icon {
-  width: 72rpx;
-  height: 72rpx;
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
   pointer-events: none;
   /* 与我的页列表图标同一双层软投影，四个 tab 一致 */
   filter: drop-shadow(0 3rpx 5rpx rgba(146, 106, 66, 0.32))

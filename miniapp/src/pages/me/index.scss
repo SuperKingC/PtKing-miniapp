@@ -6,7 +6,9 @@
 
 /* 透明素材自适应原始宽高，完整展示卡面、云朵与边缘，不再放大裁切。 */
 .me-page__banner {
-  width: 100%;
+  /* 736px 画布两侧各 8px 透明安全边；只补偿留白，不裁卡面。 */
+  width: 102.222222%;
+  margin-left: -1.111111%;
   margin-bottom: 48rpx;
   overflow: visible;
 }
@@ -31,7 +33,7 @@
 .me-page__entries {
   overflow: visible;
   border-radius: 44rpx;
-  background: #faf3ea;
+  background: #faf6ee;
   /* 外层承载轮廓投影，内部只裁内容，不改变卡面光影。 */
   box-shadow: var(--shadow-slab);
 }
@@ -53,7 +55,7 @@
   align-items: center;
   justify-content: space-between;
   margin: 0;
-  padding: 28rpx 32rpx;
+  padding: 12rpx 24rpx;
   border-radius: 0;
   background: transparent;
   font-size: var(--font-size-body);
@@ -65,9 +67,9 @@
 
 .me-page__icon {
   flex-shrink: 0;
-  width: 72rpx;
-  height: 72rpx;
-  margin-right: 18rpx;
+  width: 104rpx;
+  height: 104rpx;
+  margin-right: 14rpx;
   filter: none;
 }
 
@@ -87,8 +89,17 @@
 }
 
 .me-page__arrow {
+  flex-shrink: 0;
+  width: 32rpx;
+  margin-left: 12rpx;
+  text-align: center;
+  line-height: 1;
+  color: #b4a38c;
+  font-size: 48rpx;
+}
+
+.theme-dark .me-page__arrow {
   color: var(--color-ink-secondary);
-  font-size: var(--font-size-card-title);
 }
 
 .me-page__foot {
@@ -109,7 +120,7 @@
   margin-top: 48rpx;
   overflow: visible;
   border-radius: 44rpx;
-  background: #faf3ea;
+  background: #faf6ee;
   /* 外层承载轮廓投影，内部只裁内容，不改变卡面光影。 */
   box-shadow: var(--shadow-slab);
 }
@@ -118,7 +129,7 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
-  padding: 12rpx 32rpx;
+  padding: 8rpx 24rpx;
   border-radius: 44rpx;
 }
 
