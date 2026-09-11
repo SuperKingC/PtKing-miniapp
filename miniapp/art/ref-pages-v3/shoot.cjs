@@ -1,10 +1,9 @@
-// 连微信开发者工具自动化端口，依次切三个 tab 截图到 shots/
+// 连微信开发者工具自动化端口，依次切三个 tab 截图到 art/verify-shots/
 const automator = require('miniprogram-automator')
 const fs = require('fs')
 const path = require('path')
 
-const root = __dirname
-const shots = path.join(root, 'shots')
+const shots = path.join(__dirname, '..', '..', 'verify-shots')
 fs.mkdirSync(shots, { recursive: true })
 
 async function main() {
@@ -18,13 +17,13 @@ async function main() {
   for (const [name, route] of tabs) {
     const page = await mini.switchTab(route)
     await new Promise((r) => setTimeout(r, 1800))
-    await mini.screenshot({ path: path.join(root, 'shots', `${name}.png`) })
+    await mini.screenshot({ path: path.join(shots, `${name}.png`) })
     console.log('shot', name, page && page.path)
   }
   // 我的页对照枕头感
   await mini.switchTab('/pages/me/index')
   await new Promise((r) => setTimeout(r, 1500))
-  await mini.screenshot({ path: path.join(root, 'shots', 'me.png') })
+  await mini.screenshot({ path: path.join(shots, 'me.png') })
   console.log('shot me')
   await mini.disconnect()
 }

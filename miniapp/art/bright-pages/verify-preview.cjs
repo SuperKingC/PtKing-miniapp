@@ -1,5 +1,6 @@
 const automator = require('miniprogram-automator')
 const path = require('node:path')
+const verifyShots = path.join(__dirname, '..', '..', 'verify-shots')
 async function main() {
   const mini = await automator.connect({ wsEndpoint: 'ws://127.0.0.1:9421' })
   try {
@@ -8,7 +9,7 @@ async function main() {
       const page = await mini.currentPage()
       await page.waitFor(selector)
       console.log(route, await (await page.$(selector)).text())
-      await mini.screenshot({ path: path.join(__dirname, `${route}-preview.png`) })
+      await mini.screenshot({ path: path.join(verifyShots, `${route}-preview.png`) })
     }
   } finally {
     await mini.callWxMethod('switchTab', { url: '/pages/test/index' })

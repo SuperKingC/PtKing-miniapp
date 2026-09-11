@@ -1,10 +1,9 @@
-// 连微信开发者工具自动化端口，切「我的」tab 截图到 shots/
+// 连微信开发者工具自动化端口，切「我的」tab 截图到 art/verify-shots/
 const automator = require('miniprogram-automator')
 const fs = require('fs')
 const path = require('path')
 
-const root = __dirname
-const shots = path.join(root, 'shots')
+const shots = path.join(__dirname, '..', '..', 'verify-shots')
 fs.mkdirSync(shots, { recursive: true })
 
 async function main() {

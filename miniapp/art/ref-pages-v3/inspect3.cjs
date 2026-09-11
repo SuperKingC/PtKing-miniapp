@@ -12,7 +12,7 @@ const automator = require('miniprogram-automator')
   // 滚到顶再截一张（switchTab 后可能停在原滚动位置，hero 在视口上方）
   await mini.pageScrollTo(0)
   await new Promise((r) => setTimeout(r, 1200))
-  await mini.screenshot({ path: 'art/ref-pages-v3/shots/test-top.png' })
+  await mini.screenshot({ path: 'art/verify-shots/test-top.png' })
   console.log('shot test-top')
   await mini.disconnect()
 })().catch((e) => { console.error('ERR', e.message); process.exit(1) })
