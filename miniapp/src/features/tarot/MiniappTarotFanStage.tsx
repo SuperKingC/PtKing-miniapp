@@ -35,7 +35,7 @@ export function MiniappTarotFanStage({
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--fan">
       <Text className="miniapp-tarot__title">{copy.fanTitle(needCount)}</Text>
-      <View className="miniapp-tarot__spacer" />
+      <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
       <View className={`miniapp-tarot__picked-row miniapp-tarot__picked-row--${needCount}`}>
         {Array.from({ length: needCount }, (_, order) => (
           <View

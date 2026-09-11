@@ -466,9 +466,10 @@
 }
 
 // ritual stages (shuffle / cut / fan / reveal) share one rhythm:
-// title pinned at a fixed top position, card area auto-centered in the
-// remaining space, hint + button docked at the bottom, so text distances
-// stay consistent across every stage
+// title pinned at a fixed top position (well below the progress bar so the
+// composition does not hug the header), card area centered in the remaining
+// space, hint + button docked at the bottom, so text distances stay
+// consistent across every stage
 .miniapp-tarot__stage--ritual,
 .miniapp-tarot__stage--fan,
 .miniapp-tarot__stage--reveal {
@@ -476,7 +477,7 @@
   justify-content: flex-start;
   gap: 24rpx;
   overflow-y: auto;
-  padding-top: 24rpx;
+  padding-top: 88rpx;
 }
 
 .miniapp-tarot__hint {
@@ -517,10 +518,17 @@
 
 // equal-grow spacers above/below the card area: title stays pinned at the
 // top, hint/button dock at the bottom, cards land in the vertical middle;
-// min-height keeps a safe gap (and orbit clearance) on short screens
+// min-height keeps a safe gap (and orbit clearance) on short screens.
+// the top spacer grows twice as fast so the leftover space splits 2:1 —
+// title and card group both settle below the stage's vertical midline
 .miniapp-tarot__spacer {
   flex: 1 1 0;
   min-height: 48rpx;
+}
+
+.miniapp-tarot__spacer--top {
+  flex-grow: 2;
+  min-height: 88rpx;
 }
 
 .miniapp-tarot__shuffle-deck::before {

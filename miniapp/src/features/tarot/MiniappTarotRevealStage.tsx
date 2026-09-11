@@ -34,7 +34,7 @@ export function MiniappTarotRevealStage({
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--reveal">
       <Text className="miniapp-tarot__title">{copy.revealTitle(allFlipped)}</Text>
-      <View className="miniapp-tarot__spacer" />
+      <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
       <View className="miniapp-tarot__reveal-row">
         {drawn.map((item, index) => (
           <Button

@@ -46,7 +46,7 @@ export function MiniappTarotCutStage({
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--ritual miniapp-tarot__stage--cut">
       <Text className="miniapp-tarot__title">{copy.cutTitle}</Text>
-      <View className="miniapp-tarot__spacer" />
+      <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
       <Button
         className={[
           'miniapp-tarot__cut-deck',
