@@ -5,16 +5,15 @@
   --color-ink-secondary: #8d8072;
   --color-primary: #c4713f;
   --test-hero-bg: linear-gradient(180deg, #e3edf7 0%, #cdddf0 100%);
-  --test-capsule-bg: #f5eee6;
+  --test-capsule-bg: #f6f1ea;
   --test-action-bg: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
-  /* 枕头感（对齐参考图亮度）：顶内高光 + 底部内软影 + 实色米棕侧壁 + 单层淡软影 */
-  --test-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95),
-    inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
-    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.12),
-    0 6rpx 0 #e9dcc3,
-    -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.1);
+  /* 参考图配方：顶内高光 + 底部厚度线 + 紧贴软影渐散（厚度感来自 0 4rpx 0 实线） */
+  --test-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.9),
+    0 4rpx 0 #e7dfd1,
+    -2rpx 8rpx 14rpx rgba(150, 120, 85, 0.12),
+    0 14rpx 26rpx rgba(150, 120, 85, 0.08);
 }
 
 .test-page-shell.theme-dark {
@@ -37,8 +36,7 @@
 
 .test-page view,
 .test-page text,
-.test-page image,
-.test-page input {
+.test-page image {
   box-sizing: border-box;
 }
 
@@ -48,11 +46,9 @@
 }
 
 .test-page__brand {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  margin: 0 4rpx 28rpx;
+  position: relative;
+  z-index: 1;
+  margin: 0 4rpx;
 }
 
 .test-page__brand-text {
@@ -75,48 +71,18 @@
   color: var(--color-ink-secondary);
 }
 
-.test-page__bell {
-  flex-shrink: 0;
-  width: 56rpx;
-  height: 56rpx;
-}
-
 .test-page__hero {
-  margin-bottom: 24rpx;
-  border-radius: 32rpx;
-  /* 参考图整卡（文字烘焙在图内），容器只做枕头感投影不裁切 */
-  box-shadow: var(--test-shadow);
+  /* 参考图：猫伸出卡外叠进品牌行，蓝卡顶与副标题只留一线间距 */
+  margin-top: -56rpx;
+  margin-bottom: 28rpx;
 }
 
 .test-page__hero-img {
   display: block;
   width: 100%;
   height: auto;
-}
-
-.test-page__hero-title {
-  display: block;
-  font-size: 36rpx;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.35;
-  color: #ffffff;
-  text-shadow: 0 2rpx 6rpx rgba(96, 118, 138, 0.18);
-}
-
-.test-page__hero-sub {
-  display: block;
-  margin-top: 10rpx;
-  font-size: 26rpx;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.test-page__hero-meta {
-  display: block;
-  margin-top: 14rpx;
-  font-size: 22rpx;
-  line-height: 1.5;
-  color: rgba(76, 92, 108, 0.75);
+  /* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条 */
+  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
 }
 
 .test-page__section {
@@ -140,9 +106,8 @@
 .test-page__resume {
   margin-bottom: 28rpx;
   padding: 24rpx 28rpx;
-  border: 2rpx solid var(--test-highlight);
   border-radius: 24rpx;
-  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
+  background: #fefcf8;
   box-shadow: var(--test-shadow);
 }
 
@@ -167,10 +132,9 @@
   gap: 4rpx;
   margin-bottom: 30rpx;
   padding: 8rpx;
-  border: 2rpx solid var(--test-highlight);
   border-radius: 999rpx;
-  background: linear-gradient(180deg, #faf4e8 0%, #f2ead9 100%);
-  box-shadow: var(--test-shadow);
+  background: var(--test-capsule-bg);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.9), 0 5rpx 10rpx rgba(150, 120, 85, 0.08);
 }
 
 .test-page__chip {
@@ -185,8 +149,8 @@
 }
 
 .test-page__chip--active {
-  background: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), inset 0 -6rpx 10rpx rgba(150, 94, 56, 0.14), 0 3rpx 8rpx rgba(116, 86, 55, 0.16);
+  background: linear-gradient(180deg, #f4cba6 0%, #eda87e 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 4rpx 0 #d89a6b, 0 8rpx 14rpx rgba(150, 94, 56, 0.18);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
 }
@@ -194,7 +158,7 @@
 .test-page__grid {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 24rpx;
 }
 
 .test-page__card {
@@ -204,10 +168,9 @@
   width: 100%;
   min-width: 0;
   padding: 30rpx 24rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.9);
   border-radius: 30rpx;
-  /* 参考图卡面：均匀净白微暖，靠单层淡影浮起 */
-  background: #fefcf7;
+  /* 参考图卡面：均匀净白微暖，靠底部厚度线 + 紧贴软影浮起 */
+  background: #fefcf8;
   box-shadow: var(--test-shadow);
 }
 
@@ -253,9 +216,9 @@
   flex-shrink: 0;
   padding: 16rpx 26rpx;
   border-radius: 999rpx;
-  /* 参考图按钮：浅陶土底、均匀微渐变、顶内高光、底部微深，无深色侧壁 */
-  background: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), inset 0 -6rpx 10rpx rgba(150, 94, 56, 0.14), 0 3rpx 8rpx rgba(116, 86, 55, 0.16);
+  /* 参考图按钮：浅陶土面 + 顶部浅内高光 + 陶土厚度线 + 紧贴软影 */
+  background: linear-gradient(180deg, #f6d2b2 0%, #eeb98a 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 5rpx 0 #d89a6b, 0 10rpx 16rpx rgba(150, 94, 56, 0.18);
   font-size: 25rpx;
   font-weight: var(--font-weight-semibold);
   line-height: 1.4;

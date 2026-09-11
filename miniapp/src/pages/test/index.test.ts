@@ -48,11 +48,10 @@ describe('测试首页软陶单列布局', () => {
     expect(findElement('test-page__card-go').getText(page)).toContain('开始测试')
   })
 
-  it('品牌行带铃铛、今日推荐蓝卡沿用真实每日推荐数据', () => {
+  it('品牌行与今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('hero-card-v3.png')
-    expect(source).toContain('icon-bell-v2.png')
+    expect(source).toContain('hero-card-v4.png')
     expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')
     expect(source).toContain('openDetail(daily.id)')
   })
@@ -99,7 +98,7 @@ describe('测试首页软陶单列布局', () => {
 
   it('分类共享胶囊底，各分类等分宽度且无需横向滚动', () => {
     const chips = styleBlock('.test-page__chips')
-    expect(chips).toContain('background: linear-gradient(180deg, #faf4e8 0%, #f2ead9 100%)')
+    expect(chips).toContain('background: var(--test-capsule-bg)')
     expect(chips).toContain('border-radius: 999rpx')
     expect(chips).not.toContain('overflow-x: auto')
     expect(styleBlock('.test-page__chip')).toContain('flex: 1')
@@ -119,15 +118,15 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用厚毡枕头感阴影（对齐参考图亮度），不裁切阴影', () => {
-    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 6rpx 0 #e9dcc3/)
-    const hero = styleBlock('.test-page__hero')
-    expect(hero).toContain('box-shadow: var(--test-shadow)')
-    expect(hero).not.toContain('overflow: hidden')
+    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 4rpx 0 #e7dfd1/)
+    const heroImg = styleBlock('.test-page__hero-img')
+    expect(heroImg).toContain('drop-shadow')
+    expect(heroImg).not.toContain('overflow: hidden')
     const card = styleBlock('.test-page__card')
-    expect(card).toContain('background: #fefcf7')
+    expect(card).toContain('background: #fefcf8')
     expect(card).toContain('box-shadow: var(--test-shadow)')
     expect(card).not.toContain('overflow: hidden')
-    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%)')
-    expect(styleBlock('.test-page__card-go')).toContain('inset 0 2rpx 3rpx')
+    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f6d2b2 0%, #eeb98a 100%)')
+    expect(styleBlock('.test-page__card-go')).toContain('0 5rpx 0 #d89a6b')
   })
 })

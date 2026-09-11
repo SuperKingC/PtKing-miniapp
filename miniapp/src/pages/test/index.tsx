@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Image, Input, ScrollView, Text, View } from '@tarojs/components'
+import { Image, ScrollView, Text, View } from '@tarojs/components'
 import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
@@ -12,13 +12,12 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroCardImg from '../../assets/illus/hero-card-v3.png'
-import tileMbtiImg from '../../assets/illus/tile-mbti-v3.png'
-import tileStarImg from '../../assets/illus/tile-star-v1.png'
-import tileLoveImg from '../../assets/illus/tile-love-v3.png'
-import tileCareerImg from '../../assets/illus/tile-career-v2.png'
-import tileFunImg from '../../assets/illus/tile-fun-v2.png'
-import bellImg from '../../assets/illus/icon-bell-v2.png'
+import heroCardImg from '../../assets/illus/hero-card-v4.png'
+import tileMbtiImg from '../../assets/illus/tile-mbti-v4.png'
+import tileStarImg from '../../assets/illus/tile-star-v2.png'
+import tileLoveImg from '../../assets/illus/tile-love-v4.png'
+import tileCareerImg from '../../assets/illus/tile-career-v3.png'
+import tileFunImg from '../../assets/illus/tile-fun-v3.png'
 import './index.scss'
 
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tileStarImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
@@ -94,7 +93,6 @@ export default function TestPage() {
               <Text className="test-page__brand-title">测测子</Text>
               <Text className="test-page__brand-sub">来测测你的另一面</Text>
             </View>
-            <Image className="test-page__bell" src={bellImg} mode="aspectFit" />
           </View>
           {daily && <View className="test-page__hero" hoverClass="pressable--pressed" onClick={() => {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
