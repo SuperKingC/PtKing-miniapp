@@ -149,8 +149,8 @@
 }
 
 .test-page__chip--active {
-  background: linear-gradient(180deg, #f2cbad 0%, #efb991 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 5rpx 0 #d79466, 0 10rpx 16rpx rgba(150, 94, 56, 0.22);
+  background: linear-gradient(180deg, #f7c6a1 0%, #f4be95 40%, #ebb28a 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 5rpx 0 #d28c5b, 0 10rpx 16rpx rgba(150, 94, 56, 0.2);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
 }
@@ -216,13 +216,13 @@
   flex-shrink: 0;
   padding: 16rpx 26rpx;
   border-radius: 999rpx;
-  /* 参考图按钮：浅陶土面 + 顶部浅内高光 + 陶土厚度线 + 紧贴软影 */
-  background: linear-gradient(180deg, #f2c49e 0%, #eaa977 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.85), inset 0 -4rpx 8rpx rgba(150, 94, 56, 0.12), 0 6rpx 0 #d28c5b, 0 12rpx 18rpx rgba(150, 94, 56, 0.2);
+  /* 参考图按钮剖面（逐像素采样）：顶高光带 #fdd8b8 → 主调 #f4be95 → 下部 #ebb28a → 厚度线 #d28c5b → 紧贴软影 */
+  background: linear-gradient(180deg, #fdd8b8 0%, #f4be95 34%, #f1bb94 62%, #ebb28a 100%);
+  box-shadow: inset 0 2rpx 4rpx rgba(255, 248, 235, 0.95), inset 0 -4rpx 8rpx rgba(150, 94, 56, 0.1), 0 6rpx 0 #d28c5b, 0 12rpx 18rpx rgba(150, 94, 56, 0.18);
   font-size: 24rpx;
   font-weight: var(--font-weight-semibold);
   line-height: 1.4;
   white-space: nowrap;
   color: #ffffff;
-  text-shadow: 0 1rpx 2rpx rgba(150, 94, 56, 0.2);
+  text-shadow: 0 1rpx 2rpx rgba(150, 94, 56, 0.18);
 }

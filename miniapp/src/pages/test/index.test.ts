@@ -126,7 +126,7 @@ describe('测试首页软陶单列布局', () => {
     expect(card).toContain('background: #fefcf8')
     expect(card).toContain('box-shadow: var(--test-shadow)')
     expect(card).not.toContain('overflow: hidden')
-    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f2c49e 0%, #eaa977 100%)')
+    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fdd8b8 0%, #f4be95 34%, #f1bb94 62%, #ebb28a 100%)')
     expect(styleBlock('.test-page__card-go')).toContain('0 6rpx 0 #d28c5b')
   })
 })
