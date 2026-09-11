@@ -153,7 +153,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(12rpx + env(safe-area-inset-top)) 28rpx 14rpx;
+  // 头部整体下移：叉叉/标题/历史钮离屏顶一整口气，星夜标题不再顶到刘海
+  padding: calc(44rpx + env(safe-area-inset-top)) 28rpx 14rpx;
 }
 
 .miniapp-tarot__header-title {
@@ -202,7 +203,7 @@
   display: flex;
   justify-content: center;
   gap: 14rpx;
-  padding: 6rpx 40rpx 10rpx;
+  padding: 14rpx 40rpx 16rpx;
 }
 
 .miniapp-tarot__progress > view {
@@ -477,7 +478,7 @@
   justify-content: flex-start;
   gap: 24rpx;
   overflow-y: auto;
-  padding-top: 88rpx;
+  padding-top: 60rpx;
 }
 
 .miniapp-tarot__hint {
@@ -530,7 +531,7 @@
 
 .miniapp-tarot__spacer--top {
   flex-grow: 3;
-  min-height: 88rpx;
+  min-height: 72rpx;
 }
 
 .miniapp-tarot__shuffle-deck::before {

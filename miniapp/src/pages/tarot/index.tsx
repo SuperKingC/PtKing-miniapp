@@ -23,7 +23,7 @@ import './index.scss'
 // hold 到资源加载完成（有仪式感下限，加载慢时由 loaded 触发）→ 淡出帘幕。
 // 不与资源预加载耦合：慢网时帘幕内显示预加载进度，完成后淡入正式界面。
 const CURTAIN_CLOSE_MS = 900
-const CURTAIN_HOLD_MIN_MS = 500
+const CURTAIN_HOLD_MIN_MS = 160
 const CURTAIN_OPEN_MS = 620
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
@@ -59,6 +59,21 @@ export default function TarotPage() {
     const timer = setTimeout(() => setCurtain('opening'), wait)
     return () => clearTimeout(timer)
   }, [curtain, curtainLoaded])
+
+  // 慢网兜底：hold 最长等 12s，超时放行淡出，帘后流程内 loading 层继续显示进度
+  useEffect(() => {
+    if (curtain !== 'holding') return
+    const timer = setTimeout(() => setCurtain('opening'), 12000)
+    return () => clearTimeout(timer)
+  }, [curtain])
+
+  // opening 淡出播完后彻底卸载帘幕节点：WXSS 同节点 class 切换的 opacity 动画
+  // 在模拟器上实测不重放（淡出类挂上后帘幕仍不透明），卸载是确定性兜底
+  useEffect(() => {
+    if (curtain !== 'opening') return
+    const timer = setTimeout(() => setCurtain('idle'), CURTAIN_OPEN_MS + 80)
+    return () => clearTimeout(timer)
+  }, [curtain])
 
   // 慢网兜底：hold 最长等 12s，超时放行淡出，帘后流程内 loading 层继续显示进度
   useEffect(() => {
@@ -103,12 +118,14 @@ export default function TarotPage() {
     setHistoryRequest(0)
     setCurtainProgress(0)
     setCurtainLoaded(false)
+    // 底栏随帘幕出现即藏：不等帘后流程挂载，先广播流程可见(底栏 ownRoute 判塔罗即藏)
+    Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, true)
     if (reducedMotion) {
       setFlowOpen(true)
       return
     }
-    // 帘幕关上(布帘拉上/星星连线)→ 帘后挂载流程(同时开始预加载) →
-    // hold:加载完成或达最短仪式时长后由 effect 淡出帘幕露出流程页
+    // 帘幕关上(布帘拉合/星显连线)→ 帘后挂载流程(同时开始预加载) →
+    // hold:加载完成即快进淡出(只保 160ms 呼吸底线)，慢网 12s 兜底放行
     holdStartRef.current = Date.now()
     setCurtain('closing')
     curtainTimersRef.current.push(
@@ -124,6 +141,7 @@ export default function TarotPage() {
     setTarotShareTitle('')
     setCurtainProgress(0)
     setCurtainLoaded(false)
+    Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, false)
   }
 
   const changeSkin = (next: TarotSkin) => {
@@ -211,6 +229,14 @@ export default function TarotPage() {
           <View className="tarot-curtain__panel tarot-curtain__panel--left">
             <View className="tarot-curtain__drape" />
             <View className="tarot-curtain__drape tarot-curtain__drape--b" />
+            <View className="tarot-curtain__drape tarot-curtain__drape--c" />
+            <View className="tarot-curtain__valance">
+              <View className="tarot-curtain__valance-scallop" />
+              <View className="tarot-curtain__valance-scallop tarot-curtain__valance-scallop--b" />
+              <View className="tarot-curtain__valance-scallop tarot-curtain__valance-scallop--c" />
+              <View className="tarot-curtain__tassel tarot-curtain__tassel--a" />
+              <View className="tarot-curtain__tassel tarot-curtain__tassel--b" />
+            </View>
             <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
@@ -218,13 +244,22 @@ export default function TarotPage() {
           <View className="tarot-curtain__panel tarot-curtain__panel--right">
             <View className="tarot-curtain__drape" />
             <View className="tarot-curtain__drape tarot-curtain__drape--b" />
+            <View className="tarot-curtain__valance">
+              <View className="tarot-curtain__valance-scallop" />
+              <View className="tarot-curtain__valance-scallop tarot-curtain__valance-scallop--b" />
+              <View className="tarot-curtain__valance-scallop tarot-curtain__valance-scallop--c" />
+              <View className="tarot-curtain__tassel tarot-curtain__tassel--a" />
+              <View className="tarot-curtain__tassel tarot-curtain__tassel--b" />
+            </View>
             <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
           </View>
-          {/* classic 星夜：星星逐颗亮起再连线成星座(纯 CSS 渐进绘制) */}
+          {/* classic 星夜仪式：流星划过 → 星环展开 → 五星逐颗亮起连线成星座 */}
           {skin === 'classic' && (
             <>
+              <View className="tarot-curtain__meteor" />
+              <View className="tarot-curtain__meteor tarot-curtain__meteor--b" />
               <View className="tarot-curtain__constellation">
                 <View className="tarot-curtain__const-line" />
                 <View className="tarot-curtain__const-line tarot-curtain__const-line--b" />
@@ -244,14 +279,18 @@ export default function TarotPage() {
           {skin === 'classic' && (
             <View className="tarot-curtain__glow tarot-curtain__glow--halo" />
           )}
-          {/* 合拢后帘内加载进度：细进度条+百分比，完成后随帘幕淡出 */}
+          {/* 合拢后帘内加载进度：宝珠轨道+进度胶囊，完成后随帘幕淡出 */}
           {curtain !== 'opening' && (
             <View className="tarot-curtain__loading">
+              <View className="tarot-curtain__loading-orb">
+                <View className="tarot-curtain__loading-ring" />
+                <Text className="tarot-curtain__loading-pct">{Math.round(curtainProgress * 100)}</Text>
+              </View>
               <View className="tarot-curtain__loading-track">
                 <View className="tarot-curtain__loading-fill" style={{ width: `${Math.round(curtainProgress * 100)}%` }} />
               </View>
               <Text className="tarot-curtain__loading-text">
-                {curtainLoaded ? '仪式准备就绪' : `星图绘制中 ${Math.round(curtainProgress * 100)}%`}
+                {curtainLoaded ? '仪式准备就绪' : skin === 'classic' ? '星图绘制中' : '猫咪布置占卜屋中'}
               </Text>
             </View>
           )}

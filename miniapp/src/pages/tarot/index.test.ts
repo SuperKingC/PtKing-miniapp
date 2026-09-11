@@ -35,26 +35,39 @@ describe('bright tarot entry wiring', () => {
     expect(page).toContain('tarot-curtain__glow')
     expect(page).toContain('tarot-curtain__star--a')
     expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
-    // 帘内加载进度：合拢后帘幕展示预加载进度，完成后随帘淡出(用户需求:加载流程放进开场动画)
+    // 帘内加载进度：宝珠环+胶囊条在合拢期间就显示预加载进度，完成后随帘淡出
     expect(page).toContain('onLoadProgress={handleLoadProgress}')
     expect(page).toContain('onLoadDone={handleLoadDone}')
     expect(page).toContain('tarot-curtain__loading-fill')
     expect(page).toContain('curtainLoaded ? \'仪式准备就绪\'')
+    expect(page).toContain('星图绘制中')
+    expect(page).toContain('猫咪布置占卜屋中')
+    // 底栏随帘幕出现即藏：startFlow 先广播流程可见再开帘
+    expect(page).toMatch(/setCurtainLoaded\(false\)[\s\S]*Taro\.eventCenter\.trigger\(TAROT_FLOW_VISIBILITY_EVENT, true\)/)
     const styles = source('./index.scss')
     expect(styles).toContain('@keyframes tarot-flow-reveal')
     expect(styles).toContain('@keyframes tarot-star-twinkle')
     expect(styles).toContain('.tarot-curtain--holding .tarot-curtain__glow')
     // 淡出式揭幕(不再横向拉开)：整帘 opacity 渐隐露出流程页
     expect(styles).toContain('@keyframes tarot-curtain-fade')
-    // clay 布帘褶皱垂坠感(用户需求:不是硬门板)
+    // clay 布帘精致化：三重竖褶 + 顶部帷幔(扇贝垂边/垂穗摇摆)
     expect(styles).toContain('tarot-curtain__drape')
-    // classic 星星逐颗亮起再连线成星座
+    expect(styles).toContain('tarot-curtain__valance-scallop')
+    expect(styles).toContain('@keyframes tarot-tassel-sway')
+    // classic 仪式三件套：流星斜掠、星星逐颗亮起连线
+    expect(styles).toContain('tarot-curtain__meteor')
     expect(styles).toContain('@keyframes tarot-const-star-pop')
     expect(styles).toContain('@keyframes tarot-const-line-grow')
     expect(styles).toContain('tarot-curtain__const-line--b')
-    // hold 等加载完成才淡出，慢网 12s 兜底放行
+    // 加载宝珠环：百分比在环心，环轨旋转
+    expect(styles).toContain('tarot-curtain__loading-ring')
+    expect(styles).toContain('@keyframes tarot-curtain-orb-spin')
+    // hold 加载完成即快进淡出(160ms 呼吸底线)，慢网 12s 兜底放行
     expect(page).toMatch(/if \(!curtainLoaded\) return[\s\S]*CURTAIN_HOLD_MIN_MS - elapsed/)
     expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')
+    // 淡出播完后彻底卸载帘幕：WXSS 同节点 class 切换的 opacity 动画实测不重放，
+    // 卸载是清屏的确定性兜底(用户反馈：帘幕卡住不消失)
+    expect(page).toMatch(/if \(curtain !== 'opening'\) return[\s\S]*setCurtain\('idle'\), CURTAIN_OPEN_MS \+ 80/)
   })
   it('listens for history at the always-mounted page, including repeat requests', () => {
     expect(source('./index.tsx')).toContain('Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)')

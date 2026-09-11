@@ -73,11 +73,11 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(shuffleStage).toContain('miniapp-tarot__stage--shuffle')
     // shuffle / cut / fan / reveal all reuse the same base ritual layout,
     // so title position and gaps stay consistent across every stage
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,[\s\S]*?\.miniapp-tarot__stage--fan,[\s\S]*?\.miniapp-tarot__stage--reveal \{[\s\S]*?padding-top: 88rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,[\s\S]*?\.miniapp-tarot__stage--fan,[\s\S]*?\.miniapp-tarot__stage--reveal \{[\s\S]*?padding-top: 60rpx/)
     // spacers above/below the card area position it between the fixed title
     // and the docked controls (auto margins pooled all free space at the
     // stage bottom in the WeChat renderer); the top spacer grows more so
-    // title and cards both sit below the vertical midline
+    // the deck lands on the sanctuary ring's center (measured y≈53%)
     expect(shuffleStage).toContain('miniapp-tarot__spacer--top')
     expect(styles).toMatch(/\.miniapp-tarot__spacer \{[\s\S]*?flex: 1 1 0/)
     expect(styles).toMatch(/\.miniapp-tarot__spacer \{[\s\S]*?min-height: 48rpx/)
