@@ -19,9 +19,9 @@ page {
   --color-accent: #f39c6d;
   --color-ink: #332e28;
   --color-ink-secondary: #8a7f72;
-  --color-page-bg: #f7f4ee;
+  --color-page-bg: #fefaf5;
   --color-card-bg: #ffffff;
-  --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
+  --shadow-card: 0 2rpx 4rpx rgba(172, 142, 100, 0.2), 0 8rpx 16rpx rgba(172, 142, 100, 0.1);
   /* 厚毡枕头感：顶部内高光 + 底部内软影（阴影包进卡面）+ 实色米棕侧壁 + 宽软影。 */
   --shadow-slab: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95),
     inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
@@ -74,7 +74,7 @@ page {
     --color-ink-secondary: #a39486;
     --color-page-bg: #191411;
     --color-card-bg: #262019;
-    --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 2rpx 4rpx rgba(0, 0, 0, 0.3), 0 10rpx 20rpx rgba(0, 0, 0, 0.16);
     --shadow-slab: inset 0 2rpx 3rpx rgba(255, 240, 220, 0.10),
       inset 0 6rpx 14rpx rgba(255, 240, 220, 0.05),
       inset 0 -12rpx 20rpx rgba(0, 0, 0, 0.30),
@@ -102,9 +102,9 @@ page {
   --color-accent: #f39c6d;
   --color-ink: #332e28;
   --color-ink-secondary: #8a7f72;
-  --color-page-bg: #f7f4ee;
+  --color-page-bg: #fefaf5;
   --color-card-bg: #ffffff;
-  --shadow-card: 0 8rpx 18rpx rgba(108, 80, 50, 0.2), 0 24rpx 52rpx 12rpx rgba(108, 80, 50, 0.26);
+  --shadow-card: 0 2rpx 4rpx rgba(172, 142, 100, 0.2), 0 8rpx 16rpx rgba(172, 142, 100, 0.1);
   --shadow-slab: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95),
     inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
     inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.16),
@@ -132,7 +132,7 @@ page {
   --color-ink-secondary: #a39486;
   --color-page-bg: #191411;
   --color-card-bg: #262019;
-  --shadow-card: 0 8rpx 18rpx rgba(0, 0, 0, 0.38), 0 24rpx 52rpx 12rpx rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 2rpx 4rpx rgba(0, 0, 0, 0.3), 0 10rpx 20rpx rgba(0, 0, 0, 0.16);
   --shadow-slab: inset 0 2rpx 3rpx rgba(255, 240, 220, 0.10),
     inset 0 6rpx 14rpx rgba(255, 240, 220, 0.05),
     inset 0 -12rpx 20rpx rgba(0, 0, 0, 0.30),

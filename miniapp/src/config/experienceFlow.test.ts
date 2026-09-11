@@ -31,7 +31,7 @@ describe('体验入口契约', () => {
     expect(styles).toContain('width: 104rpx')
     expect(styles).toContain('font-size: 22rpx')
     expect(styles).toContain('justify-content: center')
-    expect(styles).toContain('background: #f7f4ee')
+    expect(styles).toContain('background: #fefaf5')
     expect(styles).toContain('background-color: #f3e5d1')
     expect(styles).not.toContain('rgba(255, 255, 255')
     expect(appStyles).toContain('custom-tab-bar')

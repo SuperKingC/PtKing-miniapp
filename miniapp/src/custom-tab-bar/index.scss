@@ -13,7 +13,8 @@
   min-height: 160rpx;
   /* 参考稿：胶囊距屏边约 52rpx，槽内上下只留胶囊呼吸位；左右 28rpx 让胶囊拉长铺满 */
   padding: 8rpx 28rpx 14rpx;
-  background: #f7f4ee;
+  /* 槽底与页面同色（参考稿 #fefaf5），胶囊靠自身光影浮出 */
+  background: #fefaf5;
   border-top: none;
 }
 
