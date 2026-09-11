@@ -117,16 +117,16 @@ describe('测试首页软陶单列布局', () => {
     expect(source).toContain('test-page-shell theme-${theme}')
   })
 
-  it('卡片和横幅使用厚毡枕头感阴影（对齐参考图亮度），不裁切阴影', () => {
-    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 14rpx 26rpx rgba(150, 120, 85, 0.07)')
+  it('卡片和横幅使用参考图同色卡面+暖褐影（逐像素采样对齐），不裁切阴影', () => {
+    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 12rpx 18rpx rgba(170, 140, 90, 0.1)')
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
     const card = styleBlock('.test-page__card')
-    expect(card).toContain('background: #fefcf8')
+    expect(card).toContain('background: #fefaf4')
     expect(card).toContain('box-shadow: var(--test-shadow)')
     expect(card).not.toContain('overflow: hidden')
-    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fdd8b8 0%, #f4be95 34%, #f1bb94 62%, #ebb28a 100%)')
-    expect(styleBlock('.test-page__card-go')).toContain('0 6rpx 0 #d28c5b')
+    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fad6b5 0%, #f3bf98 26%, #f2bd95 52%, #e9ae85 84%, #d99e70 96%, #d08e5e 100%)')
+    expect(styleBlock('.test-page__card-go')).toContain('0 4rpx 6rpx rgba(150, 94, 56, 0.22)')
   })
 })
