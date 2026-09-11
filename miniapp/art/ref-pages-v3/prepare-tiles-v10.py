@@ -39,8 +39,8 @@ OUT = {
     'mbti': 'tile-mbti-v10.png',
     'love': 'tile-love-v10.png',
     'star': 'tile-star-v10.png',
-    'career': 'tile-career-v10.png',
-    'fun': 'tile-fun-v10.png',
+    'career': 'tile-career-v11.png',
+    'fun': 'tile-fun-v11.png',
 }
 SHADOW_RGB = (174, 153, 124)   # 接触影基色（合成用）
 
@@ -109,7 +109,11 @@ def crop_tile(ref, name, box):
 
 
 def synth_tile(src_name, out_name):
-    """参考稿没有的 tile：透明资产缩放到统一实体高，合成同款接触影。"""
+    """参考稿没有的 tile：透明资产缩放到统一实体高，合成同款接触影。
+
+    PIL AFFINE 系数是「输出坐标 → 输入坐标」映射，影子要在实体下方 3px，
+    输入侧必须取 y_in = y_out - (oy + 3)（写成 -(oy-3) 会把影子翻到上方）。
+    """
     img = Image.open(os.path.join(SRC_DIR, src_name)).convert('RGBA')
     a = np.asarray(img, dtype=float)
     ys, xs = np.where(a[:, :, 3] > 128)
@@ -122,7 +126,7 @@ def synth_tile(src_name, out_name):
     # 接触影：剪影下移 3px、σ4 模糊、α×0.55（原稿影峰 #d2c1ac 反推）、只落在实体外
     alpha = np.asarray(body)[:, :, 3]
     sh = Image.fromarray(alpha.astype(np.uint8), 'L').transform(
-        (CANVAS, CANVAS), Image.AFFINE, (1, 0, -ox, 0, 1, -(oy - 3)), Image.BILINEAR)
+        (CANVAS, CANVAS), Image.AFFINE, (1, 0, -ox, 0, 1, -(oy + 3)), Image.BILINEAR)
     sh = sh.filter(ImageFilter.GaussianBlur(4))
     sh_a = (np.asarray(sh, dtype=float) * 0.55).clip(0, 255)
     body_a = Image.new('L', (CANVAS, CANVAS), 0)
