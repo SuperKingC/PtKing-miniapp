@@ -96,7 +96,9 @@ export default function TestPage() {
   }
   const renderCard = (definition: typeof definitions[number], badge: string) => (
     <View key={definition.id} className="test-page__card" hoverClass="test-page__card--press" onClick={() => openDetail(definition.id)}>
-      <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" lazyLoad />
+      {/* 不挂 lazyLoad:分类切换大增删卡片时 lazy 图重触发解码,卡面先出文字后出图标,
+          整列闪一下(实机录帧 f030→f031);22 张 tile 共 ~200KB,常驻解码缓存更稳 */}
+      <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" />
       <View className="test-page__card-content">
         <Text className="test-page__card-title">{definition.title}</Text>
         <Text className="test-page__card-sub">{definition.intro[0]}</Text>

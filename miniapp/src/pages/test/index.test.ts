@@ -145,5 +145,7 @@ describe('测试首页软陶单列布局', () => {
     expect(styleBlock('.test-page__card-go')).toContain('0 4rpx 6rpx rgba(150, 94, 56, 0.22)')
     /* 接触影烘焙进 v10 tile，CSS 不再叠投影 */
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
+    /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
+    expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
   })
 })
