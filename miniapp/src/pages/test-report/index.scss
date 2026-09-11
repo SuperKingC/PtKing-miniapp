@@ -5,7 +5,8 @@
   padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx calc(24rpx + env(safe-area-inset-bottom));
 }
 
-.test-report__back {
+/* 左上返回圆钮：奶油圆片 + 细箭头 + 软投影（仅顶部导航用，勿复用于底部文字链） */
+.test-report__navback {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +15,7 @@
   margin-bottom: 20rpx;
   border-radius: 50%;
   background: var(--color-card-bg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 6rpx 14rpx rgba(108, 80, 50, 0.16), 0 2rpx 4rpx rgba(108, 80, 50, 0.1);
   color: var(--color-ink);
   font-size: 40rpx;
 }
@@ -578,6 +579,10 @@
   line-height: 1.4;
 }
 
+.test-report__share::after {
+  border: none;
+}
+
 .test-report__share--solo {
   width: 100%;
   height: 80rpx;
@@ -588,14 +593,26 @@
   color: var(--color-primary);
 }
 
-.test-report__share::after {
-  border: none;
-}
-
 .test-report__back {
   margin-top: 16rpx;
   min-height: 64rpx;
   color: var(--color-ink-secondary);
+}
+
+/* 底部回测试中心：整行胶囊 + 柔和描边，层级在主 CTA/分享之下 */
+.test-report__home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80rpx;
+  margin-top: 16rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid var(--color-primary-soft);
+  background: transparent;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* ===== 激励视频解锁门 ===== */

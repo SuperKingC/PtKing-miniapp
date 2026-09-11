@@ -323,7 +323,7 @@ export default function TestReportPage() {
   if (locked) {
   return (
     <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-report__back" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack}>
         <Text>←</Text>
       </View>
       <View className="test-report__hero">
@@ -400,7 +400,7 @@ export default function TestReportPage() {
   }
   return (
     <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-report__back" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack}>
         <Text>←</Text>
       </View>
       <View className="test-report__hero">
@@ -705,7 +705,7 @@ export default function TestReportPage() {
           </View>
         )}
         <View
-          className="test-report__back"
+          className="test-report__home"
           hoverClass="pressable--pressed"
           onClick={() => {
             Taro.switchTab({ url: '/pages/test/index' })
