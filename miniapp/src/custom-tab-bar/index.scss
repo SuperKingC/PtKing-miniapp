@@ -11,8 +11,8 @@
   width: 100%;
   height: 100%;
   min-height: 160rpx;
-  /* 参考稿：胶囊距屏边约 52rpx，槽内上下只留胶囊呼吸位 */
-  padding: 8rpx 52rpx 14rpx;
+  /* 参考稿：胶囊距屏边约 52rpx，槽内上下只留胶囊呼吸位；左右 28rpx 让胶囊拉长铺满 */
+  padding: 8rpx 28rpx 14rpx;
   background: #f7f4ee;
   border-top: none;
 }
@@ -51,13 +51,13 @@
   height: 100%;
   /* 参考稿胶囊高约 167rpx（槽 186rpx − 上下呼吸位 22rpx） */
   min-height: 164rpx;
-  gap: 8rpx;
+  gap: 6rpx;
 }
 
 .tabbar__icon {
   flex-shrink: 0;
-  width: 96rpx;
-  height: 96rpx;
+  width: 104rpx;
+  height: 104rpx;
   pointer-events: none;
   /* 与我的页列表图标同一双层软投影，四个 tab 一致 */
   filter: drop-shadow(0 3rpx 5rpx rgba(146, 106, 66, 0.32))
@@ -65,11 +65,11 @@
 }
 
 .tabbar__text {
-  /* 参考稿：标签实测约 42rpx、字间约 12rpx 留气口（负右边距抵消末字后字距，保持视觉居中） */
-  margin-right: -12rpx;
-  letter-spacing: 12rpx;
-  font-size: 42rpx;
-  line-height: 1.15;
+  /* 标签 30rpx + 6rpx 字距留气口（负右边距抵消末字后字距，保持视觉居中） */
+  margin-right: -6rpx;
+  letter-spacing: 6rpx;
+  font-size: 30rpx;
+  line-height: 1.2;
   font-weight: 500;
   color: #8d7f6e;
   pointer-events: none;
