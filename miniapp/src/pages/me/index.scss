@@ -36,9 +36,10 @@
 .me-page__entries {
   overflow: visible;
   border-radius: 44rpx;
-  background: #faf6ee;
-  /* 枕头感：卡面上亮下沉的微渐变；投影走标准实色接触带三层法（app.scss --shadow-card 同剖面） */
-  background-image: linear-gradient(180deg, #fdfaf3 0%, #f5eedd 100%);
+  background: #fdf8f1;
+  /* 枕头感：卡面上亮下沉的微渐变（定稿 ui-3_v2 卡面 #fdf8f1..fef8f2 近白微暖，禁再压黄）；
+     投影走标准实色接触带三层法（app.scss --shadow-card 同剖面） */
+  background-image: linear-gradient(180deg, #fffdf9 0%, #fdf8f1 100%);
   /* 外层承载轮廓投影，内部只裁内容，不改变卡面光影。 */
   box-shadow:
     0 6rpx 0 rgba(172, 142, 100, 0.28),
@@ -130,9 +131,9 @@
   margin-top: 40rpx;
   overflow: visible;
   border-radius: 44rpx;
-  background: #faf6ee;
-  /* 枕头感：与列表卡同款微渐变；投影与列表卡同款弥散软影 */
-  background-image: linear-gradient(180deg, #fdfaf3 0%, #f5eedd 100%);
+  background: #fdf8f1;
+  /* 枕头感：与列表卡同款微渐变（近白微暖）；投影与列表卡同款弥散软影 */
+  background-image: linear-gradient(180deg, #fffdf9 0%, #fdf8f1 100%);
   /* 外层承载轮廓投影，内部只裁内容，不改变卡面光影。 */
   box-shadow:
     0 6rpx 0 rgba(172, 142, 100, 0.28),
