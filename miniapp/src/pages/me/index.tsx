@@ -15,12 +15,12 @@ import {
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
 import meBannerImg from '../../assets/illus/me-banner-transparent-v2.png'
-import iconClear from '../../assets/illus/icon-me-clear-v4.png'
-import iconPrivacy from '../../assets/illus/icon-me-privacy-v4.png'
-import iconShare from '../../assets/illus/icon-me-share-v4.png'
-import iconFeedback from '../../assets/illus/icon-me-feedback-v4.png'
-import iconTheme from '../../assets/illus/icon-me-theme-v4.png'
-import iconHaptics from '../../assets/illus/icon-me-haptics-v4.png'
+import iconClear from '../../assets/illus/icon-me-clear-v5.png'
+import iconPrivacy from '../../assets/illus/icon-me-privacy-v5.png'
+import iconShare from '../../assets/illus/icon-me-share-v5.png'
+import iconFeedback from '../../assets/illus/icon-me-feedback-v5.png'
+import iconTheme from '../../assets/illus/icon-me-theme-v5.png'
+import iconHaptics from '../../assets/illus/icon-me-haptics-v5.png'
 import './index.scss'
 
 /** 与 miniapp/package.json 的 version 保持一致（无后端，版本号本地维护） */
