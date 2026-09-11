@@ -98,7 +98,7 @@ describe('测试首页软陶单列布局', () => {
 
   it('分类共享胶囊底，各分类等分宽度且无需横向滚动', () => {
     const chips = styleBlock('.test-page__chips')
-    expect(chips).toContain('background: linear-gradient(180deg, #f7f1e2 0%, #eee5d1 100%)')
+    expect(chips).toContain('background: linear-gradient(180deg, #faf4e8 0%, #f2ead9 100%)')
     expect(chips).toContain('border-radius: 999rpx')
     expect(chips).not.toContain('overflow-x: auto')
     expect(styleBlock('.test-page__chip')).toContain('flex: 1')
@@ -107,7 +107,7 @@ describe('测试首页软陶单列布局', () => {
 
   it('奶油白、浅雾蓝、桃色只覆盖本页，暗色主题保留独立配色', () => {
     const light = styleBlock('.test-page-shell.theme-light')
-    expect(light).toContain('--color-page-bg: #f7f2e9')
+    expect(light).toContain('--color-page-bg: #fefaf5')
     expect(light).toContain('--color-card-bg: #fffdf8')
     expect(light).toContain('--test-hero-bg')
     expect(light).toContain('--test-action-bg')
@@ -118,7 +118,7 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用厚毡枕头感阴影（与我的页 slab 同配方），不裁切阴影', () => {
-    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 6rpx 0 #e3d3b6/)
+    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 6rpx 0 #e9dcc3/)
     const hero = styleBlock('.test-page__hero')
     expect(hero).toContain('box-shadow: var(--test-shadow)')
     expect(hero).not.toContain('overflow: hidden')

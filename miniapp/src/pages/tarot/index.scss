@@ -10,18 +10,18 @@
   overflow: hidden;
 }
 
-.tarot-home-shell.theme-light { background: #f7f2e9; }
+.tarot-home-shell.theme-light { background: #fefaf5; }
 .tarot-home { padding: calc(var(--page-top-inset, 88px) + 8rpx) 36rpx calc(220rpx + env(safe-area-inset-bottom)); }
 /* 横幅自带雾蓝天空与云，矩形直接满宽铺，靠宽软投影浮起 */
-.tarot-home__hero { display: block; width: 100%; height: auto; margin: 8rpx 0 30rpx; border-radius: 36rpx; box-shadow: 0 6rpx 0 #e3d3b6, -2rpx 8rpx 10rpx rgba(116, 86, 55, 0.2), -6rpx 18rpx 26rpx rgba(116, 86, 55, 0.14), -8rpx 30rpx 44rpx rgba(116, 86, 55, 0.1); }
+.tarot-home__hero { display: block; width: 100%; height: auto; margin: 8rpx 0 30rpx; border-radius: 36rpx; box-shadow: 0 6rpx 0 #e9dcc3, -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.12); }
 .tarot-home__draw {
   display: flex; align-items: center; justify-content: center; gap: 12rpx;
   width: 100%; margin: 0 auto 36rpx; padding: 0 20rpx; height: 104rpx;
   background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%); color: #6b4a33;
   border: 3rpx solid #fbeedd; border-radius: 52rpx; font-size: 32rpx; font-weight: 600; letter-spacing: 3rpx;
   /* 枕头感按钮：顶内高光 + 底内软影 + 实色侧壁 + 宽软影 */
-  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -10rpx 16rpx rgba(150, 94, 56, 0.2),
-    0 6rpx 0 #cf9464, -2rpx 8rpx 10rpx rgba(116, 86, 55, 0.2), -6rpx 18rpx 26rpx rgba(116, 86, 55, 0.14);
+  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -10rpx 16rpx rgba(150, 94, 56, 0.16),
+    0 5rpx 0 #d8a67c, -2rpx 10rpx 16rpx rgba(116, 86, 55, 0.14);
   &::after { border: none; }
 }
 .tarot-home__draw-star { font-size: 30rpx; color: #fdf3e2; text-shadow: 0 2rpx 4rpx rgba(150, 94, 56, 0.25); }
@@ -31,11 +31,10 @@
   flex: 1; min-width: 0; padding: 30rpx 28rpx 24rpx; border-radius: 34rpx;
   border: 2rpx solid rgba(255, 255, 255, 0.85);
   /* 枕头感卡（与我的页 --shadow-slab 同配方） */
-  background: linear-gradient(180deg, #fffef9 0%, #fdf8ec 100%);
+  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
   box-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95), inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
-    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.16), 0 6rpx 0 #e3d3b6,
-    -2rpx 8rpx 10rpx rgba(116, 86, 55, 0.22), -6rpx 18rpx 26rpx rgba(116, 86, 55, 0.16),
-    -8rpx 30rpx 44rpx rgba(116, 86, 55, 0.1);
+    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.12), 0 6rpx 0 #e9dcc3,
+    -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.1);
 }
 .tarot-home__entry-title { display: block; color: var(--color-ink); font-size: 30rpx; font-weight: 600; }
 .tarot-home__entry-sub { display: block; margin-top: 10rpx; color: var(--color-ink-secondary); font-size: 22rpx; }

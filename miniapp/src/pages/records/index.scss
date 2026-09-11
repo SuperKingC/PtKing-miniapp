@@ -4,13 +4,13 @@
   padding: calc(var(--page-top-inset, 88px) + 8rpx) 32rpx calc(220rpx + env(safe-area-inset-bottom));
 }
 
-.records-page-shell.theme-light { background: #f7f2e9; }
+.records-page-shell.theme-light { background: #fefaf5; }
 .records-page__hero { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; margin-bottom: 24rpx; min-height: 280rpx; }
 .records-page__heading { flex: 1; min-width: 0; padding-left: 12rpx; }
 .records-page__title { display: block; color: var(--color-ink); font-size: 46rpx; letter-spacing: 3rpx; font-weight: 700; }
 .records-page__subtitle { display: block; margin-top: 12rpx; color: var(--color-ink-secondary); font-size: 24rpx; letter-spacing: 2rpx; }
 .records-page__book { width: 290rpx; height: 290rpx; flex-shrink: 0; margin-right: -8rpx; }
-.records-page__count { display: inline-flex; align-items: center; margin-top: 36rpx; padding: 18rpx 26rpx; border-radius: 22rpx; background: linear-gradient(180deg, #fffef9 0%, #fdf8ec 100%); color: var(--color-ink); font-size: 25rpx; box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.14), 0 5rpx 0 #e3d3b6, -2rpx 8rpx 10rpx rgba(116,86,55,.18); }
+.records-page__count { display: inline-flex; align-items: center; margin-top: 36rpx; padding: 18rpx 26rpx; border-radius: 22rpx; background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%); color: var(--color-ink); font-size: 25rpx; box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.1), 0 5rpx 0 #e9dcc3, -2rpx 8rpx 12rpx rgba(116,86,55,.1); }
 .records-page__count-num { margin: 0 4rpx; color: #d98a53; font-size: 34rpx; font-weight: 700; }
 .records-page__date-group { display: block; margin: 4rpx 8rpx 20rpx; color: var(--color-ink-secondary); font-size: 24rpx; letter-spacing: 2rpx; }
 .records-page__item-icon { flex-shrink: 0; width: 112rpx; height: 112rpx; }
@@ -94,12 +94,11 @@
   padding: 28rpx 12rpx;
   border-radius: 24rpx;
   border: 2rpx solid rgba(255,255,255,.85);
-  /* 枕头感卡（与我的页 --shadow-slab 同配方） */
-  background: linear-gradient(180deg, #fffef9 0%, #fdf8ec 100%);
+  /* 枕头感卡（对齐参考图亮度）：inset 高光软影 + 侧壁 + 单层淡软影 */
+  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
   box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 6rpx 14rpx rgba(255,250,240,.5),
-    inset 0 -12rpx 20rpx rgba(170,136,97,.16), 0 6rpx 0 #e3d3b6,
-    -2rpx 8rpx 10rpx rgba(116,86,55,.22), -6rpx 18rpx 26rpx rgba(116,86,55,.16),
-    -8rpx 30rpx 44rpx rgba(116,86,55,.1);
+    inset 0 -12rpx 20rpx rgba(170,136,97,.12), 0 6rpx 0 #e9dcc3,
+    -2rpx 10rpx 18rpx rgba(116,86,55,.1);
 }
 
 .records-page__stat-value {
@@ -130,12 +129,11 @@
   padding: 24rpx 18rpx;
   border: 2rpx solid rgba(255,255,255,.85);
   border-radius: 28rpx;
-  /* 枕头感 item（与我的页 --shadow-slab 同配方） */
-  background: linear-gradient(180deg, #fffef9 0%, #fdf8ec 100%);
+  /* 枕头感 item（对齐参考图亮度）：inset 高光软影 + 侧壁 + 单层淡软影 */
+  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
   box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 6rpx 14rpx rgba(255,250,240,.5),
-    inset 0 -12rpx 20rpx rgba(170,136,97,.16), 0 6rpx 0 #e3d3b6,
-    -2rpx 8rpx 10rpx rgba(116,86,55,.22), -6rpx 18rpx 26rpx rgba(116,86,55,.16),
-    -8rpx 30rpx 44rpx rgba(116,86,55,.1);
+    inset 0 -12rpx 20rpx rgba(170,136,97,.12), 0 6rpx 0 #e9dcc3,
+    -2rpx 10rpx 18rpx rgba(116,86,55,.1);
   overflow: visible;
 }
 
@@ -246,8 +244,8 @@
   overflow-x: auto;
   padding: 6rpx;
   border-radius: 26rpx;
-  background: linear-gradient(180deg, #f7f1e2 0%, #eee5d1 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.12), 0 5rpx 0 #e3d3b6, -2rpx 8rpx 10rpx rgba(116,86,55,.16);
+  background: linear-gradient(180deg, #faf4e8 0%, #f2ead9 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.09), 0 5rpx 0 #e9dcc3, -2rpx 8rpx 12rpx rgba(116,86,55,.1);
 }
 
 .records-page__chip {
@@ -261,7 +259,7 @@
 .records-page__chip--on {
   background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
   color: #6b4a33;
-  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.2), 0 4rpx 0 #cf9464, -2rpx 6rpx 8rpx rgba(116, 86, 55, 0.18);
+  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.16), 0 4rpx 0 #d8a67c, -2rpx 6rpx 10rpx rgba(116, 86, 55, 0.14);
 }
 
 .records-page__item-chevron {
