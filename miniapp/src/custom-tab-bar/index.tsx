@@ -8,20 +8,20 @@ import {
   resolveTheme,
   type ResolvedTheme,
 } from '../services/theme'
-import testIcon from '../assets/tabbar/test-v10s.png'
-import testActiveIcon from '../assets/tabbar/test-active-v10s.png'
-import tarotIcon from '../assets/tabbar/tarot-v10s.png'
-import tarotActiveIcon from '../assets/tabbar/tarot-active-v10s.png'
-import recordsIcon from '../assets/tabbar/records-v10s.png'
-import recordsActiveIcon from '../assets/tabbar/records-active-v10s.png'
-import meIcon from '../assets/tabbar/me-v10s.png'
-import meActiveIcon from '../assets/tabbar/me-active-v10s.png'
+import testIcon from '../assets/tabbar/test-v11s.png'
+import testActiveIcon from '../assets/tabbar/test-active-v11s.png'
+import tarotIcon from '../assets/tabbar/tarot-v11s.png'
+import tarotActiveIcon from '../assets/tabbar/tarot-active-v11s.png'
+import recordsIcon from '../assets/tabbar/records-v11s.png'
+import recordsActiveIcon from '../assets/tabbar/records-active-v11s.png'
+import meIcon from '../assets/tabbar/me-v11s.png'
+import meActiveIcon from '../assets/tabbar/me-active-v11s.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
 import { getWxGlobal } from '../services/wxGlobal'
 import { TAROT_TAB_INDEX, TAROT_FLOW_VISIBILITY_EVENT, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
-// 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；米白槽底+ui-4 米色胶囊，软陶毡面插画图标。
+// 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；米白槽底+米色颗粒胶囊，高调奶油软陶插画图标。
 // 选中态双保险：①点击时乐观置位（即时反馈）②各 tab 页 onShow 经 eventCenter 广播索引
 // （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
 

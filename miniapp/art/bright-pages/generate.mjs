@@ -11,7 +11,7 @@ cfg.output.maxTotalMB = 30
 cfg.style += ', bright high-key lighting, slightly stronger rounded 3D volume, lifted shadows, never dark or muddy'
 const configPath = path.join(root, 'art.local.config.json')
 fs.writeFileSync(configPath, JSON.stringify(cfg, null, 2))
-const ref = 'C:/Users/admin/.cursor/projects/d-Mine-PtKing-miniapp/assets/c__Users_admin_AppData_Roaming_Cursor_User_workspaceStorage_82a36c340e95d2cfdc330b44ebc1acff_images_ui-4-1d4d7e8a-3fe6-4205-a051-aea56e059d16.jpg'
+const ref = 'D:/Mine/PtKing-miniapp/miniapp/art/ref-pages-v3/reference-ui.png'
 const filenames = { tarot: 'tarot-home-clay-v1.png', records: 'records-book-clay-v1.png' }
 const missing = Object.keys(filenames).filter(name => {
   const output = path.join(root, 'generated-art', name, filenames[name])

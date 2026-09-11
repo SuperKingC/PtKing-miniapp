@@ -1,6 +1,6 @@
 # PtKing 生图提示词清单:每行一条 `name|提示词`,# 开头为注释。
 # 运行前编辑本文件;产物输出 art/generated-art/(gitignore),同目录 manifest.json 留痕。
-# 当前风格:软陶毡面 3D(2026-09-09 用户选定 heal-preview ui-4,风格锚定在 art.config.json 的 style 与 AGENTS.md)。
+# 当前风格:高调奶油软陶 3D(2026-09-11 用户选定 ref-pages-v3/reference-ui.png,ui-4 退役;风格锚定在 art.config.json 的 style 与 AGENTS.md)。
 # 禁止退回扁平矢量色块、水彩勾线、彩铅排线。品牌栏文字画进图,禁止 CSS 叠字。
 # 底栏四枚固定:探头猫+测验纸;扇形三张牌;爪印厚本;坐姿奶油猫。未选中/选中是同一物件两种状态。
 
