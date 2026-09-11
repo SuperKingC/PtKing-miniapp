@@ -51,7 +51,7 @@ describe('测试首页软陶单列布局', () => {
   it('品牌行与今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('hero-card-v5.png')
+    expect(source).toContain('hero-card-v6.png')
     expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')
     expect(source).toContain('openDetail(daily.id)')
   })
@@ -118,7 +118,7 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用参考图同色卡面+暖褐影（逐像素采样对齐），不裁切阴影', () => {
-    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 2rpx 3rpx rgba(172, 142, 100, 0.38)')
+    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 6rpx 0 rgba(172, 142, 100, 0.3)')
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
