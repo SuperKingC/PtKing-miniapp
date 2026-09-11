@@ -81,7 +81,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(shuffleStage).toContain('miniapp-tarot__spacer--top')
     expect(styles).toMatch(/\.miniapp-tarot__spacer \{[\s\S]*?flex: 1 1 0/)
     expect(styles).toMatch(/\.miniapp-tarot__spacer \{[\s\S]*?min-height: 48rpx/)
-    expect(styles).toMatch(/\.miniapp-tarot__spacer--top \{[\s\S]*?flex-grow: 2/)
+    expect(styles).toMatch(/\.miniapp-tarot__spacer--top \{[\s\S]*?flex-grow: 3/)
     // trajectory stays below the title line
     expect(styles).toContain('translateY(-46rpx) rotate(-17deg)')
     expect(styles).not.toContain('translateY(-72rpx)')
@@ -208,6 +208,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
 
     expect(flowSource).toContain('preloadTarotResources')
+    // 预加载进度/完成外抛给页面帘幕层(帘幕开场动画显示同一份进度)
+    expect(flowSource).toContain('onLoadProgress?.(p)')
+    expect(flowSource).toContain('onLoadDone?.()')
     expect(flowSource).toContain('resourcesLoaded')
     expect(flowSource).toContain('loadProgress')
     expect(flowSource).toContain('miniapp-tarot__loading')

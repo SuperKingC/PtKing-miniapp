@@ -105,12 +105,12 @@
 .tarot-curtain--closing .tarot-curtain__panel--left,
 .tarot-curtain--holding .tarot-curtain__panel--left {
   transform: translateX(0);
-  animation: tarot-curtain-close-left .42s cubic-bezier(.6, .04, .3, 1) both;
+  animation: tarot-curtain-close-left .9s cubic-bezier(.32, .08, .24, 1) both;
 }
 .tarot-curtain--closing .tarot-curtain__panel--right,
 .tarot-curtain--holding .tarot-curtain__panel--right {
   transform: translateX(0);
-  animation: tarot-curtain-close-right .42s cubic-bezier(.6, .04, .3, 1) both;
+  animation: tarot-curtain-close-right .9s cubic-bezier(.32, .08, .24, 1) both;
 }
 @keyframes tarot-curtain-close-left {
   from { transform: translateX(-101%); }
@@ -120,26 +120,34 @@
   from { transform: translateX(101%); }
   to { transform: translateX(0); }
 }
-/* 拉开：从合拢位滑回屏外 */
-.tarot-curtain--opening .tarot-curtain__panel--left {
-  animation: tarot-curtain-open-left .56s cubic-bezier(.5, .06, .26, 1) both;
+/* 淡出：hold 结束后整片帘幕带内容淡出露出流程页（原来的横向拉开改为柔淡出） */
+.tarot-curtain--opening {
+  animation: tarot-curtain-fade .62s ease both;
 }
-.tarot-curtain--opening .tarot-curtain__panel--right {
-  animation: tarot-curtain-open-right .56s cubic-bezier(.5, .06, .26, 1) both;
+@keyframes tarot-curtain-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
-@keyframes tarot-curtain-open-left {
-  from { transform: translateX(0); }
-  to { transform: translateX(-101%); }
-}
-@keyframes tarot-curtain-open-right {
-  from { transform: translateX(0); }
-  to { transform: translateX(101%); }
-}
+.tarot-curtain--opening .tarot-curtain__panel--left { transform: translateX(0); }
+.tarot-curtain--opening .tarot-curtain__panel--right { transform: translateX(0); }
 
-/* clay：奶油帘幕 + 陶土包边（接缝在中缝，右帘左缘描陶土边） */
+/* clay：奶油布帘——帘面竖向褶皱(渐变明暗条)垂坠感 + 陶土包边。
+   拉上 = 两片布帘从中缝向两侧收拢(合拢动画不变)，褶皱随布面走，不再是硬门板 */
 .tarot-curtain--clay .tarot-curtain__panel {
   background: linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%);
 }
+/* 布帘褶皱：帘片内竖向明暗条模拟垂坠布纹，收拢时随帘走 */
+.tarot-curtain__drape {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 12%;
+  width: 17%;
+  background: linear-gradient(90deg, rgba(214, 186, 143, 0) 0%, rgba(190, 158, 112, .28) 45%, rgba(158, 128, 88, .42) 50%, rgba(190, 158, 112, .28) 55%, rgba(214, 186, 143, 0) 100%);
+  opacity: .75;
+}
+.tarot-curtain__drape--b { left: 55%; width: 22%; opacity: .5; }
+.tarot-curtain__panel--right .tarot-curtain__drape { left: auto; right: 12%; }
+.tarot-curtain__panel--right .tarot-curtain__drape--b { left: auto; right: 40%; }
 .tarot-curtain--clay .tarot-curtain__panel--left { box-shadow: 10rpx 0 30rpx rgba(122, 88, 58, 0.14); }
 .tarot-curtain--clay .tarot-curtain__panel--right { border-left: 6rpx solid #e5c9a0; box-shadow: -10rpx 0 30rpx rgba(122, 88, 58, 0.14); }
 
@@ -203,6 +211,84 @@
   transition: opacity .4s ease;
 }
 
+/* classic 仪式感：中缝暖光之外再叠一圈大光环缓慢呼吸，星星连线完成后整体随帘淡出 */
+.tarot-curtain__glow--halo {
+  left: 50%; top: 50%;
+  width: 640rpx; height: 640rpx;
+  margin: -320rpx 0 0 -320rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 156, 240, 0) 34%, rgba(184, 156, 240, .2) 52%, rgba(139, 100, 220, .12) 64%, rgba(184, 156, 240, 0) 72%);
+  animation: tarot-halo-breathe 2.4s ease-in-out infinite;
+}
+.tarot-curtain--opening .tarot-curtain__glow--halo { animation: none; }
+@keyframes tarot-halo-breathe {
+  0%, 100% { transform: scale(.92); opacity: .7; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* classic 星座连线：五颗星按序亮起，四段线用 scaleX 渐进生长把星连成星座。
+   全部固定坐标(750 设计稿基准)，合拢后播 2.2s 编排，hold 期间持续微闪 */
+.tarot-curtain__constellation {
+  position: absolute;
+  left: 0; right: 0; top: 20%;
+  height: 40%;
+  opacity: 0;
+  pointer-events: none;
+}
+.tarot-curtain--holding .tarot-curtain__constellation {
+  opacity: 1;
+  transition: opacity .4s ease;
+}
+.tarot-curtain--opening .tarot-curtain__constellation {
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.tarot-curtain__const-star {
+  position: absolute;
+  color: #f3e6ff;
+  font-size: 30rpx;
+  text-shadow: 0 0 16rpx rgba(216, 200, 245, .95), 0 0 34rpx rgba(184, 156, 240, .8);
+  opacity: 0;
+  transform: scale(.3);
+}
+.tarot-curtain--holding .tarot-curtain__const-star {
+  animation: tarot-const-star-pop .46s cubic-bezier(.3, 1.3, .5, 1) both;
+}
+.tarot-curtain--closing .tarot-curtain__const-star {
+  animation: tarot-const-star-pop .46s cubic-bezier(.3, 1.3, .5, 1) both;
+}
+/* 星位：错落成小北斗形（左上到右下再抬起） */
+.tarot-curtain__const-star--1 { left: 30%; top: 8%;  animation-delay: .15s; }
+.tarot-curtain__const-star--2 { left: 42%; top: 22%; animation-delay: .5s; font-size: 24rpx; }
+.tarot-curtain__const-star--3 { left: 53%; top: 40%; animation-delay: .85s; }
+.tarot-curtain__const-star--4 { left: 62%; top: 60%; animation-delay: 1.2s; font-size: 24rpx; }
+.tarot-curtain__const-star--5 { left: 71%; top: 76%; animation-delay: 1.55s; }
+@keyframes tarot-const-star-pop {
+  0% { opacity: 0; transform: scale(.3); }
+  60% { opacity: 1; transform: scale(1.25); }
+  100% { opacity: .95; transform: scale(1); }
+}
+.tarot-curtain__const-line {
+  position: absolute;
+  height: 3rpx;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, rgba(216, 200, 245, .0), rgba(216, 200, 245, .8));
+  box-shadow: 0 0 10rpx rgba(184, 156, 240, .7);
+}
+.tarot-curtain--holding .tarot-curtain__const-line,
+.tarot-curtain--closing .tarot-curtain__const-line {
+  animation: tarot-const-line-grow .4s ease-out both;
+}
+/* 四段线首尾接星：用固定角度定位(与星位错落一致)，逐段生长 */
+.tarot-curtain__const-line { left: 31.2%; top: 12.5%; width: 15%; rotate: 38deg; animation-delay: .62s; }
+.tarot-curtain__const-line--b { left: 43.4%; top: 29%; width: 15.5%; rotate: 50deg; animation-delay: .97s; }
+.tarot-curtain__const-line--c { left: 54.2%; top: 47%; width: 13.5%; rotate: 48deg; animation-delay: 1.32s; }
+@keyframes tarot-const-line-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 /* classic：夜幕合拢后月牙亮起，拉开时随帘幕渐隐（不再瞬时消失） */
 .tarot-curtain__dream {
   position: absolute; left: 0; right: 0; top: 16%;
@@ -224,3 +310,42 @@
   font-size: 72rpx; color: #ead18d;
   text-shadow: 0 0 30rpx rgba(234, 209, 141, 0.6), 0 0 60rpx rgba(184, 156, 240, 0.4);
 }
+
+/* 帘内加载进度：合拢完成后出现在下半屏，细进度条+状态文案；随帘幕淡出。
+   慢网时用户在这里看到预加载进度，不再是帘后静默 */
+.tarot-curtain__loading {
+  position: absolute;
+  left: 0; right: 0; bottom: 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14rpx;
+  pointer-events: none;
+  opacity: 0;
+}
+.tarot-curtain--holding .tarot-curtain__loading {
+  opacity: 1;
+  transition: opacity .45s ease .2s;
+}
+.tarot-curtain__loading-track {
+  width: 360rpx;
+  height: 8rpx;
+  border-radius: 99rpx;
+  background: rgba(255, 255, 255, .14);
+  overflow: hidden;
+}
+.tarot-curtain__loading-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b89cf0, #ead18d);
+  box-shadow: 0 0 14rpx rgba(216, 185, 102, .55);
+  transition: width .3s ease;
+}
+.tarot-curtain__loading-text {
+  color: rgba(240, 230, 255, .78);
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+}
+.tarot-curtain--clay .tarot-curtain__loading-track { background: rgba(122, 88, 58, .14); }
+.tarot-curtain--clay .tarot-curtain__loading-fill { background: linear-gradient(90deg, #e5ab7e, #d99e6b); box-shadow: 0 0 14rpx rgba(217, 158, 107, .4); }
+.tarot-curtain--clay .tarot-curtain__loading-text { color: rgba(107, 74, 51, .72); }

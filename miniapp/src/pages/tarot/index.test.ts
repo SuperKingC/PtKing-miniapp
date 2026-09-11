@@ -30,16 +30,31 @@ describe('bright tarot entry wiring', () => {
     expect(styles).toContain('.tarot-home__skin-thumb--clay .tarot-home__skin-thumb-img { margin-top: -97rpx; }')
     expect(styles).toMatch(/\.tarot-home__skins\s*{[^}]*margin-top:\s*44rpx/)
   })
-  it('curtain entrance layers star twinkle, seam glow, moon fade and flow reveal', () => {
+  it('curtain entrance layers drape close, constellation line-up and fade-out reveal', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-curtain__glow')
     expect(page).toContain('tarot-curtain__star--a')
     expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
+    // 帘内加载进度：合拢后帘幕展示预加载进度，完成后随帘淡出(用户需求:加载流程放进开场动画)
+    expect(page).toContain('onLoadProgress={handleLoadProgress}')
+    expect(page).toContain('onLoadDone={handleLoadDone}')
+    expect(page).toContain('tarot-curtain__loading-fill')
+    expect(page).toContain('curtainLoaded ? \'仪式准备就绪\'')
     const styles = source('./index.scss')
     expect(styles).toContain('@keyframes tarot-flow-reveal')
     expect(styles).toContain('@keyframes tarot-star-twinkle')
-    expect(styles).toContain('.tarot-curtain--opening .tarot-curtain__dream')
     expect(styles).toContain('.tarot-curtain--holding .tarot-curtain__glow')
+    // 淡出式揭幕(不再横向拉开)：整帘 opacity 渐隐露出流程页
+    expect(styles).toContain('@keyframes tarot-curtain-fade')
+    // clay 布帘褶皱垂坠感(用户需求:不是硬门板)
+    expect(styles).toContain('tarot-curtain__drape')
+    // classic 星星逐颗亮起再连线成星座
+    expect(styles).toContain('@keyframes tarot-const-star-pop')
+    expect(styles).toContain('@keyframes tarot-const-line-grow')
+    expect(styles).toContain('tarot-curtain__const-line--b')
+    // hold 等加载完成才淡出，慢网 12s 兜底放行
+    expect(page).toMatch(/if \(!curtainLoaded\) return[\s\S]*CURTAIN_HOLD_MIN_MS - elapsed/)
+    expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')
   })
   it('listens for history at the always-mounted page, including repeat requests', () => {
     expect(source('./index.tsx')).toContain('Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)')

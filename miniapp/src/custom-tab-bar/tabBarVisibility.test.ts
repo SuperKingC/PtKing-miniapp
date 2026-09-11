@@ -6,9 +6,11 @@ describe('custom tab bar visibility', () => {
     expect(shouldHideCustomTabBar('pages/tarot/index', 'pages/tarot/index', 1)).toBe(false)
   })
 
-  it('hides only while the selected tarot tab has an open flow', () => {
+  it('hides the tarot page instance whenever its flow is open, selected state notwithstanding', () => {
     expect(shouldHideCustomTabBar('', 'pages/tarot/index', 1, true)).toBe(true)
-    expect(shouldHideCustomTabBar('pages/tarot/index', 'pages/records/index', 2, true)).toBe(false)
+    // 塔罗实例挂载时读到过期 storage 选中值（如「记录」），流程开着也必须藏栏
+    expect(shouldHideCustomTabBar('pages/tarot/index', 'pages/records/index', 2, true)).toBe(true)
+    expect(shouldHideCustomTabBar('pages/tarot/index', '', -1, true)).toBe(true)
     expect(shouldHideCustomTabBar('', 'pages/tarot/index', 1, false)).toBe(false)
   })
 

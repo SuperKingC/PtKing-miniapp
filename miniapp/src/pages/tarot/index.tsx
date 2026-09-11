@@ -19,11 +19,12 @@ import singleCardImage from '../../assets/illus/tarot-card-single-v3.png'
 import cardsFanImage from '../../assets/illus/tarot-cards-fan-v3.png'
 import './index.scss'
 
-// 帘幕编排：合拢 → 帘后挂载流程（同时开始预加载）→ 短暂停顿 → 拉开。
-// 不与资源预加载耦合：慢网时帘开后由流程内既有 loading 百分比层接管。
-const CURTAIN_CLOSE_MS = 420
-const CURTAIN_HOLD_MS = 340
-const CURTAIN_OPEN_MS = 560
+// 帘幕编排：合拢(布帘拉上/星星连线) → 帘后挂载流程（同时开始预加载）→
+// hold 到资源加载完成（有仪式感下限，加载慢时由 loaded 触发）→ 淡出帘幕。
+// 不与资源预加载耦合：慢网时帘幕内显示预加载进度，完成后淡入正式界面。
+const CURTAIN_CLOSE_MS = 900
+const CURTAIN_HOLD_MIN_MS = 500
+const CURTAIN_OPEN_MS = 620
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
 
@@ -40,6 +41,7 @@ export default function TarotPage() {
   const [skin, setSkinState] = useState<TarotSkin>(() => getTarotSkin())
   const [curtain, setCurtain] = useState<CurtainPhase>('idle')
   const curtainTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const holdStartRef = useRef(0)
   const reducedMotion = motionPreference === 'reduced'
 
   const clearCurtainTimers = () => {
@@ -47,6 +49,23 @@ export default function TarotPage() {
     curtainTimersRef.current = []
   }
   useEffect(() => () => clearCurtainTimers(), [])
+
+  // hold 阶段等加载：加载完成(或超最短仪式时长)才淡出帘幕。loading 层兜底慢网。
+  useEffect(() => {
+    if (curtain !== 'holding') return
+    if (!curtainLoaded) return
+    const elapsed = Date.now() - holdStartRef.current
+    const wait = Math.max(0, CURTAIN_HOLD_MIN_MS - elapsed)
+    const timer = setTimeout(() => setCurtain('opening'), wait)
+    return () => clearTimeout(timer)
+  }, [curtain, curtainLoaded])
+
+  // 慢网兜底：hold 最长等 12s，超时放行淡出，帘后流程内 loading 层继续显示进度
+  useEffect(() => {
+    if (curtain !== 'holding') return
+    const timer = setTimeout(() => setCurtain('opening'), 12000)
+    return () => clearTimeout(timer)
+  }, [curtain])
 
   useDidShow(() => {
     Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, flowOpen)
@@ -68,31 +87,43 @@ export default function TarotPage() {
     return { title: APP_TAROT_SHARE_TITLE }
   })
   const handleShareTitleChange = useCallback((title: string) => setTarotShareTitle(title), [])
+  // 帘幕层显示的加载进度：流程组件预加载回调外抛，合拢/星显阶段读同一份值
+  const [curtainProgress, setCurtainProgress] = useState(0)
+  const [curtainLoaded, setCurtainLoaded] = useState(false)
+  const handleLoadProgress = useCallback((progress: number) => {
+    setCurtainProgress(progress)
+    if (progress >= 1) setCurtainLoaded(true)
+  }, [])
+  const handleLoadDone = useCallback(() => setCurtainLoaded(true), [])
 
   const startFlow = (selected: MiniappTarotSpread, withSpreadStage = true) => {
     tapFeedback()
     setSpread(selected)
     setChooseSpread(withSpreadStage)
     setHistoryRequest(0)
+    setCurtainProgress(0)
+    setCurtainLoaded(false)
     if (reducedMotion) {
       setFlowOpen(true)
       return
     }
-    // 帘幕关上再打开：合拢后帘后挂载流程，短暂停顿后滑开
+    // 帘幕关上(布帘拉上/星星连线)→ 帘后挂载流程(同时开始预加载) →
+    // hold:加载完成或达最短仪式时长后由 effect 淡出帘幕露出流程页
+    holdStartRef.current = Date.now()
     setCurtain('closing')
     curtainTimersRef.current.push(
       setTimeout(() => {
         setFlowOpen(true)
         setCurtain('holding')
       }, CURTAIN_CLOSE_MS),
-      setTimeout(() => setCurtain('opening'), CURTAIN_CLOSE_MS + CURTAIN_HOLD_MS),
-      setTimeout(() => setCurtain('idle'), CURTAIN_CLOSE_MS + CURTAIN_HOLD_MS + CURTAIN_OPEN_MS),
     )
   }
   const closeFlow = () => {
     setFlowOpen(false)
     setHistoryRequest(0)
     setTarotShareTitle('')
+    setCurtainProgress(0)
+    setCurtainLoaded(false)
   }
 
   const changeSkin = (next: TarotSkin) => {
@@ -119,7 +150,7 @@ export default function TarotPage() {
             curtain === 'opening' ? 'tarot-page--reveal' : '',
           ].filter(Boolean).join(' ')}
         >
-          <MiniappTarotFlow initialSpread={spread} chooseSpread={chooseSpread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} />
+          <MiniappTarotFlow initialSpread={spread} chooseSpread={chooseSpread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} onLoadProgress={handleLoadProgress} onLoadDone={handleLoadDone} />
         </View>
       ) : (
         <View className={`tab-page tarot-home-shell theme-${theme}`} style={topInsetStyle()}>
@@ -178,19 +209,50 @@ export default function TarotPage() {
       {curtainVisible && (
         <View className={curtainClass} aria-hidden>
           <View className="tarot-curtain__panel tarot-curtain__panel--left">
+            <View className="tarot-curtain__drape" />
+            <View className="tarot-curtain__drape tarot-curtain__drape--b" />
             <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
           </View>
           <View className="tarot-curtain__panel tarot-curtain__panel--right">
+            <View className="tarot-curtain__drape" />
+            <View className="tarot-curtain__drape tarot-curtain__drape--b" />
             <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
             <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
           </View>
+          {/* classic 星夜：星星逐颗亮起再连线成星座(纯 CSS 渐进绘制) */}
+          {skin === 'classic' && (
+            <>
+              <View className="tarot-curtain__constellation">
+                <View className="tarot-curtain__const-line" />
+                <View className="tarot-curtain__const-line tarot-curtain__const-line--b" />
+                <View className="tarot-curtain__const-line tarot-curtain__const-line--c" />
+                <Text className="tarot-curtain__const-star tarot-curtain__const-star--1">✦</Text>
+                <Text className="tarot-curtain__const-star tarot-curtain__const-star--2">✧</Text>
+                <Text className="tarot-curtain__const-star tarot-curtain__const-star--3">✦</Text>
+                <Text className="tarot-curtain__const-star tarot-curtain__const-star--4">✧</Text>
+                <Text className="tarot-curtain__const-star tarot-curtain__const-star--5">✦</Text>
+              </View>
+              <View className="tarot-curtain__dream">
+                <Text className="tarot-curtain__moon">☾</Text>
+              </View>
+            </>
+          )}
           <View className="tarot-curtain__glow" />
           {skin === 'classic' && (
-            <View className="tarot-curtain__dream">
-              <Text className="tarot-curtain__moon">☾</Text>
+            <View className="tarot-curtain__glow tarot-curtain__glow--halo" />
+          )}
+          {/* 合拢后帘内加载进度：细进度条+百分比，完成后随帘幕淡出 */}
+          {curtain !== 'opening' && (
+            <View className="tarot-curtain__loading">
+              <View className="tarot-curtain__loading-track">
+                <View className="tarot-curtain__loading-fill" style={{ width: `${Math.round(curtainProgress * 100)}%` }} />
+              </View>
+              <Text className="tarot-curtain__loading-text">
+                {curtainLoaded ? '仪式准备就绪' : `星图绘制中 ${Math.round(curtainProgress * 100)}%`}
+              </Text>
             </View>
           )}
         </View>

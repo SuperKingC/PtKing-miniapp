@@ -27,11 +27,15 @@ interface MiniappTarotFlowProps {
   /** 入口是否已在页面上选定牌阵：false 时跳过流程内选牌阵阶段 */
   chooseSpread?: boolean
   historyRequest?: number
+  /** 资源预加载进度(0..1)外抛：帘幕开场动画在合拢/星显阶段展示同一份进度 */
+  onLoadProgress?(progress: number): void
+  /** 预加载全部成功后回调：帘幕层据此淡入正式界面 */
+  onLoadDone?(): void
 }
 
 const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 'reading'] as const
 
-export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', chooseSpread = true, historyRequest = 0 }: MiniappTarotFlowProps) {
+export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', chooseSpread = true, historyRequest = 0, onLoadProgress, onLoadDone }: MiniappTarotFlowProps) {
   const [state, dispatch] = useReducer(tarotFlowReducer, initialSpread, (spread) => ({ ...createInitialTarotFlow(), spread }))
   const motionPreference = useMotionPreference()
   // 皮肤在挂载时定死，流程内不支持中途换肤；换肤入口在塔罗首页
@@ -57,11 +61,16 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
     setLoadProgress(0)
     setLoadError(false)
     preloadTarotResources((p) => {
-      if (attempt === loadAttemptRef.current) setLoadProgress(p)
+      if (attempt !== loadAttemptRef.current) return
+      setLoadProgress(p)
+      onLoadProgress?.(p)
     }, skin)
       .then(({ failedUrls }) => {
         if (attempt !== loadAttemptRef.current) return
-        if (failedUrls.length === 0) setResourcesLoaded(true)
+        if (failedUrls.length === 0) {
+          setResourcesLoaded(true)
+          onLoadDone?.()
+        }
         else setLoadError(true)
       })
       .catch(() => {

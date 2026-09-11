@@ -519,15 +519,17 @@
 // equal-grow spacers above/below the card area: title stays pinned at the
 // top, hint/button dock at the bottom, cards land in the vertical middle;
 // min-height keeps a safe gap (and orbit clearance) on short screens.
-// the top spacer grows twice as fast so the leftover space splits 2:1 —
-// title and card group both settle below the stage's vertical midline
+// the top spacer grows 3:2 so the deck settles on the sanctuary ring's
+// center (measured on the backdrop: ring spans y 31%..75%, center ~53% —
+// the stage sits below the fixed header, so asymmetric growth lands the
+// deck slightly below the stage's own midline, right on the ring)
 .miniapp-tarot__spacer {
   flex: 1 1 0;
   min-height: 48rpx;
 }
 
 .miniapp-tarot__spacer--top {
-  flex-grow: 2;
+  flex-grow: 3;
   min-height: 88rpx;
 }
 
