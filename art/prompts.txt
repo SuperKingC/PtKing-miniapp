@@ -223,3 +223,6 @@ me-banner-v4|只要横版品牌插画不要手机界面。雾蓝软陶铺满画�
 # —— 三页参考稿对齐资产(2026-09-10;用户给出测测/塔罗/记录三屏目标稿 miniapp/art/ref-pages-v3/reference-ui.png) ——
 # 实际生成走 miniapp/art/ref-pages-v3/(英文提示词 + reference-ui.png 作 --ref i2i),流程:kit 生图 → floodfill 抠透明 → PIL 降分辨率 → TinyPNG 落包。
 # 产物:test-hero-clay-v1(猫举清单)、tile-mbti/personality/love/career/fun-v1(方块图标)、icon-bell-v1(铃铛)、tarot-hero-v2(雾蓝夜空三牌横幅)、tarot-card-single-v1、tarot-cards-fan-v1、records-book-v2(爪印本)。
+
+# —— 塔罗首页 hero v5(2026-09-11,压扁成 3:2 横幅;gen.mjs 长请求会被网关 3min 掐断,实际走直连 probe i2i gpt-5.4-image-2,挂 tarot-panel-v4 作参考图) ——
+tarot-panel-v5|高调奶油软陶 3D 治愈插画(claymorphism),哑光聚合软陶表面干净光滑细腻,圆润饱满无硬描边,高调影棚光阴影浅而弥散,色板奶油白/燕麦/水感雾蓝/奶杏陶土/浅金褐。保持参考图完全相同的元素配色与构图气质,只把画幅压扁成横版 3:2 横幅面板:雾蓝天空配奶油软陶云朵月牙圆星,左上深棕圆润大字标题「塔罗时光」正下方浅灰棕小字副标题「给此刻的自己一点启发」(副标题必须精确写这十个字,不得增减字),中下三张圆角软陶塔罗牌轻扇排列,左右雾蓝牌面分别饰太阳纹章与月牙纹章,中间陶土橘菱格纹牌面嵌米色圆章罗盘星,右下角探头奶油橘纹小猫,天空留白克制,画面中禁止:水印、logo
