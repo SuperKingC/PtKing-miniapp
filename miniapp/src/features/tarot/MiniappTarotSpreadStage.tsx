@@ -3,6 +3,8 @@ import {
   TAROT_SPREADS,
   type MiniappTarotSpread,
 } from './tarotSpreads'
+import { getTarotSkin } from './tarotSkin'
+import { getTarotStageCopy } from './tarotSkinCopy'
 
 interface MiniappTarotSpreadStageProps {
   spread: MiniappTarotSpread
@@ -13,9 +15,10 @@ export function MiniappTarotSpreadStage({
   spread,
   onSelect,
 }: MiniappTarotSpreadStageProps) {
+  const copy = getTarotStageCopy(getTarotSkin())
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--spread">
-      <Text className="miniapp-tarot__title">选择适合问题的牌阵</Text>
+      <Text className="miniapp-tarot__title">{copy.spreadTitle}</Text>
       <View className="miniapp-tarot__spreads">
         {TAROT_SPREADS.map((option) => (
           <Button

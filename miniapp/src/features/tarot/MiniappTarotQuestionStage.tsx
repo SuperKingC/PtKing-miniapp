@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Button, Text, Textarea, View } from '@tarojs/components'
+import { getTarotSkin } from './tarotSkin'
+import { getTarotStageCopy } from './tarotSkinCopy'
 
 const prompts = [
   '我现在最需要看清的是什么？',
@@ -22,6 +24,7 @@ export function MiniappTarotQuestionStage({
   onContinue,
 }: MiniappTarotQuestionStageProps) {
   const [promptOffset, setPromptOffset] = useState(0)
+  const copy = getTarotStageCopy(getTarotSkin())
   const visiblePrompts = Array.from(
     { length: 3 },
     (_, index) => prompts[(promptOffset + index) % prompts.length],
@@ -29,7 +32,7 @@ export function MiniappTarotQuestionStage({
 
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--question">
-      <Text className="miniapp-tarot__title">先写下你真正想知道的事</Text>
+      <Text className="miniapp-tarot__title">{copy.questionTitle}</Text>
       <Textarea
         className="miniapp-tarot__question"
         value={question}

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Button, Text, View } from '@tarojs/components'
 import type { DrawnTarotCard } from './tarotCards'
 import { MiniappTarotCard } from './MiniappTarotCard'
+import { getTarotSkin } from './tarotSkin'
+import { getTarotStageCopy } from './tarotSkinCopy'
 
 interface MiniappTarotRevealStageProps {
   drawn: DrawnTarotCard[]
@@ -18,6 +20,7 @@ export function MiniappTarotRevealStage({
 }: MiniappTarotRevealStageProps) {
   const allFlipped = flipped.length > 0 && flipped.every(Boolean)
   const [ready, setReady] = useState(false)
+  const copy = getTarotStageCopy(getTarotSkin())
 
   useEffect(() => {
     if (!allFlipped) {
@@ -30,7 +33,7 @@ export function MiniappTarotRevealStage({
 
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--reveal">
-      <Text className="miniapp-tarot__title">{allFlipped ? '牌已全部翻开' : '逐张点开，翻开你的牌'}</Text>
+      <Text className="miniapp-tarot__title">{copy.revealTitle(allFlipped)}</Text>
       <View className="miniapp-tarot__spacer" />
       <View className="miniapp-tarot__reveal-row">
         {drawn.map((item, index) => (

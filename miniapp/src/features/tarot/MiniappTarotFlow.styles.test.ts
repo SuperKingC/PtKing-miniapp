@@ -52,7 +52,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('@keyframes miniapp-tarot-mist-glow')
     expect(styles).toContain('@keyframes miniapp-tarot-orbit-spin')
     expect(styles).toContain('@keyframes miniapp-tarot-rune-spin')
-    expect(styles).toContain('border: 2rpx dashed rgba(255, 222, 137, .75)')
+    expect(styles).toContain('border: 2rpx dashed var(--tarot-rune-ring)')
     expect(styles).toMatch(/\.miniapp-tarot__progress > view \{[\s\S]*?transition: width \.42s/)
     // rune circle is bigger than the card (226x356) so the arcane ring wraps the pile
     expect(styles).toContain('width: 430rpx')
@@ -122,8 +122,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('cubic-bezier(.34, 1.28, .4, 1)')
     // arcane flash pulse while the cut happens
     expect(styles).toContain('@keyframes miniapp-tarot-cut-flash')
-    // lifted packet glows with a purple aura while airborne
-    expect(styles).toContain('drop-shadow(0 16rpx 22rpx rgba(126, 47, 221, .5)) brightness(1.1)')
+    // lifted packet glows with a purple aura while airborne (skin-scoped via --tarot-cut-lift-shadow)
+    expect(styles).toContain('drop-shadow(0 16rpx 22rpx var(--tarot-cut-lift-shadow)) brightness(1.1)')
     // stardust rises as the cut lands
     expect(styles).toContain('@keyframes miniapp-tarot-cut-spark')
   })
