@@ -153,17 +153,12 @@ export default function TarotPage() {
                       hoverClass="pressable--pressed"
                       onClick={() => changeSkin(option)}
                     >
-                      <View className="tarot-home__skin-thumb">
-                        {/* 底层放大铺满防露底，前景整图缩小入框：预览框仍铺满，场景完整可见 */}
+                      <View className={`tarot-home__skin-thumb tarot-home__skin-thumb--${option}`}>
+                        {/* 原图放大铺满裁切：按皮肤主体位置上移裁切窗（clip 窗口 220rpx，图按满宽自然高） */}
                         <Image
-                          className="tarot-home__skin-thumb-bg"
+                          className="tarot-home__skin-thumb-img"
                           src={getTarotSanctuaryBackground(option)}
                           mode="aspectFill"
-                        />
-                        <Image
-                          className="tarot-home__skin-thumb-fg"
-                          src={getTarotSanctuaryBackground(option)}
-                          mode="aspectFit"
                         />
                       </View>
                       <Text className="tarot-home__skin-name">{TAROT_SKIN_LABELS[option]}</Text>

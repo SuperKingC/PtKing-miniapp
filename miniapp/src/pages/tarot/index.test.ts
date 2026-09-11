@@ -16,15 +16,16 @@ describe('bright tarot entry wiring', () => {
     expect(page).toContain('onClose={closeFlow}')
     expect(page).toContain('initialSpread={spread}')
   })
-  it('renders skin thumbnails as fit-inside over blurred fill backdrop', () => {
+  it('renders skin thumbnails as full-bleed crops biased to each skin subject', () => {
     const page = source('./index.tsx')
-    expect(page).toContain('tarot-home__skin-thumb-bg')
-    expect(page).toContain('tarot-home__skin-thumb-fg')
+    expect(page).toContain('tarot-home__skin-thumb--${option}')
+    expect(page).toContain('tarot-home__skin-thumb-img')
     expect(page).toContain('mode="aspectFill"')
-    expect(page).toContain('mode="aspectFit"')
     const styles = source('./index.scss')
-    expect(styles).toContain('.tarot-home__skin-thumb-bg')
-    expect(styles).toContain('.tarot-home__skin-thumb-fg')
+    expect(styles).toMatch(/\.tarot-home__skin-thumb\s*{[^}]*height:\s*220rpx[^}]*overflow:\s*hidden/)
+    expect(styles).toMatch(/\.tarot-home__skin-thumb-img\s*{[^}]*height:\s*490rpx[^}]*margin-top:\s*-147rpx/)
+    expect(styles).toContain('.tarot-home__skin-thumb--clay .tarot-home__skin-thumb-img { margin-top: -97rpx; }')
+    expect(styles).toMatch(/\.tarot-home__skins\s*{[^}]*margin-top:\s*44rpx/)
   })
   it('curtain entrance layers star twinkle, seam glow, moon fade and flow reveal', () => {
     const page = source('./index.tsx')
