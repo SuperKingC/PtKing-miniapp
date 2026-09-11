@@ -72,7 +72,7 @@ export type MiniappTarotFlowState =
 export type MiniappTarotFlowEvent =
   | { type: 'set-question'; question: string }
   | { type: 'set-spread'; spread: MiniappTarotSpread }
-  | { type: 'continue' }
+  | { type: 'continue'; chooseSpread?: boolean }
   | { type: 'set-shuffle-progress'; progress: number }
   | { type: 'skip-ritual'; candidates: TarotCandidate[] }
   | { type: 'start-cut' }
@@ -84,7 +84,7 @@ export type MiniappTarotFlowEvent =
   | { type: 'flip-card'; index: number }
   | { type: 'finish-reading'; reading: TarotReading }
   | { type: 'mark-shared' }
-  | { type: 'restart' }
+  | { type: 'restart'; spread: MiniappTarotSpread }
 
 export function createInitialTarotFlow(): MiniappTarotFlowState {
   return {
@@ -99,13 +99,23 @@ export function tarotFlowReducer(
   state: MiniappTarotFlowState,
   event: MiniappTarotFlowEvent,
 ): MiniappTarotFlowState {
-  if (event.type === 'restart') return createInitialTarotFlow()
+  // 再占一次回到提问，但保留入场时选定的牌阵，避免三牌阵入场被重置回单牌
+  if (event.type === 'restart') return { ...createInitialTarotFlow(), spread: event.spread }
 
   switch (state.stage) {
     case 'question':
       if (event.type === 'set-question') return { ...state, question: event.question }
       if (event.type === 'set-spread') return { ...state, spread: event.spread }
       if (event.type === 'continue' && state.question.trim()) {
+        // 入口已选定牌阵时跳过选牌阵阶段，直接进入洗牌
+        if (event.chooseSpread === false) {
+          return {
+            stage: 'shuffle',
+            question: state.question.trim(),
+            spread: state.spread,
+            progress: 0,
+          }
+        }
         return {
           stage: 'spread',
           question: state.question.trim(),

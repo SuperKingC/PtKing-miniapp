@@ -78,6 +78,47 @@ describe('miniapp tarot question flow', () => {
     expect(tarotFlowReducer(shuffle, { type: 'continue' })).toBe(shuffle)
   })
 
+  it('skips the spread stage when the entry already picked a spread', () => {
+    const question = tarotFlowReducer(createInitialTarotFlow(), {
+      type: 'set-question',
+      question: '  今天的工作运如何？  ',
+    })
+    const shuffle = tarotFlowReducer(question, {
+      type: 'continue',
+      chooseSpread: false,
+    })
+
+    expect(shuffle).toEqual({
+      stage: 'shuffle',
+      question: '今天的工作运如何？',
+      spread: 'single',
+      progress: 0,
+    })
+    // 流程内不再有选牌阵阶段，set-spread 不应改变任何状态
+    expect(tarotFlowReducer(shuffle, {
+      type: 'set-spread',
+      spread: 'decision',
+    })).toBe(shuffle)
+  })
+
+  it('restarts into the question stage while keeping the entry spread', () => {
+    const reading = {
+      stage: 'reading' as const,
+      question: '问题',
+      spread: 'triple' as const,
+      drawn: [],
+      reading: {} as TarotReading,
+      shared: false,
+    }
+
+    expect(tarotFlowReducer(reading, { type: 'restart', spread: 'triple' })).toEqual({
+      stage: 'question',
+      question: '',
+      promptOffset: 0,
+      spread: 'triple',
+    })
+  })
+
   it('requires completed shuffle and one completed cut before entering the fan', () => {
     const question = tarotFlowReducer(createInitialTarotFlow(), {
       type: 'set-question',

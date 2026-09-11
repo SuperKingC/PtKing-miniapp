@@ -24,12 +24,14 @@ interface MiniappTarotFlowProps {
   onClose(): void
   onShareTitleChange?(title: string): void
   initialSpread?: MiniappTarotSpread
+  /** 入口是否已在页面上选定牌阵：false 时跳过流程内选牌阵阶段 */
+  chooseSpread?: boolean
   historyRequest?: number
 }
 
 const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 'reading'] as const
 
-export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', historyRequest = 0 }: MiniappTarotFlowProps) {
+export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', chooseSpread = true, historyRequest = 0 }: MiniappTarotFlowProps) {
   const [state, dispatch] = useReducer(tarotFlowReducer, initialSpread, (spread) => ({ ...createInitialTarotFlow(), spread }))
   const motionPreference = useMotionPreference()
   // 皮肤在挂载时定死，流程内不支持中途换肤；换肤入口在塔罗首页
@@ -42,7 +44,12 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
   const leaveTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const loadAttemptRef = useRef(0)
   const history = useMemo(() => historyOpen ? listTarotHistory() : [], [historyOpen, state.stage])
-  const activeStageIndex = stageOrder.indexOf(state.stage)
+  // 进度条只画实际会经过的阶段：已选定牌阵时没有选牌阵一幕
+  const stages = useMemo(
+    () => (chooseSpread ? stageOrder : stageOrder.filter((stage) => stage !== 'spread')),
+    [chooseSpread],
+  )
+  const activeStageIndex = stages.indexOf(state.stage)
 
   const loadResources = () => {
     const attempt = ++loadAttemptRef.current
@@ -114,7 +121,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
     leaveTimersRef.current = []
     setHistoryOpen(false)
     setLeaving(false)
-    dispatch({ type: 'restart' })
+    dispatch({ type: 'restart', spread: state.spread })
   }
 
   return (
@@ -160,7 +167,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
             <Button aria-label="查看解读历史" onClick={() => { tapFeedback(); setHistoryOpen(true) }}>⌛</Button>
           </View>
           <View className="miniapp-tarot__progress" aria-hidden>
-            {stageOrder.map((stage, index) => (
+            {stages.map((stage, index) => (
               <View
                 key={stage}
                 className={index <= activeStageIndex ? 'miniapp-tarot__progress-active' : ''}
@@ -171,8 +178,9 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
           {state.stage === 'question' && (
             <MiniappTarotQuestionStage
               question={state.question}
+              nextLabel={chooseSpread ? '下一步 · 选牌阵' : '下一步 · 洗牌'}
               onQuestionChange={(question) => dispatch({ type: 'set-question', question })}
-              onContinue={() => { tapFeedback(); dispatch({ type: 'continue' }) }}
+              onContinue={() => { tapFeedback(); dispatch({ type: 'continue', chooseSpread }) }}
             />
           )}
           {state.stage === 'spread' && (

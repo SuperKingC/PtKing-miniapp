@@ -14,12 +14,14 @@ const prompts = [
 
 interface MiniappTarotQuestionStageProps {
   question: string
+  nextLabel?: string
   onQuestionChange(question: string): void
   onContinue(): void
 }
 
 export function MiniappTarotQuestionStage({
   question,
+  nextLabel = '下一步 · 选牌阵',
   onQuestionChange,
   onContinue,
 }: MiniappTarotQuestionStageProps) {
@@ -60,7 +62,7 @@ export function MiniappTarotQuestionStage({
         disabled={!question.trim()}
         onClick={onContinue}
       >
-        下一步 · 选牌阵
+        {nextLabel}
       </Button>
     </View>
   )

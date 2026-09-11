@@ -10,8 +10,11 @@ describe('bright tarot entry wiring', () => {
     expect(page).toContain('tarot-cards-fan-v3.png')
     expect(page).toContain('快速获得指引')
     expect(page).toContain('深度探索指引')
-    expect(page).toContain("startFlow('single')")
-    expect(page).toContain("startFlow('triple')")
+    // 抽取今日指引保留流程内选牌阵；两个入口卡已定牌阵，跳过选牌阵阶段
+    expect(page).toContain("startFlow('single', true)")
+    expect(page).toContain("startFlow('single', false)")
+    expect(page).toContain("startFlow('triple', false)")
+    expect(page).toContain('chooseSpread={chooseSpread}')
     expect(page).toContain('flowOpen ?')
     expect(page).toContain('onClose={closeFlow}')
     expect(page).toContain('initialSpread={spread}')
@@ -42,5 +45,15 @@ describe('bright tarot entry wiring', () => {
     expect(source('./index.tsx')).toContain('Taro.eventCenter.on(TAROT_HISTORY_OPEN_EVENT, openHistory)')
     expect(source('./index.tsx')).toContain('historyRequest={historyRequest}')
     expect(source('../../features/tarot/MiniappTarotFlow.tsx')).toContain('if (historyRequest > 0) setHistoryOpen(true)')
+  })
+  it('lets preselected entries skip the spread stage while the draw button keeps it', () => {
+    const flow = source('../../features/tarot/MiniappTarotFlow.tsx')
+    // 默认仍走完整流程（抽取今日指引），入口卡传 false 时剔除选牌阵一幕
+    expect(flow).toContain('chooseSpread = true')
+    expect(flow).toContain('stageOrder.filter((stage) => stage !== \'spread\')')
+    expect(flow).toContain("dispatch({ type: 'continue', chooseSpread })")
+    expect(flow).toContain('nextLabel={chooseSpread ? \'下一步 · 选牌阵\' : \'下一步 · 洗牌\'}')
+    // 再占一次保留入场牌阵，不会重置回单牌
+    expect(flow).toContain("dispatch({ type: 'restart', spread: state.spread })")
   })
 })

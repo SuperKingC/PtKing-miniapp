@@ -33,6 +33,8 @@ export default function TarotPage() {
   const motionPreference = useMotionPreference()
   const [flowOpen, setFlowOpen] = useState(false)
   const [spread, setSpread] = useState<MiniappTarotSpread>('single')
+  // 抽取今日指引在流程内保留选牌阵；两个入口卡已定牌阵，直接跳过该阶段
+  const [chooseSpread, setChooseSpread] = useState(true)
   const [historyRequest, setHistoryRequest] = useState(0)
   const [tarotShareTitle, setTarotShareTitle] = useState('')
   const [skin, setSkinState] = useState<TarotSkin>(() => getTarotSkin())
@@ -67,9 +69,10 @@ export default function TarotPage() {
   })
   const handleShareTitleChange = useCallback((title: string) => setTarotShareTitle(title), [])
 
-  const startFlow = (selected: MiniappTarotSpread) => {
+  const startFlow = (selected: MiniappTarotSpread, withSpreadStage = true) => {
     tapFeedback()
     setSpread(selected)
+    setChooseSpread(withSpreadStage)
     setHistoryRequest(0)
     if (reducedMotion) {
       setFlowOpen(true)
@@ -116,7 +119,7 @@ export default function TarotPage() {
             curtain === 'opening' ? 'tarot-page--reveal' : '',
           ].filter(Boolean).join(' ')}
         >
-          <MiniappTarotFlow initialSpread={spread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} />
+          <MiniappTarotFlow initialSpread={spread} chooseSpread={chooseSpread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} />
         </View>
       ) : (
         <View className={`tab-page tarot-home-shell theme-${theme}`} style={topInsetStyle()}>
@@ -124,17 +127,17 @@ export default function TarotPage() {
             <View className="tarot-home">
               {/* 参考图整面板：标题/副标题/月牙云朵三牌猫全部烘焙在图内 */}
               <Image className="tarot-home__hero" src={heroImage} mode="widthFix" />
-              <Button className="tarot-home__draw" onClick={() => startFlow('single')}>
+              <Button className="tarot-home__draw" onClick={() => startFlow('single', true)}>
                 <Text className="tarot-home__draw-star">✦</Text>
                 <Text className="tarot-home__draw-text">抽取今日指引</Text>
               </Button>
               <View className="tarot-home__entries">
-                <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('single')}>
+                <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('single', false)}>
                   <Text className="tarot-home__entry-title">单张指引</Text>
                   <Text className="tarot-home__entry-sub">快速获得指引</Text>
                   <Image className="tarot-home__single-card" src={singleCardImage} mode="aspectFit" />
                 </View>
-                <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('triple')}>
+                <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('triple', false)}>
                   <Text className="tarot-home__entry-title">三牌牌阵</Text>
                   <Text className="tarot-home__entry-sub">深度探索指引</Text>
                   <Image className="tarot-home__cards" src={cardsFanImage} mode="aspectFit" />
