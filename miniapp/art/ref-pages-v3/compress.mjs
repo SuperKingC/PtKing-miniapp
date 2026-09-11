@@ -12,7 +12,7 @@ for (const line of fs.readFileSync('D:/Mine/miniapp-kit/.env', 'utf8').split(/\r
 }
 const keys = ['TINYPNG_API_KEY', 'TINYPNG_API_KEY_2', 'TINYPNG_API_KEY_3'].map(name => process.env[name]).filter(Boolean)
 const jobs = [
-  { name: 'hero-card-v2.png', source: 'hero-card-v1.png' },
+  { name: 'hero-card-v3.png', source: 'hero-card-v1.png' },
   { name: 'tile-mbti-v3.png' },
   { name: 'tile-love-v3.png' },
   { name: 'tile-star-v1.png' },

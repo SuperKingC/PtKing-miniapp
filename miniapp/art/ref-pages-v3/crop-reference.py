@@ -22,7 +22,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 # name → (crop box in 原图坐标, 最长边, 抠图)
 # 左屏 offset x=0；中屏 x=832；右屏 x=1664
 JOBS = {
-    'hero-card-v1': ((96, 240, 776, 540), 740, True),
+    'hero-card-v1': ((96, 202, 776, 540), 740, True),
     'tile-mbti-v3': ((1745, 690, 1900, 845), 240, True),
     'tile-love-v3': ((110, 920, 278, 1100), 240, True),
     'tile-star-v1': ((110, 1135, 280, 1315), 240, True),
