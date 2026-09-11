@@ -6,12 +6,12 @@
 }
 
 /* 透明圆角 PNG（选定稿几何蒙版抠图，见 art/me-redesign/prepare-banner-geom.py）：
-   圆角与边缘自带 alpha，容器只承担投影，与列表卡一致。 */
+   圆角与边缘自带 alpha。盒式 box-shadow 绕矩形盒走，会在透明圆角外露出
+   灰边与角部楔形——投影必须挂在图上随 alpha 轮廓走（drop-shadow）。 */
 .me-page__banner {
   border-radius: 40rpx;
   margin-bottom: 28rpx;
   overflow: hidden;
-  box-shadow: var(--shadow-card);
 }
 
 .me-page__banner-clip {
@@ -24,11 +24,13 @@
   display: block;
   width: 100%;
   height: auto;
+  /* 随形轻投影：贴边近影 + 弥散远影，勿加重（图底缘已烘焙厚度渐变） */
+  filter: drop-shadow(0 3rpx 6rpx rgba(150, 116, 78, 0.12)) drop-shadow(0 12rpx 26rpx rgba(150, 116, 78, 0.12));
 }
 
-/* 保留暗色图像调色。 */
+/* 保留暗色图像调色；drop-shadow 随 alpha 轮廓，dark 下同挂避免投影丢失。 */
 .theme-dark .me-page__banner-img {
-  filter: brightness(0.88) saturate(0.92);
+  filter: brightness(0.88) saturate(0.92) drop-shadow(0 3rpx 6rpx rgba(0, 0, 0, 0.28)) drop-shadow(0 12rpx 26rpx rgba(0, 0, 0, 0.22));
 }
 
 .me-page__entries {
