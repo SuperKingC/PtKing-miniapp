@@ -70,7 +70,7 @@ describe('测试首页软陶单列布局', () => {
     expect(source).not.toContain('matchTests')
   })
 
-  it('列表为单列全宽横向卡片，152rpx参考图方块图标占正常文档流', () => {
+  it('列表为单列全宽横向卡片，172rpx参考图方块图标（实体148rpx）占正常文档流', () => {
     expect(styleBlock('.test-page__grid')).toContain('flex-direction: column')
     const card = styleBlock('.test-page__card')
     expect(card).toContain('display: flex')
@@ -78,9 +78,9 @@ describe('测试首页软陶单列布局', () => {
     expect(card).toContain('width: 100%')
     expect(card).not.toContain('flex-direction: column')
     const icon = styleBlock('.test-page__card-spot')
-    expect(icon).toContain('flex: 0 0 152rpx')
-    expect(icon).toContain('width: 152rpx')
-    expect(icon).toContain('height: 152rpx')
+    expect(icon).toContain('flex: 0 0 172rpx')
+    expect(icon).toContain('width: 172rpx')
+    expect(icon).toContain('height: 172rpx')
     expect(icon).not.toContain('absolute')
   })
 
@@ -118,17 +118,16 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用参考图同色卡面+暖褐影（逐像素采样对齐），不裁切阴影', () => {
-    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 2rpx 4rpx rgba(172, 142, 100, 0.32)')
+    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 2rpx 3rpx rgba(172, 142, 100, 0.38)')
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
     const card = styleBlock('.test-page__card')
     expect(card).toContain('background: #fefaf4')
     expect(card).toContain('box-shadow: var(--test-shadow)')
-    expect(card).not.toContain('overflow: hidden')
     expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fad6b5 0%, #f3bf98 26%, #f2bd95 52%, #e9ae85 84%, #d99e70 96%, #d08e5e 100%)')
     expect(styleBlock('.test-page__card-go')).toContain('0 4rpx 6rpx rgba(150, 94, 56, 0.22)')
-    /* 接触影烘焙进 v9 tile，CSS 不再叠投影 */
+    /* 接触影烘焙进 v10 tile，CSS 不再叠投影 */
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
   })
 })

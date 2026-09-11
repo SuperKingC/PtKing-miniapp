@@ -9,11 +9,12 @@
   --test-action-bg: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
-  /* 参考稿剖面（高清原稿逐像素）：卡面与底色同色，但卡下缘有一条实的暖褐影带
-     #e2d8ca（α≈0.32，约 7rpx）紧贴后渐散——这是卡片厚度的主来源，不能淡 */
+  /* 参考稿剖面（高清原稿逐像素）：卡面与底色同色，卡下缘实影带峰值 #ded2c2
+     （α≈0.39 @2496 稿，1px≈1rpx）厚约 3rpx 紧贴后 12rpx 渐散；CSS 高斯会把
+     峰值稀释到写定值的 ~0.7 倍，故 α 按实测/0.83 抬到 0.38 */
   --test-shadow: inset 0 2rpx 3rpx rgba(255, 255, 255, 0.9),
-    0 2rpx 4rpx rgba(172, 142, 100, 0.32),
-    0 5rpx 9rpx rgba(172, 142, 100, 0.16),
+    0 2rpx 3rpx rgba(172, 142, 100, 0.38),
+    0 6rpx 10rpx rgba(172, 142, 100, 0.2),
     0 14rpx 22rpx rgba(172, 142, 100, 0.1);
 }
 
@@ -132,18 +133,18 @@
   display: flex;
   gap: 4rpx;
   margin-bottom: 30rpx;
-  padding: 6rpx;
+  padding: 4rpx;
   border-radius: 999rpx;
-  /* 参考稿胶囊剖面：底与页同色，上缘 2-3rpx 白高光线（#fefefd），
-     下缘 #e1d6c7 实影带（α≈0.3）+ 紧贴渐散——外圈厚度感同卡片 */
+  /* 参考稿胶囊剖面（x=400 列实测）：条高 ~72rpx，上缘 2-3rpx 白高光（#fefefd→#fff），
+     下缘实影带峰值 #dbcfbe（α≈0.42）紧贴 1-2rpx 后 16rpx 渐散；条比 chip 只大 2-3rpx */
   background: var(--test-capsule-bg);
-  box-shadow: inset 0 2rpx 2rpx rgba(255, 255, 255, 0.95), 0 2rpx 4rpx rgba(160, 130, 90, 0.3), 0 6rpx 10rpx rgba(160, 130, 90, 0.14);
+  box-shadow: inset 0 2rpx 2rpx rgba(255, 255, 255, 0.95), 0 1rpx 2rpx rgba(160, 128, 88, 0.3), 0 4rpx 6rpx rgba(160, 130, 90, 0.28), 0 10rpx 16rpx rgba(160, 130, 90, 0.12);
 }
 
 .test-page__chip {
   flex: 1;
   min-width: 0;
-  padding: 12rpx 4rpx;
+  padding: 16rpx 4rpx;
   border-radius: 999rpx;
   font-size: 26rpx;
   line-height: 1.4;
@@ -152,9 +153,10 @@
 }
 
 .test-page__chip--active {
-  /* 参考图 chip 剖面：顶高光 #fce2c6 → 主体 #f5c29c → 下部 #eeb48a → 底缘暗线 #d18f61 + 紧贴软影 */
+  /* 参考图 chip 剖面（x=200 列实测，高 ~71rpx）：顶高光 #fbe1c6 → 主体 #f5c29c →
+     下部 #eeb48a → 底缘实影线 #d28c5b + 紧贴软影（α 实测 0.30/0.14 系 CSS 稀释前） */
   background: linear-gradient(180deg, #fce2c6 0%, #f5c29c 30%, #f4c098 55%, #eeb48a 85%, #e2a577 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.7), 0 4rpx 5rpx rgba(150, 94, 56, 0.2), 0 8rpx 12rpx rgba(150, 94, 56, 0.1);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.7), 0 2rpx 3rpx rgba(150, 94, 56, 0.3), 0 6rpx 9rpx rgba(150, 94, 56, 0.14);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
 }
@@ -176,13 +178,17 @@
   /* 参考图卡面与页面底色同色 #fefaf4，浮起感全靠下缘暖褐影带 */
   background: #fefaf4;
   box-shadow: var(--test-shadow);
+  overflow: hidden;
 }
 
 .test-page__card-spot {
-  flex: 0 0 152rpx;
-  width: 152rpx;
-  height: 152rpx;
-  /* v9 起接触影烘焙进图内（与参考稿逐像素同源），CSS 不再叠投影避免双重影 */
+  /* v10 画布 172rpx（1px↔1rpx），实体 148rpx 烘焙在图内 @ (10,8)；
+     负 margin 把实体锚到参考稿位（距卡左 22rpx、顶 26rpx），底边距留接触影 */
+  flex: 0 0 172rpx;
+  width: 172rpx;
+  height: 172rpx;
+  margin: -12rpx 0 -12rpx -12rpx;
+  /* 接触影烘焙在图内，CSS 不叠投影避免双重影 */
   filter: none;
 }
 
