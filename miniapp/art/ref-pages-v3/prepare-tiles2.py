@@ -22,10 +22,10 @@ PREP.mkdir(parents=True, exist_ok=True)
 SRC = ROOT.parents[1] / 'src/assets/illus'
 
 JOBS = {
-    'tile-star-v3.png': ('tile-star-v5.png', 200),
-    'tile-love-v4.png': ('tile-love-v5.png', 200),
-    'tile-mbti-v5.png': ('tile-mbti-v6.png', 200),
-    'tile-fun-v5.jpg': ('tile-fun-v6.png', 200),
+    'tile-star-v6.png': ('tile-star-v6.png', 200),
+    'tile-love-v5b.png': ('tile-love-v6.png', 200),
+    'tile-mbti-v7.png': ('tile-mbti-v7.png', 200),
+    'tile-fun-v7.png': ('tile-fun-v7.png', 200),
 }
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
