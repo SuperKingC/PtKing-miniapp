@@ -112,19 +112,19 @@ describe('测试首页软陶单列布局', () => {
     expect(light).toContain('--test-hero-bg')
     expect(light).toContain('--test-action-bg')
     const dark = styleBlock('.test-page-shell.theme-dark')
-    for (const token of ['--test-hero-bg:', '--test-action-bg:', '--test-capsule-bg:', '--test-highlight:', '--test-shadow:']) expect(dark).toContain(token)
+    for (const token of ['--test-hero-bg:', '--test-action-bg:', '--test-capsule-bg:', '--test-highlight:']) expect(dark).toContain(token)
     expect(styles).not.toMatch(/(^|\n)(page|\.theme-light|\.theme-dark)\s*\{/)
     expect(source).toContain('test-page-shell theme-${theme}')
   })
 
   it('卡片和横幅使用参考图同色卡面+暖褐影（逐像素采样对齐），不裁切阴影', () => {
-    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 6rpx 0 rgba(172, 142, 100, 0.3)')
+    /* 卡片厚度走全局 --shadow-card（实色接触带三层法） */
+    const card = styleBlock('.test-page__card')
+    expect(card).toContain('background: #fefaf4')
+    expect(card).toContain('box-shadow: var(--shadow-card)')
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
-    const card = styleBlock('.test-page__card')
-    expect(card).toContain('background: #fefaf4')
-    expect(card).toContain('box-shadow: var(--test-shadow)')
     expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fad6b5 0%, #f3bf98 26%, #f2bd95 52%, #e9ae85 84%, #d99e70 96%, #d08e5e 100%)')
     expect(styleBlock('.test-page__card-go')).toContain('0 4rpx 6rpx rgba(150, 94, 56, 0.22)')
     /* 接触影烘焙进 v10 tile，CSS 不再叠投影 */

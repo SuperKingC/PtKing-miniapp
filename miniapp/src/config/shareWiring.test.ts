@@ -86,15 +86,15 @@ describe('share capability wiring', () => {
     expect(styles).not.toMatch(/box-shadow:[^;]*inset/)
     expect(styles).not.toContain('width: 134%')
     expect(styles).toMatch(/\.theme-dark \.me-page__banner-img \{[^}]*brightness/)
-    const slabTokens = [...appStyles.matchAll(/--shadow-slab:([^;]+);/g)]
-    expect(slabTokens).toHaveLength(4)
-    // 厚毡枕头感：顶部内高光 + 底部内软影（阴影包进卡面）+ 实色侧壁，四处令牌同构。
-    for (const [, value] of slabTokens) {
-      expect(value).toContain('inset 0 2rpx 3rpx')
-      expect(value).toContain('inset 0 -12rpx 20rpx')
-      expect(value).toContain('0 6rpx 0')
+    // item 外边缘厚度标准（2026-09-11 定稿）：--shadow-card 实色接触带三层法，四处令牌同构。
+    const cardTokens = [...appStyles.matchAll(/--shadow-card:([^;]+);/g)]
+    expect(cardTokens).toHaveLength(4)
+    for (const [, value] of cardTokens) {
+      expect(value).toMatch(/0 [46]rpx 0/)
+      expect(value).toMatch(/0 2?0rpx (28|30)rpx/)
     }
-    expect(slabTokens[0][1]).toBe(slabTokens[2][1])
+    expect(cardTokens[0][1]).toBe(cardTokens[2][1])
+    expect(appStyles).not.toContain('--shadow-slab')
     expect([...appStyles.matchAll(/--shadow-image:/g)]).toHaveLength(4)
     expect(styles).not.toContain('.me-page__banner-title')
     expect(styles).not.toContain('.me-page__banner-veil')
@@ -102,11 +102,10 @@ describe('share capability wiring', () => {
     expect(styles).toMatch(/\.me-page__foot-version \{[\s\S]*?text-align: center/)
     expect(styles).toMatch(/\.me-page \{[\s\S]*?padding: calc\(var\(--page-top-inset, 88px\) \+ 8rpx\) 40rpx 40rpx/)
     expect(styles).not.toContain('.me-page__slab-shadow')
-    // 品牌图沿透明轮廓投影；列表/偏好卡用弥散软影（无 slab 实色侧壁，侧壁会压暗卡面）。
-    expect(styles).toMatch(/\.me-page__entries \{[^}]*box-shadow:[^;]*rgba\(150, 116, 78/)
-    expect(styles).toMatch(/\.me-page__prefs \{[^}]*box-shadow:[^;]*rgba\(150, 116, 78/)
-    expect(styles).not.toMatch(/\.me-page__entry[^ ]* \{[^}]*var\(--shadow-slab\)/)
-    expect(appStyles).toContain('--shadow-slab:')
+    // 品牌图沿透明轮廓投影；列表/偏好卡走标准实色接触带三层法（0 6rpx 0）。
+    expect(styles).toMatch(/\.me-page__entries \{[^}]*box-shadow:[^;]*0 6rpx 0/)
+    expect(styles).toMatch(/\.me-page__prefs \{[^}]*box-shadow:[^;]*0 6rpx 0/)
+    expect(appStyles).toContain('--shadow-card:')
     expect(styles).toMatch(/\.me-page__icon \{[^}]*filter: none/)
     expect(styles).toMatch(/\.me-page__icon \{[^}]*width: 84rpx;[^}]*height: 84rpx/)
     expect(styles).toMatch(/\.me-page__arrow \{[^}]*font-size: 48rpx/)

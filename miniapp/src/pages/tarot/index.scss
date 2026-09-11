@@ -38,11 +38,10 @@
 .tarot-home__entry {
   flex: 1; min-width: 0; padding: 30rpx 28rpx 24rpx; border-radius: 34rpx;
   border: 2rpx solid rgba(255, 255, 255, 0.85);
-  /* 枕头感卡（与我的页 --shadow-slab 同配方） */
+  /* 枕头感卡：厚度走全局 --shadow-card 实色接触带三层法 */
   background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
   box-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.95), inset 0 6rpx 14rpx rgba(255, 250, 240, 0.5),
-    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.12), 0 6rpx 0 #e9dcc3,
-    -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.1);
+    inset 0 -12rpx 20rpx rgba(170, 136, 97, 0.12), var(--shadow-card);
 }
 .tarot-home__entry-title { display: block; color: var(--color-ink); font-size: 30rpx; font-weight: 600; }
 .tarot-home__entry-sub { display: block; margin-top: 10rpx; color: var(--color-ink-secondary); font-size: 22rpx; }

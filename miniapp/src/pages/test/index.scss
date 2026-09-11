@@ -9,13 +9,7 @@
   --test-action-bg: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
-  /* 参考稿影带剖面（高清原稿按影色反推 α）：峰值 0.40，α≥0.23 的核心带厚 ~8rpx
-     （快攻直上、缓落 12rpx）——box-shadow 高斯层做不出这种「肥核心」，叠无模糊实色
-     接触带 6rpx@0.30 锁出核心厚度（同记录页侧壁手法），峰值三层合计 ≈0.42 */
-  --test-shadow: inset 0 2rpx 3rpx rgba(255, 255, 255, 0.9),
-    0 6rpx 0 rgba(172, 142, 100, 0.3),
-    0 10rpx 14rpx rgba(172, 142, 100, 0.16),
-    0 20rpx 28rpx rgba(172, 142, 100, 0.09);
+  /* 卡片厚度用全局 --shadow-card（实色接触带三层法，见 app.scss） */
 }
 
 .test-page-shell.theme-dark {
@@ -24,8 +18,6 @@
   --test-action-bg: #4a3329;
   --test-highlight: rgba(255, 255, 255, 0.08);
   --test-edge: #40352b;
-  --test-shadow: inset 0 2rpx 0 rgba(255, 255, 255, 0.04), 0 3rpx 0 #211a15,
-    0 12rpx 24rpx rgba(0, 0, 0, 0.16);
 }
 
 .test-page {
@@ -110,7 +102,7 @@
   padding: 24rpx 28rpx;
   border-radius: 24rpx;
   background: #fefaf4;
-  box-shadow: var(--test-shadow);
+  box-shadow: var(--shadow-card);
 }
 
 .test-page__resume-title {
@@ -189,7 +181,7 @@
   border-radius: 30rpx;
   /* 参考图卡面与页面底色同色 #fefaf4，浮起感全靠下缘暖褐影带 */
   background: #fefaf4;
-  box-shadow: var(--test-shadow);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 

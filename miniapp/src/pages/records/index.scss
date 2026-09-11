@@ -10,7 +10,7 @@
 .records-page__title { display: block; color: var(--color-ink); font-size: 46rpx; letter-spacing: 3rpx; font-weight: 700; }
 .records-page__subtitle { display: block; margin-top: 12rpx; color: var(--color-ink-secondary); font-size: 24rpx; letter-spacing: 2rpx; }
 .records-page__book { width: 290rpx; height: 290rpx; flex-shrink: 0; margin-right: -8rpx; }
-.records-page__count { display: inline-flex; align-items: center; margin-top: 36rpx; padding: 18rpx 26rpx; border-radius: 22rpx; background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%); color: var(--color-ink); font-size: 25rpx; box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.1), 0 5rpx 0 #e9dcc3, -2rpx 8rpx 12rpx rgba(116,86,55,.1); }
+.records-page__count { display: inline-flex; align-items: center; margin-top: 36rpx; padding: 18rpx 26rpx; border-radius: 22rpx; background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%); color: var(--color-ink); font-size: 25rpx; box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.1), var(--shadow-card); }
 .records-page__count-num { margin: 0 4rpx; color: #d98a53; font-size: 34rpx; font-weight: 700; }
 .records-page__date-group { display: block; margin: 4rpx 8rpx 20rpx; color: var(--color-ink-secondary); font-size: 24rpx; letter-spacing: 2rpx; }
 .records-page__item-icon { flex-shrink: 0; width: 128rpx; height: 128rpx; margin: -8rpx 0 -8rpx -12rpx; }
@@ -97,8 +97,7 @@
   /* 枕头感卡（对齐参考图亮度）：inset 高光软影 + 侧壁 + 单层淡软影 */
   background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
   box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 6rpx 14rpx rgba(255,250,240,.5),
-    inset 0 -12rpx 20rpx rgba(170,136,97,.12), 0 6rpx 0 #e9dcc3,
-    -2rpx 10rpx 18rpx rgba(116,86,55,.1);
+    inset 0 -12rpx 20rpx rgba(170,136,97,.12), var(--shadow-card);
 }
 
 .records-page__stat-value {
@@ -132,8 +131,7 @@
   /* 枕头感 item（对齐参考图亮度）：inset 高光软影 + 侧壁 + 单层淡软影 */
   background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
   box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 6rpx 14rpx rgba(255,250,240,.5),
-    inset 0 -12rpx 20rpx rgba(170,136,97,.12), 0 6rpx 0 #e9dcc3,
-    -2rpx 10rpx 18rpx rgba(116,86,55,.1);
+    inset 0 -12rpx 20rpx rgba(170,136,97,.12), var(--shadow-card);
   overflow: hidden;
 }
 
@@ -239,7 +237,7 @@
   padding: 6rpx;
   border-radius: 26rpx;
   background: linear-gradient(180deg, #faf4e8 0%, #f2ead9 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.09), 0 5rpx 0 #e9dcc3, -2rpx 8rpx 12rpx rgba(116,86,55,.1);
+  box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 -10rpx 16rpx rgba(170,136,97,.09), var(--shadow-card);
 }
 
 .records-page__chip {
@@ -259,7 +257,7 @@
 .records-page__chip--on {
   background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
   color: #6b4a33;
-  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.16), 0 4rpx 0 #d8a67c, -2rpx 6rpx 10rpx rgba(116, 86, 55, 0.14);
+  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.16), 0 4rpx 0 rgba(150, 94, 56, 0.26), 0 8rpx 11rpx rgba(150, 94, 56, 0.14);
 }
 
 .records-page__item-chevron {
