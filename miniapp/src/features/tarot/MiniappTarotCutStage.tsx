@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
 import { getTarotCardBack } from './tarotAssets'
+import { getTarotSkin } from './tarotSkin'
+import { getTarotStageCopy } from './tarotSkinCopy'
 
 interface MiniappTarotCutStageProps {
   cutCount: number
@@ -12,13 +14,14 @@ interface MiniappTarotCutStageProps {
 }
 
 function CutPile() {
+  const skin = getTarotSkin()
   return (
     <View className="miniapp-tarot__cut-pile">
       {Array.from({ length: 10 }, (_, index) => (
         <View key={index} className="miniapp-tarot__cut-sheet" style={{ top: `${index * 3}rpx` }} />
       ))}
       <View className="miniapp-tarot__cut-face">
-        <Image src={getTarotCardBack()} mode="aspectFill" fadeIn={false} />
+        <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
       </View>
     </View>
   )
@@ -32,6 +35,8 @@ export function MiniappTarotCutStage({
   onContinue,
   onSkip,
 }: MiniappTarotCutStageProps) {
+  const skin = getTarotSkin()
+  const copy = getTarotStageCopy(skin)
   useEffect(() => {
     if (!cutting) return
     const timer = setTimeout(onFinishCut, 520)
@@ -40,7 +45,7 @@ export function MiniappTarotCutStage({
 
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--ritual miniapp-tarot__stage--cut">
-      <Text className="miniapp-tarot__title">凭直觉切一下牌</Text>
+      <Text className="miniapp-tarot__title">{copy.cutTitle}</Text>
       <View className="miniapp-tarot__spacer" />
       <Button
         className={[
@@ -56,7 +61,7 @@ export function MiniappTarotCutStage({
       </Button>
       <View className="miniapp-tarot__spacer" />
       <Text className="miniapp-tarot__hint">
-        {cutCount > 0 ? `已切 ${cutCount} 次，还可以继续切牌` : '点击牌堆，每次完成一次切牌'}
+        {copy.cutHint(cutCount)}
       </Text>
       <Button className="miniapp-tarot__next" disabled={cutCount === 0 || cutting} onClick={onContinue}>
         完成切牌 · 进入选牌

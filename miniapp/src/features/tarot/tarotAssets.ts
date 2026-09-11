@@ -1,5 +1,6 @@
 import { resolveAssetBaseUrl } from '../../services/assetBaseUrl'
 import { getWxGlobal } from '../../services/wxGlobal'
+import type { TarotSkin } from './tarotSkin'
 
 const artworkFiles = [
   'the-fool.jpg',
@@ -26,24 +27,28 @@ const artworkFiles = [
   'the-world.jpg',
 ]
 
+// clay 皮肤资产用 -clay 后缀同名文件，与 classic 原文件并存于同一目录
+const skinSuffix = (skin: TarotSkin): string => (skin === 'clay' ? '-clay' : '')
+
 // 塔罗资源统一挂在资产版本根的 /tarot 子路径下；路径由塔罗功能自持，与其它功能解耦
-export function getTarotSanctuaryBackground(): string {
-  return `${resolveAssetBaseUrl()}/tarot/ui/sanctuary-background.jpg`
+export function getTarotSanctuaryBackground(skin: TarotSkin = 'clay'): string {
+  return `${resolveAssetBaseUrl()}/tarot/ui/sanctuary-background${skinSuffix(skin)}.jpg`
 }
 
-export function getTarotCardBack(): string {
-  return `${resolveAssetBaseUrl()}/tarot/ui/card-back.jpg`
+export function getTarotCardBack(skin: TarotSkin = 'clay'): string {
+  return `${resolveAssetBaseUrl()}/tarot/ui/card-back${skinSuffix(skin)}.jpg`
 }
 
-export function getTarotArtworkUrl(cardId: number): string {
-  return `${resolveAssetBaseUrl()}/tarot/cards/${artworkFiles[cardId] ?? artworkFiles[0]}`
+export function getTarotArtworkUrl(cardId: number, skin: TarotSkin = 'clay'): string {
+  const fallback = artworkFiles.includes(artworkFiles[cardId]) ? artworkFiles[cardId] : artworkFiles[0]
+  return `${resolveAssetBaseUrl()}/tarot/cards/${fallback.replace('.jpg', `${skinSuffix(skin)}.jpg`)}`
 }
 
-export function getTarotResourceUrls(): string[] {
+export function getTarotResourceUrls(skin: TarotSkin = 'clay'): string[] {
   return [
-    getTarotSanctuaryBackground(),
-    getTarotCardBack(),
-    ...Array.from({ length: 22 }, (_, i) => getTarotArtworkUrl(i)),
+    getTarotSanctuaryBackground(skin),
+    getTarotCardBack(skin),
+    ...Array.from({ length: 22 }, (_, i) => getTarotArtworkUrl(i, skin)),
   ]
 }
 
@@ -104,8 +109,9 @@ function downloadTarotFile(url: string): Promise<{ statusCode?: number; tempFile
  */
 export async function preloadTarotResources(
   onProgress: (progress: number) => void = () => undefined,
+  skin: TarotSkin = 'clay',
 ): Promise<TarotPreloadResult> {
-  const urls = getTarotResourceUrls()
+  const urls = getTarotResourceUrls(skin)
   if (urls.length === 0) {
     onProgress(1)
     return { failedUrls: [], total: 0 }

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
 import { impactFeedback, startPulseHaptics, stopPulseHaptics } from '../../services/haptics'
 import { getTarotCardBack } from './tarotAssets'
+import { getTarotSkin } from './tarotSkin'
+import { getTarotStageCopy } from './tarotSkinCopy'
 
 interface MiniappTarotShuffleStageProps {
   progress: number
@@ -18,6 +20,8 @@ export function MiniappTarotShuffleStage({
   onContinue,
   onSkip,
 }: MiniappTarotShuffleStageProps) {
+  const skin = getTarotSkin()
+  const copy = getTarotStageCopy(skin)
   const timerRef = useRef(0)
   const startTimeRef = useRef(0)
   const startProgressRef = useRef(0)
@@ -54,7 +58,7 @@ export function MiniappTarotShuffleStage({
 
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--ritual miniapp-tarot__stage--shuffle">
-      <Text className="miniapp-tarot__title">长按牌堆洗牌，让心意融进牌里</Text>
+      <Text className="miniapp-tarot__title">{copy.shuffleTitle}</Text>
       <View className="miniapp-tarot__spacer" />
       <Button
         className={`miniapp-tarot__shuffle-deck${isShuffling ? ' miniapp-tarot__shuffle-deck--active' : ''}${progress >= 100 && !isShuffling ? ' miniapp-tarot__shuffle-deck--complete' : ''}`}
@@ -65,7 +69,7 @@ export function MiniappTarotShuffleStage({
       >
         {Array.from({ length: 10 }, (_, index) => (
           <View key={index} className={`miniapp-tarot__deck-card miniapp-tarot__deck-card--${index + 1}`}>
-            <Image src={getTarotCardBack()} mode="aspectFill" fadeIn={false} />
+            <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
           </View>
         ))}
         <View className="miniapp-tarot__shuffle-orbit miniapp-tarot__shuffle-orbit--outer" />
@@ -77,7 +81,7 @@ export function MiniappTarotShuffleStage({
       <View className="miniapp-tarot__shuffle-bar">
         <View style={{ width: `${progress}%` }} />
       </View>
-      <Text className="miniapp-tarot__hint">{Math.round(progress)}% · 松手可暂停，再次长按继续</Text>
+      <Text className="miniapp-tarot__hint">{copy.shuffleHint(progress)}</Text>
       <Button className="miniapp-tarot__next" disabled={progress < 100} onClick={onContinue}>
         {progress < 100 ? '继续洗牌…' : '下一步 · 切牌'}
       </Button>

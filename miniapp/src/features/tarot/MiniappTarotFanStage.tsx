@@ -2,6 +2,8 @@ import { useEffect, type CSSProperties } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
 import type { TarotCandidate } from './tarotCards'
 import { getTarotCardBack } from './tarotAssets'
+import { getTarotSkin } from './tarotSkin'
+import { getTarotStageCopy } from './tarotSkinCopy'
 
 interface MiniappTarotFanStageProps {
   candidates: TarotCandidate[]
@@ -22,6 +24,8 @@ export function MiniappTarotFanStage({
   onFinishPick,
   onContinue,
 }: MiniappTarotFanStageProps) {
+  const skin = getTarotSkin()
+  const copy = getTarotStageCopy(skin)
   useEffect(() => {
     if (flyingCard === undefined) return
     const timer = setTimeout(() => onFinishPick(flyingCard), 450)
@@ -30,7 +34,7 @@ export function MiniappTarotFanStage({
 
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--fan">
-      <Text className="miniapp-tarot__title">心中默念问题，选出 {needCount} 张牌</Text>
+      <Text className="miniapp-tarot__title">{copy.fanTitle(needCount)}</Text>
       <View className="miniapp-tarot__spacer" />
       <View className={`miniapp-tarot__picked-row miniapp-tarot__picked-row--${needCount}`}>
         {Array.from({ length: needCount }, (_, order) => (
@@ -41,7 +45,7 @@ export function MiniappTarotFanStage({
               : 'miniapp-tarot__picked-slot'}
           >
             {picked[order] !== undefined && (
-              <Image src={getTarotCardBack()} mode="aspectFill" fadeIn={false} />
+              <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
             )}
           </View>
         ))}
@@ -61,12 +65,12 @@ export function MiniappTarotFanStage({
             disabled={picked.includes(index) || flyingCard !== undefined}
             onClick={() => onPick(index)}
           >
-            <Image src={getTarotCardBack()} mode="aspectFill" fadeIn={false} />
+            <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
           </Button>
         ))}
       </View>
       <View className="miniapp-tarot__spacer" />
-      <Text className="miniapp-tarot__hint">已选 {picked.length}/{needCount}</Text>
+      <Text className="miniapp-tarot__hint">{copy.fanHint(picked.length, needCount)}</Text>
       <Button
         className="miniapp-tarot__next"
         disabled={picked.length !== needCount || flyingCard !== undefined}

@@ -11,6 +11,7 @@ import { MiniappTarotReadingStage } from './MiniappTarotReadingStage'
 import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { MiniappTarotHistoryPanel } from './MiniappTarotHistoryPanel'
 import { getTarotSanctuaryBackground, preloadTarotResources } from './tarotAssets'
+import { getTarotSkin } from './tarotSkin'
 import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
 import { listTarotHistory, saveTarotReading } from './tarotHistory'
@@ -31,6 +32,8 @@ const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 're
 export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', historyRequest = 0 }: MiniappTarotFlowProps) {
   const [state, dispatch] = useReducer(tarotFlowReducer, initialSpread, (spread) => ({ ...createInitialTarotFlow(), spread }))
   const motionPreference = useMotionPreference()
+  // 皮肤在挂载时定死，流程内不支持中途换肤；换肤入口在塔罗首页
+  const [skin] = useState(() => getTarotSkin())
   const [historyOpen, setHistoryOpen] = useState(false)
   const [leaving, setLeaving] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
@@ -48,7 +51,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
     setLoadError(false)
     preloadTarotResources((p) => {
       if (attempt === loadAttemptRef.current) setLoadProgress(p)
-    })
+    }, skin)
       .then(({ failedUrls }) => {
         if (attempt !== loadAttemptRef.current) return
         if (failedUrls.length === 0) setResourcesLoaded(true)
@@ -115,10 +118,10 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
   }
 
   return (
-    <View className={['miniapp-tarot', `motion-${motionPreference}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')}>
+    <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')}>
       <Image
         className="miniapp-tarot__background"
-        src={getTarotSanctuaryBackground()}
+        src={getTarotSanctuaryBackground(skin)}
         mode="aspectFill"
         fadeIn={false}
       />
