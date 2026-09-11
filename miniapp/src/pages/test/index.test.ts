@@ -118,7 +118,7 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用厚毡枕头感阴影（对齐参考图亮度），不裁切阴影', () => {
-    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 5rpx 0 #ddd0bc/)
+    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 14rpx 26rpx rgba(150, 120, 85, 0.07)')
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
