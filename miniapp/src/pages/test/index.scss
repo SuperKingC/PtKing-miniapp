@@ -6,7 +6,7 @@
   --color-primary: #c4713f;
   --test-hero-bg: linear-gradient(180deg, #e3edf7 0%, #cdddf0 100%);
   --test-capsule-bg: #f5eee6;
-  --test-action-bg: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
+  --test-action-bg: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
   /* 枕头感（对齐参考图亮度）：顶内高光 + 底部内软影 + 实色米棕侧壁 + 单层淡软影 */
@@ -82,7 +82,7 @@
 }
 
 .test-page__hero {
-  margin-bottom: 28rpx;
+  margin-bottom: 24rpx;
   border-radius: 32rpx;
   /* 参考图整卡（文字烘焙在图内），容器只做枕头感投影不裁切 */
   box-shadow: var(--test-shadow);
@@ -117,41 +117,6 @@
   font-size: 22rpx;
   line-height: 1.5;
   color: rgba(76, 92, 108, 0.75);
-}
-
-.test-page__search {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
-  padding: 4rpx 24rpx;
-  border: 2rpx solid var(--test-edge);
-  border-radius: 999rpx;
-  background: var(--color-card-bg);
-  box-shadow: inset 0 2rpx 0 var(--test-highlight), 0 4rpx 10rpx rgba(114, 92, 68, 0.06);
-}
-
-.test-page__search-input {
-  flex: 1;
-  min-width: 0;
-  height: 64rpx;
-  font-size: 26rpx;
-  color: var(--color-ink);
-}
-
-.test-page__search-clear {
-  flex-shrink: 0;
-  padding: 12rpx 4rpx;
-  font-size: 24rpx;
-  color: var(--color-primary);
-}
-
-.test-page__search-empty {
-  display: block;
-  margin: 16rpx 4rpx 0;
-  font-size: 26rpx;
-  line-height: 1.6;
-  color: var(--color-ink-secondary);
 }
 
 .test-page__section {
@@ -220,8 +185,8 @@
 }
 
 .test-page__chip--active {
-  background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
-  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.2), 0 4rpx 0 #cf9464, -2rpx 6rpx 8rpx rgba(116, 86, 55, 0.18);
+  background: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), inset 0 -6rpx 10rpx rgba(150, 94, 56, 0.14), 0 3rpx 8rpx rgba(116, 86, 55, 0.16);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
 }
@@ -235,21 +200,21 @@
 .test-page__card {
   display: flex;
   align-items: center;
-  gap: 22rpx;
+  gap: 24rpx;
   width: 100%;
   min-width: 0;
-  padding: 26rpx 22rpx;
-  border: 2rpx solid var(--test-highlight);
-  border-radius: 28rpx;
-  /* 枕头感：卡面上亮下沉微渐变，配合 --test-shadow 底部内软影 */
-  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
+  padding: 30rpx 24rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.9);
+  border-radius: 30rpx;
+  /* 参考图卡面：均匀净白微暖，靠单层淡影浮起 */
+  background: #fefcf7;
   box-shadow: var(--test-shadow);
 }
 
 .test-page__card-spot {
-  flex: 0 0 136rpx;
-  width: 136rpx;
-  height: 136rpx;
+  flex: 0 0 152rpx;
+  width: 152rpx;
+  height: 152rpx;
 }
 
 .test-page__card-content {
@@ -286,13 +251,15 @@
 .test-page__card-go {
   display: block;
   flex-shrink: 0;
-  padding: 14rpx 22rpx;
+  padding: 16rpx 26rpx;
   border-radius: 999rpx;
-  background: linear-gradient(180deg, #f3cda4 0%, #e5ab7e 100%);
-  box-shadow: inset 0 3rpx 4rpx rgba(255, 248, 235, 0.85), inset 0 -8rpx 12rpx rgba(150, 94, 56, 0.2), 0 4rpx 0 #cf9464, -2rpx 6rpx 8rpx rgba(116, 86, 55, 0.18);
-  font-size: 24rpx;
+  /* 参考图按钮：浅陶土底、均匀微渐变、顶内高光、底部微深，无深色侧壁 */
+  background: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), inset 0 -6rpx 10rpx rgba(150, 94, 56, 0.14), 0 3rpx 8rpx rgba(116, 86, 55, 0.16);
+  font-size: 25rpx;
   font-weight: var(--font-weight-semibold);
   line-height: 1.4;
   white-space: nowrap;
   color: #ffffff;
+  text-shadow: 0 1rpx 2rpx rgba(150, 94, 56, 0.2);
 }
