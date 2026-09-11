@@ -10,14 +10,14 @@ const kitRoot = path.resolve(miniRoot, '../../miniapp-kit')
 const TARGET = path.join(miniRoot, 'src/assets/tabbar')
 
 const NAMES = [
-  'icon-tab-test-v14s.png',
-  'icon-tab-test-active-v14s.png',
-  'icon-tab-tarot-v14s.png',
-  'icon-tab-tarot-active-v14s.png',
-  'icon-tab-records-v14s.png',
-  'icon-tab-records-active-v14s.png',
-  'icon-tab-me-v14s.png',
-  'icon-tab-me-active-v14s.png',
+  'icon-tab-test-v16s.png',
+  'icon-tab-test-active-v16s.png',
+  'icon-tab-tarot-v16s.png',
+  'icon-tab-tarot-active-v16s.png',
+  'icon-tab-records-v16s.png',
+  'icon-tab-records-active-v16s.png',
+  'icon-tab-me-v16s.png',
+  'icon-tab-me-active-v16s.png',
 ]
 
 for (const line of fs.readFileSync(path.join(kitRoot, '.env'), 'utf8').split(/\r?\n/)) {
