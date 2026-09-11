@@ -39,8 +39,8 @@ OUT = {
     'mbti': 'tile-mbti-v10.png',
     'love': 'tile-love-v10.png',
     'star': 'tile-star-v10.png',
-    'career': 'tile-career-v11.png',
-    'fun': 'tile-fun-v11.png',
+    'career': 'tile-career-v12.png',
+    'fun': 'tile-fun-v12.png',
 }
 SHADOW_RGB = (174, 153, 124)   # 接触影基色（合成用）
 
@@ -111,8 +111,11 @@ def crop_tile(ref, name, box):
 def synth_tile(src_name, out_name):
     """参考稿没有的 tile：透明资产缩放到统一实体高，合成同款接触影。
 
-    PIL AFFINE 系数是「输出坐标 → 输入坐标」映射，影子要在实体下方 3px，
-    输入侧必须取 y_in = y_out - (oy + 3)（写成 -(oy-3) 会把影子翻到上方）。
+    方向性投影（2026-09-11 用户二轮反馈修正）：参考裁切稿 star-v10 烘焙影实测
+    左 5px / 下 13px、顶 1px / 右 2px，物件投影 73% 在左+下方——光从右上打来。
+    故剪影须向左 3px、下 5px 平移后再 σ2.8 模糊（先右下后左上的位移量若写反，
+    PIL AFFINE 是「输出→输入」映射，c/f 系数 = -位移-锚点）。
+    峰值 α0.45：参考底带色 #dbcfc0 混白卡面 #fefaf4 反推（0.44）。
     """
     img = Image.open(os.path.join(SRC_DIR, src_name)).convert('RGBA')
     a = np.asarray(img, dtype=float)
@@ -123,12 +126,12 @@ def synth_tile(src_name, out_name):
     body = body.resize((max(1, round(bw * scale)), max(1, round(bh * scale))), Image.LANCZOS)
     tw, th = body.size
     ox, oy = BODY_X + (154 - tw) // 2, BODY_Y + (BODY_H - th) // 2
-    # 接触影：剪影下移 3px、σ4 模糊、α×0.55（原稿影峰 #d2c1ac 反推）、只落在实体外
+    # 方向性接触影：剪影左移 3px、下移 5px、σ2.8 模糊、α×0.45，只落在实体外
     alpha = np.asarray(body)[:, :, 3]
     sh = Image.fromarray(alpha.astype(np.uint8), 'L').transform(
-        (CANVAS, CANVAS), Image.AFFINE, (1, 0, -ox, 0, 1, -(oy + 3)), Image.BILINEAR)
-    sh = sh.filter(ImageFilter.GaussianBlur(4))
-    sh_a = (np.asarray(sh, dtype=float) * 0.55).clip(0, 255)
+        (CANVAS, CANVAS), Image.AFFINE, (1, 0, 3 - ox, 0, 1, -(oy + 5)), Image.BILINEAR)
+    sh = sh.filter(ImageFilter.GaussianBlur(2.8))
+    sh_a = (np.asarray(sh, dtype=float) * 0.45).clip(0, 255)
     body_a = Image.new('L', (CANVAS, CANVAS), 0)
     body_a.paste(Image.fromarray(alpha.astype(np.uint8), 'L'), (ox, oy))
     sh_a = np.maximum(sh_a - np.asarray(body_a, dtype=float), 0)
