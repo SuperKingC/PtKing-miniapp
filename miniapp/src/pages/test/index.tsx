@@ -110,6 +110,17 @@ export default function TestPage() {
       <Text className="test-page__card-go">开始测试</Text>
     </View>
   )
+  /* 单 grid 渲染推荐+主列表：分类切换时卡片 key 在同一父列表内 move（React 复用不重挂），
+     替代旧的「推荐区整块卸载+browsing 重建」——那是全部↔cat 专有的闪屏源
+     （29卡↔7卡大增删+跨区搬家重挂，WebView 合成层重建出整页白帧，实机 44fps 录屏 f046/f053） */
+  const isAll = activeCategory === 'all'
+  const gridChildren: (JSX.Element)[] = []
+  if (isAll && recommended.length > 0) {
+    gridChildren.push(<Text key="sec-recommended" className="test-page__section-title">为你推荐</Text>)
+    for (const definition of recommended) gridChildren.push(renderCard(definition, '推荐'))
+  }
+  gridChildren.push(<Text key="sec-main" className="test-page__section-title">{isAll ? '更多测试' : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}</Text>)
+  for (const definition of browsing) gridChildren.push(renderCard(definition, '可测试'))
 
   return (
     <View className={`tab-page test-page-shell theme-${theme}`} style={topInsetStyle()}>
@@ -136,12 +147,8 @@ export default function TestPage() {
           <View id="test-category-results" className="test-page__chips">
             {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="test-page__chip--press" onClick={() => pickCategory(category.key)}><Text>{category.label}</Text></View>)}
           </View>
-          {activeCategory === 'all' && recommended.length > 0 && <View className="test-page__section">
-            <Text className="test-page__section-title">为你推荐</Text>
-            <View className="test-page__grid">{recommended.map((definition) => renderCard(definition, '推荐'))}</View>
-          </View>}
-          <Text className="test-page__section-title">{activeCategory === 'all' ? '更多测试' : TEST_CATEGORIES.find((item) => item.key === activeCategory)?.label}</Text>
-          <View className="test-page__grid">{browsing.map((definition) => renderCard(definition, '可测试'))}</View>
+          {/* 推荐+主列表合进同一个 grid:卡片跨分组移动走 React move 复用,不重挂不重解码 */}
+          <View className="test-page__grid">{gridChildren}</View>
         </View>
       </ScrollView>
     </View>

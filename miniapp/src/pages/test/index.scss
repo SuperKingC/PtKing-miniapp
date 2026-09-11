@@ -83,9 +83,11 @@
   margin-bottom: 28rpx;
 }
 
+/* section-title 现在是 grid 的子项(flex column + gap 24rpx),自带上边距贴分组,
+   下缘靠 grid gap 分隔,不再自带 margin-bottom 免得与 gap 叠加过宽 */
 .test-page__section-title {
   display: block;
-  margin: 8rpx 4rpx 20rpx;
+  margin: 12rpx 4rpx 0;
   font-size: 30rpx;
   font-weight: var(--font-weight-bold);
   line-height: 1.4;
