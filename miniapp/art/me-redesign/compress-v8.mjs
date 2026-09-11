@@ -12,7 +12,7 @@ for (const line of fs.readFileSync('D:/Mine/miniapp-kit/.env', 'utf8').split(/\r
 }
 const keys = ['TINYPNG_API_KEY', 'TINYPNG_API_KEY_2', 'TINYPNG_API_KEY_3'].map(name => process.env[name]).filter(Boolean)
 const jobs = [
-  { name: 'me-banner-panel-v3.png', source: 'me-banner-panel-v3-src-720.png' },
+  { name: 'me-banner-panel-v4.png', source: 'me-banner-panel-v4-src.png' },
   { name: 'icon-me-clear-v8.png', source: 'ref-clear-ben2.png' },
   { name: 'icon-me-privacy-v8.png', source: 'ref-privacy-ben2.png' },
   { name: 'icon-me-share-v8.png', source: 'ref-share-ben2.png' },

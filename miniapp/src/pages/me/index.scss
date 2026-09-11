@@ -35,10 +35,13 @@
   overflow: visible;
   border-radius: 44rpx;
   background: #faf6ee;
-  /* 枕头感：卡面上亮下沉的微渐变，配合 --shadow-slab 的底部内软影 */
+  /* 枕头感：卡面上亮下沉的微渐变；投影走弥散软影不带实色侧壁（slab 侧壁压暗卡面） */
   background-image: linear-gradient(180deg, #fdfaf3 0%, #f5eedd 100%);
   /* 外层承载轮廓投影，内部只裁内容，不改变卡面光影。 */
-  box-shadow: var(--shadow-slab);
+  box-shadow:
+    0 2rpx 6rpx rgba(150, 116, 78, 0.1),
+    0 10rpx 24rpx rgba(150, 116, 78, 0.12),
+    0 24rpx 48rpx rgba(150, 116, 78, 0.1);
 }
 
 .me-page__entries-clip {
@@ -58,7 +61,7 @@
   align-items: center;
   justify-content: space-between;
   margin: 0;
-  padding: 8rpx 24rpx;
+  padding: 12rpx 24rpx;
   border-radius: 0;
   background: transparent;
   font-size: var(--font-size-body);
@@ -70,10 +73,12 @@
 
 .me-page__icon {
   flex-shrink: 0;
-  width: 76rpx;
-  height: 76rpx;
+  width: 84rpx;
+  height: 84rpx;
   margin-right: 16rpx;
   filter: none;
+  /* 软陶物件接触投影：贴卡面的近影 + 随形的弥散远影（与 tile 同套路） */
+  filter: drop-shadow(0 3rpx 3rpx rgba(150, 118, 82, 0.22)) drop-shadow(0 10rpx 16rpx rgba(150, 118, 82, 0.12));
 }
 
 .me-page__entry-label,
@@ -124,10 +129,13 @@
   overflow: visible;
   border-radius: 44rpx;
   background: #faf6ee;
-  /* 枕头感：与列表卡同款微渐变 */
+  /* 枕头感：与列表卡同款微渐变；投影与列表卡同款弥散软影 */
   background-image: linear-gradient(180deg, #fdfaf3 0%, #f5eedd 100%);
   /* 外层承载轮廓投影，内部只裁内容，不改变卡面光影。 */
-  box-shadow: var(--shadow-slab);
+  box-shadow:
+    0 2rpx 6rpx rgba(150, 116, 78, 0.1),
+    0 10rpx 24rpx rgba(150, 116, 78, 0.12),
+    0 24rpx 48rpx rgba(150, 116, 78, 0.1);
 }
 
 .me-page__prefs-clip {

@@ -18,19 +18,20 @@ FINAL.mkdir(parents=True, exist_ok=True)
 
 image = Image.open(REF).convert('RGB')
 
-# 面板 face bbox(实测:蓝区顶缘 y80、强差异 bbox x137-1513 / 底缘 y900-905,各边内缩 4px 防晕)
-BOX = (135, 78, 1515, 906)
+# 面板 face bbox(实测:蓝区顶缘 y80、强差异 bbox x137-1513 / 强底缘 y900,晕带 900-905 舍弃)。
+# 蒙版满幅贴边:此前内缩 4px 防晕导致页面上面板边缘留透明缝("没撑满"),
+# 改为 BOX 直贴强差异缘,蒙版画满 crop 全幅,面板边缘即图边缘。
+BOX = (137, 80, 1513, 900)
 crop = image.crop(BOX)
 w, h = crop.size
 
 # 抗锯齿圆角蒙版:4x 超采样绘制再缩小;半径按参考稿实测 82px(1664 宽基准)同比例
-INSET = 4
-RADIUS = 82 - INSET
+RADIUS = 82
 SS = 4
 mask = Image.new('L', (w * SS, h * SS), 0)
 draw = ImageDraw.Draw(mask)
 draw.rounded_rectangle(
-    (INSET * SS, INSET * SS, (w - INSET) * SS, (h - INSET) * SS),
+    (0, 0, w * SS - 1, h * SS - 1),
     radius=RADIUS * SS, fill=255,
 )
 mask = mask.resize((w, h), Image.Resampling.LANCZOS)
@@ -38,10 +39,10 @@ mask = mask.resize((w, h), Image.Resampling.LANCZOS)
 rgba = crop.convert('RGBA')
 rgba.putalpha(mask)
 
-OUT_W = 820
+OUT_W = 720
 out = rgba.resize((OUT_W, round(h * OUT_W / w)), Image.Resampling.LANCZOS)
-out.save(FINAL / 'me-banner-panel-v3-src.png')
-print(f'banner v3: crop {BOX} -> {out.size}, ratio {round(out.width / out.height, 3)}')
+out.save(FINAL / 'me-banner-panel-v4-src.png')
+print(f'banner v4: crop {BOX} -> {out.size}, ratio {round(out.width / out.height, 3)}')
 
 # 检查图:贴页面底色(左)与品红(右)各一份
 pagebg = Image.new('RGB', out.size, (254, 250, 245))
