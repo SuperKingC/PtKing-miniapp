@@ -14,13 +14,13 @@ import {
 } from '../../services/theme'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
-import meBannerImg from '../../assets/illus/me-banner-transparent-v2.png'
-import iconClear from '../../assets/illus/icon-me-clear-v5.png'
-import iconPrivacy from '../../assets/illus/icon-me-privacy-v5.png'
-import iconShare from '../../assets/illus/icon-me-share-v5.png'
-import iconFeedback from '../../assets/illus/icon-me-feedback-v5.png'
-import iconTheme from '../../assets/illus/icon-me-theme-v5.png'
-import iconHaptics from '../../assets/illus/icon-me-haptics-v5.png'
+import meBannerImg from '../../assets/illus/me-banner-panel-v3.png'
+import iconClear from '../../assets/illus/icon-me-clear-v8.png'
+import iconPrivacy from '../../assets/illus/icon-me-privacy-v8.png'
+import iconShare from '../../assets/illus/icon-me-share-v8.png'
+import iconFeedback from '../../assets/illus/icon-me-feedback-v8.png'
+import iconTheme from '../../assets/illus/icon-me-theme-v8.png'
+import iconHaptics from '../../assets/illus/icon-me-haptics-v8.png'
 import './index.scss'
 
 /** 与 miniapp/package.json 的 version 保持一致（无后端，版本号本地维护） */
@@ -154,6 +154,7 @@ export default function MePage() {
       </View>
       <View className="me-page__prefs">
         <View className="me-page__prefs-clip">
+        <Text className="me-page__prefs-title">偏好设置</Text>
         <View className="me-page__switch-row">
           <Image className="me-page__icon" src={iconTheme} mode="aspectFit" />
           <Text className="me-page__switch-label">深色模式</Text>

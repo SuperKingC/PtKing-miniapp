@@ -1,0 +1,6 @@
+generated/
+prepared/
+shots/
+preview/
+*.local.*
+compression-state.local.json

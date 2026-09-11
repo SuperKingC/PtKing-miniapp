@@ -5,31 +5,30 @@
   padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx 40rpx;
 }
 
-/* 透明素材自适应原始宽高，完整展示卡面、云朵与边缘，不再放大裁切。 */
+/* 透明圆角 PNG（选定稿几何蒙版抠图，见 art/me-redesign/prepare-banner-geom.py）：
+   圆角与边缘自带 alpha，容器只承担投影，与列表卡一致。 */
 .me-page__banner {
-  /* 736px 画布两侧各 8px 透明安全边；只补偿留白，不裁卡面。 */
-  width: 102.222222%;
-  margin-left: -1.111111%;
-  margin-bottom: 24rpx;
-  overflow: visible;
+  border-radius: 40rpx;
+  margin-bottom: 28rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 .me-page__banner-clip {
   width: 100%;
-  overflow: visible;
+  overflow: hidden;
+  border-radius: 40rpx;
 }
 
 .me-page__banner-img {
   display: block;
   width: 100%;
   height: auto;
-  /* 用户拍板：用原图效果，不加调色滤镜，只保留轮廓投影 */
-  filter: var(--shadow-image);
 }
 
-/* 保留暗色图像调色，同时避免全局 image 规则覆盖轮廓投影。 */
+/* 保留暗色图像调色。 */
 .theme-dark .me-page__banner-img {
-  filter: brightness(0.88) saturate(0.92) var(--shadow-image);
+  filter: brightness(0.88) saturate(0.92);
 }
 
 .me-page__entries {
@@ -71,9 +70,9 @@
 
 .me-page__icon {
   flex-shrink: 0;
-  width: 104rpx;
-  height: 104rpx;
-  margin-right: 14rpx;
+  width: 76rpx;
+  height: 76rpx;
+  margin-right: 16rpx;
   filter: none;
 }
 
@@ -139,6 +138,13 @@
   border-radius: 44rpx;
 }
 
+.me-page__prefs-title {
+  display: block;
+  padding: 4rpx 8rpx 0;
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
 .theme-dark .me-page__prefs {
   background: var(--color-card-bg);
 }
@@ -147,7 +153,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 96rpx;
+  min-height: 104rpx;
 }
 
 .me-page__switch {
