@@ -49,8 +49,12 @@
   align-items: center;
   margin-top: 32rpx;
   padding: 48rpx 32rpx 40rpx;
-  border-radius: 24rpx;
-  background: var(--color-card-bg);
+  border: 2rpx solid rgba(255,255,255,.85);
+  border-radius: 28rpx;
+  /* 空状态卡对齐 item 枕头规范：inset 高光 + 标准三层接触带（--shadow-card） */
+  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255,253,247,.95), inset 0 6rpx 14rpx rgba(255,250,240,.5),
+    inset 0 -12rpx 20rpx rgba(170,136,97,.12), var(--shadow-card);
 }
 
 .records-page__empty-img {
@@ -73,10 +77,14 @@
   margin-top: 32rpx;
   padding: 0 36rpx;
   border-radius: 999rpx;
-  background: var(--color-primary);
+  /* 对齐主页「开始测试」胶囊剖面（逐像素采样参考图）：顶部高光 → 主体陶土 → 底缘暗线，
+     无实色厚度墙，底影紧贴渐散 */
+  background: linear-gradient(180deg, #fad6b5 0%, #f3bf98 26%, #f2bd95 52%, #e9ae85 84%, #d99e70 96%, #d08e5e 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 240, 225, 0.55), 0 4rpx 6rpx rgba(150, 94, 56, 0.22), 0 9rpx 14rpx rgba(150, 94, 56, 0.1);
   color: #ffffff;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
+  text-shadow: 0 1rpx 2rpx rgba(150, 94, 56, 0.18);
 }
 
 .records-page__stats {
