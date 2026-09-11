@@ -1,5 +1,7 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-11 20:20：三项体验修复(4c67af8)。①tab选中态偶发不切换：tabbar 实例晚于页面 onShow 订阅的竞态——`useTabBarSelected` onShow 时也落乐观 storage(key 从 index.tsx 挪到 tabBarVisibility.ts 叶子模块，防 hook↔组件循环引用)+广播后 160ms 守卫式补发(仅栈顶页才发)；tabbar 挂载 120ms 后重解 ownRoute 校准。②流程内底栏残留：`shouldHideCustomTabBar` 改 ownRoute 优先——塔罗实例 flowOpen 即藏，不再信可能过期的 selected(新实例挂载读旧 storage)。③牌组居中背景圆环：金环量测 y 31%..75% 中心 53%，顶部 spacer 2:1→3:2。④帘幕开场重做：合拢 0.9s + 布帘竖向褶皱(clay)；classic 星星逐颗 pop 连线成星座 + halo 呼吸光；帘内预加载进度条(Flow 新增 onLoadProgress/onLoadDone 外抛)，hold 等 loaded(最短 500ms 仪式感，12s 慢网兜底)后整帘淡出(替代横向拉开)。契约测试同步，427 全过；automator 实机：tab 连续切换 5 次高亮正确、两皮肤帘幕三连拍、洗牌页圆环居中确认。注意：流程内提问页布局为居中表单不受 spacer 影响；me 页未接 useTabBarSelected(点击乐观值已兜底)。
+
 - 2026-09-11 19:05：四仪式阶段(洗牌/切牌/选牌/翻牌)布局整体下移(用户反馈牌与标题偏高)。`MiniappTarotFlow.scss` ritual/fan/reveal 共享节奏 `padding-top` 24→88rpx(标题离开进度条),新增 `.miniapp-tarot__spacer--top`(flex-grow 2 + min-height 88rpx,上spacer多长使牌组落到中线偏下);四个 Stage 组件顶部 spacer 挂 `--top` 修饰类,提问页(居中表单)不动。契约测试断言同步(88rpx + spacer--top)。vitest 契约 16 过、全量 425/426(唯一失败 shareWiring 为工作区既有 app.scss 未提交改动所致,与本任务无关);清缓存重建后 automator 实机五图验收(shuffle/cut/fan/reveal/reveal-flipped)。
 
 - 2026-09-11 18:20：入口已选牌阵时跳过流程内选牌阵阶段。`tarotFlow.ts` 的 `continue` 事件带 `chooseSpread?: boolean`（仅显式 false 跳过，缺省保持完整流程），`restart` 事件携带牌阵（顺带修复再占一次把三牌阵重置回单牌的问题）；`MiniappTarotFlow.tsx` 新增 `chooseSpread` prop（默认 true），进度条只画实际经过的阶段，问题页按钮文案随之切「下一步 · 洗牌/选牌阵」；`pages/tarot/index.tsx` 的 `startFlow(spread, withSpreadStage)`——抽取今日指引保留选牌阵，单张指引/三牌牌阵两张入口卡传 false。vitest 424 全过，automator 模拟器实测两条路径 5 项断言全过。
