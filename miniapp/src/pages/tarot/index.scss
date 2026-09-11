@@ -43,3 +43,116 @@
 .tarot-home__notice { display: flex; align-items: center; justify-content: center; gap: 14rpx; margin-top: 34rpx; text-align: center; font-size: 22rpx; letter-spacing: 3rpx; color: var(--color-ink-secondary); }
 .tarot-home__notice::before,
 .tarot-home__notice::after { content: '✦'; font-size: 18rpx; opacity: 0.6; }
+
+/* ── 牌桌皮肤选择区 ── */
+.tarot-home__skins { margin-top: 8rpx; }
+.tarot-home__skins-title { display: block; margin: 0 0 18rpx 6rpx; color: var(--color-ink); font-size: 26rpx; font-weight: 600; letter-spacing: 2rpx; }
+.tarot-home__skin-row { display: flex; gap: 24rpx; }
+.tarot-home__skin {
+  position: relative; flex: 1; min-width: 0; overflow: hidden;
+  border-radius: 28rpx; border: 3rpx solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(180deg, #fffefa 0%, #fefaf0 100%);
+  box-shadow: 0 5rpx 0 #e9dcc3, -2rpx 8rpx 14rpx rgba(116, 86, 55, 0.1);
+  transition: transform .18s ease;
+}
+.tarot-home__skin--active {
+  border-color: #e5ab7e;
+  box-shadow: 0 5rpx 0 #d8a67c, 0 0 0 6rpx rgba(229, 171, 126, 0.22), -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.14);
+}
+.tarot-home__skin-thumb { display: block; width: 100%; height: 220rpx; }
+.tarot-home__skin-name { display: block; padding: 14rpx 0 16rpx; text-align: center; color: var(--color-ink); font-size: 24rpx; font-weight: 600; }
+.tarot-home__skin-check {
+  position: absolute; top: 14rpx; right: 14rpx;
+  width: 44rpx; height: 44rpx; line-height: 44rpx; text-align: center;
+  border-radius: 50%; color: #fff; font-size: 24rpx;
+  background: rgba(229, 171, 126, 0.92);
+  box-shadow: 0 4rpx 10rpx rgba(116, 86, 55, 0.28);
+}
+
+/* ── 入场帘幕（两皮肤共用机制，外观分皮肤）── */
+.tarot-curtain {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tarot-curtain__panel {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 62%;
+}
+/* 关上：挂载即播的 keyframes（不依赖初始 class 帧序） */
+.tarot-curtain--closing .tarot-curtain__panel--left,
+.tarot-curtain--holding .tarot-curtain__panel--left {
+  transform: translateX(0);
+  animation: tarot-curtain-close-left .42s cubic-bezier(.6, .04, .3, 1) both;
+}
+.tarot-curtain--closing .tarot-curtain__panel--right,
+.tarot-curtain--holding .tarot-curtain__panel--right {
+  transform: translateX(0);
+  animation: tarot-curtain-close-right .42s cubic-bezier(.6, .04, .3, 1) both;
+}
+@keyframes tarot-curtain-close-left {
+  from { transform: translateX(-101%); }
+  to { transform: translateX(0); }
+}
+@keyframes tarot-curtain-close-right {
+  from { transform: translateX(101%); }
+  to { transform: translateX(0); }
+}
+/* 拉开：从合拢位滑回屏外 */
+.tarot-curtain--opening .tarot-curtain__panel--left {
+  animation: tarot-curtain-open-left .56s cubic-bezier(.5, .06, .26, 1) both;
+}
+.tarot-curtain--opening .tarot-curtain__panel--right {
+  animation: tarot-curtain-open-right .56s cubic-bezier(.5, .06, .26, 1) both;
+}
+@keyframes tarot-curtain-open-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-101%); }
+}
+@keyframes tarot-curtain-open-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(101%); }
+}
+
+/* clay：奶油帘幕 + 陶土包边 */
+.tarot-curtain--clay .tarot-curtain__panel {
+  background: linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%);
+  border-right: 6rpx solid #e5c9a0;
+  box-shadow: -10rpx 0 30rpx rgba(122, 88, 58, 0.18);
+}
+.tarot-curtain--clay .tarot-curtain__panel--left { border-right: 6rpx solid #e5c9a0; box-shadow: 10rpx 0 30rpx rgba(122, 88, 58, 0.18); }
+.tarot-curtain--clay .tarot-curtain__panel--right { border-right: none; border-left: 6rpx solid #e5c9a0; }
+.tarot-curtain--clay .tarot-curtain__star {
+  position: absolute; top: 44%;
+  font-size: 40rpx; color: #e0aa79; opacity: 0.7;
+}
+.tarot-curtain--clay .tarot-curtain__panel--left .tarot-curtain__star { right: 30rpx; }
+.tarot-curtain--clay .tarot-curtain__panel--right .tarot-curtain__star { left: 30rpx; }
+
+/* classic：入梦暗场，星夜月牙在合拢的夜幕后亮起 */
+.tarot-curtain--classic .tarot-curtain__panel {
+  background: linear-gradient(180deg, #0b0718 0%, #07050d 100%);
+}
+.tarot-curtain--classic .tarot-curtain__star {
+  position: absolute; top: 26%;
+  font-size: 30rpx; color: #b89cf0; opacity: 0.85;
+  text-shadow: 0 0 18rpx rgba(184, 156, 240, 0.8);
+}
+.tarot-curtain--classic .tarot-curtain__panel--left .tarot-curtain__star { right: 44rpx; top: 34%; }
+.tarot-curtain--classic .tarot-curtain__panel--right .tarot-curtain__star { left: 44rpx; top: 20%; }
+.tarot-curtain__dream {
+  position: absolute; left: 0; right: 0; top: 18%;
+  display: flex; justify-content: center;
+  opacity: 0;
+}
+.tarot-curtain--holding .tarot-curtain__dream {
+  opacity: 1;
+  transition: opacity .5s ease .1s;
+}
+.tarot-curtain__moon {
+  font-size: 72rpx; color: #ead18d;
+  text-shadow: 0 0 30rpx rgba(234, 209, 141, 0.6), 0 0 60rpx rgba(184, 156, 240, 0.4);
+}
