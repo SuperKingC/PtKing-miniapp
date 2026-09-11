@@ -8,17 +8,17 @@ import {
   resolveTheme,
   type ResolvedTheme,
 } from '../services/theme'
-import testIcon from '../assets/tabbar/icon-tab-test-v14s.png'
-import testActiveIcon from '../assets/tabbar/icon-tab-test-active-v14s.png'
-import tarotIcon from '../assets/tabbar/icon-tab-tarot-v14s.png'
-import tarotActiveIcon from '../assets/tabbar/icon-tab-tarot-active-v14s.png'
-import recordsIcon from '../assets/tabbar/icon-tab-records-v14s.png'
-import recordsActiveIcon from '../assets/tabbar/icon-tab-records-active-v14s.png'
-import meIcon from '../assets/tabbar/icon-tab-me-v14s.png'
-import meActiveIcon from '../assets/tabbar/icon-tab-me-active-v14s.png'
+import testIcon from '../assets/tabbar/icon-tab-test-v15s.png'
+import testActiveIcon from '../assets/tabbar/icon-tab-test-active-v15s.png'
+import tarotIcon from '../assets/tabbar/icon-tab-tarot-v15s.png'
+import tarotActiveIcon from '../assets/tabbar/icon-tab-tarot-active-v15s.png'
+import recordsIcon from '../assets/tabbar/icon-tab-records-v15s.png'
+import recordsActiveIcon from '../assets/tabbar/icon-tab-records-active-v15s.png'
+import meIcon from '../assets/tabbar/icon-tab-me-v15s.png'
+import meActiveIcon from '../assets/tabbar/icon-tab-me-active-v15s.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
 import { getWxGlobal } from '../services/wxGlobal'
-import { TAROT_TAB_INDEX, TAROT_FLOW_VISIBILITY_EVENT, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
+import { TABBAR_SELECTED_KEY, TAROT_TAB_INDEX, TAROT_FLOW_VISIBILITY_EVENT, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
 // 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；米白槽底+米色颗粒胶囊，高调奶油软陶插画图标。
@@ -26,9 +26,6 @@ import './index.scss'
 // （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
 
 type PageLike = { route?: string }
-
-/** 乐观选中 storage key：switchTo 点击时写入，新 tabbar 实例挂载时读取兜底 */
-export const TABBAR_SELECTED_KEY = 'ptking:tabbar-selected'
 
 function readStoredSelectedIndex(): number {
   try {
@@ -64,6 +61,7 @@ const TABS = [
 export default class CustomTabBar extends Component {
   ownRoute = currentRoute()
   tarotFlowOpen = false
+  mountFixTimer = 0
 
   state = {
     selected: (() => {
@@ -103,6 +101,13 @@ export default class CustomTabBar extends Component {
     const stored = readStoredSelectedIndex()
     const initial = this.ownRoute && byRoute >= 0 ? byRoute : stored >= 0 ? stored : byRoute
     this.applyVisibility(initial)
+    // 首挂竞态兜底：tabbar 上下文里路由常解析为空、页面 onShow 广播也可能早于本订阅，
+    // 挂载后短延迟重解路由并按本页索引校准一次，否则错误选中态会一直挂到下一次广播
+    this.mountFixTimer = setTimeout(() => {
+      this.ownRoute = Taro.getCurrentInstance()?.page?.path || currentRoute() || this.ownRoute
+      const byRoute = tabIndexFromRoute(this.ownRoute)
+      if (this.ownRoute && byRoute >= 0) this.applyVisibility(byRoute)
+    }, 120) as unknown as number
     try {
       Taro.onThemeChange?.((res: { theme?: string }) => {
         this.setState({ theme: resolveTheme(getThemePreference(), res?.theme) })
@@ -113,6 +118,7 @@ export default class CustomTabBar extends Component {
   }
 
   componentWillUnmount() {
+    clearTimeout(this.mountFixTimer)
     Taro.eventCenter.off(TABBAR_SELECT_EVENT, this.handleSelectEvent)
     Taro.eventCenter.off(TAROT_FLOW_VISIBILITY_EVENT, this.handleFlowVisibility)
     Taro.eventCenter.off(THEME_CHANGE_EVENT, this.handleThemeEvent)
