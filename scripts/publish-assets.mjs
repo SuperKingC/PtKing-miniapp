@@ -104,13 +104,13 @@ if (!fs.existsSync(assetDir)) die(`资产目录不存在: ${assetDir}。先把�
 
 const missing = missingTarot()
 if (missing.length) {
-  console.error(`[assets] 塔罗资源缺 ${missing.length}/24 张，小程序会停在「资源加载失败」：`)
+  console.error(`[assets] 塔罗资源缺 ${missing.length}/${TAROT_FILES.length} 张，小程序会停在「资源加载失败」：`)
   for (const rel of missing) console.error(`  - art/generated-art/${rel}`)
-  if (checkOnly || yes) die('补齐 24 张后再发布')
+  if (checkOnly || yes) die(`补齐 ${TAROT_FILES.length} 张后再发布`)
 }
 
 if (checkOnly) {
-  console.log('[assets] 塔罗 24 张齐全')
+  console.log(`[assets] 塔罗 ${TAROT_FILES.length} 张齐全`)
   process.exit(0)
 }
 

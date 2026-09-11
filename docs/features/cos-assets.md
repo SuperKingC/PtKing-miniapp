@@ -2,7 +2,7 @@
 
 状态：脚本已落地；真实 COS 凭据与首传需你在 kit `.env` 配好后执行一次。
 
-塔罗牌、测试题 JSON、报告配图都不进小程序主包，统一放 COS 版本目录，由 `TARO_ASSET_BASE_URL` 热更下发。塔罗运行时拼 `{根}/tarot/...`，共 24 张。
+塔罗牌、测试题 JSON、报告配图都不进小程序主包，统一放 COS 版本目录，由 `TARO_ASSET_BASE_URL` 热更下发。塔罗运行时拼 `{根}/tarot/...`，两套皮肤各 24 张（classic 无后缀 + clay `-clay` 后缀），共 48 张。
 
 ## 在腾讯云创建存储桶（一次性）
 
@@ -41,36 +41,20 @@ COS_PUBLIC_BASE=https://你的访问域名
 
 `art.config.json` 的 `output.cos` 保持 `assets/ptking`。塔罗原图已从 Pet10 `public/tarot/` 拷到本地资产目录（gitignore，不入库）。换图覆盖同名文件后执行 `npm run assets:compress`（只 TinyPNG，不降分辨率），再 `npm run assets`。
 
-当前文件：
+当前文件（classic 24 张 + clay 皮肤 24 张，clay 由 2026-09-11 新锚点 reference-ui.png 风格生成，猫咪占卜屋场景）：
 
 ```text
 art/generated-art/tarot/ui/sanctuary-background.jpg
 art/generated-art/tarot/ui/card-back.jpg
-art/generated-art/tarot/cards/the-fool.jpg
-art/generated-art/tarot/cards/the-magician.jpg
-art/generated-art/tarot/cards/high-priestess.jpg
-art/generated-art/tarot/cards/the-empress.jpg
-art/generated-art/tarot/cards/the-emperor.jpg
-art/generated-art/tarot/cards/the-hierophant.jpg
-art/generated-art/tarot/cards/the-lovers.jpg
-art/generated-art/tarot/cards/the-chariot.jpg
-art/generated-art/tarot/cards/strength.jpg
-art/generated-art/tarot/cards/the-hermit.jpg
-art/generated-art/tarot/cards/wheel-of-fortune.jpg
-art/generated-art/tarot/cards/justice.jpg
-art/generated-art/tarot/cards/the-hanged-man.jpg
-art/generated-art/tarot/cards/death.jpg
-art/generated-art/tarot/cards/temperance.jpg
-art/generated-art/tarot/cards/the-devil.jpg
-art/generated-art/tarot/cards/the-tower.jpg
-art/generated-art/tarot/cards/the-star.jpg
-art/generated-art/tarot/cards/the-moon.jpg
-art/generated-art/tarot/cards/the-sun.jpg
-art/generated-art/tarot/cards/judgement.jpg
-art/generated-art/tarot/cards/the-world.jpg
+art/generated-art/tarot/cards/{22 张 majors}.jpg
+art/generated-art/tarot/ui/sanctuary-background-clay.jpg
+art/generated-art/tarot/ui/card-back-clay.jpg
+art/generated-art/tarot/cards/{22 张 majors}-clay.jpg
 ```
 
-牌面原图像素约 768×1152，背景约 900×1350。界面上牌面大约 190×300 rpx，真机按 2～3 倍屏也就需要约 400×600 像素。因此：
+（majors 清单见 `scripts/publish-assets.mjs` 的 `TAROT_FILES`。）
+
+牌面原图像素约 768×1152（clay 批次为 2:3 竖幅），背景约 900×1350。界面上牌面大约 190×300 rpx，真机按 2～3 倍屏也就需要约 400×600 像素。因此：
 
 - **只做 TinyPNG、不降分辨率**：像素不变，主要减 JPEG 体积，观感几乎不变。这是当前做法。
 - **适度缩小（例如收到 560×840）**：手机上看不出差别，体积会再小一截。
@@ -85,7 +69,7 @@ art/generated-art/tarot/cards/the-world.jpg
 - 资源管理器双击仓库根目录的 `一键上传.cmd`（脚本正文是英文，避免 Windows 命令行把中文拆成乱码命令）
 - 或在仓库根 PowerShell 执行：`npm run assets`
 
-这一条会：检查 24 张塔罗图 → 真传到 COS → 写入 `.asset-base-url` → 重建 `miniapp/dist`。
+这一条会：检查 48 张塔罗图（两套皮肤）→ 真传到 COS → 写入 `.asset-base-url` → 重建 `miniapp/dist`。
 
 只想预演或拆开跑：
 
@@ -98,14 +82,14 @@ npm run assets:publish
 | 命令 | 作用 |
 |---|---|
 | `assets:compress` | 对 `art/generated-art/tarot` 做一次 TinyPNG，不改像素 |
-| `assets:check` | 只检查 24 张塔罗是否都在 `art/generated-art` |
+| `assets:check` | 只检查 48 张塔罗（两套皮肤）是否都在 `art/generated-art` |
 | `assets:upload` | dry-run，只打印将上传的 key |
 | `assets:publish` | 只真传并写地址，不重建 |
 | `build:weapp` / `dev:weapp` | 自动读取 `.asset-base-url` 注入 `TARO_ASSET_BASE_URL` |
 
 `.asset-base-url` 已 gitignore，只服务本机构建。已手动设置环境变量时，脚本不会覆盖。
 
-发布后用微信开发者工具导入 `D:\Mine\PtKing-miniapp\miniapp`，清缓存后编译。塔罗页应先显示下载百分比，24 张都成功才进入流程；失败则停在「资源加载失败」，可点「重新加载」。
+发布后用微信开发者工具导入 `D:\Mine\PtKing-miniapp\miniapp`，清缓存后编译。塔罗页应先显示下载百分比，当前皮肤 24 张都成功才进入流程；失败则停在「资源加载失败」，可点「重新加载」。
 
 ## 本地不经 COS 预览
 
