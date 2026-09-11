@@ -1,23 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Image, Text, View } from '@tarojs/components'
-import { useDidShow, useRouter } from '@tarojs/taro'
+import { Text, View } from '@tarojs/components'
+import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_ENTERTAINMENT_DISCLAIMER } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
 import { clearTestDraft, getTestDraft } from '../../services/testDrafts'
 import { getTestDefinition } from '../../services/testRegistry'
-import spotPersonalityImg from '../../assets/illus/spot-personality-v3.png'
-import spotLoveImg from '../../assets/illus/spot-love-v3.png'
-import spotCareerImg from '../../assets/illus/spot-career-v3.png'
-import spotFunImg from '../../assets/illus/spot-fun-v3.png'
+import { topInsetStyle } from '../../services/navMetrics'
 import './index.scss'
-
-const COVER_BY_CATEGORY: Record<string, string> = {
-  人格: spotPersonalityImg,
-  情感: spotLoveImg,
-  职场: spotCareerImg,
-  趣味: spotFunImg,
-}
 
 // 测试详情页：信息胶囊 + 介绍 + 注意（答题指引）+ 娱乐化免责 + 开始/继续/重开
 export default function TestDetailPage() {
@@ -37,7 +27,7 @@ export default function TestDetailPage() {
 
   if (!definition) {
     return (
-      <View className={`test-detail theme-${theme}`}>
+      <View className={`test-detail theme-${theme}`} style={topInsetStyle()}>
         <Text className="test-detail__missing">测试不存在或已下架</Text>
       </View>
     )
@@ -55,10 +45,18 @@ export default function TestDetailPage() {
     wx.navigateTo({ url: `/pages/test-play/index?testId=${definition.id}` })
   }
 
+  const goBack = () => {
+    // 无系统标题栏：左上返回键兜底，栈底时回测试中心
+    if (Taro.getCurrentPages().length > 1) Taro.navigateBack({ delta: 1 })
+    else Taro.switchTab({ url: '/pages/test/index' })
+  }
+
   return (
-    <View className={`test-detail theme-${theme}`}>
+    <View className={`test-detail theme-${theme}`} style={topInsetStyle()}>
+      <View className="test-detail__back" hoverClass="pressable--pressed" onClick={goBack}>
+        <Text>←</Text>
+      </View>
       <View className="test-detail__card">
-        <Image className="test-detail__cover" src={COVER_BY_CATEGORY[definition.category] ?? spotPersonalityImg} mode="aspectFit" />
         <Text className="test-detail__title">{definition.title}</Text>
         <View className="test-detail__capsules">
           {capsules.map((capsule) => (

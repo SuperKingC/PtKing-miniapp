@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-11 12:50
+- 原因：用户反馈四点：顶距偏高（内容顶进胶囊）、没有返回键、封面 icon 要去掉、答题/报告页也不要系统「测测子」标题栏。
+- 修改：根因是 Taro 把 scss 里 --page-top-inset 兜底值 88px 编译成 88rpx（44px），兜底腰斩成 49px 顶到胶囊上面；改为根节点内联 style 注入 topInsetStyle()（与 tab 页同法，实测 95px）。删封面图与四张 spot PNG（资产退役）；加左上圆形返回键（getCurrentPages>1 走 navigateBack，栈底 switchTab 回测试中心）。
+
 - 时间：2026-09-09 17:00
 - 原因：详情封面改 ui-4 软陶毡面。
 - 修改：`index.tsx` 引用 `spot-*-v2.png`。

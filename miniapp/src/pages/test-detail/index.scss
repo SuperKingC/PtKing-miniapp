@@ -12,23 +12,29 @@
   font-size: var(--font-size-body);
 }
 
+.test-detail__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-bottom: 16rpx;
+  border-radius: 50%;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
+  color: var(--color-ink);
+  font-size: 40rpx;
+}
+
 .test-detail__card {
   overflow: hidden;
   border-radius: 32rpx;
   background: var(--color-card-bg);
-  padding: 0 40rpx 40rpx;
-}
-
-.test-detail__cover {
-  display: block;
-  width: 220rpx;
-  height: 220rpx;
-  margin: 8rpx auto 0;
+  padding: 40rpx 40rpx 40rpx;
 }
 
 .test-detail__title {
   display: block;
-  margin-top: 8rpx;
   text-align: center;
   font-size: var(--font-size-overlay-title);
   font-weight: var(--font-weight-bold);

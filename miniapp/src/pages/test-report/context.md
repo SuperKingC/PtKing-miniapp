@@ -1,5 +1,7 @@
 ## 工作记录
 
+- 2026-09-11 12:50：用户澄清报告页也不要系统标题栏。撤掉 navigationStyle: default 回全局沉浸式；四个根节点（无记录/解锁门/缺数据/正文）统一内联注入 topInsetStyle()（padding-top 95px），正文与解锁门根节点加左上返回键（栈底兜底 switchTab 回测试中心）。
+
 - 2026-09-11 12:15：用户澄清整体上移范围：答题页/报告页不上移，保留系统标题栏。`index.config.ts` 加 `navigationStyle: default` 恢复系统标题栏「测测子」；`index.scss` 顶部内边距恢复为固定 `32rpx`。
 
 - 2026-09-09 16:30：`index.config.ts` 导航标题改为「测测子」。

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Text, View } from '@tarojs/components'
-import { useRouter, useUnload } from '@tarojs/taro'
+import Taro, { useRouter, useUnload } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { scoreTest } from '../../domain/testEngine'
@@ -18,6 +18,7 @@ import {
 } from '../../services/testDrafts'
 import { tapFeedback } from '../../services/haptics'
 import { getPlayProgress, getTestPlayStage } from '../../domain/experience'
+import { topInsetStyle } from '../../services/navMetrics'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
@@ -83,7 +84,7 @@ export default function TestPlayPage() {
 
   if (!definition) {
     return (
-      <View className={`test-play theme-${theme}`}>
+      <View className={`test-play theme-${theme}`} style={topInsetStyle()}>
         <Text className="test-play__missing">测试不存在或已下架</Text>
       </View>
     )
@@ -174,8 +175,17 @@ export default function TestPlayPage() {
     }
   }
 
+  const goBack = () => {
+    // 无系统标题栏：左上返回键；答题中途返回由 warnBeforeLeavingPlay 的原生确认兜底
+    if (Taro.getCurrentPages().length > 1) Taro.navigateBack({ delta: 1 })
+    else Taro.switchTab({ url: '/pages/test/index' })
+  }
+
   return (
-    <View className={`test-play theme-${theme} motion-${motionPreference}`}>
+    <View className={`test-play theme-${theme} motion-${motionPreference}`} style={topInsetStyle()}>
+      <View className="test-play__back" hoverClass="pressable--pressed" onClick={goBack}>
+        <Text>←</Text>
+      </View>
       {restoring && (
         <View className="test-play__restoring">
           <Text>正在恢复进度…</Text>

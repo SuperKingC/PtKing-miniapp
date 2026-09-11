@@ -7,6 +7,7 @@ import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from 
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_ENTERTAINMENT_DISCLAIMER, APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
+import { topInsetStyle } from '../../services/navMetrics'
 import { renderShareCard } from '../../services/reportShareCard'
 import { showRewardedAd } from '../../services/rewardedAd'
 import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
@@ -303,7 +304,7 @@ export default function TestReportPage() {
 
   if (!definition || !record) {
     return (
-      <View className={`test-report theme-${theme}`}>
+      <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
         <Text className="test-report__missing">还没有该测试的报告，先去完成一次测试吧。</Text>
         <View
           className="test-report__action"
@@ -321,7 +322,10 @@ export default function TestReportPage() {
   // ===== 解锁门：锁定记录不渲染报告正文，也不给次级出口（聚焦解锁动作，返回走导航） =====
   if (locked) {
   return (
-    <View className={`test-report theme-${theme}`}>
+    <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
+      <View className="test-report__back" hoverClass="pressable--pressed" onClick={goBack}>
+        <Text>←</Text>
+      </View>
       <View className="test-report__hero">
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">报告已生成</Text>
@@ -359,7 +363,7 @@ export default function TestReportPage() {
 
   if (!report) {
     return (
-      <View className={`test-report theme-${theme}`}>
+      <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
         <Text className="test-report__missing">报告数据缺失，请重新测试。</Text>
       </View>
     )
@@ -389,8 +393,16 @@ export default function TestReportPage() {
     second: runnerUp?.title,
     previous: history[1] ? history[1].reportSnapshot?.title ?? definition.reports[history[1].result.reportId]?.title ?? null : null,
   })
+  const goBack = () => {
+    // 无系统标题栏：左上返回键兜底，栈底时回测试中心
+    if (Taro.getCurrentPages().length > 1) Taro.navigateBack({ delta: 1 })
+    else Taro.switchTab({ url: '/pages/test/index' })
+  }
   return (
-    <View className={`test-report theme-${theme}`}>
+    <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
+      <View className="test-report__back" hoverClass="pressable--pressed" onClick={goBack}>
+        <Text>←</Text>
+      </View>
       <View className="test-report__hero">
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">{report.title}</Text>

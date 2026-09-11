@@ -1,5 +1,8 @@
 import { Text, View } from '@tarojs/components'
+import Taro from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
+import { topInsetStyle } from '../../services/navMetrics'
+import './index.scss'
 
 interface PolicySection {
   heading: string
@@ -50,8 +53,16 @@ const SECTIONS: PolicySection[] = [
 // 隐私政策与用户条款页：纯静态文案（微信审核要求的合规页面，入口在「我的」页）
 export default function PrivacyPage() {
   const theme = useAppTheme()
+  const goBack = () => {
+    // 无系统标题栏：左上返回键兜底，栈底时回「我的」
+    if (Taro.getCurrentPages().length > 1) Taro.navigateBack({ delta: 1 })
+    else Taro.switchTab({ url: '/pages/me/index' })
+  }
   return (
-    <View className={`privacy-page theme-${theme}`}>
+    <View className={`privacy-page theme-${theme}`} style={topInsetStyle()}>
+      <View className="privacy-page__back" hoverClass="pressable--pressed" onClick={goBack}>
+        <Text>←</Text>
+      </View>
       <View className="privacy-page__header">
         <Text className="privacy-page__title">隐私政策与用户条款</Text>
         <Text className="privacy-page__updated">更新日期：2026-09-08</Text>

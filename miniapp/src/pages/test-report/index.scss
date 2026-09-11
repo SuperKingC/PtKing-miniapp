@@ -1,8 +1,22 @@
 .test-report {
   box-sizing: border-box;
   min-height: 100vh;
-  /* 系统标题栏保留（页面配置 navigationStyle: default），顶部不做胶囊安全距离上移 */
-  padding: 32rpx 40rpx calc(24rpx + env(safe-area-inset-bottom));
+  /* 无系统标题栏：顶部留胶囊安全距离（根节点内联注入 --page-top-inset） */
+  padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx calc(24rpx + env(safe-area-inset-bottom));
+}
+
+.test-report__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 88rpx;
+  margin-bottom: 20rpx;
+  border-radius: 50%;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
+  color: var(--color-ink);
+  font-size: 40rpx;
 }
 
 .test-report__missing {
