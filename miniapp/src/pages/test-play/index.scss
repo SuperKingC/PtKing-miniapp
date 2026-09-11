@@ -1,8 +1,8 @@
 .test-play {
   position: relative;
   min-height: 100vh;
-  /* 无系统标题栏：顶部留胶囊安全距离 */
-  padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx calc(64rpx + env(safe-area-inset-bottom));
+  /* 系统标题栏保留（页面配置 navigationStyle: default），顶部不做胶囊安全距离上移 */
+  padding: 32rpx 40rpx calc(64rpx + env(safe-area-inset-bottom));
 }
 
 .test-play__restoring {
