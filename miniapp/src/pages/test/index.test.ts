@@ -118,7 +118,7 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用参考图同色卡面+暖褐影（逐像素采样对齐），不裁切阴影', () => {
-    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 12rpx 18rpx rgba(170, 140, 90, 0.1)')
+    const lightShadow = styleBlock('.test-page-shell.theme-light'); expect(lightShadow).toContain('0 2rpx 4rpx rgba(172, 142, 100, 0.32)')
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
@@ -128,5 +128,7 @@ describe('测试首页软陶单列布局', () => {
     expect(card).not.toContain('overflow: hidden')
     expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fad6b5 0%, #f3bf98 26%, #f2bd95 52%, #e9ae85 84%, #d99e70 96%, #d08e5e 100%)')
     expect(styleBlock('.test-page__card-go')).toContain('0 4rpx 6rpx rgba(150, 94, 56, 0.22)')
+    /* 接触影烘焙进 v9 tile，CSS 不再叠投影 */
+    expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
   })
 })

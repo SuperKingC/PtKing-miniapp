@@ -9,12 +9,12 @@
   --test-action-bg: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
-  /* 参考图剖面（逐像素采样）：卡面与页面底色同色 #fefaf4，形体全靠
-     顶部白高光线 + 卡下缘 #e1d6c7 暖褐影带（约 10px 快速衰减）+ 极淡弥散 */
-  --test-shadow: inset 0 2rpx 3rpx rgba(255, 255, 255, 0.85),
-    inset 0 -1rpx 2rpx rgba(190, 150, 105, 0.08),
-    0 3rpx 5rpx rgba(170, 140, 90, 0.2),
-    0 12rpx 18rpx rgba(170, 140, 90, 0.1);
+  /* 参考稿剖面（高清原稿逐像素）：卡面与底色同色，但卡下缘有一条实的暖褐影带
+     #e2d8ca（α≈0.32，约 7rpx）紧贴后渐散——这是卡片厚度的主来源，不能淡 */
+  --test-shadow: inset 0 2rpx 3rpx rgba(255, 255, 255, 0.9),
+    0 2rpx 4rpx rgba(172, 142, 100, 0.32),
+    0 5rpx 9rpx rgba(172, 142, 100, 0.16),
+    0 14rpx 22rpx rgba(172, 142, 100, 0.1);
 }
 
 .test-page-shell.theme-dark {
@@ -134,9 +134,10 @@
   margin-bottom: 30rpx;
   padding: 6rpx;
   border-radius: 999rpx;
-  /* 参考图胶囊底与页面同色，轮廓靠上缘白高光 + 下缘 #e9e1d4 紧贴暖影 */
+  /* 参考稿胶囊剖面：底与页同色，上缘 2-3rpx 白高光线（#fefefd），
+     下缘 #e1d6c7 实影带（α≈0.3）+ 紧贴渐散——外圈厚度感同卡片 */
   background: var(--test-capsule-bg);
-  box-shadow: inset 0 2rpx 2rpx rgba(255, 255, 255, 0.9), 0 3rpx 4rpx rgba(150, 115, 75, 0.16), 0 8rpx 14rpx rgba(150, 115, 75, 0.1);
+  box-shadow: inset 0 2rpx 2rpx rgba(255, 255, 255, 0.95), 0 2rpx 4rpx rgba(160, 130, 90, 0.3), 0 6rpx 10rpx rgba(160, 130, 90, 0.14);
 }
 
 .test-page__chip {
@@ -181,8 +182,8 @@
   flex: 0 0 152rpx;
   width: 152rpx;
   height: 152rpx;
-  /* 参考图接触影：tile 底缘 4px 内 #d4c5b1 暖褐快速衰减，再接淡弥散 */
-  filter: drop-shadow(0 2rpx 3rpx rgba(160, 125, 80, 0.25)) drop-shadow(0 6rpx 8rpx rgba(150, 120, 80, 0.14));
+  /* v9 起接触影烘焙进图内（与参考稿逐像素同源），CSS 不再叠投影避免双重影 */
+  filter: none;
 }
 
 .test-page__card-content {
