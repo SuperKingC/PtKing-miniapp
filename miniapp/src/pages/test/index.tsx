@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Image, ScrollView, Text, View } from '@tarojs/components'
 import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
@@ -37,6 +37,28 @@ export default function TestPage() {
   const theme = useAppTheme()
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
+  /* 分类切换闪屏（实机录屏逐帧复现+automator offset 采样量化）：页面带非零滚动位
+     （含 reLaunch 恢复的残留 ~55px）切分类，推荐区卸载内容高度骤减，WebView 对
+     越界滚动位逐帧钳制回弹，整页内容连帧窜动。方案：切换当拍把视口归零——
+     onScroll 持续记录实时位，仅滚动位非零时才挂受控 scrollTop 归零（scroll-top
+     变化自带 ~240ms 平滑滚动，滚动位大时归顶顺理成章；滚动位≈0 时完全不挂、
+     零动画零滚动）。onScrollStop 后摘除恢复非受控，避免后续 render 拉回旧值。
+     scroll-into-view 在 enhanced 下强制动画已否决；scrollAnchoring=false 双保险 */
+  const [scrollTop, setScrollTop] = useState<number | undefined>(undefined)
+  const scrollPosRef = useRef(0)
+  const pickCategory = (key: TestCategoryKey) => {
+    if (key === activeCategory) return
+    if (scrollPosRef.current > 1) {
+      setScrollTop((prev) => (prev === undefined ? 0 : prev === 0 ? 0.01 : 0))
+    }
+    setActiveCategory(key)
+  }
+  const handleScroll = (e: { detail?: { scrollTop?: number } }) => {
+    scrollPosRef.current = e.detail?.scrollTop ?? 0
+  }
+  const handleScrollStop = () => {
+    if (scrollTop !== undefined) setScrollTop(undefined)
+  }
   const [resume, setResume] = useState(() => listActiveTestDrafts(listTestDefinitions())[0] ?? null)
   const [recentIds, setRecentIds] = useState(() => loadTestRecords().map((record) => record.testId))
   const [dailyCategory, setDailyCategory] = useState(todayCategory)
@@ -89,7 +111,7 @@ export default function TestPage() {
 
   return (
     <View className={`tab-page test-page-shell theme-${theme}`} style={topInsetStyle()}>
-      <ScrollView className="tab-page__scroll" scrollY enhanced showScrollbar={false}>
+      <ScrollView className="tab-page__scroll" scrollY scrollTop={scrollTop} scrollAnchoring={false} enhanced showScrollbar={false} onScroll={handleScroll} onScrollStop={handleScrollStop}>
         <View className="test-page">
           <View className="test-page__brand">
             <View className="test-page__brand-text">
@@ -110,7 +132,7 @@ export default function TestPage() {
             <Text className="test-page__resume-meta">已完成 {resume.draft.answers.length}/{resume.definition.questions.length} 题</Text>
           </View>}
           <View id="test-category-results" className="test-page__chips">
-            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="test-page__chip--press" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
+            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="test-page__chip--press" onClick={() => pickCategory(category.key)}><Text>{category.label}</Text></View>)}
           </View>
           {activeCategory === 'all' && recommended.length > 0 && <View className="test-page__section">
             <Text className="test-page__section-title">为你推荐</Text>

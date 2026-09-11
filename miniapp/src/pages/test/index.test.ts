@@ -61,7 +61,7 @@ describe('测试首页软陶单列布局', () => {
       'TEST_CATEGORIES.map', 'useState(listTestDefinitions)', 'subscribeTestRegistry(refresh)', 'useDidShow(refresh)',
       'filterByCategory(definitions, activeCategory)',
       'pickRecommendedTests(definitions, recentIds, resume?.definition.id, 4)',
-      'setActiveCategory(category.key)',
+      'pickCategory(category.key)',
       '/pages/test-detail/index?testId=${encodeURIComponent(testId)}',
       '/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}',
       'useShareAppMessage',
@@ -103,6 +103,22 @@ describe('测试首页软陶单列布局', () => {
     expect(chips).not.toContain('overflow-x: auto')
     expect(styleBlock('.test-page__chip')).toContain('flex: 1')
     expect(styleBlock('.test-page__chip')).toContain('min-width: 0')
+  })
+
+  it('分类切换当拍视口归零（非零滚动位切换内容高度骤减会连帧错位闪屏），零位切换零滚动', () => {
+    /* onScroll 记录实时位,仅滚动位非零时才挂受控 scrollTop 归零;≈0 时零滚动零动画 */
+    expect(source).toContain('const [scrollTop, setScrollTop] = useState<number | undefined>(undefined)')
+    expect(source).toContain('scrollPosRef = useRef(0)')
+    expect(source).toContain('if (scrollPosRef.current > 1)')
+    expect(source).toContain('setScrollTop((prev) => (prev === undefined ? 0 : prev === 0 ? 0.01 : 0))')
+    expect(source).toContain('onScroll={handleScroll}')
+    expect(source).toContain('onScrollStop={handleScrollStop}')
+    expect(source).toContain('pickCategory(category.key)')
+    expect(source).not.toContain('onClick={() => setActiveCategory(category.key)}')
+    /* scroll-into-view 在 enhanced 下强制动画滚动,不得使用 */
+    expect(source).not.toContain('scrollIntoView=')
+    /* ScrollView 关锚定双保险 */
+    expect(source).toContain('scrollAnchoring={false}')
   })
 
   it('奶油白、浅雾蓝、桃色只覆盖本页，暗色主题保留独立配色', () => {
