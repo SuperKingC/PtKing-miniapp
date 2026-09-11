@@ -65,13 +65,13 @@
 }
 
 .tabbar__text {
-  /* 标签 20rpx（对齐参考稿墨高≈19rpx）+ 4rpx 字距留气口（负右边距抵消末字后字距，保持视觉居中）
-     相对定位上提，文字墨底离胶囊底留出参考稿比例的呼吸位，图标不动 */
+  /* 标签 22rpx + 4rpx 字距留气口（负右边距抵消末字后字距，保持视觉居中）
+     相对定位轻上提，文字墨底离胶囊底留呼吸位，图标不动 */
   position: relative;
-  top: -14rpx;
+  top: -6rpx;
   margin-right: -4rpx;
   letter-spacing: 4rpx;
-  font-size: 20rpx;
+  font-size: 22rpx;
   line-height: 1.2;
   font-weight: 500;
   color: #8d7f6e;
