@@ -17,7 +17,7 @@ import tileMbtiImg from '../../assets/illus/tile-mbti-v4.png'
 import tileStarImg from '../../assets/illus/tile-star-v2.png'
 import tileLoveImg from '../../assets/illus/tile-love-v4.png'
 import tileCareerImg from '../../assets/illus/tile-career-v3.png'
-import tileFunImg from '../../assets/illus/tile-fun-v3.png'
+import tileFunImg from '../../assets/illus/tile-fun-v4.png'
 import './index.scss'
 
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tileStarImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }

@@ -118,7 +118,7 @@ describe('测试首页软陶单列布局', () => {
   })
 
   it('卡片和横幅使用厚毡枕头感阴影（对齐参考图亮度），不裁切阴影', () => {
-    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 4rpx 0 #e7dfd1/)
+    expect(styleBlock('.test-page-shell.theme-light')).toMatch(/--test-shadow:[^;]+0 5rpx 0 #ddd0bc/)
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
@@ -126,7 +126,7 @@ describe('测试首页软陶单列布局', () => {
     expect(card).toContain('background: #fefcf8')
     expect(card).toContain('box-shadow: var(--test-shadow)')
     expect(card).not.toContain('overflow: hidden')
-    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f6d2b2 0%, #eeb98a 100%)')
-    expect(styleBlock('.test-page__card-go')).toContain('0 5rpx 0 #d89a6b')
+    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #f2c49e 0%, #eaa977 100%)')
+    expect(styleBlock('.test-page__card-go')).toContain('0 6rpx 0 #d28c5b')
   })
 })

@@ -5,15 +5,15 @@
   --color-ink-secondary: #8d8072;
   --color-primary: #c4713f;
   --test-hero-bg: linear-gradient(180deg, #e3edf7 0%, #cdddf0 100%);
-  --test-capsule-bg: #f6f1ea;
+  --test-capsule-bg: #f5f0ea;
   --test-action-bg: linear-gradient(180deg, #f5cfae 0%, #eeb98a 100%);
   --test-highlight: rgba(255, 255, 255, 0.95);
   --test-edge: #eae1d2;
   /* 参考图配方：顶内高光 + 底部厚度线 + 紧贴软影渐散（厚度感来自 0 4rpx 0 实线） */
   --test-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.9),
-    0 4rpx 0 #e7dfd1,
-    -2rpx 8rpx 14rpx rgba(150, 120, 85, 0.12),
-    0 14rpx 26rpx rgba(150, 120, 85, 0.08);
+    0 5rpx 0 #ddd0bc,
+    -2rpx 10rpx 16rpx rgba(150, 120, 85, 0.18),
+    0 18rpx 32rpx rgba(150, 120, 85, 0.12);
 }
 
 .test-page-shell.theme-dark {
@@ -134,7 +134,7 @@
   padding: 8rpx;
   border-radius: 999rpx;
   background: var(--test-capsule-bg);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.9), 0 5rpx 10rpx rgba(150, 120, 85, 0.08);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 253, 247, 0.9), 0 4rpx 0 #e2d6c6, 0 10rpx 16rpx rgba(150, 120, 85, 0.12);
 }
 
 .test-page__chip {
@@ -149,8 +149,8 @@
 }
 
 .test-page__chip--active {
-  background: linear-gradient(180deg, #f4cba6 0%, #eda87e 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 4rpx 0 #d89a6b, 0 8rpx 14rpx rgba(150, 94, 56, 0.18);
+  background: linear-gradient(180deg, #f2cbad 0%, #efb991 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 5rpx 0 #d79466, 0 10rpx 16rpx rgba(150, 94, 56, 0.22);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
 }
@@ -217,9 +217,9 @@
   padding: 16rpx 26rpx;
   border-radius: 999rpx;
   /* 参考图按钮：浅陶土面 + 顶部浅内高光 + 陶土厚度线 + 紧贴软影 */
-  background: linear-gradient(180deg, #f6d2b2 0%, #eeb98a 100%);
-  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.9), 0 5rpx 0 #d89a6b, 0 10rpx 16rpx rgba(150, 94, 56, 0.18);
-  font-size: 25rpx;
+  background: linear-gradient(180deg, #f2c49e 0%, #eaa977 100%);
+  box-shadow: inset 0 2rpx 3rpx rgba(255, 248, 235, 0.85), inset 0 -4rpx 8rpx rgba(150, 94, 56, 0.12), 0 6rpx 0 #d28c5b, 0 12rpx 18rpx rgba(150, 94, 56, 0.2);
+  font-size: 24rpx;
   font-weight: var(--font-weight-semibold);
   line-height: 1.4;
   white-space: nowrap;
