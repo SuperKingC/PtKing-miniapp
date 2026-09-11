@@ -25,37 +25,38 @@ const configPath = path.join(root, 'art.config.json')
 const envOut = path.join(root, '.asset-base-url')
 const uploadScript = path.join(kitRoot, 'cos', 'upload-cos.mjs')
 
-const TAROT_FILES = [
+const TAROT_MAJORS = [
+  'the-fool',
+  'the-magician',
+  'high-priestess',
+  'the-empress',
+  'the-emperor',
+  'the-hierophant',
+  'the-lovers',
+  'the-chariot',
+  'strength',
+  'the-hermit',
+  'wheel-of-fortune',
+  'justice',
+  'the-hanged-man',
+  'death',
+  'temperance',
+  'the-devil',
+  'the-tower',
+  'the-star',
+  'the-moon',
+  'the-sun',
+  'judgement',
+  'the-world',
+]
+
+// 两套皮肤：classic 原文件 + clay 皮肤（猫咪占卜屋，-clay 后缀同名文件）
+export const TAROT_FILES = [
   'tarot/ui/sanctuary-background.jpg',
   'tarot/ui/card-back.jpg',
-  ...[
-    'tarot/ui/sanctuary-background-clay.jpg',
-    'tarot/ui/card-back-clay.jpg',
-    ...[
-      'the-fool',
-      'the-magician',
-      'high-priestess',
-      'the-empress',
-      'the-emperor',
-      'the-hierophant',
-      'the-lovers',
-      'the-chariot',
-      'strength',
-      'the-hermit',
-      'wheel-of-fortune',
-      'justice',
-      'the-hanged-man',
-      'death',
-      'temperance',
-      'the-devil',
-      'the-tower',
-      'the-star',
-      'the-moon',
-      'the-sun',
-      'judgement',
-      'the-world',
-    ].flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
-  ],
+  ...TAROT_MAJORS.flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
+  'tarot/ui/sanctuary-background-clay.jpg',
+  'tarot/ui/card-back-clay.jpg',
 ]
 
 const args = new Set(process.argv.slice(2))

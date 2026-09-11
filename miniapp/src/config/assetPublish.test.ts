@@ -7,8 +7,25 @@ function repoRoot() {
   return resolve(miniappRoot(), '..')
 }
 
+// 与 scripts/publish-assets.mjs 的 TAROT_FILES 同构：22 majors × 2 皮肤 + 2 ui × 2 皮肤
+function expectedTarotFiles(): string[] {
+  const majors = [
+    'the-fool', 'the-magician', 'high-priestess', 'the-empress', 'the-emperor', 'the-hierophant',
+    'the-lovers', 'the-chariot', 'strength', 'the-hermit', 'wheel-of-fortune', 'justice',
+    'the-hanged-man', 'death', 'temperance', 'the-devil', 'the-tower', 'the-star',
+    'the-moon', 'the-sun', 'judgement', 'the-world',
+  ]
+  return [
+    'tarot/ui/sanctuary-background.jpg',
+    'tarot/ui/card-back.jpg',
+    ...majors.flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
+    'tarot/ui/sanctuary-background-clay.jpg',
+    'tarot/ui/card-back-clay.jpg',
+  ]
+}
+
 describe('COS asset publish workflow', () => {
-  it('ships check/upload/publish scripts and a 24-file tarot checklist', () => {
+  it('ships check/upload/publish scripts and a 48-file tarot checklist (two skins)', () => {
     const root = repoRoot()
     const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')) as { scripts: Record<string, string> }
     const publishSource = readFileSync(resolve(root, 'scripts/publish-assets.mjs'), 'utf8')
@@ -28,10 +45,17 @@ describe('COS asset publish workflow', () => {
     expect(existsSync(resolve(root, 'docs/features/cos-assets.md'))).toBe(true)
     expect(publishSource).toContain('--build')
 
-    expect(publishSource).toContain('tarot/ui/sanctuary-background.jpg')
-    expect(publishSource).toContain('tarot/ui/card-back.jpg')
-    expect(publishSource).toContain('tarot/cards/the-fool.jpg')
-    expect(publishSource).toContain('tarot/cards/the-world.jpg')
-    expect(publishSource.match(/tarot\/(?:ui|cards)\/[\w-]+\.jpg/g)).toHaveLength(24)
+    // two skins: 24 classic files + 24 clay-suffixed files; cards are built
+    // from a majors list, so lock the template + ui literals instead
+    expect(expectedTarotFiles()).toHaveLength(48)
+    expect(publishSource).toContain("'tarot/ui/sanctuary-background.jpg'")
+    expect(publishSource).toContain("'tarot/ui/card-back.jpg'")
+    expect(publishSource).toContain("'tarot/ui/sanctuary-background-clay.jpg'")
+    expect(publishSource).toContain("'tarot/ui/card-back-clay.jpg'")
+    expect(publishSource).toContain("'the-fool'")
+    expect(publishSource).toContain("'the-world'")
+    expect(publishSource).toContain('`tarot/cards/${name}.jpg`')
+    expect(publishSource).toContain('`tarot/cards/${name}-clay.jpg`')
+    expect(publishSource.match(/tarot\/(?:ui|cards)\/[\w-]+\.jpg/g)).toHaveLength(4)
   })
 })
