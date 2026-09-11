@@ -8,13 +8,14 @@ import {
   resolveTheme,
   type ResolvedTheme,
 } from '../services/theme'
-import testIcon from '../assets/tabbar/test-v9.png'
-import testActiveIcon from '../assets/tabbar/test-active-v9.png'
-import tarotIcon from '../assets/tabbar/tarot-active-v7.png'
-import recordsIcon from '../assets/tabbar/records-v7.png'
-import recordsActiveIcon from '../assets/tabbar/records-active-v9.png'
-import meIcon from '../assets/tabbar/me-v7.png'
-import meActiveIcon from '../assets/tabbar/me-active-v7.png'
+import testIcon from '../assets/tabbar/test-v10s.png'
+import testActiveIcon from '../assets/tabbar/test-active-v10s.png'
+import tarotIcon from '../assets/tabbar/tarot-v10s.png'
+import tarotActiveIcon from '../assets/tabbar/tarot-active-v10s.png'
+import recordsIcon from '../assets/tabbar/records-v10s.png'
+import recordsActiveIcon from '../assets/tabbar/records-active-v10s.png'
+import meIcon from '../assets/tabbar/me-v10s.png'
+import meActiveIcon from '../assets/tabbar/me-active-v10s.png'
 import { TABBAR_SELECT_EVENT } from '../hooks/useTabBarSelected'
 import { getWxGlobal } from '../services/wxGlobal'
 import { TAROT_TAB_INDEX, TAROT_FLOW_VISIBILITY_EVENT, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
@@ -41,7 +42,7 @@ function currentRoute(): string {
 
 const TABS = [
   { text: '测试', icon: testIcon, activeIcon: testActiveIcon, path: '/pages/test/index' },
-  { text: '塔罗', icon: tarotIcon, activeIcon: tarotIcon, path: '/pages/tarot/index' },
+  { text: '塔罗', icon: tarotIcon, activeIcon: tarotActiveIcon, path: '/pages/tarot/index' },
   { text: '记录', icon: recordsIcon, activeIcon: recordsActiveIcon, path: '/pages/records/index' },
   { text: '我的', icon: meIcon, activeIcon: meActiveIcon, path: '/pages/me/index' },
 ]
