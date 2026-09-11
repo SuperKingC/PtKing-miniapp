@@ -9,6 +9,14 @@
   height: 100%;
   overflow: hidden;
 }
+/* 帘幕拉开时流程页随中缝露出：轻微上浮淡入，叠出层次感 */
+.tarot-page--reveal {
+  animation: tarot-flow-reveal .56s cubic-bezier(.3, .08, .24, 1) both;
+}
+@keyframes tarot-flow-reveal {
+  from { opacity: 0.25; transform: translateY(18rpx) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
 .tarot-home-shell.theme-light { background: #fefaf5; }
 .tarot-home { padding: calc(var(--page-top-inset, 88px) + 8rpx) 36rpx calc(220rpx + env(safe-area-inset-bottom)); }
@@ -59,7 +67,18 @@
   border-color: #e5ab7e;
   box-shadow: 0 5rpx 0 #d8a67c, 0 0 0 6rpx rgba(229, 171, 126, 0.22), -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.14);
 }
-.tarot-home__skin-thumb { display: block; width: 100%; height: 220rpx; }
+/* 缩略图：底层放大铺满防露底，前景整图缩小入框（竖版场景图不再被裁成特写） */
+.tarot-home__skin-thumb {
+  position: relative; display: block; width: 100%; height: 220rpx; overflow: hidden;
+  background: #f2ede2;
+}
+.tarot-home__skin-thumb-bg {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 0; width: 100%; height: 100%;
+  transform: scale(1.25); filter: blur(16rpx); opacity: 0.75;
+}
+.tarot-home__skin-thumb-fg {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 0; width: 100%; height: 100%;
+}
 .tarot-home__skin-name { display: block; padding: 14rpx 0 16rpx; text-align: center; color: var(--color-ink); font-size: 24rpx; font-weight: 600; }
 .tarot-home__skin-check {
   position: absolute; top: 14rpx; right: 14rpx;
@@ -79,9 +98,12 @@
 }
 .tarot-curtain__panel {
   position: absolute;
-  top: 0; bottom: 0;
-  width: 62%;
+  top: 0;
+  height: 100%;
+  width: 50%;
 }
+.tarot-curtain__panel--left { left: 0; }
+.tarot-curtain__panel--right { right: 0; }
 /* 关上：挂载即播的 keyframes（不依赖初始 class 帧序） */
 .tarot-curtain--closing .tarot-curtain__panel--left,
 .tarot-curtain--holding .tarot-curtain__panel--left {
@@ -117,40 +139,89 @@
   to { transform: translateX(101%); }
 }
 
-/* clay：奶油帘幕 + 陶土包边 */
+/* clay：奶油帘幕 + 陶土包边（接缝在中缝，右帘左缘描陶土边） */
 .tarot-curtain--clay .tarot-curtain__panel {
   background: linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%);
-  border-right: 6rpx solid #e5c9a0;
-  box-shadow: -10rpx 0 30rpx rgba(122, 88, 58, 0.18);
 }
-.tarot-curtain--clay .tarot-curtain__panel--left { border-right: 6rpx solid #e5c9a0; box-shadow: 10rpx 0 30rpx rgba(122, 88, 58, 0.18); }
-.tarot-curtain--clay .tarot-curtain__panel--right { border-right: none; border-left: 6rpx solid #e5c9a0; }
-.tarot-curtain--clay .tarot-curtain__star {
-  position: absolute; top: 44%;
-  font-size: 40rpx; color: #e0aa79; opacity: 0.7;
-}
-.tarot-curtain--clay .tarot-curtain__panel--left .tarot-curtain__star { right: 30rpx; }
-.tarot-curtain--clay .tarot-curtain__panel--right .tarot-curtain__star { left: 30rpx; }
+.tarot-curtain--clay .tarot-curtain__panel--left { box-shadow: 10rpx 0 30rpx rgba(122, 88, 58, 0.14); }
+.tarot-curtain--clay .tarot-curtain__panel--right { border-left: 6rpx solid #e5c9a0; box-shadow: -10rpx 0 30rpx rgba(122, 88, 58, 0.14); }
 
-/* classic：入梦暗场，星夜月牙在合拢的夜幕后亮起 */
+/* classic：入梦暗场 */
 .tarot-curtain--classic .tarot-curtain__panel {
   background: linear-gradient(180deg, #0b0718 0%, #07050d 100%);
 }
+
+/* 星星：同一帘面两枚错位闪烁（左帘 z 序低于右帘，右帘星放帘左缘保证可见） */
+.tarot-curtain__star {
+  position: absolute;
+  font-size: 34rpx;
+  color: #e0aa79;
+  opacity: 0;
+}
 .tarot-curtain--classic .tarot-curtain__star {
-  position: absolute; top: 26%;
-  font-size: 30rpx; color: #b89cf0; opacity: 0.85;
+  color: #b89cf0;
   text-shadow: 0 0 18rpx rgba(184, 156, 240, 0.8);
 }
-.tarot-curtain--classic .tarot-curtain__panel--left .tarot-curtain__star { right: 44rpx; top: 34%; }
-.tarot-curtain--classic .tarot-curtain__panel--right .tarot-curtain__star { left: 44rpx; top: 20%; }
+.tarot-curtain--closing .tarot-curtain__star,
+.tarot-curtain--holding .tarot-curtain__star {
+  animation: tarot-star-pop .5s ease both, tarot-star-twinkle 1.6s ease-in-out .5s infinite;
+}
+/* 三枚错点位 + 相位差，避免两帘同步闪烁的机械感 */
+.tarot-curtain__panel--left .tarot-curtain__star--a { right: 30rpx; top: 30%; animation-delay: .05s, .55s; }
+.tarot-curtain__panel--left .tarot-curtain__star--b { right: 64rpx; top: 52%; font-size: 24rpx; animation-delay: .18s, .68s; }
+.tarot-curtain__panel--left .tarot-curtain__star--c { right: 38rpx; top: 72%; font-size: 28rpx; animation-delay: .32s, .82s; }
+.tarot-curtain__panel--right .tarot-curtain__star--a { left: 30rpx; top: 24%; animation-delay: 0s, .5s; }
+.tarot-curtain__panel--right .tarot-curtain__star--b { left: 70rpx; top: 46%; font-size: 26rpx; animation-delay: .24s, .74s; }
+.tarot-curtain__panel--right .tarot-curtain__star--c { left: 40rpx; top: 66%; font-size: 30rpx; animation-delay: .1s, .6s; }
+@keyframes tarot-star-pop {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 0.85; transform: scale(1); }
+}
+@keyframes tarot-star-twinkle {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.25; }
+}
+
+/* 合拢后从中缝透出的暖光，随拉开渐隐（对两皮肤各自染色） */
+.tarot-curtain__glow {
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 160rpx;
+  margin-left: -80rpx;
+  opacity: 0;
+  pointer-events: none;
+}
+.tarot-curtain--clay .tarot-curtain__glow {
+  background: linear-gradient(90deg, rgba(240, 200, 148, 0) 0%, rgba(240, 200, 148, 0.5) 50%, rgba(240, 200, 148, 0) 100%);
+}
+.tarot-curtain--classic .tarot-curtain__glow {
+  background: linear-gradient(90deg, rgba(184, 156, 240, 0) 0%, rgba(184, 156, 240, 0.45) 50%, rgba(184, 156, 240, 0) 100%);
+}
+.tarot-curtain--holding .tarot-curtain__glow {
+  opacity: 1;
+  transition: opacity .45s ease .1s;
+}
+.tarot-curtain--opening .tarot-curtain__glow {
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+/* classic：夜幕合拢后月牙亮起，拉开时随帘幕渐隐（不再瞬时消失） */
 .tarot-curtain__dream {
-  position: absolute; left: 0; right: 0; top: 18%;
+  position: absolute; left: 0; right: 0; top: 16%;
   display: flex; justify-content: center;
   opacity: 0;
+  transform: scale(0.7);
 }
 .tarot-curtain--holding .tarot-curtain__dream {
   opacity: 1;
-  transition: opacity .5s ease .1s;
+  transform: scale(1);
+  transition: opacity .5s ease .05s, transform .5s cubic-bezier(.34, 1.4, .64, 1) .05s;
+}
+.tarot-curtain--opening .tarot-curtain__dream {
+  opacity: 0;
+  transform: scale(1.15);
+  transition: opacity .38s ease, transform .38s ease;
 }
 .tarot-curtain__moon {
   font-size: 72rpx; color: #ead18d;

@@ -22,7 +22,7 @@ import './index.scss'
 // 帘幕编排：合拢 → 帘后挂载流程（同时开始预加载）→ 短暂停顿 → 拉开。
 // 不与资源预加载耦合：慢网时帘开后由流程内既有 loading 百分比层接管。
 const CURTAIN_CLOSE_MS = 420
-const CURTAIN_HOLD_MS = 260
+const CURTAIN_HOLD_MS = 340
 const CURTAIN_OPEN_MS = 560
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
@@ -110,7 +110,12 @@ export default function TarotPage() {
   return (
     <>
       {flowOpen ? (
-        <View className="tarot-page">
+        <View
+          className={[
+            'tarot-page',
+            curtain === 'opening' ? 'tarot-page--reveal' : '',
+          ].filter(Boolean).join(' ')}
+        >
           <MiniappTarotFlow initialSpread={spread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} />
         </View>
       ) : (
@@ -148,11 +153,19 @@ export default function TarotPage() {
                       hoverClass="pressable--pressed"
                       onClick={() => changeSkin(option)}
                     >
-                      <Image
-                        className="tarot-home__skin-thumb"
-                        src={getTarotSanctuaryBackground(option)}
-                        mode="aspectFill"
-                      />
+                      <View className="tarot-home__skin-thumb">
+                        {/* 底层放大铺满防露底，前景整图缩小入框：预览框仍铺满，场景完整可见 */}
+                        <Image
+                          className="tarot-home__skin-thumb-bg"
+                          src={getTarotSanctuaryBackground(option)}
+                          mode="aspectFill"
+                        />
+                        <Image
+                          className="tarot-home__skin-thumb-fg"
+                          src={getTarotSanctuaryBackground(option)}
+                          mode="aspectFit"
+                        />
+                      </View>
                       <Text className="tarot-home__skin-name">{TAROT_SKIN_LABELS[option]}</Text>
                       {skin === option && <Text className="tarot-home__skin-check">✓</Text>}
                     </View>
@@ -167,12 +180,17 @@ export default function TarotPage() {
       {curtainVisible && (
         <View className={curtainClass} aria-hidden>
           <View className="tarot-curtain__panel tarot-curtain__panel--left">
-            <Text className="tarot-curtain__star">✦</Text>
+            <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
+            <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
+            <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
           </View>
           <View className="tarot-curtain__panel tarot-curtain__panel--right">
-            <Text className="tarot-curtain__star">✦</Text>
+            <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
+            <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
+            <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
           </View>
-          {skin === 'classic' && curtain !== 'opening' && (
+          <View className="tarot-curtain__glow" />
+          {skin === 'classic' && (
             <View className="tarot-curtain__dream">
               <Text className="tarot-curtain__moon">☾</Text>
             </View>
