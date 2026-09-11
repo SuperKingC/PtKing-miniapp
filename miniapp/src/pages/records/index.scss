@@ -195,12 +195,6 @@
   color: var(--color-primary);
 }
 
-.records-page__item-time {
-  flex-shrink: 0;
-  font-size: var(--font-size-aux);
-  color: var(--color-ink-secondary);
-}
-
 /* 存储达上限提示条 */
 .records-page__cap {
   margin-bottom: 24rpx;
@@ -254,6 +248,12 @@
   background: var(--color-card-bg);
   color: var(--color-ink-secondary);
   font-size: var(--font-size-aux);
+}
+
+/* chip 按压只叠一层暖底：不用全局 opacity 突变（五层影卡整块重绘会视觉闪屏） */
+.records-page__chip--press {
+  background: #f6efe2;
+  opacity: 1;
 }
 
 .records-page__chip--on {

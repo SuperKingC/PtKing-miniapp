@@ -27,6 +27,20 @@ import './index.scss'
 
 type PageLike = { route?: string }
 
+/** 乐观选中 storage key：switchTo 点击时写入，新 tabbar 实例挂载时读取兜底 */
+export const TABBAR_SELECTED_KEY = 'ptking:tabbar-selected'
+
+function readStoredSelectedIndex(): number {
+  try {
+    const value = Taro.getStorageSync(TABBAR_SELECTED_KEY)
+    const index = typeof value === 'number' ? value : Number(value)
+    if (Number.isInteger(index) && index >= 0 && index < TABS.length) return index
+  } catch {
+    // storage 不可用时退回路由推断
+  }
+  return -1
+}
+
 function currentPage(): PageLike | undefined {
   const pages = Taro.getCurrentPages()
   return pages[pages.length - 1] as PageLike | undefined
@@ -52,7 +66,12 @@ export default class CustomTabBar extends Component {
   tarotFlowOpen = false
 
   state = {
-    selected: tabIndexFromRoute(this.ownRoute),
+    selected: (() => {
+      const byRoute = tabIndexFromRoute(this.ownRoute)
+      if (this.ownRoute && byRoute >= 0) return byRoute
+      const stored = readStoredSelectedIndex()
+      return stored >= 0 ? stored : byRoute
+    })(),
     theme: 'light' as ResolvedTheme,
     hidden: shouldHideCustomTabBar(
       this.ownRoute,
@@ -78,7 +97,12 @@ export default class CustomTabBar extends Component {
     this.setState({
       theme: resolveTheme(getThemePreference(), currentSystemTheme()),
     })
-    this.applyVisibility(tabIndexFromRoute(this.ownRoute))
+    // 选中态三级兜底：本页路由 > storage 乐观值 > 「测试」。
+    // 路由解析不出（后台实例路由为空）时宁可信 storage——它是最近一次真实点击。
+    const byRoute = tabIndexFromRoute(this.ownRoute)
+    const stored = readStoredSelectedIndex()
+    const initial = this.ownRoute && byRoute >= 0 ? byRoute : stored >= 0 ? stored : byRoute
+    this.applyVisibility(initial)
     try {
       Taro.onThemeChange?.((res: { theme?: string }) => {
         this.setState({ theme: resolveTheme(getThemePreference(), res?.theme) })
@@ -110,6 +134,13 @@ export default class CustomTabBar extends Component {
   switchTo = (index: number) => {
     const url = TABS[index]?.path
     if (!url) return
+    // 乐观选中先落 storage：tab 页各自持独立 tabbar 实例，新实例挂载早于 onShow 广播，
+    // 初始 selected 用 storage 兜底，避免新实例先渲染旧选中态再跳变
+    try {
+      Taro.setStorageSync(TABBAR_SELECTED_KEY, index)
+    } catch {
+      // storage 不可用时仍走事件广播路子
+    }
     const wxApi = getWxGlobal()
     if (wxApi?.switchTab) {
       wxApi.switchTab({ url })

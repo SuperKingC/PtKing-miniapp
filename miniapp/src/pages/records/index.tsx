@@ -185,7 +185,7 @@ export default function RecordsPage() {
               <View
                 key={item}
                 className={category === item ? 'records-page__chip records-page__chip--on' : 'records-page__chip'}
-                hoverClass="pressable--pressed"
+                hoverClass="records-page__chip--press"
                 onClick={() => setCategory(item)}
               >
                 <Text>{item}</Text>
@@ -219,7 +219,6 @@ export default function RecordsPage() {
                   >
                     <View className="records-page__item-head">
                       <Text className="records-page__item-cat">{definition?.category ?? '测试'}</Text>
-                      <Text className="records-page__item-time">{formatTime(record.finishedAt).slice(5)}</Text>
                     </View>
                     <Text className="records-page__item-title">{title}</Text>
                     <Text className="records-page__item-result">{result}</Text>

@@ -12,7 +12,7 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroCardImg from '../../assets/illus/hero-card-v5.png'
+import heroCardImg from '../../assets/illus/hero-card-v6.png'
 import tileMbtiImg from '../../assets/illus/tile-mbti-v10.png'
 import tileStarImg from '../../assets/illus/tile-star-v10.png'
 import tileLoveImg from '../../assets/illus/tile-love-v10.png'
@@ -73,12 +73,15 @@ export default function TestPage() {
     wx.navigateTo({ url: `/pages/test-detail/index?testId=${encodeURIComponent(testId)}` })
   }
   const renderCard = (definition: typeof definitions[number], badge: string) => (
-    <View key={definition.id} className="test-page__card" hoverClass="pressable--pressed" onClick={() => openDetail(definition.id)}>
+    <View key={definition.id} className="test-page__card" hoverClass="test-page__card--press" onClick={() => openDetail(definition.id)}>
       <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" lazyLoad />
       <View className="test-page__card-content">
         <Text className="test-page__card-title">{definition.title}</Text>
         <Text className="test-page__card-sub">{definition.intro[0]}</Text>
-        <Text className="test-page__card-meta">约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {badge}</Text>
+        <View className="test-page__card-meta">
+          <Text className="test-page__card-clock" aria-hidden />
+          <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {badge}</Text>
+        </View>
       </View>
       <Text className="test-page__card-go">开始测试</Text>
     </View>
@@ -94,7 +97,7 @@ export default function TestPage() {
               <Text className="test-page__brand-sub">来测测你的另一面</Text>
             </View>
           </View>
-          {daily && <View className="test-page__hero" hoverClass="pressable--pressed" onClick={() => {
+          {daily && <View className="test-page__hero" hoverClass="test-page__hero--press" onClick={() => {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
@@ -107,7 +110,7 @@ export default function TestPage() {
             <Text className="test-page__resume-meta">已完成 {resume.draft.answers.length}/{resume.definition.questions.length} 题</Text>
           </View>}
           <View id="test-category-results" className="test-page__chips">
-            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="pressable--pressed" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
+            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="test-page__chip--press" onClick={() => setActiveCategory(category.key)}><Text>{category.label}</Text></View>)}
           </View>
           {activeCategory === 'all' && recommended.length > 0 && <View className="test-page__section">
             <Text className="test-page__section-title">为你推荐</Text>

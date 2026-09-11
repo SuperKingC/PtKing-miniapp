@@ -5,7 +5,7 @@ const source = (file: string) => readFileSync(require('node:path').resolve(__dir
 describe('bright tarot entry wiring', () => {
   it('keeps the existing flow behind a light home and returns home on close', () => {
     const page = source('./index.tsx')
-    expect(page).toContain('tarot-panel-v2.jpg')
+    expect(page).toContain('tarot-panel-v3.jpg')
     expect(page).toContain('tarot-card-single-v3.png')
     expect(page).toContain('tarot-cards-fan-v3.png')
     expect(page).toContain('快速获得指引')
