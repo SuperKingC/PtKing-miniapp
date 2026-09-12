@@ -146,8 +146,10 @@ describe('测试首页软陶单列布局', () => {
     const heroImg = styleBlock('.test-page__hero-img')
     expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
-    expect(styleBlock('.test-page__card-go')).toContain('background: linear-gradient(180deg, #fad6b5 0%, #f3bf98 26%, #f2bd95 52%, #e9ae85 84%, #d99e70 96%, #d08e5e 100%)')
-    expect(styleBlock('.test-page__card-go')).toContain('0 4rpx 6rpx rgba(150, 94, 56, 0.22)')
+    /* 按钮剖面提为全局令牌，与二级页主 CTA 同层（值逐像素采样，见 app.scss） */
+    const go = styleBlock('.test-page__card-go')
+    expect(go).toContain('background: var(--action-btn-bg)')
+    expect(go).toContain('box-shadow: var(--action-btn-shadow)')
     /* 接触影烘焙进 v10 tile，CSS 不再叠投影 */
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */

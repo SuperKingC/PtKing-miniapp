@@ -36,6 +36,8 @@
   overflow: hidden;
   border-radius: 32rpx;
   background: var(--color-card-bg);
+  /* item 外边缘厚度标准：与测试中心卡片、报告页卡片同一层实色接触带三层法 */
+  box-shadow: var(--shadow-card);
   padding: 40rpx 40rpx 40rpx;
 }
 
@@ -128,15 +130,22 @@
   min-height: 104rpx;
   margin: 28rpx auto 0;
   border-radius: 999rpx;
-  background: var(--color-primary);
-  color: #ffffff;
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
 }
 
+/* 主 CTA：与测试中心「开始测试」同一层奶杏暖陶剖面（全局 --action-btn-*） */
+.test-detail__start {
+  background: var(--action-btn-bg);
+  box-shadow: var(--action-btn-shadow);
+  color: #ffffff;
+  text-shadow: 0 1rpx 2rpx rgba(150, 94, 56, 0.18);
+}
+
+/* 次级动作：与报告页底部胶囊同法（柔和主色描边 + 卡面底），层级低于主 CTA */
 .test-detail__restart {
   margin-top: 24rpx;
+  border: 2rpx solid var(--color-primary-soft);
   background: var(--color-card-bg);
   color: var(--color-primary);
-  border: 2rpx solid var(--color-primary);
 }
