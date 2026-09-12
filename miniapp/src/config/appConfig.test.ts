@@ -11,8 +11,8 @@ const TAB_ICONS = [
   'icon-tab-tarot-active-v18s.png',
   'icon-tab-records-v17s.png',
   'icon-tab-records-active-v17s.png',
-  'icon-tab-me-v17s.png',
-  'icon-tab-me-active-v17s.png',
+  'icon-tab-me-v18s.png',
+  'icon-tab-me-active-v18s.png',
 ] as const
 
 describe('WeChat app config (M0 skeleton)', () => {

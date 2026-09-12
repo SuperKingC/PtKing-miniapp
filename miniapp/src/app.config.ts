@@ -37,8 +37,8 @@ export default defineAppConfig({
       {
         pagePath: 'pages/me/index',
         text: '我的',
-        iconPath: 'assets/tabbar/icon-tab-me-v17s.png',
-        selectedIconPath: 'assets/tabbar/icon-tab-me-active-v17s.png',
+        iconPath: 'assets/tabbar/icon-tab-me-v18s.png',
+        selectedIconPath: 'assets/tabbar/icon-tab-me-active-v18s.png',
       },
     ],
   },
