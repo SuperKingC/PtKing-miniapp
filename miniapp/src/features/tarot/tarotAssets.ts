@@ -1,6 +1,9 @@
 import { resolveAssetBaseUrl } from '../../services/assetBaseUrl'
 import { getWxGlobal } from '../../services/wxGlobal'
+import { isTarotAssetCached, resetTarotAssetCacheIfBaseChanged, saveTarotAssetFromTemp } from './tarotAssetCache'
 import type { TarotSkin } from './tarotSkin'
+
+export { resolveTarotAssetUrl } from './tarotAssetCache'
 
 const artworkFiles = [
   'the-fool.jpg',
@@ -103,25 +106,21 @@ function downloadTarotFile(url: string): Promise<{ statusCode?: number; tempFile
 }
 
 /**
- * 下载全部塔罗资源，确认每张图片均可访问后才允许进入流程。
+ * 逐个确保 URL 可用：命中本地缓存直接跳过（免网络），未命中才下载并在成功后落盘。
  * 走 wx.downloadFile 回调式 API（真机 Taro 动态 import 不保证 Promise 化）。
  * 使用并发 worker 模式，最多同时 4 个下载。
  */
-export async function preloadTarotResources(
+export async function preloadTarotAssetUrls(
+  urls: string[],
   onProgress: (progress: number) => void = () => undefined,
-  skin: TarotSkin = 'clay',
 ): Promise<TarotPreloadResult> {
-  const urls = getTarotResourceUrls(skin)
   if (urls.length === 0) {
     onProgress(1)
     return { failedUrls: [], total: 0 }
   }
 
-  const unusable = urls.filter((url) => !isUsableTarotAssetUrl(url))
-  if (unusable.length > 0) {
-    onProgress(1)
-    return { failedUrls: unusable, total: urls.length }
-  }
+  // 资产版本根变化时先作废旧档，后续按新 URL 重新建档
+  resetTarotAssetCacheIfBaseChanged(resolveAssetBaseUrl())
 
   let nextIndex = 0
   let completed = 0
@@ -130,8 +129,14 @@ export async function preloadTarotResources(
 
   async function downloadOne(url: string): Promise<void> {
     try {
+      if (isTarotAssetCached(url)) return
       const result = await downloadTarotFile(url)
-      if (!isTarotDownloadSuccess(result)) failedUrls.push(url)
+      if (!isTarotDownloadSuccess(result)) {
+        failedUrls.push(url)
+        return
+      }
+      // 落盘失败不判失败：本次会话仍可展示远程 URL，只是下次还要重下
+      if (result.tempFilePath) await saveTarotAssetFromTemp(url, result.tempFilePath)
     } catch {
       failedUrls.push(url)
     } finally {
@@ -158,4 +163,27 @@ export async function preloadTarotResources(
     }
   }
   return { failedUrls, total: urls.length }
+}
+
+/**
+ * 下载全部塔罗资源，确认每张图片均可访问后才允许进入流程。
+ * 已缓存的资源不再重复下载。
+ */
+export async function preloadTarotResources(
+  onProgress: (progress: number) => void = () => undefined,
+  skin: TarotSkin = 'clay',
+): Promise<TarotPreloadResult> {
+  const urls = getTarotResourceUrls(skin)
+  if (urls.length === 0) {
+    onProgress(1)
+    return { failedUrls: [], total: 0 }
+  }
+
+  const unusable = urls.filter((url) => !isUsableTarotAssetUrl(url))
+  if (unusable.length > 0) {
+    onProgress(1)
+    return { failedUrls: unusable, total: urls.length }
+  }
+
+  return preloadTarotAssetUrls(urls, onProgress)
 }

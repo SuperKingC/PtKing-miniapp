@@ -41,7 +41,8 @@ describe('tarot skin preference', () => {
 
   it('exposes labels and order for the picker', () => {
     expect(TAROT_SKIN_ORDER).toEqual(['clay', 'classic'])
-    expect(TAROT_SKIN_LABELS.clay).toBe('猫咪占卜屋')
+    // clay 皮肤名不出现「占卜」字样(过审约束)
+    expect(TAROT_SKIN_LABELS.clay).toBe('测测子的牌桌')
     expect(TAROT_SKIN_LABELS.classic).toBe('星夜圣殿')
   })
 

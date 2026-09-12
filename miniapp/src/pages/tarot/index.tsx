@@ -5,7 +5,6 @@ import { APP_TAROT_SHARE_TITLE } from '../../services/brand'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
 import { TAROT_HISTORY_OPEN_EVENT } from '../../features/tarot/tarotHistory'
 import type { MiniappTarotSpread } from '../../features/tarot/tarotSpreads'
-import { getTarotSanctuaryBackground, isUsableTarotAssetUrl } from '../../features/tarot/tarotAssets'
 import { getTarotSkin, setTarotSkin, TAROT_SKIN_LABELS, TAROT_SKIN_ORDER, type TarotSkin } from '../../features/tarot/tarotSkin'
 import { TAROT_FLOW_VISIBILITY_EVENT } from '../../custom-tab-bar/tabBarVisibility'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
@@ -17,6 +16,8 @@ import { trackEvent } from '../../services/monitor'
 import heroImage from '../../assets/illus/tarot-panel-v6.jpg'
 import singleCardImage from '../../assets/illus/tarot-card-single-v4.png'
 import cardsFanImage from '../../assets/illus/tarot-cards-fan-v4.png'
+import skinThumbClassic from '../../assets/illus/tarot-skin-classic-v1.jpg'
+import skinThumbClay from '../../assets/illus/tarot-skin-clay-v1.jpg'
 import './index.scss'
 
 // 帘幕编排：合拢(布帘拉上/星星连线，期间帘后已挂载流程并预加载) →
@@ -152,11 +153,10 @@ export default function TarotPage() {
     trackEvent('tarot_skin_change', { skin: next })
   }
 
-  const skinThumbSrc = (option: TarotSkin): string => {
-    const remote = getTarotSanctuaryBackground(option)
-    // COS 资产根未配置时（占位域名/空），缩略图请求必然失败留白，退回包内 hero 兜底
-    return isUsableTarotAssetUrl(remote) ? remote : heroImage
-  }
+  // 牌桌缩略图：两套皮肤各自本地裁剪的横版小图（由真背景裁出，随包下发，不走网络）。
+  // 旧版铺远程 2:3 竖幅背景，资产根未配置时整块空白/退同一张 hero，用户判为「图片不对」。
+  const skinThumbSrc = (option: TarotSkin): string =>
+    option === 'classic' ? skinThumbClassic : skinThumbClay
 
   const curtainVisible = curtain !== 'idle'
   const curtainClass = [
@@ -212,8 +212,6 @@ export default function TarotPage() {
                       onClick={() => changeSkin(option)}
                     >
                       <View className={`tarot-home__skin-thumb tarot-home__skin-thumb--${option}`}>
-                        {/* 原图放大铺满裁切：按皮肤主体位置上移裁切窗（clip 窗口 220rpx，图按满宽自然高）。
-                            COS 资产根未配置（本地开发/未发布）时退回包内 hero——否则缩略图整块空白 */}
                         <Image
                           className="tarot-home__skin-thumb-img"
                           src={skinThumbSrc(option)}
@@ -244,9 +242,14 @@ export default function TarotPage() {
               <View className="tarot-curtain__tassel tarot-curtain__tassel--a" />
               <View className="tarot-curtain__tassel tarot-curtain__tassel--b" />
             </View>
-            <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
-            <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
-            <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
+            {/* 星点只属于 clay 奶油布帘；classic 星夜不再点缀星星 */}
+            {skin === 'clay' && (
+              <>
+                <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
+                <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
+                <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
+              </>
+            )}
           </View>
           <View className="tarot-curtain__panel tarot-curtain__panel--right">
             <View className="tarot-curtain__drape" />
@@ -258,30 +261,15 @@ export default function TarotPage() {
               <View className="tarot-curtain__tassel tarot-curtain__tassel--a" />
               <View className="tarot-curtain__tassel tarot-curtain__tassel--b" />
             </View>
-            <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
-            <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
-            <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
+            {skin === 'clay' && (
+              <>
+                <Text className="tarot-curtain__star tarot-curtain__star--a">✦</Text>
+                <Text className="tarot-curtain__star tarot-curtain__star--b">✦</Text>
+                <Text className="tarot-curtain__star tarot-curtain__star--c">✦</Text>
+              </>
+            )}
           </View>
-          {/* classic 星夜仪式：流星划过 → 星环展开 → 五星逐颗亮起连线成星座 */}
-          {skin === 'classic' && (
-            <>
-              <View className="tarot-curtain__meteor" />
-              <View className="tarot-curtain__meteor tarot-curtain__meteor--b" />
-              <View className="tarot-curtain__constellation">
-                <View className="tarot-curtain__const-line" />
-                <View className="tarot-curtain__const-line tarot-curtain__const-line--b" />
-                <View className="tarot-curtain__const-line tarot-curtain__const-line--c" />
-                <Text className="tarot-curtain__const-star tarot-curtain__const-star--1">✦</Text>
-                <Text className="tarot-curtain__const-star tarot-curtain__const-star--2">✧</Text>
-                <Text className="tarot-curtain__const-star tarot-curtain__const-star--3">✦</Text>
-                <Text className="tarot-curtain__const-star tarot-curtain__const-star--4">✧</Text>
-                <Text className="tarot-curtain__const-star tarot-curtain__const-star--5">✦</Text>
-              </View>
-              <View className="tarot-curtain__dream">
-                <Text className="tarot-curtain__moon">☾</Text>
-              </View>
-            </>
-          )}
+          {/* classic 星夜仪式：只留中缝暖光与呼吸光环，不再有月亮和星星 */}
           <View className="tarot-curtain__glow" />
           {skin === 'classic' && (
             <View className="tarot-curtain__glow tarot-curtain__glow--halo" />

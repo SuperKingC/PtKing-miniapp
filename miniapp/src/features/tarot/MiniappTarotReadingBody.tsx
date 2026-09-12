@@ -1,5 +1,5 @@
 import { Image, Text, View } from '@tarojs/components'
-import { getTarotArtworkUrl } from './tarotAssets'
+import { getTarotArtworkUrl, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 import type { TarotReading } from './tarotReading'
 
@@ -27,7 +27,7 @@ export function MiniappTarotReadingBody({ reading }: MiniappTarotReadingBodyProp
         <View key={`${item.card.id}-${index}`} className="miniapp-tarot__reading-card">
           <Image
             className={item.reversed ? 'miniapp-tarot__reading-art miniapp-tarot__reading-art--reversed' : 'miniapp-tarot__reading-art'}
-            src={getTarotArtworkUrl(item.card.id, skin)}
+            src={resolveTarotAssetUrl(getTarotArtworkUrl(item.card.id, skin))}
             mode="aspectFill"
             fadeIn={false}
           />

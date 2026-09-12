@@ -72,6 +72,7 @@
   --tarot-rune-ring: rgba(255, 222, 137, .75);
   --tarot-rune-ring-2: rgba(203, 137, 255, .65);
   --tarot-burst: rgba(255, 222, 137, .68);
+  --tarot-burst-glow: rgba(255, 222, 137, .4);
   --tarot-cut-lift-shadow: rgba(126, 47, 221, .5);
   --tarot-sheet-line: rgba(113, 86, 62, .9);
   --tarot-sheet-bg: #d5c7a9;
@@ -153,8 +154,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  // 头部整体下移：叉叉/标题/历史钮离屏顶一整口气，星夜标题不再顶到刘海
-  padding: calc(44rpx + env(safe-area-inset-top)) 28rpx 14rpx;
+  // 头部整体下移：叉叉/副题/历史钮离屏顶一整口气，星夜标题不再顶到刘海
+  padding: calc(72rpx + env(safe-area-inset-top)) 28rpx 20rpx;
 }
 
 .miniapp-tarot__header-title {
@@ -166,8 +167,7 @@
 
 .miniapp-tarot__header-title > text:first-child {
   color: var(--tarot-title-soft);
-  font-size: var(--font-size-section-title);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-aux);
 }
 
 .miniapp-tarot__header-title > text:last-child {
@@ -203,7 +203,7 @@
   display: flex;
   justify-content: center;
   gap: 14rpx;
-  padding: 14rpx 40rpx 16rpx;
+  padding: 18rpx 40rpx 22rpx;
 }
 
 .miniapp-tarot__progress > view {
@@ -683,12 +683,14 @@
   top: 218rpx;
   left: 50%;
   z-index: 6;
-  width: 30rpx;
-  height: 30rpx;
-  border: 3rpx solid #ffe39b;
+  // 完成波纹：大直径细边框(2rpx)起点即成品环尺寸，动画只放大 2 倍——
+  // 旧方案 30rpx 起步放大 15 倍，1px 边框被插值拉成粗糊带；环尺寸原地画就不糊
+  width: 430rpx;
+  height: 430rpx;
+  border: 2rpx solid var(--tarot-burst);
   border-radius: 50%;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(.3);
+  transform: translate(-50%, -50%) scale(.22);
   pointer-events: none;
 }
 
@@ -919,10 +921,12 @@
   }
 }
 
+// 完成波纹：满尺寸细环只放大 2 倍 + 内侧软晕淡出，环缘保持锐利不糊
 @keyframes miniapp-tarot-shuffle-burst {
-  0% { opacity: .98; transform: translate(-50%, -50%) scale(.3); box-shadow: 0 0 0 var(--tarot-burst-clear); }
-  70% { opacity: .72; transform: translate(-50%, -50%) scale(12); box-shadow: 0 0 32rpx 8rpx var(--tarot-burst-glow); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(15); box-shadow: 0 0 0 var(--tarot-burst-clear); }
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.22); box-shadow: 0 0 0 0 var(--tarot-burst-glow), inset 0 0 0 0 var(--tarot-burst-glow); }
+  25% { opacity: .95; }
+  70% { opacity: .5; transform: translate(-50%, -50%) scale(1.6); box-shadow: 0 0 26rpx 2rpx var(--tarot-burst-glow), inset 0 0 18rpx var(--tarot-burst-glow); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2); box-shadow: 0 0 0 0 var(--tarot-burst-glow), inset 0 0 0 0 var(--tarot-burst-glow); }
 }
 
 .miniapp-tarot__shuffle-bar {
@@ -1856,9 +1860,9 @@
   }
 }
 
-// ── clay 皮肤：猫咪牌屋（2026-09-11 锚点 reference-ui.png 高调奶油软陶）──
-// 场景与 classic 星夜圣殿完全不同：奶油猫占卜师坐在桌对面，暖亮色调；
-// 仅覆盖变量与少量皮肤专属元素（猫气泡指引），流程组件与 stage 动画完全复用。
+// ── clay 皮肤：测测子的牌桌（2026-09-11 锚点 reference-ui.png 高调奶油软陶）──
+// 场景与 classic 星夜圣殿完全不同：奶油猫店长「测测子」坐在桌对面，暖亮色调；
+// 仅覆盖变量与少量皮肤专属元素（测测子气泡指引），流程组件与 stage 动画完全复用。
 .miniapp-tarot.skin-clay {
   --tarot-root-bg: linear-gradient(180deg, #f2ecdf 0%, #f4eee1 52%, #ede4d2 100%);
   --tarot-fade-bg: linear-gradient(180deg, #efe7d8 0%, #e9dfcc 100%);
@@ -1927,6 +1931,7 @@
   --tarot-rune-ring: rgba(217, 158, 107, .6);
   --tarot-rune-ring-2: rgba(168, 198, 232, .6);
   --tarot-burst: rgba(240, 197, 154, .68);
+  --tarot-burst-glow: rgba(240, 197, 154, .4);
   --tarot-cut-lift-shadow: rgba(178, 122, 80, .4);
   --tarot-sheet-line: rgba(160, 118, 82, .5);
   --tarot-sheet-bg: #f3e7d3;
@@ -1960,7 +1965,7 @@
     text-shadow: 0 0 12rpx #fff, 0 0 26rpx rgba(224, 152, 95, .7);
   }
 
-  // 猫咪指引气泡：白底圆角 + 燕麦描边 + 左下小尾巴，贴在场景猫的斜下方
+  // 测测子指引气泡：白底圆角 + 燕麦描边 + 左下小尾巴，贴在场景猫的斜下方
   .miniapp-tarot__hint {
     position: relative;
     margin: 0 auto;

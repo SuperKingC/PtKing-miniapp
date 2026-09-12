@@ -4,10 +4,25 @@
  * （真机尤其如此）——所以必须先用 typeof 探测裸标识符，globalThis.wx 只作兜底。
  * node/vitest 里两者都不存在，返回 undefined，调用方走各自的静默兜底路径。
  */
+/** 只覆盖本地资源缓存用到的文件系统能力。 */
+export interface WxFileSystemManager {
+  /** 把临时文件持久化到小程序本地存储；success 回 savedFilePath。 */
+  saveFile?: (options: {
+    tempFilePath: string
+    filePath?: string
+    success?: (result: { savedFilePath?: string }) => void
+    fail?: (error?: unknown) => void
+  }) => void
+  /** 同步探测文件是否存在；不存在时抛错。 */
+  accessSync?: (path: string) => unknown
+  unlinkSync?: (path: string) => unknown
+}
+
 export interface WxLike {
   getStorageSync?: (key: string) => unknown
   setStorageSync?: (key: string, value: unknown) => void
   removeStorageSync?: (key: string) => void
+  getFileSystemManager?: () => WxFileSystemManager
   showModal?: (options: {
     title?: string
     content?: string

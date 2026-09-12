@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
-import { getTarotCardBack } from './tarotAssets'
+import { getTarotCardBack, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 import { getTarotStageCopy } from './tarotSkinCopy'
 
@@ -21,7 +21,7 @@ function CutPile() {
         <View key={index} className="miniapp-tarot__cut-sheet" style={{ top: `${index * 3}rpx` }} />
       ))}
       <View className="miniapp-tarot__cut-face">
-        <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
+        <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
       </View>
     </View>
   )

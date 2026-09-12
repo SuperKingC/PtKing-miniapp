@@ -103,6 +103,17 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(shuffleStage).toContain('progress >= 100 && !isShuffling')
   })
 
+  it('fires a crisp full-size completion ring instead of an upscaled blurry circle', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // 满尺寸细环(430rpx/2rpx 边)只放大 2 倍：旧 30rpx 环放大 15 倍会把边框插值成粗糊带
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-burst \{[\s\S]*?width: 430rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-burst \{[\s\S]*?border: 2rpx solid var\(--tarot-burst\)/)
+    expect(styles).toContain('--tarot-burst-glow')
+    expect(styles).not.toContain('scale(15)')
+    expect(styles).not.toContain('scale(12)')
+  })
+
   it('cuts one centered deck: top packet lifts aside and restacks below', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const cutStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotCutStage.tsx'), 'utf8')
@@ -206,6 +217,10 @@ describe('miniapp tarot WXSS compatibility', () => {
   it('gates the tarot flow behind a resource download overlay with progress', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+
+    // 流程头部：副题仅一行(选牌阵/提问阶段名)，无「塔罗密室」主标题
+    expect(flowSource).not.toContain('塔罗密室')
+    expect(flowSource).toContain("state.stage === 'question' ? '聆听内心的提问' : findTarotSpread(state.spread).label")
 
     expect(flowSource).toContain('preloadTarotResources')
     // 预加载进度/完成外抛给页面帘幕层(帘幕开场动画显示同一份进度)

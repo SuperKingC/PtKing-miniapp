@@ -1,5 +1,18 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-12 18:15：牌桌预览改包内真图 + 塔罗资源落盘缓存（用户：牌桌要用两套皮肤背景图，之前是好的；且下载过的资源要缓存）。
+  ①**牌桌缩略图**：旧版 `skinThumbSrc` 铺远程 2:3 竖幅背景靠 `isUsableTarotAssetUrl` 判可达，未配资产根时退纯 CSS 星/月牙卡 → 用户看不到真场景。改为**从两套皮肤背景各裁一张横版小图打进包内**：`art/ref-pages-v3/compress-tarot-skin-thumbs.py` 产出 `tarot-skin-classic-v1.jpg`（490×330，33KB，对准月门）/`tarot-skin-clay-v1.jpg`（490×330，13KB，对准测测子与桌面），`index.tsx` 直接 import 本地图，删除 `isUsableTarotAssetUrl` 依赖与 `.tarot-home__skin-thumb-fallback*` 死样式；`index.scss` 缩略图去负 margin 改满铺。
+  ②**资源缓存**：旧版 `preloadTarotResources` 的 `downloadFile` 临时文件**用完即弃**，每次进入重下 24 张（clay 约 2MB / classic 约 5MB）。新增 `tarotAssetCache.ts`：成功后 `saveFile` 落盘 + `ptking_tarot_asset_cache` 存 URL→本地路径映射（按资产版本根 base 分段，换版即清旧文件）；`preloadTarotResources` 命中缓存直接跳过下载，渲染侧全部改走 `resolveTarotAssetUrl()`（Flow 背景 + Card 牌背/牌面 + Cut/Shuffle/Fan + ReadingBody）。
+  ③`wxGlobal.ts` 补 `getFileSystemManager`（saveFile/accessSync/unlinkSync）与 `WxFileSystemModule`；node/vitest 无 wx 时静默退回远程 URL。
+  ④验证：`tarotAssetCache.test.ts`（7）+ `tarotAssets.test.ts`（11，含「二次进入 0 次下载」）新增，全量 457 过；本机 8788 带日志静态服务实测——首次进入 24 条 GET，退出再进两次均 **0 条塔罗资源请求**，牌桌两格显示真场景图。注意：真机需 `saveFile` 配额（每皮肤 ≤10MB，classic 5MB 接近上限）；正式包仍要 COS 上传 + `.asset-base-url` 注入域名。
+
+- 2026-09-12 16:00：牌桌缩略图错图 + classic 星夜动画去月亮星星 + clay 资产重出。
+  ①**用户可见症状「牌桌用的图片不对、点进塔罗资源加载失败」同一根因**：`art/generated-art/` gitignore，48 张塔罗图在盘上丢失（classic 24 张覆盖前被删，clay 24 张从未落盘），构建地址又只有占位域名 → 流程预加载 24 张全 404 停在「资源加载失败」；牌桌两格缩略图因 `skinThumbSrc` 不可达时退同一张包内 `tarot-panel-v6.jpg`（3:2 入口 hero，带「塔罗时光」烘焙标题），被 220rpx 窗口硬裁后两块都是 clay 场景+标题，判为错图。
+  ②修复：classic 24 张从 `D:\Pet10\public\tarot` 回拷；clay 24 张用 kit `art/gen.mjs` 按 `art/prompts-tarot-clay.txt`+`-batch.txt` 24 条提示词重出（gemini-3.1-flash-image-preview 2:3，chariot/devil/high-priestess 三张首出带烘焙英文标题与色卡，带强禁字提示词重出干净），按 2:3 归一到 `sanctuary-background-clay.jpg`/`card-back-clay.jpg`/`*-clay.jpg`，逐张 q88 压到 ≤180KB。
+  ③牌桌缩略图改 `string | null`：可达走该皮肤真场景（两套各自 2:3 竖幅），不可达走纯 CSS 肤色卡（classic 暗底月牙、clay 奶底星），**不再退同一张包内 hero**。
+  ④classic 星夜帘幕删掉月亮/流星/星座连线三件套（用户：星夜牌桌动画不要月亮和星星），只留中缝暖光+halo 呼吸；`tarot-curtain__star` 星点改只挂 `skin === 'clay'`。契约测试同步（index.test.ts 断 `not.toContain` 旧节点名 + fallback 类名）。
+  ⑤本地验证路径：`npm run art:preview`（本机 8787 静态服务模拟 COS）+ `TARO_ASSET_DEV_BASE_URL=http://127.0.0.1:8787/ptking-web/local-dev` 重建；真机/正式包仍需把 48 张传 COS 后 `.asset-base-url` 注入正式域名，本机无 COS 凭据未上传。
+
 - 2026-09-11 21:20：开场四项修复(648340d)。①底栏随帘即藏：`startFlow` 先 `trigger(TAROT_FLOW_VISIBILITY_EVENT, true)` 再开帘，不等帘后流程挂载。②加载快进：HOLD_MIN 500→160ms。③开场精致化：clay 顶部帷幔(三扇贝垂边+双垂穗 `tarot-tassel-sway` 摇摆)+三重竖褶；classic 双流星+星座连线+月牙+halo；加载宝珠环(环轨旋+环心pct)+宝石胶囊条，文案分皮肤。④头部下移(header 12→44rpx、progress padding 加倍、阶段 padding-top 88→60rpx)，牌组对准圆环中心(y≈53%)。⑤**重要平台坑**：WXSS 同节点 class 切换(`--holding`→`--opening`)的 opacity keyframes 动画实测**不重放**——类挂上后帘幕仍不透明残留到 12s 兜底；修复=opening 700ms 后 `setCurtain('idle')` 卸载节点，卸载是确定性清屏兜底。后续凡「class 切换触发的整层淡出」都应优先考虑卸载式而非依赖动画重放。探针定位套路：bundle 变量撞名(tt=页面 curtainLoaded 也=Flow loadError)会误导静态分析，须用 console 监听+逐 300ms class 轮询在运行时取证。
 
 - 2026-09-11 20:20：三项体验修复(4c67af8)。①tab选中态偶发不切换：tabbar 实例晚于页面 onShow 订阅的竞态——`useTabBarSelected` onShow 时也落乐观 storage(key 从 index.tsx 挪到 tabBarVisibility.ts 叶子模块，防 hook↔组件循环引用)+广播后 160ms 守卫式补发(仅栈顶页才发)；tabbar 挂载 120ms 后重解 ownRoute 校准。②流程内底栏残留：`shouldHideCustomTabBar` 改 ownRoute 优先——塔罗实例 flowOpen 即藏，不再信可能过期的 selected(新实例挂载读旧 storage)。③牌组居中背景圆环：金环量测 y 31%..75% 中心 53%，顶部 spacer 2:1→3:2。④帘幕开场重做：合拢 0.9s + 布帘竖向褶皱(clay)；classic 星星逐颗 pop 连线成星座 + halo 呼吸光；帘内预加载进度条(Flow 新增 onLoadProgress/onLoadDone 外抛)，hold 等 loaded(最短 500ms 仪式感，12s 慢网兜底)后整帘淡出(替代横向拉开)。契约测试同步，427 全过；automator 实机：tab 连续切换 5 次高亮正确、两皮肤帘幕三连拍、洗牌页圆环居中确认。注意：流程内提问页布局为居中表单不受 spacer 影响；me 页未接 useTabBarSelected(点击乐观值已兜底)。

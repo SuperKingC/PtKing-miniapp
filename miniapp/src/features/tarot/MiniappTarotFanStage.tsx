@@ -1,7 +1,7 @@
 import { useEffect, type CSSProperties } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
 import type { TarotCandidate } from './tarotCards'
-import { getTarotCardBack } from './tarotAssets'
+import { getTarotCardBack, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 import { getTarotStageCopy } from './tarotSkinCopy'
 
@@ -45,7 +45,7 @@ export function MiniappTarotFanStage({
               : 'miniapp-tarot__picked-slot'}
           >
             {picked[order] !== undefined && (
-              <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
+              <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
             )}
           </View>
         ))}
@@ -65,7 +65,7 @@ export function MiniappTarotFanStage({
             disabled={picked.includes(index) || flyingCard !== undefined}
             onClick={() => onPick(index)}
           >
-            <Image src={getTarotCardBack(skin)} mode="aspectFill" fadeIn={false} />
+            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
           </Button>
         ))}
       </View>

@@ -22,9 +22,11 @@ describe('tarot stage copy per skin', () => {
     expect(copy.questionTitle).not.toBe(getTarotStageCopy('classic').questionTitle)
     expect(copy.shuffleHint(50)).toContain('50%')
     expect(copy.fanTitle(3)).toContain('3 张牌')
-    expect(copy.revealTitle(false)).toContain('猫咪')
+    // 猫一律称「测测子」，不再用「猫咪」泛称(过审约束)
+    expect(copy.revealTitle(false)).toContain('测测子')
     for (const value of [copy.questionTitle, copy.spreadTitle, copy.shuffleTitle, copy.cutTitle, copy.fanTitle(3), copy.revealTitle(false)]) {
       expect(value).not.toMatch(/占卜|算命|改运/)
+      expect(value).not.toContain('猫咪')
     }
   })
 })

@@ -1,7 +1,9 @@
 /**
- * 分皮肤流程指引文案：classic 保持现有措辞，clay 换成猫咪牌屋的猫口吻短句
+ * 分皮肤流程指引文案：classic 保持现有措辞，clay 换成测测子（店猫）口吻短句
  * （配合 .skin-clay .miniapp-tarot__hint 猫气泡样式）。
  * 仅覆盖 stage 标题与操作提示；按钮、牌阵名、解读文案两套皮肤共用。
+ * 过审约束：用户可见文案禁「占卜/算命/改运」（tarotCopy.test.ts 把关）；
+ * 猫一律称「测测子」，不再用「猫咪」泛称。
  */
 import type { TarotSkin } from './tarotSkin'
 
@@ -30,15 +32,15 @@ const CLASSIC: TarotStageCopy = {
 }
 
 const CLAY: TarotStageCopy = {
-  questionTitle: '想问点什么呢？告诉猫咪吧',
+  questionTitle: '想问点什么呢？告诉测测子吧',
   spreadTitle: '今天的牌，想怎么摆？',
-  shuffleTitle: '长按牌堆，跟猫咪一起静静心',
+  shuffleTitle: '长按牌堆，跟测测子一起静静心',
   shuffleHint: (progress) => `${Math.round(progress)}% · 松手歇口气，再按继续`,
   cutTitle: '凭直觉，轻轻切开这叠牌',
-  cutHint: (cutCount) => (cutCount > 0 ? `已切 ${cutCount} 次，猫咪等你准备好` : '点一下牌堆，切几次都可以'),
+  cutHint: (cutCount) => (cutCount > 0 ? `已切 ${cutCount} 次，测测子等你准备好` : '点一下牌堆，切几次都可以'),
   fanTitle: (needCount) => `闭眼想三秒，选出 ${needCount} 张牌`,
-  fanHint: (pickedCount, needCount) => `已选 ${pickedCount}/${needCount} · 猫咪陪着你`,
-  revealTitle: (allFlipped) => (allFlipped ? '牌都翻开啦' : '逐张点开，看看猫咪翻到了什么'),
+  fanHint: (pickedCount, needCount) => `已选 ${pickedCount}/${needCount} · 测测子陪着你`,
+  revealTitle: (allFlipped) => (allFlipped ? '牌都翻开啦' : '逐张点开，看看测测子翻到了什么'),
 }
 
 export function getTarotStageCopy(skin: TarotSkin): TarotStageCopy {

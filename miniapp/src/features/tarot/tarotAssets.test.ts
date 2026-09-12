@@ -12,15 +12,20 @@ import {
   isTarotDownloadSuccess,
   isUsableTarotAssetUrl,
   preloadTarotResources,
+  resolveTarotAssetUrl,
   TAROT_PRELOAD_TIMEOUT_MS,
 } from './tarotAssets'
+import { clearTarotAssetCache } from './tarotAssetCache'
 
 const downloadFile = vi.fn()
 
 describe('miniapp tarot assets', () => {
   beforeEach(() => {
     downloadFile.mockReset()
-    ;(globalThis as { wx?: { downloadFile: (options: { url: string; success?: (result: unknown) => void; fail?: (error?: unknown) => void }) => void; getSystemInfoSync: () => { platform: string } } }).wx = {
+    clearTarotAssetCache()
+    const storage = new Map<string, unknown>()
+    const files = new Set<string>()
+    ;(globalThis as { wx?: unknown }).wx = {
       downloadFile: (options: { url: string; success?: (result: unknown) => void; fail?: (error?: unknown) => void }) => {
         Promise.resolve(downloadFile(options.url)).then(
           (result) => options.success?.(result),
@@ -28,6 +33,20 @@ describe('miniapp tarot assets', () => {
         )
       },
       getSystemInfoSync: () => ({ platform: 'devtools' }),
+      getStorageSync: (key: string) => storage.get(key),
+      setStorageSync: (key: string, value: unknown) => { storage.set(key, value) },
+      getFileSystemManager: () => ({
+        saveFile: ({ tempFilePath, success }: { tempFilePath: string; success?: (result: { savedFilePath?: string }) => void }) => {
+          const savedFilePath = `wxfile://${tempFilePath}`
+          files.add(savedFilePath)
+          success?.({ savedFilePath })
+        },
+        accessSync: (path: string) => {
+          if (!files.has(path)) throw new Error('ENOENT')
+          return undefined
+        },
+        unlinkSync: (path: string) => { files.delete(path) },
+      }),
     }
   })
 
@@ -98,6 +117,34 @@ describe('miniapp tarot assets', () => {
 
     expect(result.failedUrls).toHaveLength(0)
     expect(downloadFile).toHaveBeenCalled()
+  })
+
+  it('persists downloaded resources to the local cache and resolves them offline', async () => {
+    downloadFile.mockImplementation((url: string) => Promise.resolve({ statusCode: 200, tempFilePath: `/tmp/${encodeURIComponent(url)}.jpg` }))
+
+    const result = await preloadTarotResources()
+    expect(result.failedUrls).toHaveLength(0)
+
+    const url = getTarotCardBack('clay')
+    expect(resolveTarotAssetUrl(url)).toContain('wxfile://')
+    expect(resolveTarotAssetUrl(url)).not.toBe(url)
+  })
+
+  it('skips network downloads for resources already cached on a second entry', async () => {
+    downloadFile.mockImplementation((url: string) => Promise.resolve({ statusCode: 200, tempFilePath: `/tmp/${encodeURIComponent(url)}.jpg` }))
+
+    // 首次进入：24 张全部下载并落盘
+    await preloadTarotResources()
+    expect(downloadFile).toHaveBeenCalledTimes(24)
+
+    // 二次进入：全部命中本地缓存，不再发起任何下载
+    downloadFile.mockClear()
+    const result = await preloadTarotResources()
+
+    expect(result.failedUrls).toHaveLength(0)
+    expect(downloadFile).not.toHaveBeenCalled()
+    const url = getTarotCardBack('clay')
+    expect(resolveTarotAssetUrl(url)).toContain('wxfile://')
   })
 
   it('treats hung downloads as failed after the preload timeout', async () => {

@@ -10,7 +10,7 @@ import { MiniappTarotRevealStage } from './MiniappTarotRevealStage'
 import { MiniappTarotReadingStage } from './MiniappTarotReadingStage'
 import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { MiniappTarotHistoryPanel } from './MiniappTarotHistoryPanel'
-import { getTarotSanctuaryBackground, preloadTarotResources } from './tarotAssets'
+import { getTarotSanctuaryBackground, preloadTarotResources, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
@@ -137,7 +137,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
     <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')}>
       <Image
         className="miniapp-tarot__background"
-        src={getTarotSanctuaryBackground(skin)}
+        src={resolveTarotAssetUrl(getTarotSanctuaryBackground(skin))}
         mode="aspectFill"
         fadeIn={false}
       />
@@ -170,7 +170,6 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
           <View className="miniapp-tarot__header">
             <Button aria-label="退出塔罗" onClick={onClose}>×</Button>
             <View className="miniapp-tarot__header-title">
-              <Text>塔罗密室</Text>
               <Text>{state.stage === 'question' ? '聆听内心的提问' : findTarotSpread(state.spread).label}</Text>
             </View>
             <Button aria-label="查看解读历史" onClick={() => { tapFeedback(); setHistoryOpen(true) }}>⌛</Button>

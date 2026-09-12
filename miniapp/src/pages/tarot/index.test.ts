@@ -20,22 +20,35 @@ describe('bright tarot entry wiring', () => {
     expect(page).toContain('onClose={closeFlow}')
     expect(page).toContain('initialSpread={spread}')
   })
-  it('renders skin thumbnails as full-bleed crops biased to each skin subject', () => {
+  it('renders skin thumbnails from bundled per-skin crops (no network, no CSS fallback)', () => {
     const page = source('./index.tsx')
+    expect(page).toContain('tarot-skin-classic-v1.jpg')
+    expect(page).toContain('tarot-skin-clay-v1.jpg')
     expect(page).toContain('tarot-home__skin-thumb--${option}')
-    expect(page).toContain('tarot-home__skin-thumb-img')
+    expect(page).toContain('className="tarot-home__skin-thumb-img"')
     expect(page).toContain('mode="aspectFill"')
+    // 两套皮肤各自包内小图，随包下发；不再依赖远程资产可达性
+    expect(page).toContain('const skinThumbSrc = (option: TarotSkin): string')
+    expect(page).toContain("option === 'classic' ? skinThumbClassic : skinThumbClay")
+    expect(page).not.toContain('skin-thumb-fallback')
+    expect(page).not.toContain('isUsableTarotAssetUrl')
     const styles = source('./index.scss')
     expect(styles).toMatch(/\.tarot-home__skin-thumb\s*{[^}]*height:\s*220rpx[^}]*overflow:\s*hidden/)
-    expect(styles).toMatch(/\.tarot-home__skin-thumb-img\s*{[^}]*height:\s*490rpx[^}]*margin-top:\s*-147rpx/)
-    expect(styles).toContain('.tarot-home__skin-thumb--clay .tarot-home__skin-thumb-img { margin-top: -97rpx; }')
+    expect(styles).toMatch(/\.tarot-home__skin-thumb-img\s*{[^}]*width:\s*100%[^}]*height:\s*100%/)
+    // 旧版 CSS 兜底卡已随本地图移除
+    expect(styles).not.toContain('tarot-home__skin-thumb-fallback')
     expect(styles).toMatch(/\.tarot-home__skins\s*{[^}]*margin-top:\s*44rpx/)
   })
-  it('curtain entrance layers drape close, constellation line-up and fade-out reveal', () => {
+  it('curtain entrance layers drape close and fade-out reveal', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-curtain__glow')
     expect(page).toContain('tarot-curtain__star--a')
     expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
+    // 星点只挂 clay：classic 星夜不再有月亮和星星（用户反馈）
+    expect(page).toMatch(/\{skin === 'clay' && \(\s*<>[\s\S]*?tarot-curtain__star--a/)
+    expect(page).not.toContain('tarot-curtain__moon')
+    expect(page).not.toContain('tarot-curtain__const-star')
+    expect(page).not.toContain('tarot-curtain__meteor')
     // 帘内加载进度：宝珠环+胶囊条在合拢期间就显示预加载进度，完成后随帘淡出
     expect(page).toContain('onLoadProgress={handleLoadProgress}')
     expect(page).toContain('onLoadDone={handleLoadDone}')
@@ -60,11 +73,11 @@ describe('bright tarot entry wiring', () => {
     expect(styles).toContain('@keyframes tarot-curtain-swell-left')
     expect(styles).toMatch(/\.tarot-curtain--clay \.tarot-curtain__panel::after[\s\S]*?border-radius/)
     expect(styles).toContain('tarot-tassel-whip')
-    // classic 仪式三件套：流星斜掠、星星逐颗亮起连线
-    expect(styles).toContain('tarot-curtain__meteor')
-    expect(styles).toContain('@keyframes tarot-const-star-pop')
-    expect(styles).toContain('@keyframes tarot-const-line-grow')
-    expect(styles).toContain('tarot-curtain__const-line--b')
+    // classic 星夜只有中缝暖光与呼吸光环：流星/星座连线/月牙样式已移除
+    expect(styles).not.toContain('tarot-curtain__meteor')
+    expect(styles).not.toContain('@keyframes tarot-const-star-pop')
+    expect(styles).not.toContain('@keyframes tarot-const-line-grow')
+    expect(styles).not.toContain('tarot-curtain__moon')
     // 加载宝珠环：百分比在环心，环轨旋转
     expect(styles).toContain('tarot-curtain__loading-ring')
     expect(styles).toContain('@keyframes tarot-curtain-orb-spin')
