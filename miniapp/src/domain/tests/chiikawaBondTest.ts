@@ -135,7 +135,7 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const CHIIKAWA_BOND_TEST: TestDefinition = {
   id: 'chiikawa-bond',
-  title: '谁和你最有缘',
+  title: 'Chiikawa中谁和你最有缘',
   category: '趣味',
   meta: { minutes: 4, resultLabel: '5 型 · 缘分角色鉴定' },
   intro: [
