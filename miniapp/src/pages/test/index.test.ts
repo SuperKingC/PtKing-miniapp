@@ -51,7 +51,12 @@ describe('测试首页软陶单列布局', () => {
   it('品牌行与今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('hero-card-v8.png')
+    expect(source).toContain('hero-card-v9.png')
+    /* 气球/公文包 tile 走 v14：左+下方向性接触影（旧 v13 修黑晕边时把影一起洗掉了） */
+    expect(source).toContain('tile-fun-v14.png')
+    expect(source).toContain('tile-career-v14.png')
+    expect(source).not.toContain('tile-fun-v13.png')
+    expect(source).not.toContain('tile-career-v13.png')
     expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')
     expect(source).toContain('openDetail(daily.id)')
   })
