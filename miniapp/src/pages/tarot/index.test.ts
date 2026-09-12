@@ -53,11 +53,12 @@ describe('bright tarot entry wiring', () => {
     // 12s 慢网兜底只保留一份
     expect(page.match(/setTimeout\(\(\) => setCurtain\('opening'\), 12000\)/g)).toHaveLength(1)
   })
-
   it('curtain entrance layers drape close and fade-out reveal', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-curtain__glow')
     expect(page).toContain('tarot-curtain__star--a')
+    // 合拢底色：第一拍铺满，保证帘子盖严后再放行流程
+    expect(page).toContain('tarot-curtain__backdrop')
     expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
     // 星点只挂 clay：classic 星夜不再有月亮和星星（用户反馈）
     expect(page).toMatch(/\{skin === 'clay' && \(\s*<>[\s\S]*?tarot-curtain__star--a/)
@@ -96,14 +97,21 @@ describe('bright tarot entry wiring', () => {
     // 加载宝珠环：百分比在环心，环轨旋转
     expect(styles).toContain('tarot-curtain__loading-ring')
     expect(styles).toContain('@keyframes tarot-curtain-orb-spin')
-    // hold 加载完成即放行淡出(不设最短仪式时长，资源好即进——用户反馈进塔罗太慢)，慢网 12s 兜底放行
+    // hold 等「帘子盖严 + 资源就绪」，保留一点点呼吸；慢网 12s 兜底放行
     expect(page).toMatch(/if \(!curtainLoaded\) return[\s\S]*CURTAIN_HOLD_MIN_MS - elapsed/)
-    expect(page).toContain('CURTAIN_HOLD_MIN_MS = 0')
-    expect(page).toContain('CURTAIN_CLOSE_MS = 420')
-    expect(page).toContain('CURTAIN_OPEN_MS = 360')
-    expect(styles).toContain('tarot-curtain-close-left .42s')
-    expect(styles).toContain('tarot-curtain-fade .36s')
+    expect(page).toContain('CURTAIN_HOLD_MIN_MS = 160')
+    expect(page).toContain('CURTAIN_CLOSE_MS = 720')
+    expect(page).toContain('CURTAIN_OPEN_MS = 500')
+    // 动画时长必须与 JS 常量一致，且合拢要慢到读作布料（0.72s）
+    expect(styles).toContain('tarot-curtain-close-left .72s')
+    expect(styles).toContain('tarot-curtain-fade .5s')
+    // 合拢第一拍就铺满，避免「帘未盖严流程先露」
+    expect(styles).toMatch(/\.tarot-curtain--closing \.tarot-curtain__backdrop/)
+    // 顺滑落位：缓起缓收 + 末段轻微过冲，不再用大过冲的硬回弹
+    expect(styles).toContain('cubic-bezier(.34, .06, .2, 1.02)')
     expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')
+    // 合拢动画走完才挂载流程：保证「帘先盖严再进去」
+    expect(page).toMatch(/setCurtain\('closing'\)[\s\S]*holdStartRef\.current = Date\.now\(\)[\s\S]*setFlowOpen\(true\)/)
     // 淡出播完后彻底卸载帘幕：WXSS 同节点 class 切换的 opacity 动画实测不重放，
     // 卸载是清屏的确定性兜底(用户反馈：帘幕卡住不消失)
     expect(page).toMatch(/if \(curtain !== 'opening'\) return[\s\S]*setCurtain\('idle'\), CURTAIN_OPEN_MS \+ 80/)

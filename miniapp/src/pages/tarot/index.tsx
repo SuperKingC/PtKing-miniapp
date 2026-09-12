@@ -20,12 +20,12 @@ import skinThumbClassic from '../../assets/illus/tarot-skin-classic-v1.jpg'
 import skinThumbClay from '../../assets/illus/tarot-skin-clay-v1.jpg'
 import './index.scss'
 
-// 帘幕编排：合拢(布帘拉上/星星连线，期间帘后已挂载流程并预加载) →
-// hold 到资源加载完成(不设最短仪式时长，资源好即放行；合拢耗时本身兜底) → 淡出帘幕。
-// 不与资源预加载耦合：慢网时帘幕内显示预加载进度，完成后淡入正式界面。
-const CURTAIN_CLOSE_MS = 420
-const CURTAIN_HOLD_MIN_MS = 0
-const CURTAIN_OPEN_MS = 360
+// 帘幕编排：合拢(布帘拉上，期间帘后已挂载流程并预加载) → hold 等资源就绪 →
+// 淡出帘幕露出流程。合拢时长 = 帘身动画时长，必须等帘子完全盖严才放行，
+// 否则会看到「帘还没拉上流程就冒出来」。四值改动需同时同步 index.scss 动画时长。
+const CURTAIN_CLOSE_MS = 720
+const CURTAIN_HOLD_MIN_MS = 160
+const CURTAIN_OPEN_MS = 500
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
 
@@ -61,7 +61,8 @@ export default function TarotPage() {
   }
   useEffect(() => () => clearCurtainTimers(), [])
 
-  // hold 阶段等加载：资源完成即放行淡出(不设最短仪式时长，合拢本身已兜底)。
+  // hold 阶段等加载：帘子完全盖严(合拢动画走完)且资源就绪才放行；
+  // 合拢本身就兜住了最短仪式感，这里只给一点点呼吸时间，不额外拖慢
   useEffect(() => {
     if (curtain !== 'holding') return
     if (!curtainLoaded) return
@@ -120,12 +121,13 @@ export default function TarotPage() {
       setFlowOpen(true)
       return
     }
-    // 帘幕关上(布帘拉合/星显连线)→ 帘后挂载流程(同时开始预加载) →
-    // hold:加载完成即快进淡出(只保 160ms 呼吸底线)，慢网 12s 兜底放行
-    holdStartRef.current = Date.now()
+    // 帘幕拉合(布帘从中缝向两侧收拢到位)→ 帘后挂载流程并开始预加载 →
+    // hold:帘子盖严且资源就绪后淡出；慢网 12s 兜底放行，loading 层继续显示进度
     setCurtain('closing')
     curtainTimersRef.current.push(
       setTimeout(() => {
+        // 合拢动画已走完 → 此刻才挂载流程，帘后不再有内容抢先露出
+        holdStartRef.current = Date.now()
         setFlowOpen(true)
         setCurtain('holding')
       }, CURTAIN_CLOSE_MS),
@@ -226,6 +228,8 @@ export default function TarotPage() {
       )}
       {curtainVisible && (
         <View className={curtainClass} aria-hidden>
+          {/* 合拢底色：第一拍就铺满，保证帘子盖严后再放行流程 */}
+          <View className="tarot-curtain__backdrop" />
           <View className="tarot-curtain__panel tarot-curtain__panel--left">
             <View className="tarot-curtain__drape" />
             <View className="tarot-curtain__drape tarot-curtain__drape--b" />
