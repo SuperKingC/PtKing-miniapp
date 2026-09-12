@@ -228,8 +228,6 @@ export default function TarotPage() {
       )}
       {curtainVisible && (
         <View className={curtainClass} aria-hidden>
-          {/* 合拢底色：第一拍就铺满，保证帘子盖严后再放行流程 */}
-          <View className="tarot-curtain__backdrop" />
           <View className="tarot-curtain__panel tarot-curtain__panel--left">
             <View className="tarot-curtain__drape" />
             <View className="tarot-curtain__drape tarot-curtain__drape--b" />

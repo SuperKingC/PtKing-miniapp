@@ -96,32 +96,16 @@
   top: 0;
   height: 100%;
   width: 50%;
+  /* 内缘的弧线用 border-radius + 裁切实现，必须裁切，否则弧形之外会漏出布料 */
+  overflow: hidden;
 }
 .tarot-curtain__panel--left { left: 0; }
 .tarot-curtain__panel--right { right: 0; }
-/* 合拢底色：拉合第一拍就铺满整屏，保证「帘先盖严再进流程」不依赖两片帘各自的落位时机。
-   取各皮肤帘身底色、与帘面同色，视觉上是帘子补满而不是色块闪现 */
-.tarot-curtain__backdrop {
-  position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
-  width: 100%; height: 100%;
-  opacity: 0;
-  pointer-events: none;
-}
-.tarot-curtain--clay .tarot-curtain__backdrop { background: linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%); }
-.tarot-curtain--classic .tarot-curtain__backdrop { background: linear-gradient(180deg, #0b0718 0%, #07050d 100%); }
-.tarot-curtain--closing .tarot-curtain__backdrop,
-.tarot-curtain--holding .tarot-curtain__backdrop {
-  opacity: 1;
-  transition: opacity .2s ease;
-}
-.tarot-curtain--opening .tarot-curtain__backdrop {
-  opacity: 0;
-  transition: opacity .42s ease;
-}
 /* 关上：挂载即播的 keyframes（不依赖初始 class 帧序）。0.72s 慢速版：
    布料被拉动——缓起(张力)→中段顺滑→末段轻微过冲后落位；起手带纵向微拉伸，
-   落位时收回，读作软布垂坠而非滑块。右帘延后 50ms 起手，避免两片同步的机械感。
+   落位时收回，读作软布垂坠而非滑块。
+   内缘弧线：起手时内侧角是大圆弧(布边被拽得鼓起)，拉合过程中逐渐拉直，
+   到落位时完全平直——读作「帘边被拉平」。右帘延后 50ms 起手，两片不同步。
    时长必须与 index.tsx 的 CURTAIN_CLOSE_MS 一致 */
 .tarot-curtain--closing .tarot-curtain__panel--left,
 .tarot-curtain--holding .tarot-curtain__panel--left {
@@ -134,12 +118,36 @@
   animation: tarot-curtain-close-right .72s cubic-bezier(.34, .06, .2, 1.02) .05s both;
 }
 @keyframes tarot-curtain-close-left {
-  from { transform: translateX(-101%) scaleY(1.04); }
-  to { transform: translateX(0) scaleY(1); }
+  0% {
+    transform: translateX(-101%) scaleY(1.04);
+    border-top-right-radius: 96rpx 46%;
+    border-bottom-right-radius: 96rpx 46%;
+  }
+  55% {
+    border-top-right-radius: 62rpx 32%;
+    border-bottom-right-radius: 62rpx 32%;
+  }
+  100% {
+    transform: translateX(0) scaleY(1);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }
 @keyframes tarot-curtain-close-right {
-  from { transform: translateX(101%) scaleY(1.04); }
-  to { transform: translateX(0) scaleY(1); }
+  0% {
+    transform: translateX(101%) scaleY(1.04);
+    border-top-left-radius: 96rpx 46%;
+    border-bottom-left-radius: 96rpx 46%;
+  }
+  55% {
+    border-top-left-radius: 62rpx 32%;
+    border-bottom-left-radius: 62rpx 32%;
+  }
+  100% {
+    transform: translateX(0) scaleY(1);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }
 /* 合拢落位后的余摆：布料惯性——中缝侧先停、远端再荡回，两帘错开相位；
    幅度逐次递减 + 纵向微呼吸，读作软布自己慢慢静下来 */
@@ -198,14 +206,14 @@
     radial-gradient(120% 60% at 50% 0%, rgba(255, 250, 238, .9), rgba(255, 250, 238, 0) 60%),
     linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%);
 }
-/* 布帘底摆：软布垂坠的弧形下摆——旧版直切平边看着"硬"，改五瓣圆弧垂边+
-   陶土投影包边，随帘移动时读作布料底缘而非色块矩形 */
+/* 布帘底摆：软布垂坠的弧形下摆。面板已 overflow 裁切，下摆收在帘身内，
+   随内缘弧线一起被裁，读作布料底缘而非色块矩形 */
 .tarot-curtain--clay .tarot-curtain__panel::after {
   content: '';
   position: absolute;
-  left: 0; right: 0; bottom: -26rpx;
-  height: 52rpx;
-  border-radius: 0 0 44rpx 44rpx / 0 0 52rpx 52rpx;
+  left: 0; right: 0; bottom: 0;
+  height: 46rpx;
+  border-radius: 0 0 44rpx 44rpx / 0 0 46rpx 46rpx;
   background:
     radial-gradient(120% 100% at 20% 0%, rgba(122, 88, 58, .12), rgba(122, 88, 58, 0) 52%),
     linear-gradient(180deg, #f3e7d0 0%, #ecd9ba 100%);
@@ -218,6 +226,8 @@
   top: 0; bottom: 0;
   left: 8%;
   width: 20%;
+  /* 从顶端摆动：褶皱像挂在帘杆上被拽着荡，而不是整条平移 */
+  transform-origin: 50% 0;
   background: linear-gradient(90deg, rgba(214, 186, 143, 0) 0%, rgba(190, 158, 112, .26) 42%, rgba(158, 128, 88, .4) 50%, rgba(190, 158, 112, .26) 58%, rgba(214, 186, 143, 0) 100%);
   opacity: .8;
 }
@@ -229,30 +239,33 @@
 .tarot-curtain__drape--c { left: 66%; width: 26%; opacity: .55; }
 .tarot-curtain__panel--right .tarot-curtain__drape { left: auto; right: 8%; }
 .tarot-curtain__panel--right .tarot-curtain__drape--b { left: auto; right: 46%; }
-/* 褶皱联动：帘身移动时布褶受惯性挤压——横向微位移+幅度随位移摆动，
-   缓出曲线与帘身同族但稍慢，读作"布跟过去了但褶子还在荡" */
+/* 褶皱联动：帘身移动时每道布褶各自被拽动——横向摆 + 绕顶端的倾斜，
+   三道褶给不同幅度与错开相位(延迟 0/.08/.16s)，读作「一道一道荡过去」而非整片同步 */
 .tarot-curtain--closing .tarot-curtain__drape,
 .tarot-curtain--holding .tarot-curtain__drape {
-  animation: tarot-drape-follow .95s cubic-bezier(.28, .1, .3, 1.14) both;
+  animation: tarot-drape-follow 1.05s cubic-bezier(.28, .1, .3, 1.14) both;
 }
 .tarot-curtain--opening .tarot-curtain__drape {
-  animation: tarot-drape-follow-rev .62s cubic-bezier(.3, .1, .3, 1.12) both;
+  animation: tarot-drape-follow-rev .72s cubic-bezier(.3, .1, .3, 1.12) both;
 }
-.tarot-curtain__panel--left .tarot-curtain__drape { --drape-drift: 14rpx; }
-.tarot-curtain__panel--right .tarot-curtain__drape { --drape-drift: -14rpx; }
-.tarot-curtain__drape--b { --drape-drift: 6rpx; }
-.tarot-curtain__panel--right .tarot-curtain__drape--b { --drape-drift: -6rpx; }
-.tarot-curtain__drape--c { --drape-drift: 20rpx; }
-.tarot-curtain__panel--right .tarot-curtain__drape--c { --drape-drift: -20rpx; }
+.tarot-curtain__panel--left .tarot-curtain__drape { --drape-drift: 22rpx; --drape-tilt: 2.4deg; }
+.tarot-curtain__panel--right .tarot-curtain__drape { --drape-drift: -22rpx; --drape-tilt: -2.4deg; }
+.tarot-curtain__drape--b { --drape-drift: 12rpx; --drape-tilt: -3deg; }
+.tarot-curtain__panel--right .tarot-curtain__drape--b { --drape-drift: -12rpx; --drape-tilt: 3deg; }
+.tarot-curtain__drape--c { --drape-drift: 32rpx; --drape-tilt: 3.4deg; }
+.tarot-curtain__panel--right .tarot-curtain__drape--c { --drape-drift: -32rpx; --drape-tilt: -3.4deg; }
+.tarot-curtain--closing .tarot-curtain__drape--b { animation-delay: .08s; }
+.tarot-curtain--closing .tarot-curtain__drape--c { animation-delay: .16s; }
 @keyframes tarot-drape-follow {
-  0% { transform: translateX(calc(var(--drape-drift, 12rpx) * 2.2)) scaleY(1.04); }
-  60% { transform: translateX(calc(var(--drape-drift, 12rpx) * -.3)) scaleY(.98); }
-  100% { transform: translateX(0) scaleY(1); }
+  0% { transform: translateX(calc(var(--drape-drift, 12rpx) * 2)) rotate(calc(var(--drape-tilt, 2deg) * 1.6)); }
+  45% { transform: translateX(calc(var(--drape-drift, 12rpx) * -.35)) rotate(calc(var(--drape-tilt, 2deg) * -.5)); }
+  75% { transform: translateX(calc(var(--drape-drift, 12rpx) * .12)) rotate(calc(var(--drape-tilt, 2deg) * .2)); }
+  100% { transform: translateX(0) rotate(0deg); }
 }
 @keyframes tarot-drape-follow-rev {
-  0% { transform: translateX(0) scaleY(1); }
-  55% { transform: translateX(calc(var(--drape-drift, 12rpx) * -.55)) scaleY(1.03); }
-  100% { transform: translateX(calc(var(--drape-drift, 12rpx) * .4)) scaleY(.99); }
+  0% { transform: translateX(0) rotate(0deg); }
+  55% { transform: translateX(calc(var(--drape-drift, 12rpx) * -.6)) rotate(calc(var(--drape-tilt, 2deg) * -.55)); }
+  100% { transform: translateX(calc(var(--drape-drift, 12rpx) * .35)) rotate(calc(var(--drape-tilt, 2deg) * .4)); }
 }
 /* 顶部帷幔：横贯帘顶的波浪扇贝垂边，两帘各一半，拉合后拼成完整帷幔 */
 .tarot-curtain__valance {

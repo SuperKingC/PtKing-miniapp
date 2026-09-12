@@ -57,8 +57,6 @@ describe('bright tarot entry wiring', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-curtain__glow')
     expect(page).toContain('tarot-curtain__star--a')
-    // 合拢底色：第一拍铺满，保证帘子盖严后再放行流程
-    expect(page).toContain('tarot-curtain__backdrop')
     expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
     // 星点只挂 clay：classic 星夜不再有月亮和星星（用户反馈）
     expect(page).toMatch(/\{skin === 'clay' && \(\s*<>[\s\S]*?tarot-curtain__star--a/)
@@ -84,6 +82,15 @@ describe('bright tarot entry wiring', () => {
 // 褶皱联动(横移缩放)+合拢回弹+opening 轻微回缩(swell)再淡出
     expect(styles).toContain('tarot-curtain__drape')
     expect(styles).toContain('tarot-curtain__valance-scallop')
+    // 帘子内缘是曲线（起手大圆弧）并随合拢拉直，不是从头到尾的直边
+    expect(styles).toMatch(/tarot-curtain-close-left[\s\S]*?border-top-right-radius:\s*96rpx/)
+    expect(styles).toMatch(/tarot-curtain-close-left[\s\S]*?border-top-right-radius:\s*0/)
+    expect(styles).toMatch(/\.tarot-curtain__panel\s*{[^}]*overflow:\s*hidden/)
+    // 每道褶皱各自摆动：绕顶端摆动 + 错开相位
+    expect(styles).toMatch(/\.tarot-curtain__drape\s*{[^}]*transform-origin:\s*50%\s*0/)
+    expect(styles).toContain('--drape-tilt')
+    expect(styles).toContain('.tarot-curtain--closing .tarot-curtain__drape--c { animation-delay: .16s; }')
+    expect(styles).toMatch(/@keyframes tarot-drape-follow\s*{[\s\S]*?rotate\(/)
     expect(styles).toContain('@keyframes tarot-tassel-sway')
     expect(styles).toContain('@keyframes tarot-drape-follow')
     expect(styles).toContain('@keyframes tarot-curtain-swell-left')
@@ -105,8 +112,6 @@ describe('bright tarot entry wiring', () => {
     // 动画时长必须与 JS 常量一致，且合拢要慢到读作布料（0.72s）
     expect(styles).toContain('tarot-curtain-close-left .72s')
     expect(styles).toContain('tarot-curtain-fade .5s')
-    // 合拢第一拍就铺满，避免「帘未盖严流程先露」
-    expect(styles).toMatch(/\.tarot-curtain--closing \.tarot-curtain__backdrop/)
     // 顺滑落位：缓起缓收 + 末段轻微过冲，不再用大过冲的硬回弹
     expect(styles).toContain('cubic-bezier(.34, .06, .2, 1.02)')
     expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')
