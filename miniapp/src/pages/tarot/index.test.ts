@@ -63,10 +63,17 @@ describe('bright tarot entry wiring', () => {
     expect(page).not.toContain('tarot-curtain__moon')
     expect(page).not.toContain('tarot-curtain__const-star')
     expect(page).not.toContain('tarot-curtain__meteor')
-    // 帘内加载进度：宝珠环+胶囊条在合拢期间就显示预加载进度，完成后随帘淡出
+    // 帘内加载进度：宝珠环+胶囊条仅在真正走网络时显示；全命中缓存则直接开帘
     expect(page).toContain('onLoadProgress={handleLoadProgress}')
     expect(page).toContain('onLoadDone={handleLoadDone}')
+    expect(page).toContain('onLoadNetworkNeeded={handleLoadNetworkNeeded}')
     expect(page).toContain('tarot-curtain__loading-fill')
+    expect(page).toContain('curtain !== \'opening\' && curtainNetworkNeeded')
+    // 是否走网络在开帘前同步判定（否则合拢期间会先闪一下进度层）
+    expect(page).toMatch(/setCurtainNetworkNeeded\(!areTarotAssetsCached\(skin\)\)[\s\S]*?TAROT_FLOW_VISIBILITY_EVENT, true/)
+    const flow = source('../../features/tarot/MiniappTarotFlow.tsx')
+    expect(flow).toContain('areTarotAssetsCached')
+    expect(flow).toContain('onLoadNetworkNeeded?.(!areTarotAssetsCached(skin))')
     expect(page).toContain('curtainLoaded ? \'仪式准备就绪\'')
     expect(page).toContain('星图绘制中')
     expect(page).toContain('测测子布置牌桌中')
@@ -123,10 +130,10 @@ describe('bright tarot entry wiring', () => {
     expect(page).toMatch(/if \(!curtainLoaded\) return[\s\S]*CURTAIN_HOLD_MIN_MS - elapsed/)
     expect(page).toContain('CURTAIN_HOLD_MIN_MS = 160')
     expect(page).toContain('CURTAIN_CLOSE_MS = 720')
-    expect(page).toContain('CURTAIN_OPEN_MS = 830')
+    expect(page).toContain('CURTAIN_OPEN_MS = 1130')
     // 动画时长必须与 JS 常量一致：合拢 0.72s、拉开 0.78s(+右帘 0.05s 延迟)
     expect(styles).toContain('tarot-curtain-close-left .72s')
-    expect(styles).toContain('tarot-curtain-open-left .78s')
+    expect(styles).toContain('tarot-curtain-open-left 1.08s')
     // 顺滑落位：缓起缓收 + 末段轻微过冲，不再用大过冲的硬回弹
     expect(styles).toContain('cubic-bezier(.34, .06, .2, 1.02)')
     expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')

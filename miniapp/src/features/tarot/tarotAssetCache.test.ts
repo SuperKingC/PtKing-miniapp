@@ -94,7 +94,24 @@ describe('tarot asset cache', () => {
     expect(resolveTarotAssetUrl(URL_A)).toBe('wxfile:///tmp/a')
   })
 
-  it('never touches the filesystem while resolving (regression: entry stalled seconds)', async () => {
+  it('reads a record that storage returned as a JSON string', () => {
+    // 微信 storage 持久化后可能把对象序列化成字符串再读出（实测 devtools 落盘即如此）。
+    // 若只接受 object，会静默退回空缓存 → 判定为「未命中」而重复下载/闪进度。
+    const files: Record<string, string> = { [URL_A]: 'wxfile:///tmp/a' }
+    installWx({ existing: ['wxfile:///tmp/a'], seed: JSON.stringify({ base: BASE, files }) })
+
+    expect(isTarotAssetCached(URL_A)).toBe(true)
+    expect(resolveTarotAssetUrl(URL_A)).toBe('wxfile:///tmp/a')
+  })
+
+  it('reads a record wrapped in storage {data,dataType} envelope', () => {
+    const files: Record<string, string> = { [URL_A]: 'wxfile:///tmp/a' }
+    installWx({ existing: ['wxfile:///tmp/a'], seed: { data: JSON.stringify({ base: BASE, files }), dataType: 'String' } })
+
+    expect(isTarotAssetCached(URL_A)).toBe(true)
+  })
+
+  it('does not touch the filesystem while resolving (regression: entry stalled seconds)', async () => {
     // 复现线上症状：冷启动后 storage 已有 24 条映射，进流程时逐条 accessSync 校验，
     // 在开发者工具里每次同步跨进程调用上百毫秒，24 张拖出数秒等待。
     // 契约：解析与命中判断都只读 storage 映射，零磁盘 IO。

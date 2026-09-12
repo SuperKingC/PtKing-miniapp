@@ -58,6 +58,8 @@ export function getTarotResourceUrls(skin: TarotSkin = 'clay'): string[] {
 export interface TarotPreloadResult {
   failedUrls: string[]
   total: number
+  /** 实际走了网络的张数。0 = 全部命中本地缓存（可用于隐藏加载进度 UI）。 */
+  downloaded: number
 }
 
 /** 整批预加载上限：弱网挂起时让用户尽快看到失败重试，而不是一直转圈。 */
@@ -116,7 +118,7 @@ export async function preloadTarotAssetUrls(
 ): Promise<TarotPreloadResult> {
   if (urls.length === 0) {
     onProgress(1)
-    return { failedUrls: [], total: 0 }
+    return { failedUrls: [], total: 0, downloaded: 0 }
   }
 
   // 资产版本根变化时先作废旧档，后续按新 URL 重新建档
@@ -126,12 +128,14 @@ export async function preloadTarotAssetUrls(
 
   let nextIndex = 0
   let completed = 0
+  let downloaded = 0
   const finished = new Set<string>()
   const failedUrls: string[] = []
 
   async function downloadOne(url: string): Promise<void> {
     try {
       if (isTarotAssetCached(url)) return
+      downloaded++
       const result = await downloadTarotFile(url)
       if (!isTarotDownloadSuccess(result)) {
         failedUrls.push(url)
@@ -164,7 +168,18 @@ export async function preloadTarotAssetUrls(
       if (!finished.has(url) && !failedUrls.includes(url)) failedUrls.push(url)
     }
   }
-  return { failedUrls, total: urls.length }
+  return { failedUrls, total: urls.length, downloaded }
+}
+
+/**
+ * 本次进入是否完全命中本地缓存（同步判定，只读 storage 映射，不碰磁盘/网络）。
+ * 命中时可跳过进度与网络提示 UI，直接走开帘动画。
+ */
+export function areTarotAssetsCached(skin: TarotSkin = 'clay'): boolean {
+  const urls = getTarotResourceUrls(skin)
+  if (urls.length === 0) return true
+  if (urls.some((url) => !isUsableTarotAssetUrl(url))) return false
+  return urls.every((url) => isTarotAssetCached(url))
 }
 
 /**
@@ -178,13 +193,13 @@ export async function preloadTarotResources(
   const urls = getTarotResourceUrls(skin)
   if (urls.length === 0) {
     onProgress(1)
-    return { failedUrls: [], total: 0 }
+    return { failedUrls: [], total: 0, downloaded: 0 }
   }
 
   const unusable = urls.filter((url) => !isUsableTarotAssetUrl(url))
   if (unusable.length > 0) {
     onProgress(1)
-    return { failedUrls: unusable, total: urls.length }
+    return { failedUrls: unusable, total: urls.length, downloaded: 0 }
   }
 
   return preloadTarotAssetUrls(urls, onProgress)

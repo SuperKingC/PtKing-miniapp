@@ -5,6 +5,7 @@ import { APP_TAROT_SHARE_TITLE } from '../../services/brand'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
 import { TAROT_HISTORY_OPEN_EVENT } from '../../features/tarot/tarotHistory'
 import type { MiniappTarotSpread } from '../../features/tarot/tarotSpreads'
+import { areTarotAssetsCached } from '../../features/tarot/tarotAssets'
 import { getTarotSkin, setTarotSkin, TAROT_SKIN_LABELS, TAROT_SKIN_ORDER, type TarotSkin } from '../../features/tarot/tarotSkin'
 import { TAROT_FLOW_VISIBILITY_EVENT } from '../../custom-tab-bar/tabBarVisibility'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
@@ -23,10 +24,10 @@ import './index.scss'
 // 帘幕编排：合拢(布帘拉上，期间帘后已挂载流程并预加载) → hold 等资源就绪 →
 // 拉开帘子(两片向两侧滑动)露出流程。时长 = 各帘身动画时长，须与 index.scss 同步：
 // CURTAIN_CLOSE_MS 对 tarot-curtain-close-*，CURTAIN_OPEN_MS 对 tarot-curtain-open-*
-//（open 含右帘 0.05s 延迟，故 830 = 780 + 50）。
+//（open 含右帘 0.05s 延迟，故 1130 = 1080 + 50）。
 const CURTAIN_CLOSE_MS = 720
 const CURTAIN_HOLD_MIN_MS = 160
-const CURTAIN_OPEN_MS = 830
+const CURTAIN_OPEN_MS = 1130
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
 
@@ -49,11 +50,16 @@ export default function TarotPage() {
   // effect 不会因 curtainLoaded 变化重跑，只能干等 12s 兜底——线上「100% 后卡很久」的根因）。
   const [curtainProgress, setCurtainProgress] = useState(0)
   const [curtainLoaded, setCurtainLoaded] = useState(false)
+  // 本次进入是否需要走网络：全命中缓存时帘幕不显示进度/提示，整个开帘过程都不闪
+  const [curtainNetworkNeeded, setCurtainNetworkNeeded] = useState(true)
   const handleLoadProgress = useCallback((progress: number) => {
     setCurtainProgress(progress)
     if (progress >= 1) setCurtainLoaded(true)
   }, [])
   const handleLoadDone = useCallback(() => setCurtainLoaded(true), [])
+  const handleLoadNetworkNeeded = useCallback((needed: boolean) => {
+    setCurtainNetworkNeeded(needed)
+  }, [])
   const reducedMotion = motionPreference === 'reduced'
 
   const clearCurtainTimers = () => {
@@ -116,6 +122,11 @@ export default function TarotPage() {
     setHistoryRequest(0)
     setCurtainProgress(0)
     setCurtainLoaded(false)
+    // 开帘前同步判定是否要走网络：命中缓存则整段动画都不显示进度/提示，
+    // 若等到流程挂载后再判，合拢期间会先闪一下进度层
+    // 开帘前同步判定是否要走网络：命中缓存则整段动画都不显示进度/提示，
+    // 若等到流程挂载后再判，合拢期间会先闪一下进度层
+    setCurtainNetworkNeeded(!areTarotAssetsCached(skin))
     // 底栏随帘幕出现即藏：不等帘后流程挂载，先广播流程可见(底栏 ownRoute 判塔罗即藏)
     Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, true)
     if (reducedMotion) {
@@ -172,7 +183,7 @@ export default function TarotPage() {
             curtain === 'opening' ? 'tarot-page--reveal' : '',
           ].filter(Boolean).join(' ')}
         >
-          <MiniappTarotFlow initialSpread={spread} chooseSpread={chooseSpread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} onLoadProgress={handleLoadProgress} onLoadDone={handleLoadDone} />
+            <MiniappTarotFlow initialSpread={spread} chooseSpread={chooseSpread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} onLoadProgress={handleLoadProgress} onLoadDone={handleLoadDone} onLoadNetworkNeeded={handleLoadNetworkNeeded} />
         </View>
       ) : (
         <View className={`tab-page tarot-home-shell theme-${theme}`} style={topInsetStyle()}>
@@ -269,8 +280,8 @@ export default function TarotPage() {
           </View>
           {/* classic 星夜：只留中缝暖光，不加呼吸光环 */}
           <View className="tarot-curtain__glow" />
-          {/* 打开帘子时才展示的进度：合拢到位后显示，开帘前随帘身拉开撤下 */}
-          {curtain !== 'opening' && (
+          {/* 进度/提示只在真正走网络时显示：全命中缓存则直接开帘，不闪进度 */}
+          {curtain !== 'opening' && curtainNetworkNeeded && (
             <View className="tarot-curtain__loading">
               <View className="tarot-curtain__loading-orb">
                 <View className="tarot-curtain__loading-ring" />

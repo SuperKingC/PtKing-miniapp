@@ -177,11 +177,11 @@
    时长必须与 index.tsx 的 CURTAIN_OPEN_MS 一致 */
 .tarot-curtain--opening .tarot-curtain__panel--left {
   transform: translateX(0);
-  animation: tarot-curtain-open-left .78s cubic-bezier(.42, 0, .22, 1) both;
+  animation: tarot-curtain-open-left 1.08s cubic-bezier(.42, 0, .22, 1) both;
 }
 .tarot-curtain--opening .tarot-curtain__panel--right {
   transform: translateX(0);
-  animation: tarot-curtain-open-right .78s cubic-bezier(.42, 0, .22, 1) .05s both;
+  animation: tarot-curtain-open-right 1.08s cubic-bezier(.42, 0, .22, 1) .05s both;
 }
 @keyframes tarot-curtain-open-left {
   0% {
@@ -263,7 +263,7 @@
   animation: tarot-drape-follow 1.05s cubic-bezier(.28, .1, .3, 1.14) both;
 }
 .tarot-curtain--opening .tarot-curtain__drape {
-  animation: tarot-drape-follow-rev 1.05s cubic-bezier(.3, .1, .3, 1.12) both;
+  animation: tarot-drape-follow-rev 1.35s cubic-bezier(.3, .1, .3, 1.12) both;
 }
 .tarot-curtain__panel--left .tarot-curtain__drape { --drape-drift: 22rpx; --drape-tilt: 2.4deg; }
 .tarot-curtain__panel--right .tarot-curtain__drape { --drape-drift: -22rpx; --drape-tilt: -2.4deg; }

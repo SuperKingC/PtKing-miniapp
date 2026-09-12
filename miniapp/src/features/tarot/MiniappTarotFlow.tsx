@@ -10,7 +10,7 @@ import { MiniappTarotRevealStage } from './MiniappTarotRevealStage'
 import { MiniappTarotReadingStage } from './MiniappTarotReadingStage'
 import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { MiniappTarotHistoryPanel } from './MiniappTarotHistoryPanel'
-import { getTarotSanctuaryBackground, preloadTarotResources, resolveTarotAssetUrl } from './tarotAssets'
+import { areTarotAssetsCached, getTarotSanctuaryBackground, preloadTarotResources, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 import { createTarotCandidates } from './tarotCards'
 import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
@@ -32,11 +32,16 @@ interface MiniappTarotFlowProps {
   onLoadProgress?(progress: number): void
   /** 预加载全部成功后回调：帘幕层据此淡入正式界面 */
   onLoadDone?(): void
+  /**
+   * 预加载是否在真正走网络（有的资源没命中缓存）。false 表示本次纯本地命中，
+   * 帘幕层可跳过进度/提示 UI，直接走开帘动画。
+   */
+  onLoadNetworkNeeded?(needed: boolean): void
 }
 
 const stageOrder = ['question', 'spread', 'shuffle', 'cut', 'fan', 'reveal', 'reading'] as const
 
-export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', chooseSpread = true, historyRequest = 0, onLoadProgress, onLoadDone }: MiniappTarotFlowProps) {
+export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 'single', chooseSpread = true, historyRequest = 0, onLoadProgress, onLoadDone, onLoadNetworkNeeded }: MiniappTarotFlowProps) {
   const [state, dispatch] = useReducer(tarotFlowReducer, initialSpread, (spread) => ({ ...createInitialTarotFlow(), spread }))
   const motionPreference = useMotionPreference()
   // 皮肤在挂载时定死，流程内不支持中途换肤；换肤入口在塔罗首页
@@ -61,6 +66,8 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
     setResourcesLoaded(false)
     setLoadProgress(0)
     setLoadError(false)
+    // 同步判定本次是否要走网络：全命中缓存时帘幕层不显示进度/提示 UI
+    onLoadNetworkNeeded?.(!areTarotAssetsCached(skin))
     preloadTarotResources((p) => {
       if (attempt !== loadAttemptRef.current) return
       setLoadProgress(p)

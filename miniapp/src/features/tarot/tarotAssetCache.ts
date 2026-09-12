@@ -37,16 +37,30 @@ function emptyRecord(): TarotAssetCacheRecord {
   return { base: '', files: {} }
 }
 
+/** 解析 storage 里读到的值：正常是对象；某些宿主会把对象序列化成 JSON 字符串返回。 */
+function parseStoredRecord(raw: unknown): TarotAssetCacheRecord | null {
+  let value: unknown = raw
+  // 微信持久化格式是 {data,dataType}；getStorageSync 通常已解包，这里对未解包情况兜底
+  if (value && typeof value === 'object' && 'data' in (value as Record<string, unknown>)) {
+    value = (value as { data?: unknown }).data
+  }
+  if (typeof value === 'string') {
+    try { value = JSON.parse(value) } catch { return null }
+  }
+  if (!value || typeof value !== 'object') return null
+  const candidate = value as Partial<TarotAssetCacheRecord>
+  if (typeof candidate.base !== 'string' || !candidate.files || typeof candidate.files !== 'object') return null
+  return { base: candidate.base, files: { ...candidate.files } }
+}
+
 function readRecord(): TarotAssetCacheRecord {
   if (memoryRecord) return memoryRecord
   try {
     const raw = getWxGlobal()?.getStorageSync?.(CACHE_STORAGE_KEY)
-    if (raw && typeof raw === 'object') {
-      const candidate = raw as Partial<TarotAssetCacheRecord>
-      if (typeof candidate.base === 'string' && candidate.files && typeof candidate.files === 'object') {
-        memoryRecord = { base: candidate.base, files: { ...candidate.files } }
-        return memoryRecord
-      }
+    const parsed = parseStoredRecord(raw)
+    if (parsed) {
+      memoryRecord = parsed
+      return memoryRecord
     }
   } catch {
     // 读失败退回空缓存：本次仍可下载，只是无法复用历史

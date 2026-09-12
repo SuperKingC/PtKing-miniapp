@@ -5,6 +5,7 @@ vi.mock('../../services/assetBaseUrl', () => ({
 }))
 
 import {
+  areTarotAssetsCached,
   getTarotCardBack,
   getTarotResourceUrls,
   getTarotSanctuaryBackground,
@@ -15,7 +16,7 @@ import {
   resolveTarotAssetUrl,
   TAROT_PRELOAD_TIMEOUT_MS,
 } from './tarotAssets'
-import { clearTarotAssetCache } from './tarotAssetCache'
+import { clearTarotAssetCache, saveTarotAssetFromTemp } from './tarotAssetCache'
 
 const downloadFile = vi.fn()
 
@@ -145,6 +146,30 @@ describe('miniapp tarot assets', () => {
     expect(downloadFile).not.toHaveBeenCalled()
     const url = getTarotCardBack('clay')
     expect(resolveTarotAssetUrl(url)).toContain('wxfile://')
+  })
+
+  it('reports how many resources actually hit the network', async () => {
+    downloadFile.mockImplementation((url: string) => Promise.resolve({ statusCode: 200, tempFilePath: `/tmp/${encodeURIComponent(url)}.jpg` }))
+
+    const first = await preloadTarotResources()
+    expect(first.downloaded).toBe(24) // 首次全走网络
+
+    downloadFile.mockClear()
+    const second = await preloadTarotResources()
+    expect(second.downloaded).toBe(0) // 二次全命中缓存
+    expect(downloadFile).not.toHaveBeenCalled()
+  })
+
+  it('detects when every asset is already cached (for skipping the loading UI)', async () => {
+    expect(areTarotAssetsCached('clay')).toBe(false)
+
+    // 逐张落盘后应为全命中
+    const urls = getTarotResourceUrls('clay')
+    for (const url of urls) await saveTarotAssetFromTemp(url, `/tmp/${encodeURIComponent(url)}`)
+
+    expect(areTarotAssetsCached('clay')).toBe(true)
+    // 另一套皮肤未缓存，仍应为 false
+    expect(areTarotAssetsCached('classic')).toBe(false)
   })
 
   it('treats hung downloads as failed after the preload timeout', async () => {
