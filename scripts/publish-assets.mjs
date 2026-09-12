@@ -8,8 +8,11 @@
  *   npm run assets:upload    dry-run 打印上传计划
  *   npm run assets:publish   真传并写入 .asset-base-url
  *
- * 密钥只读 kit 仓库根 .env（COS_SECRET_ID/KEY/BUCKET/REGION，可选 COS_PUBLIC_BASE）。
- * 本项目不落任何 key。
+ * 密钥读取顺序（后面的不会覆盖前面的）：
+ *   1. 真实环境变量（CI / 临时改指向）
+ *   2. 本项目根 .env（已 gitignore，密钥归属本项目，推荐）
+ *   3. kit 仓库根 .env（历史写法，兜底）
+ * 需要的键：COS_SECRET_ID / COS_SECRET_KEY / COS_BUCKET / COS_REGION（可选 COS_PUBLIC_BASE）。
  */
 import { execSync, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
@@ -23,7 +26,11 @@ const kitRoot = process.env.MINIAPP_KIT_DIR
 const assetDir = path.join(root, 'art', 'generated-art')
 const configPath = path.join(root, 'art.config.json')
 const envOut = path.join(root, '.asset-base-url')
+const localEnvPath = path.join(root, '.env')
+const kitEnvPath = path.join(kitRoot, '.env')
 const uploadScript = path.join(kitRoot, 'cos', 'upload-cos.mjs')
+// 真正上 COS 的只有 tarot/ 子树 + 生图 manifest；generated-art 里的 avatar 等实验产物不上传
+const stagedDir = path.join(root, 'tmp-publish-stage')
 
 const TAROT_MAJORS = [
   'the-fool',
@@ -99,7 +106,26 @@ function missingTarot() {
   return TAROT_FILES.filter((rel) => !fs.existsSync(path.join(assetDir, rel)))
 }
 
-loadDotEnv(path.join(kitRoot, '.env'))
+/**
+ * 只把 tarot/ 子树（48 张）与生图 manifest.json 暂存到一个干净目录再上传，
+ * 避免把 generated-art 里的 avatar 等实验产物（100MB+）一起推上 COS。
+ * 暂存目录名匹配 .gitignore 的 tmp* 规则，不产生未跟踪文件。
+ */
+function stagePublishDir() {
+  fs.rmSync(stagedDir, { recursive: true, force: true })
+  fs.mkdirSync(stagedDir, { recursive: true })
+  fs.cpSync(path.join(assetDir, 'tarot'), path.join(stagedDir, 'tarot'), { recursive: true })
+  const manifest = path.join(assetDir, 'manifest.json')
+  if (fs.existsSync(manifest)) fs.copyFileSync(manifest, path.join(stagedDir, 'manifest.json'))
+}
+
+function cleanupStage() {
+  fs.rmSync(stagedDir, { recursive: true, force: true })
+}
+
+// 本项目 .env 优先于 kit .env；loadDotEnv 不覆盖已存在的键，故真实环境变量优先级最高
+loadDotEnv(localEnvPath)
+loadDotEnv(kitEnvPath)
 
 if (!fs.existsSync(assetDir)) die(`资产目录不存在: ${assetDir}。先把塔罗图放到 art/generated-art/tarot/`)
 
@@ -121,7 +147,7 @@ if (yes) {
   const missingEnv = ['COS_SECRET_ID', 'COS_SECRET_KEY', 'COS_BUCKET', 'COS_REGION']
     .filter((name) => !process.env[name]?.trim())
   if (missingEnv.length) {
-    die(`kit .env 缺少 ${missingEnv.join('、')}。写在 D:\\Mine\\miniapp-kit\\.env，不要写进本仓库`)
+    die(`缺少 ${missingEnv.join('、')}。写到本项目根 .env（已 gitignore，推荐）或 kit 仓库根 .env，不要写进任何入库文件`)
   }
 }
 
@@ -130,18 +156,22 @@ const version = gitShortSha()
 const base = publicBase()
 const assetBaseUrl = base ? `${base}/${prefix}/${version}` : ''
 
-console.log(`[assets] 目录 ${assetDir}`)
+console.log(`[assets] 目录 ${assetDir}（仅上传 tarot/ + manifest.json）`)
 console.log(`[assets] COS 路径 ${prefix}/${version}/`)
 if (assetBaseUrl) console.log(`[assets] 构建地址 ${assetBaseUrl}`)
 else console.log('[assets] 未设置 COS_PUBLIC_BASE，上传后请手动拼 TARO_ASSET_BASE_URL')
 
+stagePublishDir()
+
 const result = spawnSync(process.execPath, [
   uploadScript,
-  '--dir', assetDir,
+  '--dir', stagedDir,
   '--prefix', prefix,
   '--version', version,
   ...(yes ? ['--yes'] : []),
 ], { stdio: 'inherit', cwd: root, env: process.env })
+
+cleanupStage()
 
 if (result.status !== 0) die(`上传脚本退出码 ${result.status ?? 'null'}`)
 

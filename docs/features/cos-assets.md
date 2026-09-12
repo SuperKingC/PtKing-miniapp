@@ -1,8 +1,21 @@
 # 功能：COS 资产发布与更新
 
-状态：脚本已落地；真实 COS 凭据与首传需你在 kit `.env` 配好后执行一次。
+状态：已上线。桶 `ptking-assets-1300973162`（地域 `ap-guangzhou`），当前版本目录见仓库根 `.asset-base-url`。
 
 塔罗牌、测试题 JSON、报告配图都不进小程序主包，统一放 COS 版本目录，由 `TARO_ASSET_BASE_URL` 热更下发。塔罗运行时拼 `{根}/tarot/...`，两套皮肤各 24 张（classic 无后缀 + clay `-clay` 后缀），共 48 张。
+
+## 密钥放哪里（换电脑必读）
+
+密钥读取优先级（高→低），脚本 `scripts/publish-assets.mjs` 自动加载：
+
+1. 真实环境变量（CI / 临时改指向）
+2. **本项目根 `.env`**（已 gitignore，推荐）
+3. kit 仓库根 `miniapp-kit/.env`（历史写法，仍兼容）
+
+> ⚠️ `.env` 被 gitignore，**不随 git 同步**。换电脑 / 换工作区后密钥会「丢失」，需从旧机备份或重新新建。
+> 腾讯云 SecretKey 只在创建时显示一次，之后控制台无法再查看；丢了只能新建密钥。
+> 密钥绝不写进任何入库文件。
+
 
 ## 在腾讯云创建存储桶（一次性）
 
@@ -23,14 +36,14 @@ https://ptking-assets-125xxxxxxxx.cos.ap-guangzhou.myqcloud.com
 5. 安全组/防盗链：桶「安全管理 → 防盗链」先保持关闭。打开后若没放行微信客户端，手机会下不了图。
 6. 微信公众平台 → 开发管理 → 开发设置 → **downloadFile 合法域名**，只填主机名，例如 `ptking-assets-125xxxxxxxx.cos.ap-guangzhou.myqcloud.com`（不要 `https://`）。开发者工具可先关「不校验合法域名」做本机调试，真机必须配域名。
 
-然后把下面五项写进 `D:\Mine\miniapp-kit\.env`（本仓库不放密钥）：
+然后把下面五项写进**本项目根 `.env`**（推荐）或 `D:\Mine\miniapp-kit\.env`（旧写法，仍兼容）——两处都已 gitignore：
 
 ```env
 COS_SECRET_ID=...
 COS_SECRET_KEY=...
-COS_BUCKET=你的桶名-125xxxxxxxx
+COS_BUCKET=ptking-assets-1300973162
 COS_REGION=ap-guangzhou
-COS_PUBLIC_BASE=https://你的访问域名
+COS_PUBLIC_BASE=https://ptking-assets-1300973162.cos.ap-guangzhou.myqcloud.com
 ```
 
 `COS_PUBLIC_BASE` 不要带尾斜杠，不要带 `assets/ptking`。脚本会拼成：

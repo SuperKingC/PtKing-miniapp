@@ -1,5 +1,13 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-12 19:05：塔罗 48 张资产传 COS（用户：之前配过 COS，补密钥后传最新资源）。
+  ①**发现**：桶 `ptking-assets-1300973162`（`ap-guangzhou`）真实存在且仍公开可读，历史上有两个版本目录 `06b0a05`(classic 24 张) / `c6b24c4`(48 张)，但**都是 09-11 之前的旧图**——本地重出/重压过的 clay 资产没上传（如 `sanctuary-background-clay.jpg` 线上 48KB vs 本地 68KB）。
+  ②**根因「换电脑密钥就丢」**：原脚本只读 `miniapp-kit/.env`，而 kit 是公开 GitHub 仓库、`.env` 被 gitignore 故不随 git 同步；SecretKey 又只在创建时显示一次，无法找回。
+  ③**脚本改造** `scripts/publish-assets.mjs`：密钥读取改为 环境变量 → 本项目根 `.env` → kit `.env` 三级（用户选本项目 `.env` 方案）；新增 `stagePublishDir()` 只暂存 `tarot/` + `manifest.json` 再上传——原逻辑递归传整个 `generated-art`，会把 114MB 的 avatar 实验图一起推上 COS（历史版本目录里本就没有这些）。
+  ④**上传**：`npm run assets` → `assets/ptking/e8eb001/` 49 个文件（48 张塔罗 + manifest）7MB；`.asset-base-url` 已写正式域名，dist 注入 `https://ptking-assets-1300973162.cos.ap-guangzhou.myqcloud.com/assets/ptking/e8eb001`；线上 48/48 HTTP 200，关键文件 md5 与本地一致。
+  ⑤**依赖坑**：`cos-nodejs-sdk-v5` 是 kit 声明的可选依赖但未安装；在 kit 侧 `npm install --include=optional`（node_modules 被 gitignore），装后还原 kit 被动改到的 `package-lock.json`（kit 只读）。
+  ⑥文档 `docs/features/cos-assets.md` 更新「密钥放哪里（换电脑必读）」+ 真实桶名。全量 467 测试过。
+
 - 2026-09-12 18:15：牌桌预览改包内真图 + 塔罗资源落盘缓存（用户：牌桌要用两套皮肤背景图，之前是好的；且下载过的资源要缓存）。
   ①**牌桌缩略图**：旧版 `skinThumbSrc` 铺远程 2:3 竖幅背景靠 `isUsableTarotAssetUrl` 判可达，未配资产根时退纯 CSS 星/月牙卡 → 用户看不到真场景。改为**从两套皮肤背景各裁一张横版小图打进包内**：`art/ref-pages-v3/compress-tarot-skin-thumbs.py` 产出 `tarot-skin-classic-v1.jpg`（490×330，33KB，对准月门）/`tarot-skin-clay-v1.jpg`（490×330，13KB，对准测测子与桌面），`index.tsx` 直接 import 本地图，删除 `isUsableTarotAssetUrl` 依赖与 `.tarot-home__skin-thumb-fallback*` 死样式；`index.scss` 缩略图去负 margin 改满铺。
   ②**资源缓存**：旧版 `preloadTarotResources` 的 `downloadFile` 临时文件**用完即弃**，每次进入重下 24 张（clay 约 2MB / classic 约 5MB）。新增 `tarotAssetCache.ts`：成功后 `saveFile` 落盘 + `ptking_tarot_asset_cache` 存 URL→本地路径映射（按资产版本根 base 分段，换版即清旧文件）；`preloadTarotResources` 命中缓存直接跳过下载，渲染侧全部改走 `resolveTarotAssetUrl()`（Flow 背景 + Card 牌背/牌面 + Cut/Shuffle/Fan + ReadingBody）。
