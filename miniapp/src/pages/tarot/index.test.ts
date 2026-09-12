@@ -76,10 +76,23 @@ describe('bright tarot entry wiring', () => {
     expect(styles).toContain('@keyframes tarot-flow-reveal')
     expect(styles).toContain('@keyframes tarot-star-twinkle')
     expect(styles).toContain('.tarot-curtain--holding .tarot-curtain__glow')
-    // 淡出式揭幕(不再横向拉开)：整帘 opacity 渐隐露出流程页
-    expect(styles).toContain('@keyframes tarot-curtain-fade')
-    // clay 布帘精致化：三重竖褶 + 顶部帷幔(扇贝垂边/垂穗摇摆)；软化版：底摆弧形垂边+
-// 褶皱联动(横移缩放)+合拢回弹+opening 轻微回缩(swell)再淡出
+    // 打开帘子：两片帘向两侧真实拉开（不是 opacity 淡出），资源就绪后播放
+    expect(styles).toContain('@keyframes tarot-curtain-open-left')
+    expect(styles).toContain('@keyframes tarot-curtain-open-right')
+    expect(styles).toMatch(/tarot-curtain-open-left[\s\S]*?translateX\(-101%\)/)
+    expect(styles).toMatch(/tarot-curtain-open-right[\s\S]*?translateX\(101%\)/)
+    expect(styles).toMatch(/\.tarot-curtain--opening \.tarot-curtain__panel--left\s*{[\s\S]*?animation:\s*tarot-curtain-open-left/)
+    // 拉开时内缘重新鼓成弧线（与合拢反向），到展开时已成大弧
+    expect(styles).toMatch(/tarot-curtain-open-left[\s\S]*?border-top-right-radius:\s*108rpx/)
+    // 旧的淡出式揭幕与回缩(swell)已移除
+    expect(styles).not.toContain('@keyframes tarot-curtain-fade')
+    expect(styles).not.toContain('tarot-curtain-swell-left')
+    expect(styles).not.toContain('tarot-curtain-swell-right')
+    // 流程页在帘子拉开时轻微浮入（帘开的同时内容落定，叠出层次）
+    expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
+    expect(styles).toContain('@keyframes tarot-flow-reveal')
+    // clay 布帘精致化：三重竖褶 + 顶部帷幔(扇贝垂边/垂穗摇摆)；底摆弧形垂边+
+    // 褶皱联动(横移+绕顶端倾斜)+每道错相位+合拢回弹
     expect(styles).toContain('tarot-curtain__drape')
     expect(styles).toContain('tarot-curtain__valance-scallop')
     // 帘子内缘是曲线（起手大圆弧）并随合拢拉直，不是从头到尾的直边
@@ -93,14 +106,16 @@ describe('bright tarot entry wiring', () => {
     expect(styles).toMatch(/@keyframes tarot-drape-follow\s*{[\s\S]*?rotate\(/)
     expect(styles).toContain('@keyframes tarot-tassel-sway')
     expect(styles).toContain('@keyframes tarot-drape-follow')
-    expect(styles).toContain('@keyframes tarot-curtain-swell-left')
     expect(styles).toMatch(/\.tarot-curtain--clay \.tarot-curtain__panel::after[\s\S]*?border-radius/)
     expect(styles).toContain('tarot-tassel-whip')
-    // classic 星夜只有中缝暖光与呼吸光环：流星/星座连线/月牙样式已移除
+    // classic 星夜：只留中缝暖光；流星/星座连线/月牙/呼吸光环都已移除
     expect(styles).not.toContain('tarot-curtain__meteor')
     expect(styles).not.toContain('@keyframes tarot-const-star-pop')
     expect(styles).not.toContain('@keyframes tarot-const-line-grow')
     expect(styles).not.toContain('tarot-curtain__moon')
+    expect(styles).not.toContain('tarot-curtain__glow--halo')
+    expect(styles).not.toContain('@keyframes tarot-halo-breathe')
+    expect(page).not.toContain('tarot-curtain__glow--halo')
     // 加载宝珠环：百分比在环心，环轨旋转
     expect(styles).toContain('tarot-curtain__loading-ring')
     expect(styles).toContain('@keyframes tarot-curtain-orb-spin')
@@ -108,17 +123,16 @@ describe('bright tarot entry wiring', () => {
     expect(page).toMatch(/if \(!curtainLoaded\) return[\s\S]*CURTAIN_HOLD_MIN_MS - elapsed/)
     expect(page).toContain('CURTAIN_HOLD_MIN_MS = 160')
     expect(page).toContain('CURTAIN_CLOSE_MS = 720')
-    expect(page).toContain('CURTAIN_OPEN_MS = 500')
-    // 动画时长必须与 JS 常量一致，且合拢要慢到读作布料（0.72s）
+    expect(page).toContain('CURTAIN_OPEN_MS = 830')
+    // 动画时长必须与 JS 常量一致：合拢 0.72s、拉开 0.78s(+右帘 0.05s 延迟)
     expect(styles).toContain('tarot-curtain-close-left .72s')
-    expect(styles).toContain('tarot-curtain-fade .5s')
+    expect(styles).toContain('tarot-curtain-open-left .78s')
     // 顺滑落位：缓起缓收 + 末段轻微过冲，不再用大过冲的硬回弹
     expect(styles).toContain('cubic-bezier(.34, .06, .2, 1.02)')
     expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')
     // 合拢动画走完才挂载流程：保证「帘先盖严再进去」
     expect(page).toMatch(/setCurtain\('closing'\)[\s\S]*holdStartRef\.current = Date\.now\(\)[\s\S]*setFlowOpen\(true\)/)
-    // 淡出播完后彻底卸载帘幕：WXSS 同节点 class 切换的 opacity 动画实测不重放，
-    // 卸载是清屏的确定性兜底(用户反馈：帘幕卡住不消失)
+    // 拉开播完后彻底卸载帘幕（WXSS 换动画名才重播，卸载是清屏的确定性兜底）
     expect(page).toMatch(/if \(curtain !== 'opening'\) return[\s\S]*setCurtain\('idle'\), CURTAIN_OPEN_MS \+ 80/)
   })
   it('listens for history at the always-mounted page, including repeat requests', () => {

@@ -171,33 +171,50 @@
   82% { transform: translateX(-2rpx) scaleY(1.001); }
   100% { transform: translateX(0) scaleY(1); }
 }
-/* 淡出：hold 结束后整片帘幕带内容淡出露出流程页（横向拉开曾换成柔淡出，
-   开是软的：淡出前帘身先轻微回缩(swell)再隐去，避免整片"硬消失"） */
-.tarot-curtain--opening {
-  animation: tarot-curtain-fade .5s cubic-bezier(.4, 0, .3, 1) both;
-}
+/* 打开帘子：资源就绪后两片帘向两侧真实拉开，露出帘后已挂载的流程页。
+   拉开时内缘重新鼓成弧线（与合拢反向，读作布被推开），到展开时已滑出屏外。
+   与合拢用不同的 animation-name —— 同节点换名才会重新播放，同名不会重播。
+   时长必须与 index.tsx 的 CURTAIN_OPEN_MS 一致 */
 .tarot-curtain--opening .tarot-curtain__panel--left {
   transform: translateX(0);
-  animation: tarot-curtain-swell-left .5s cubic-bezier(.4, 0, .3, 1) both;
+  animation: tarot-curtain-open-left .78s cubic-bezier(.42, 0, .22, 1) both;
 }
 .tarot-curtain--opening .tarot-curtain__panel--right {
   transform: translateX(0);
-  animation: tarot-curtain-swell-right .5s cubic-bezier(.4, 0, .3, 1) both;
+  animation: tarot-curtain-open-right .78s cubic-bezier(.42, 0, .22, 1) .05s both;
 }
-@keyframes tarot-curtain-swell-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-12rpx); }
+@keyframes tarot-curtain-open-left {
+  0% {
+    transform: translateX(0);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  55% {
+    border-top-right-radius: 72rpx 38%;
+    border-bottom-right-radius: 72rpx 38%;
+  }
+  100% {
+    transform: translateX(-101%);
+    border-top-right-radius: 108rpx 52%;
+    border-bottom-right-radius: 108rpx 52%;
+  }
 }
-@keyframes tarot-curtain-swell-right {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(12rpx); }
+@keyframes tarot-curtain-open-right {
+  0% {
+    transform: translateX(0);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  55% {
+    border-top-left-radius: 72rpx 38%;
+    border-bottom-left-radius: 72rpx 38%;
+  }
+  100% {
+    transform: translateX(101%);
+    border-top-left-radius: 108rpx 52%;
+    border-bottom-left-radius: 108rpx 52%;
+  }
 }
-@keyframes tarot-curtain-fade {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-.tarot-curtain--opening .tarot-curtain__panel--left { transform: translateX(0); }
-.tarot-curtain--opening .tarot-curtain__panel--right { transform: translateX(0); }
 
 /* clay：奶油布帘剧场——帘面三重竖褶 + 顶部帷幔(扇贝垂边+双垂穗) + 陶土包边。
    拉合 = 两片布帘从中缝向两侧收拢(0.42s 缓出)，帷幔随帘走，织物质感 */
@@ -246,7 +263,7 @@
   animation: tarot-drape-follow 1.05s cubic-bezier(.28, .1, .3, 1.14) both;
 }
 .tarot-curtain--opening .tarot-curtain__drape {
-  animation: tarot-drape-follow-rev .72s cubic-bezier(.3, .1, .3, 1.12) both;
+  animation: tarot-drape-follow-rev 1.05s cubic-bezier(.3, .1, .3, 1.12) both;
 }
 .tarot-curtain__panel--left .tarot-curtain__drape { --drape-drift: 22rpx; --drape-tilt: 2.4deg; }
 .tarot-curtain__panel--right .tarot-curtain__drape { --drape-drift: -22rpx; --drape-tilt: -2.4deg; }
@@ -375,21 +392,6 @@
 .tarot-curtain--opening .tarot-curtain__glow {
   opacity: 0;
   transition: opacity .4s ease;
-}
-
-/* classic 仪式感：中缝暖光之外再叠一圈大光环缓慢呼吸，星星连线完成后整体随帘淡出 */
-.tarot-curtain__glow--halo {
-  left: 50%; top: 50%;
-  width: 640rpx; height: 640rpx;
-  margin: -320rpx 0 0 -320rpx;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(184, 156, 240, 0) 34%, rgba(184, 156, 240, .2) 52%, rgba(139, 100, 220, .12) 64%, rgba(184, 156, 240, 0) 72%);
-  animation: tarot-halo-breathe 2.4s ease-in-out infinite;
-}
-.tarot-curtain--opening .tarot-curtain__glow--halo { animation: none; }
-@keyframes tarot-halo-breathe {
-  0%, 100% { transform: scale(.92); opacity: .7; }
-  50% { transform: scale(1.06); opacity: 1; }
 }
 
 /* 帘内加载编排：宝珠环(百分比在环心)+下方宝石胶囊进度条+状态文案。

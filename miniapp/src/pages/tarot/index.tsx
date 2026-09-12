@@ -21,11 +21,12 @@ import skinThumbClay from '../../assets/illus/tarot-skin-clay-v1.jpg'
 import './index.scss'
 
 // 帘幕编排：合拢(布帘拉上，期间帘后已挂载流程并预加载) → hold 等资源就绪 →
-// 淡出帘幕露出流程。合拢时长 = 帘身动画时长，必须等帘子完全盖严才放行，
-// 否则会看到「帘还没拉上流程就冒出来」。四值改动需同时同步 index.scss 动画时长。
+// 拉开帘子(两片向两侧滑动)露出流程。时长 = 各帘身动画时长，须与 index.scss 同步：
+// CURTAIN_CLOSE_MS 对 tarot-curtain-close-*，CURTAIN_OPEN_MS 对 tarot-curtain-open-*
+//（open 含右帘 0.05s 延迟，故 830 = 780 + 50）。
 const CURTAIN_CLOSE_MS = 720
 const CURTAIN_HOLD_MIN_MS = 160
-const CURTAIN_OPEN_MS = 500
+const CURTAIN_OPEN_MS = 830
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
 
@@ -266,12 +267,9 @@ export default function TarotPage() {
               </>
             )}
           </View>
-          {/* classic 星夜仪式：只留中缝暖光与呼吸光环，不再有月亮和星星 */}
+          {/* classic 星夜：只留中缝暖光，不加呼吸光环 */}
           <View className="tarot-curtain__glow" />
-          {skin === 'classic' && (
-            <View className="tarot-curtain__glow tarot-curtain__glow--halo" />
-          )}
-          {/* 合拢后帘内加载进度：宝珠轨道+进度胶囊，完成后随帘幕淡出 */}
+          {/* 打开帘子时才展示的进度：合拢到位后显示，开帘前随帘身拉开撤下 */}
           {curtain !== 'opening' && (
             <View className="tarot-curtain__loading">
               <View className="tarot-curtain__loading-orb">
