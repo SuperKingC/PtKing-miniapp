@@ -21,7 +21,7 @@ import os
 import subprocess
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'base')          # v13 基底（从 git 取，一次性）
@@ -58,6 +58,9 @@ LEFT_ALPHA = np.array([255, 255, 255, 255, 255, 230, 120,
                        62, 30, 12, 5, 2, 0, 0], dtype=float)
 # 影色通道权重（由参考影核 (165,156,145) 相对页面推得）
 CH = np.array([0.947, 1.000, 1.053])
+# 上缘/右缘的软收边：参考实测 star/mbti 上缘 alpha 约 248/211/122/59、右缘约 232/165/77/30，
+# 即「本体色→页面白」在 3~4px 内过渡。v13 把这圈混成近白硬边，必须重做。
+FEATHER_SIGMA = 1.1      # 上/右软收边的模糊半径（参考实测过渡约 3~4px）
 
 
 def _ensure_base():
@@ -118,6 +121,8 @@ def _dist_outside(mask, limit=40):
     return _bfs_from_boundary(~mask, mask, limit)
 
 
+
+
 def _table(arr, d):
     return arr[np.clip(d - 1, 0, len(arr) - 1)] if arr.ndim == 1 else arr[np.clip(d - 1, 0, len(arr) - 1)]
 
@@ -163,24 +168,65 @@ def fix_tile(name, out_name):
     target_lum = l_face * mult
     rgb = np.clip(rgb + np.where(rim, target_lum - lum, 0.0)[..., None], 0, 255)
 
-    # ---- ② 外侧接触带：下缘用参考 band 表，左缘用更窄的 LEFT 表 ----
+    # ---- ② 外侧：下缘/左缘铺接触带；上缘/右缘重做软收边 ----
+    # v13 修黑晕边时把 body 外的 AA 环整体混向了页面白，形成一圈「洗白的硬边」。
+    # 参考稿上/右是「本体色按 (1-alpha) 渐隐进页面」约 3~4px，故这两侧也要重做：
+    # 取该像素最近的本体色，套参考实测 alpha 表。
     out = ~body
     below = (col_bottom[None, :] >= 0) & (yy > col_bottom[None, :])
     lefter = (row_left[:, None] >= 0) & (xx < row_left[:, None])
 
+    # 本体色外扩（供 feather 取色）：逐次把已知颜色向 4 邻域未定像素传播
+    bled = rgb.copy()
+    known = body.copy()
+    for _ in range(6):
+        if known.all():
+            break
+        acc = np.zeros_like(bled)
+        cnt = np.zeros(known.shape, dtype=float)
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            sk = np.roll(known, (dy, dx), axis=(0, 1))
+            so = np.roll(bled, (dy, dx), axis=(0, 1))
+            acc[sk] += so[sk]
+            cnt[sk] += 1
+        have = (~known) & (cnt > 0)
+        bled[have] = acc[have] / cnt[have, None]
+        known = known | have
+
     ds = np.clip(d_out.astype(int), 1, len(BAND_RGB))
     b_rgb = BAND_RGB[ds - 1]
-    # 超出表长即带宽用尽，alpha 记 0（表尾本就是 3，视觉等同收敛）
     b_a = np.where(d_out <= len(BAND_ALPHA), BAND_ALPHA[ds - 1], 0.0)
     s = np.clip(d_out.astype(int), 1, len(LEFT_DARK))
-    l_rgb = PAGE[None, None, :] - LEFT_DARK[s - 1][..., None] * CH[None, None, :]
+    l_rgb = np.clip(PAGE[None, None, :] - LEFT_DARK[s - 1][..., None] * CH[None, None, :], 0, 255)
     l_a = np.where(d_out <= len(LEFT_ALPHA), LEFT_ALPHA[s - 1], 0.0)
 
     zone_b = out & below
     zone_l = out & lefter & ~below
+    # 上缘/右缘（含圆角）不铺接触带，但要重做 v13 留下的「洗白硬边」：取最近的本体色，
+    # 按一段平滑 alpha 斜坡化进页面。斜坡用**对轮廓掩膜做高斯**得到——直接拿阶梯状的
+    # 距离查表会在斜边/圆角上留下锯齿；二值掩膜模糊后是连续过渡，天然抗锯齿。
+    # 上缘/右缘（含圆角）不铺接触带，但要重做 v13 留下的「洗白硬边」：
+    #   ① alpha 斜坡：对轮廓掩膜做高斯 → 连续过渡，天然抗锯齿；
+    #   ② 边缘颜色：用**归一化卷积**把本体色平滑外扩。逐次 4 邻域传播（bled）会沿阶梯状
+    #      掩膜取到「最近的本体像素」，斜边上颜色随之阶梯化，合成后就是一圈锯齿；
+    #      归一化卷积（加权高斯/权重高斯）得到的是连续外扩，边缘干净。
+    zone_f = out & ~below & ~lefter
+    f_a = np.asarray(Image.fromarray((body * 255).astype('uint8'), 'L')
+                     .filter(ImageFilter.GaussianBlur(FEATHER_SIGMA)), dtype=float)
+    w = body.astype(float)
+    den = np.asarray(Image.fromarray((w * 255).astype('uint8'), 'L')
+                     .filter(ImageFilter.GaussianBlur(FEATHER_SIGMA)), dtype=float) / 255.0
+    ext = np.zeros_like(rgb)
+    for c in range(3):
+        num = np.asarray(Image.fromarray((rgb[..., c] * w).astype('uint8'), 'L')
+                         .filter(ImageFilter.GaussianBlur(FEATHER_SIGMA)), dtype=float)
+        ext[..., c] = num / np.maximum(den * 255.0, 1e-3)
+    edge_rgb = np.clip(ext, 0, 255)
     out_rgb = np.where(zone_b[..., None], b_rgb,
-                       np.where(zone_l[..., None], np.clip(l_rgb, 0, 255), rgb))
-    out_a = np.where(zone_b, b_a, np.where(zone_l, l_a, A))
+                       np.where(zone_l[..., None], l_rgb,
+                                np.where(zone_f[..., None], edge_rgb, rgb)))
+    out_a = np.where(zone_b, b_a, np.where(zone_l, l_a,
+                    np.where(zone_f, f_a, A)))
 
     res = Image.fromarray(np.dstack([out_rgb, out_a]).clip(0, 255).astype('uint8'), 'RGBA')
     res.save(os.path.join(PREP, out_name))

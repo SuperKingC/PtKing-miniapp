@@ -73,18 +73,18 @@ describe('测试条 tile 左+下方向性接触影', () => {
     ['src/assets/illus/tile-fun-v16.png', BOX],
     ['src/assets/illus/tile-career-v16.png', BOX_CAREER],
   ] as [string, [number, number, number, number]][]) {
-    it(`${rel.split('/').pop()} 左/下有厚影，上/右干净`, () => {
+    it(`${rel.split('/').pop()} 左/下有厚影，上/右为黏土软收边`, () => {
       const img = decode(rel)
       const [x0, y0, x1, y1] = box
       const xa = x0 + Math.floor((x1 - x0) / 4)
       const xb = x1 - Math.floor((x1 - x0) / 4)
       const ya = y0 + Math.floor((y1 - y0) / 4)
       const yb = y1 - Math.floor((y1 - y0) / 4)
-      /* 方向：上/右干净，左/下有影 */
-      expect(bandMean(img, 'top', box, 3), '上缘应干净').toBeLessThan(4)
-      expect(bandMean(img, 'right', box, 3), '右缘应干净').toBeLessThan(4)
+      /* 方向：影集中在下/左（上/右只允许一圈很短的软收边，不该有落影） */
       expect(bandMean(img, 'bottom', box, 6), '下缘影带厚度').toBeGreaterThan(36)
       expect(bandMean(img, 'left', box, 4), '左缘影带厚度').toBeGreaterThan(40)
+      expect(bandMean(img, 'top', box, 3), '上缘不应有落影').toBeLessThan(bandMean(img, 'bottom', box, 6) * 0.9)
+      expect(bandMean(img, 'right', box, 3), '右缘不应有落影').toBeLessThan(bandMean(img, 'bottom', box, 6) * 0.35)
       /* 厚度：紧贴实体的接触核心必须够厚。取边缘带上的最大值，避开逐列 1~2px 起伏
          （v14 丢核心时整条下缘首格都只有 ~52、左缘 ~44）。 */
       const coreBottom = Math.max(...Array.from({ length: xb - xa + 1 }, (_, i) => dark(img, xa + i, y1)))
@@ -105,6 +105,21 @@ describe('测试条 tile 左+下方向性接触影', () => {
       expect(a10, '影带 d10 应已开始淡出').toBeLessThan(250)
       expect(a11, '影带 d11 应比 d10 更淡').toBeLessThan(a10)
       expect(a12, '影带 d12 应接近收尾').toBeLessThan(120)
+
+      /* 上缘/右缘必须是「黏土色软收边」，不是 v13 那种把边缘洗白的硬边。
+         判据：上缘最外一行应是半透明的本体色（有 alpha 但明显透过页面），
+         且随距离快速收窄；旧实现上缘 alpha 会直接跳到 0（右缘）或只剩 18（上缘）。 */
+      const edgeAt = (side: 'top' | 'right', d: number) => {
+        const vals: number[] = []
+        if (side === 'top') for (let x = xa; x <= xb; x += 1) vals.push(img.alpha[(y0 - d) * img.width + x])
+        else for (let y = ya; y <= yb; y += 1) vals.push(img.alpha[y * img.width + x1 + d])
+        return vals.reduce((s, v) => s + v, 0) / vals.length
+      }
+      expect(edgeAt('top', 1), '上缘第 1 行应是半透明黏土收边').toBeGreaterThan(40)
+      expect(edgeAt('top', 1), '上缘收边不应是不透明实块').toBeLessThan(200)
+      expect(edgeAt('top', 3), '上缘收边应很快收窄').toBeLessThan(edgeAt('top', 1))
+      expect(edgeAt('right', 1), '右缘第 1 列应是半透明黏土收边').toBeGreaterThan(8)
+      expect(edgeAt('right', 1), '右缘收边不应是不透明实块').toBeLessThan(200)
     })
   }
 
