@@ -5,9 +5,11 @@
   padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx 40rpx;
 }
 
-/* 透明圆角 PNG（选定稿几何蒙版抠图，见 art/me-redesign/prepare-banner-geom.py）：
-   圆角与边缘自带 alpha。盒式 box-shadow 绕矩形盒走，会在透明圆角外露出
-   灰边与角部楔形——投影必须挂在图上随 alpha 轮廓走（drop-shadow）。 */
+/* 透明圆角 PNG（几何圆角 alpha 蒙版，见 art/ref-pages-v3/fix-banner-corners.py）：
+   圆角与边缘自带 alpha，蒙版半径须与这里 40rpx 对齐——蒙版圆角大于 CSS 圆角时，
+   角部会透出页面底色（2026-09-12 修：radius_ratio 0.19 折 81px 病根）。
+   盒式 box-shadow 绕矩形盒走，会在透明圆角外露出灰边与角部楔形——
+   投影必须挂在图上随 alpha 轮廓走（drop-shadow）。 */
 .me-page__banner {
   border-radius: 40rpx;
   margin-bottom: 28rpx;
