@@ -1,6 +1,6 @@
-// 一次性：TinyPNG 压缩 v18 两枚 tile（prepared/ → src/assets/illus，升版文件名）
+// 一次性：TinyPNG 压缩 v19 两枚 tile（prepared/ → src/assets/illus，升版文件名）
 // v13 修黑晕边时把 body 外全部像素混向页面白，连带洗掉了烘焙接触影；
-// v18 几何AA修边 + 移植参考 baked 影。
+// v19 几何AA修边 + 移植参考 baked 影。
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,7 +12,7 @@ for (const line of fs.readFileSync('D:/Mine/miniapp-kit/.env', 'utf8').split(/\r
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '')
 }
 const keys = ['TINYPNG_API_KEY', 'TINYPNG_API_KEY_2', 'TINYPNG_API_KEY_3'].map((n) => process.env[n]).filter(Boolean)
-const files = ['tile-fun-v18.png', 'tile-career-v18.png']
+const files = ['tile-fun-v19.png', 'tile-career-v19.png']
 for (const name of files) {
   const input = fs.readFileSync(path.join(root, 'prepared', name))
   let done = false
