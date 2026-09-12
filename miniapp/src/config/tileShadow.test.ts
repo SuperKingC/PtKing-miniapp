@@ -119,8 +119,22 @@ describe('测试条 tile 与参考 tile 同族（影）', () => {
         const tol = Math.max(3, r * NEAR[i])
         expect(Math.abs(got.lft[i] - r), `左缘 d${i}（参考 ${r.toFixed(1)}）`).toBeLessThan(tol)
       }
-      // 上/右不应有落影
+      // 边缘不得有孤立异色点：移植影时圆角处会夹带参考实体自己的 AA 边颜色，
+      // 表现为「四周亮、自身暗」的孤立点（实测旧实现 9~12 个、参考为 0）。
       const img = decode(rel)
+      const lumAt = (x: number, y: number) => img.lum[y * img.width + x]
+      let odd = 0
+      for (let y = 1; y < img.height - 1; y += 1) {
+        for (let x = 1; x < img.width - 1; x += 1) {
+          if (img.alpha[y * img.width + x] < 10) continue
+          const bright = [lumAt(x, y - 1), lumAt(x, y + 1), lumAt(x - 1, y), lumAt(x + 1, y)]
+            .filter((v) => v > 246).length
+          if (bright >= 3 && lumAt(x, y) < 238) odd += 1
+        }
+      }
+      expect(odd, '边缘不应有孤立异色点').toBe(0)
+
+      // 上/右不应有落影
       expect(bandMean(img, 'top', BOX, 3), '上缘不应有落影').toBeLessThan(10)
       expect(bandMean(img, 'right', BOX, 3), '右缘不应有落影').toBeLessThan(10)
     })

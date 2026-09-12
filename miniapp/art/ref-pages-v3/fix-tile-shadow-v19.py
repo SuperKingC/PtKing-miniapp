@@ -81,6 +81,24 @@ def _sdf_alpha(mask, ss=4):
     return signed.reshape(H, ss, W, ss).mean(axis=(1, 3))
 
 
+def _fit_radius(body):
+    """拟合实体圆角半径（取直边段用）。"""
+    from PIL import ImageDraw
+    ys, xs = np.where(body)
+    x0, y0, x1, y1 = int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())
+    H, W = body.shape
+    best = None
+    for r in range(2, 80):
+        m = Image.new('L', (W * 4, H * 4), 0)
+        ImageDraw.Draw(m).rounded_rectangle(
+            (x0 * 4, y0 * 4, (x1 + 1) * 4 - 1, (y1 + 1) * 4 - 1), radius=r * 4, fill=255)
+        mm = np.array(m.resize((W, H), Image.Resampling.BOX)) > 128
+        diff = int((mm ^ body).sum())
+        if best is None or diff < best[0]:
+            best = (diff, r)
+    return best[1], None
+
+
 def _ref_shadow(ref_path):
     a = np.asarray(Image.open(ref_path).convert('RGBA')).astype(float)
     A = a[..., 3]
@@ -132,8 +150,15 @@ def fix_tile(ref, name, out_name):
         if len(row):
             row_left[y] = int(row.min())
     yy, xx = np.mgrid[0:H, 0:W]
-    shadow_side = ((col_bottom[None, :] >= 0) & (yy > col_bottom[None, :])) \
-        | ((row_left[:, None] >= 0) & (xx < row_left[:, None]))
+    # 影只铺在实体的**直边段**（下缘直段、左缘直段），圆角与角外区一律不铺。
+    # 「位于实体下方 / 左侧」这个判据在圆角外侧同样成立（例如 tile 左上角的上方，
+    # xx 仍小于该行的 row_left），于是参考影层里属于参考实体圆角 AA 的像素被逐点搬来，
+    # 「边缘有其他颜色」。参考影核本身也只延伸在直边段，按直边段取不会削掉影。
+    rad = _fit_radius(body)[0]
+    straight_v = (yy >= ty0 + rad) & (yy <= ty1 - rad)
+    straight_h = (xx >= tx0 + rad) & (xx <= tx1 - rad)
+    shadow_side = ((col_bottom[None, :] >= 0) & (yy > col_bottom[None, :]) & straight_h) \
+        | ((row_left[:, None] >= 0) & (xx < row_left[:, None]) & straight_v)
 
     u = (xx - tx0) / max(1, (tx1 - tx0))
     v = (yy - ty0) / max(1, (ty1 - ty0))
