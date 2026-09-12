@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-12 18:10
+- 原因：用户反馈今日推荐栏有锯齿，要求「根据参考图重新切」。
+- 修改：三页参考稿 `reference-ui.png` 已不在盘上（gitignore 未入库），改从它在 git 里的直裁产物 `hero-card-v3.png`（e5df4de）重做。病根：v7 按 alpha>=200 二值化把真彩边压成 1px 台阶（alpha 级数 64→16），v8 又对每列底缘盖固定斜坡 `[235,120,36,0]`，两者都不跟真实轮廓。新脚本 `miniapp/art/ref-pages-v3/rebuild-hero-card-v9.py`：清残框（右缘 x>=670 暖灰条 / 左缘 x=0 暖灰线 / 底缘 y>=307 半透明灰带）→ 4x 超采样重建轮廓过渡 → 核心内 alpha 原样保留（烘焙软影不动）→ 核心外取 AA 并给 RGB(0,0,0) 像素补本体色（免黑晕）。落包 `hero-card-v9.png` 76KB（TinyPNG），alpha 级数 47、硬跳变列 0、AA 环最暗合成亮度 202（v8 为 132）。`compress-hero-v9.mjs` 走压缩；`miniapp/src/config/heroCardEdges.test.ts` 锁剖面契约；test 页与两处契约断言 v8→v9。
+
 - 时间：2026-09-09 17:20
 - 原因：从 ui-4 整页裁图标会带卡底，不能当抠图用。
 - 修改：记录改回使用已泛洪的 v4 列表图标与 v7 底栏，卡片阴影改 CSS。
