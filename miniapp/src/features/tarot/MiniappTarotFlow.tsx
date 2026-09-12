@@ -17,6 +17,7 @@ import { createInitialTarotFlow, tarotFlowReducer } from './tarotFlow'
 import { listTarotHistory, saveTarotReading } from './tarotHistory'
 import { buildTarotReading, buildTarotShareTitle } from './tarotReading'
 import { impactFeedback, longFeedback, tapFeedback } from '../../services/haptics'
+import { topInsetStyle } from '../../services/navMetrics'
 import { findTarotSpread, type MiniappTarotSpread } from './tarotSpreads'
 import './MiniappTarotFlow.scss'
 
@@ -134,7 +135,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
   }
 
   return (
-    <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')}>
+    <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')} style={topInsetStyle()}>
       <Image
         className="miniapp-tarot__background"
         src={resolveTarotAssetUrl(getTarotSanctuaryBackground(skin))}

@@ -34,8 +34,8 @@
 /* ===== hero 结果卡：陶土橘渐变 + 白字 + 徽章行 ===== */
 .test-report__hero {
   position: relative;
-  /* 返回钮改为固定悬浮后不占文档流：用等量外边距维持原 hero 起始位置 */
-  margin-top: 108rpx;
+  /* 返回钮改为固定悬浮后不占文档流；只留按钮下方一小段呼吸，整页因此整体上移 */
+  margin-top: 32rpx;
   overflow: hidden;
   padding: 56rpx 40rpx 44rpx;
   border-radius: 36rpx;

@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-12
+- 原因：答题页返回钮视觉偏高，用户要求更低、中心与右上胶囊「三个点」图标对齐。
+- 修改：`navMetrics.resolveFixedBackTopPx` 由「胶囊底边 − 钮高」改为「胶囊底边 − 胶囊高/2 − 钮高/2」（胶囊高缺省兜底 32px），三页共用同一 helper 一起生效；实测返回钮中心 67px ≈ 胶囊中心 66.5px。答题页正文位置不动。
+
 - 时间：2026-09-11 12:50
 - 原因：用户澄清答题页也不要系统标题栏，且此前顶距偏高（scss 兜底 88px 被 Taro 编成 88rpx 腰斩）。
 - 修改：index.config.ts 撤掉 navigationStyle: default 回全局沉浸式；根节点内联注入 topInsetStyle()（实测 padding-top 95px，胶囊底边 83px）；加左上返回键（中途返回仍由 warnBeforeLeavingPlay 原生确认兜底）。

@@ -154,8 +154,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  // 头部整体下移：叉叉/副题/历史钮离屏顶一整口气，星夜标题不再顶到刘海
-  padding: calc(72rpx + env(safe-area-inset-top)) 28rpx 20rpx;
+  // 头部从「微信右上角胶囊底边」(--page-top-inset，由 Flow 根节点注入)起算，
+  // 叉叉/标题/历史钮整体落在自带三个点按钮高度之下，不再只用状态栏估高
+  padding: var(--page-top-inset, 88px) 28rpx 20rpx;
 }
 
 .miniapp-tarot__header-title {

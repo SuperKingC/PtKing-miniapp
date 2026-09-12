@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   BACK_BUTTON_SIZE_PX,
+  FALLBACK_MENU_HEIGHT_PX,
   FALLBACK_TOP_INSET_PX,
   resolveFixedBackTopPx,
   resolveTopInsetPx,
@@ -23,9 +24,21 @@ describe('navMetrics resolveTopInsetPx', () => {
 })
 
 describe('navMetrics resolveFixedBackTopPx', () => {
-  it('aligns the back button bottom edge with the capsule bottom edge', () => {
-    // 胶囊底 80、钮高 44 → 钮顶 36，钮底 = 36 + 44 = 80 = 胶囊底
-    expect(resolveFixedBackTopPx({ bottom: 80 }, 47)).toBe(80 - BACK_BUTTON_SIZE_PX)
+  it('aligns the back button vertical center with the capsule center (three-dot icon)', () => {
+    // 胶囊底 80、高 32 → 胶囊中心 64；钮高 44 → 钮顶 = 64 - 22 = 42，钮心 = 42 + 22 = 64
+    const top = resolveFixedBackTopPx({ bottom: 80, height: 32 }, 47)
+    expect(top).toBe(42)
+    expect(top + BACK_BUTTON_SIZE_PX / 2).toBe(80 - 32 / 2)
+  })
+
+  it('sits lower than the old bottom-aligned placement', () => {
+    expect(resolveFixedBackTopPx({ bottom: 80, height: 32 }, 47)).toBeGreaterThan(80 - BACK_BUTTON_SIZE_PX)
+  })
+
+  it('uses the default capsule height when the rect omits height', () => {
+    expect(resolveFixedBackTopPx({ bottom: 80 }, 47)).toBe(
+      80 - FALLBACK_MENU_HEIGHT_PX / 2 - BACK_BUTTON_SIZE_PX / 2,
+    )
   })
 
   it('never yields a negative top when the capsule sits high', () => {

@@ -13,6 +13,9 @@ export const FALLBACK_TOP_INSET_PX = 88
 /** 左上返回圆钮直径（px）：与 .test-*-__back 的 88rpx 同尺寸（750 设计宽 1rpx=0.5px） */
 export const BACK_BUTTON_SIZE_PX = 44
 
+/** 胶囊（右上角菜单钮）高度兜底（px）：getMenuButtonBoundingClientRect 未给 height 时用 */
+export const FALLBACK_MENU_HEIGHT_PX = 32
+
 interface MenuRect {
   bottom?: number
   height?: number
@@ -32,9 +35,9 @@ export function resolveTopInsetPx(menu: MenuRect | undefined, statusBarHeight: n
 }
 
 /**
- * 纯函数核心（可单测）：返回钮底边与胶囊底边对齐时的 fixed top(px)。
- * 胶囊底边可用时 = 底边 - 钮高；否则退回 statusBarHeight + 8（贴状态栏下沿）。
- * 保证按钮始终悬浮在胶囊同高位置，不随页面滚动。
+ * 纯函数核心（可单测）：返回钮中心与胶囊中心对齐时的 fixed top(px)。
+ * 胶囊可用时 = 胶囊底边 - 胶囊高/2 - 钮高/2（胶囊中心的三个点图标同高）；
+ * 否则退回 statusBarHeight + 8（贴状态栏下沿）。保证按钮不随页面滚动。
  */
 export function resolveFixedBackTopPx(
   menu: MenuRect | undefined,
@@ -42,7 +45,10 @@ export function resolveFixedBackTopPx(
   sizePx = BACK_BUTTON_SIZE_PX,
 ): number {
   const menuBottom = menu?.bottom
-  if (typeof menuBottom === 'number' && menuBottom > 0) return Math.max(0, menuBottom - sizePx)
+  if (typeof menuBottom === 'number' && menuBottom > 0) {
+    const menuHeight = typeof menu?.height === 'number' && menu.height > 0 ? menu.height : FALLBACK_MENU_HEIGHT_PX
+    return Math.max(0, menuBottom - menuHeight / 2 - sizePx / 2)
+  }
   if (typeof statusBarHeight === 'number' && statusBarHeight > 0) return statusBarHeight + 8
   return FALLBACK_TOP_INSET_PX - sizePx
 }
@@ -87,7 +93,7 @@ export function topInsetStyle(): Record<string, string> {
 }
 
 /**
- * 左上返回钮的悬浮定位：底边与右上角胶囊底边对齐，固定在视口不随页面滚动。
+ * 左上返回钮的悬浮定位：中心与右上角胶囊（三个点图标）中心对齐，固定在视口不随页面滚动。
  * 以 `--back-top` 变量注入页面根节点，`.test-*-__back` 用 position: fixed + top: var(...)。
  */
 export function fixedBackTop(): number {

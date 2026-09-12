@@ -6,6 +6,18 @@ const stylesPath = path.resolve(__dirname, 'MiniappTarotFlow.scss')
 const shuffleStagePath = path.resolve(__dirname, 'MiniappTarotShuffleStage.tsx')
 
 describe('miniapp tarot WXSS compatibility', () => {
+  it('drops the flow header below the wechat capsule via the injected top inset', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+    const flow = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+
+    // 头部 padding 走胶囊底边注入的 --page-top-inset，不再只用状态栏估高
+    expect(styles).toMatch(/\.miniapp-tarot__header\s*{[^}]*padding:\s*var\(--page-top-inset, 88px\)/)
+    expect(styles).not.toContain('calc(72rpx + env(safe-area-inset-top))')
+    // Flow 根节点注入该变量，叉叉/标题/历史钮整体下移到三个点按钮之下
+    expect(flow).toContain("import { topInsetStyle } from '../../services/navMetrics'")
+    expect(flow).toMatch(/className=\{\['miniapp-tarot'[\s\S]*?style=\{topInsetStyle\(\)\}/)
+  })
+
   it('does not emit universal selectors unsupported by the WeChat WXSS compiler', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
