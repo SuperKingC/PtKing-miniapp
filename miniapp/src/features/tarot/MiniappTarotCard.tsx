@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Image, Text, View } from '@tarojs/components'
 import type { DrawnTarotCard } from './tarotCards'
-import { getTarotArtworkUrl, getTarotCardBack, resolveTarotAssetUrl } from './tarotAssets'
+import { getTarotArtworkUrl, getTarotCardBack, invalidateTarotAsset, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 
 interface MiniappTarotCardProps {
@@ -47,7 +47,11 @@ export function MiniappTarotCard({ drawn, flipped, compact = false }: MiniappTar
               src={resolveTarotAssetUrl(getTarotArtworkUrl(drawn.card.id, skin))}
               mode="aspectFill"
               fadeIn={false}
-              onError={() => setArtFailed(true)}
+              onError={() => {
+                // 本地副本失效（被清理）时剔除映射，下次进入会重新下载
+                invalidateTarotAsset(getTarotArtworkUrl(drawn.card.id, skin))
+                setArtFailed(true)
+              }}
             />
           ) : (
             <View className="miniapp-tarot-card__fallback">

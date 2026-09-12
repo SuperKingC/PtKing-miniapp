@@ -3,7 +3,7 @@ import { getWxGlobal } from '../../services/wxGlobal'
 import { isTarotAssetCached, revalidateTarotAssetCache, resetTarotAssetCacheIfBaseChanged, saveTarotAssetFromTemp } from './tarotAssetCache'
 import type { TarotSkin } from './tarotSkin'
 
-export { resolveTarotAssetUrl } from './tarotAssetCache'
+export { resolveTarotAssetUrl, invalidateTarotAsset } from './tarotAssetCache'
 
 const artworkFiles = [
   'the-fool.jpg',

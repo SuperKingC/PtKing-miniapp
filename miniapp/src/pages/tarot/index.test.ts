@@ -39,6 +39,21 @@ describe('bright tarot entry wiring', () => {
     expect(styles).not.toContain('tarot-home__skin-thumb-fallback')
     expect(styles).toMatch(/\.tarot-home__skins\s*{[^}]*margin-top:\s*44rpx/)
   })
+  it('declares curtainLoaded before the hold effect that depends on it (regression: 12s stall)', () => {
+    const page = source('./index.tsx')
+    // 依赖数组里引用 curtainLoaded 时它必须已声明；否则 TDZ 读到 undefined，
+    // effect 不随 curtainLoaded 变化重跑，帘幕只能等 12s 兜底 —— 用户「100% 后卡七八秒」根因
+    const declIdx = page.indexOf('const [curtainLoaded, setCurtainLoaded] = useState(false)')
+    const effectIdx = page.indexOf('}, [curtain, curtainLoaded])')
+    expect(declIdx).toBeGreaterThan(-1)
+    expect(effectIdx).toBeGreaterThan(-1)
+    expect(declIdx).toBeLessThan(effectIdx)
+    // 只允许一处声明（历史 bug 是下方重复声明导致上方引用 TDZ）
+    expect(page.match(/const \[curtainLoaded, setCurtainLoaded\] = useState\(false\)/g)).toHaveLength(1)
+    // 12s 慢网兜底只保留一份
+    expect(page.match(/setTimeout\(\(\) => setCurtain\('opening'\), 12000\)/g)).toHaveLength(1)
+  })
+
   it('curtain entrance layers drape close and fade-out reveal', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-curtain__glow')

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import {
   clearTarotAssetCache,
+  invalidateTarotAsset,
   isTarotAssetCached,
   resetTarotAssetCacheIfBaseChanged,
   resolveTarotAssetUrl,
@@ -93,41 +94,49 @@ describe('tarot asset cache', () => {
     expect(resolveTarotAssetUrl(URL_A)).toBe('wxfile:///tmp/a')
   })
 
-  it('does not touch the filesystem on repeated renders (regression: flow froze after load)', async () => {
-    // 复现线上症状：冷启动后 storage 已有 24 条映射（上次会话落的盘），流程里反复重渲染。
-    // 修复前每次 resolveTarotAssetUrl 都 getFileSystemManager + accessSync，
-    // 进流程 9 秒内实测 995 次 IO；现在同一 URL 会话内最多查一次磁盘。
+  it('never touches the filesystem while resolving (regression: entry stalled seconds)', async () => {
+    // 复现线上症状：冷启动后 storage 已有 24 条映射，进流程时逐条 accessSync 校验，
+    // 在开发者工具里每次同步跨进程调用上百毫秒，24 张拖出数秒等待。
+    // 契约：解析与命中判断都只读 storage 映射，零磁盘 IO。
     const urls = Array.from({ length: 24 }, (_, i) => `${BASE}/tarot/cards/card-${i}.jpg`)
     const files: Record<string, string> = {}
-    const existing: string[] = []
-    for (let i = 0; i < urls.length; i++) {
-      files[urls[i]] = `wxfile:///tmp/card-${i}`
-      existing.push(`wxfile:///tmp/card-${i}`)
-    }
-    const { io } = installWx({ existing, seed: { base: BASE, files } })
+    for (let i = 0; i < urls.length; i++) files[urls[i]] = `wxfile:///tmp/card-${i}`
+    const { io } = installWx({ seed: { base: BASE, files } })
 
     io.fsmCalls = 0
     io.accessCalls = 0
 
-    // 模拟 10 轮渲染，每轮全部 24 张
     for (let round = 0; round < 10; round++) {
       for (const u of urls) expect(resolveTarotAssetUrl(u)).toContain('wxfile:///tmp/card-')
     }
+    for (const u of urls) expect(isTarotAssetCached(u)).toBe(true)
 
-    // 每张最多首次解析查一次磁盘（≤24），第二轮起全部命中记忆，不随轮次增长
-    expect(io.accessCalls).toBeLessThanOrEqual(urls.length)
-    expect(io.accessCalls).toBeGreaterThan(0)
+    // 10 轮 × 24 张渲染 + 24 次命中判断，全程零磁盘探测
+    expect(io.accessCalls).toBe(0)
+    expect(io.fsmCalls).toBe(0)
   })
 
-  it('drops files the system reclaimed on revalidate (entry-time check)', async () => {
+  it('invalidateTarotAsset drops a bad entry so the next entry re-downloads', async () => {
+    // 映射与落盘文件同生命周期；真失效（文件被清）由 Image onError 走这里兜底
     const { existing } = installWx({ existing: ['wxfile:///tmp/a'] })
     saveBase()
     await saveTarotAssetFromTemp(URL_A, '/tmp/a')
-    existing.clear() // 模拟系统回收本地文件
+    expect(isTarotAssetCached(URL_A)).toBe(true)
 
-    expect(revalidateTarotAssetCache()).toBe(1)
+    invalidateTarotAsset(URL_A)
+
     expect(isTarotAssetCached(URL_A)).toBe(false)
     expect(resolveTarotAssetUrl(URL_A)).toBe(URL_A)
+  })
+
+  it('clears session memory on revalidate so a new entry re-reads storage', async () => {
+    const { existing } = installWx({ existing: ['wxfile:///tmp/a'] })
+    saveBase()
+    await saveTarotAssetFromTemp(URL_A, '/tmp/a')
+
+    revalidateTarotAssetCache()
+    // 重校验后仍能按映射解析（映射未丢），且不触发磁盘探测
+    expect(resolveTarotAssetUrl(URL_A)).toBe('wxfile:///tmp/a')
   })
 
   it('reports failure without caching when saveFile fails or throws', async () => {

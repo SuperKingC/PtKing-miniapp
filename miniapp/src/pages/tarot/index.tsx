@@ -43,6 +43,16 @@ export default function TarotPage() {
   const [curtain, setCurtain] = useState<CurtainPhase>('idle')
   const curtainTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const holdStartRef = useRef(0)
+  // 帘幕层显示的加载进度：流程组件预加载回调外抛，合拢/星显阶段读同一份值。
+  // 必须先于下方引用它的 effect 声明（否则依赖数组在 TDZ 里读到 undefined，
+  // effect 不会因 curtainLoaded 变化重跑，只能干等 12s 兜底——线上「100% 后卡很久」的根因）。
+  const [curtainProgress, setCurtainProgress] = useState(0)
+  const [curtainLoaded, setCurtainLoaded] = useState(false)
+  const handleLoadProgress = useCallback((progress: number) => {
+    setCurtainProgress(progress)
+    if (progress >= 1) setCurtainLoaded(true)
+  }, [])
+  const handleLoadDone = useCallback(() => setCurtainLoaded(true), [])
   const reducedMotion = motionPreference === 'reduced'
 
   const clearCurtainTimers = () => {
@@ -76,13 +86,6 @@ export default function TarotPage() {
     return () => clearTimeout(timer)
   }, [curtain])
 
-  // 慢网兜底：hold 最长等 12s，超时放行淡出，帘后流程内 loading 层继续显示进度
-  useEffect(() => {
-    if (curtain !== 'holding') return
-    const timer = setTimeout(() => setCurtain('opening'), 12000)
-    return () => clearTimeout(timer)
-  }, [curtain])
-
   useDidShow(() => {
     Taro.eventCenter.trigger(TAROT_FLOW_VISIBILITY_EVENT, flowOpen)
   })
@@ -103,14 +106,6 @@ export default function TarotPage() {
     return { title: APP_TAROT_SHARE_TITLE }
   })
   const handleShareTitleChange = useCallback((title: string) => setTarotShareTitle(title), [])
-  // 帘幕层显示的加载进度：流程组件预加载回调外抛，合拢/星显阶段读同一份值
-  const [curtainProgress, setCurtainProgress] = useState(0)
-  const [curtainLoaded, setCurtainLoaded] = useState(false)
-  const handleLoadProgress = useCallback((progress: number) => {
-    setCurtainProgress(progress)
-    if (progress >= 1) setCurtainLoaded(true)
-  }, [])
-  const handleLoadDone = useCallback(() => setCurtainLoaded(true), [])
 
   const startFlow = (selected: MiniappTarotSpread, withSpreadStage = true) => {
     tapFeedback()

@@ -74,18 +74,6 @@ function fileSystem(): WxFileSystemManager | undefined {
   return fsManager
 }
 
-function fileExists(path: string): boolean {
-  const fs = fileSystem()
-  if (!fs?.accessSync) return false
-  try {
-    fs.accessSync(path)
-    return true
-  } catch {
-    // 被系统回收 / 已删除
-    return false
-  }
-}
-
 function removeFile(path: string): void {
   try {
     fileSystem()?.unlinkSync?.(path)
@@ -94,23 +82,31 @@ function removeFile(path: string): void {
   }
 }
 
-/** 该 URL 是否已有可用本地副本。 */
+/**
+ * 该 URL 是否已有可用本地副本。
+ *
+ * 只查 storage 映射，不做磁盘存在性探测（accessSync 在开发者工具是跨进程同步调用，
+ * 单次可达百毫秒，24 张就是数秒 —— 进入时逐条校验会把「缓存命中」拖成「等好几秒」）。
+ * 安全性依据：saveFile 落盘的文件与 storage 映射属同一存储域，用户清小程序数据时
+ * 两者一起消失；正常使用中不会出现「映射还在、文件没了」。真出现时由 Image onError
+ * 兜底（见 invalidateTarotAsset）。
+ */
 export function isTarotAssetCached(url: string): boolean {
   if (!url) return false
   if (resolvedPaths.has(url)) return true
   const path = readRecord().files[url]
-  if (!path || !fileExists(path)) return false
+  if (!path) return false
   resolvedPaths.set(url, path)
   return true
 }
 
-/** 渲染用：命中缓存返回本地路径，否则原样返回远程 URL。解析结果会话内记忆，避免重复磁盘 IO。 */
+/** 渲染用：命中缓存返回本地路径，否则原样返回远程 URL。只读 storage 映射，不做磁盘 IO。 */
 export function resolveTarotAssetUrl(url: string): string {
   if (!url) return url
   const cached = resolvedPaths.get(url)
   if (cached) return cached
   const path = readRecord().files[url]
-  if (path && fileExists(path)) {
+  if (path) {
     resolvedPaths.set(url, path)
     return path
   }
@@ -118,23 +114,27 @@ export function resolveTarotAssetUrl(url: string): string {
 }
 
 /**
- * 进入流程时重校验一次：清掉会话记忆，逐条探测已记录文件是否还在磁盘上，
- * 不存在（被系统回收 / 清缓存）的条目从映射里剔除，交给后续下载补回。
- * 这样「每帧渲染免 IO」与「跨会话回收可感知」兼得。
- * 返回被剔除的失效 URL 数。
+ * 图片加载失败时调用：把该 URL 从映射与会话记忆里剔除，下次进入会重新下载。
+ * 这是「映射还在但文件确实失效」的唯一兜底路径，替代进入时的逐条磁盘校验。
  */
-export function revalidateTarotAssetCache(): number {
-  resolvedPaths.clear()
+export function invalidateTarotAsset(url: string): void {
+  if (!url) return
+  resolvedPaths.delete(url)
   const record = readRecord()
-  const dropped: string[] = []
-  for (const [url, path] of Object.entries(record.files)) {
-    if (!fileExists(path)) dropped.push(url)
-  }
-  if (dropped.length > 0) {
-    for (const url of dropped) delete record.files[url]
-    writeRecord(record)
-  }
-  return dropped.length
+  if (!record.files[url]) return
+  const path = record.files[url]
+  delete record.files[url]
+  writeRecord(record)
+  removeFile(path)
+}
+
+/**
+ * 进入流程时清掉会话记忆（新一次进入应重新按 storage 映射解析）。
+ * 不做逐条磁盘探测：accessSync 在这个环境是跨进程同步调用，24 张会拖出数秒等待，
+ * 而映射与落盘文件同生命周期，失效场景由 invalidateTarotAsset（Image onError）兜底。
+ */
+export function revalidateTarotAssetCache(): void {
+  resolvedPaths.clear()
 }
 
 /** 资产版本根变化时清空旧缓存（含已落盘文件），返回是否发生了重置。 */
