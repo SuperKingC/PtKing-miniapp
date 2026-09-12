@@ -5,13 +5,17 @@
   padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx calc(64rpx + env(safe-area-inset-bottom));
 }
 
+/* 左上返回圆钮：固定悬浮在右上角胶囊同高（底边对齐胶囊底边），不随页面滚动 */
 .test-play__back {
+  position: fixed;
+  left: 40rpx;
+  top: var(--back-top, 44px);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 88rpx;
   height: 88rpx;
-  margin-bottom: 20rpx;
   border-radius: 50%;
   background: var(--color-card-bg);
   box-shadow: var(--shadow-card);
@@ -45,6 +49,8 @@
 }
 
 .test-play__progress-track {
+  /* 返回钮改为固定悬浮后不占文档流：用等量外边距维持原进度条起始位置 */
+  margin-top: 108rpx;
   height: 8rpx;
   border-radius: 999rpx;
   background: var(--color-primary-soft);

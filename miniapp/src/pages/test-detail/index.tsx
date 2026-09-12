@@ -6,7 +6,7 @@ import { APP_ENTERTAINMENT_DISCLAIMER } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
 import { clearTestDraft, getTestDraft } from '../../services/testDrafts'
 import { getTestDefinition } from '../../services/testRegistry'
-import { topInsetStyle } from '../../services/navMetrics'
+import { backButtonStyle, topInsetStyle } from '../../services/navMetrics'
 import './index.scss'
 
 // 测试详情页：信息胶囊 + 介绍 + 注意（答题指引）+ 娱乐化免责 + 开始/继续/重开
@@ -53,7 +53,7 @@ export default function TestDetailPage() {
 
   return (
     <View className={`test-detail theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-detail__back" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-detail__back" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       <View className="test-detail__card">

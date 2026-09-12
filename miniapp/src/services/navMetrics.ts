@@ -10,6 +10,9 @@ import { getWxGlobal } from './wxGlobal'
 /** 兜底值：无胶囊/无状态栏信息时的保守估计（iPhone 常规值附近） */
 export const FALLBACK_TOP_INSET_PX = 88
 
+/** 左上返回圆钮直径（px）：与 .test-*-__back 的 88rpx 同尺寸（750 设计宽 1rpx=0.5px） */
+export const BACK_BUTTON_SIZE_PX = 44
+
 interface MenuRect {
   bottom?: number
   height?: number
@@ -28,12 +31,44 @@ export function resolveTopInsetPx(menu: MenuRect | undefined, statusBarHeight: n
   return FALLBACK_TOP_INSET_PX
 }
 
-export function getTopInsetPx(): number {
+/**
+ * 纯函数核心（可单测）：返回钮底边与胶囊底边对齐时的 fixed top(px)。
+ * 胶囊底边可用时 = 底边 - 钮高；否则退回 statusBarHeight + 8（贴状态栏下沿）。
+ * 保证按钮始终悬浮在胶囊同高位置，不随页面滚动。
+ */
+export function resolveFixedBackTopPx(
+  menu: MenuRect | undefined,
+  statusBarHeight: number | undefined,
+  sizePx = BACK_BUTTON_SIZE_PX,
+): number {
+  const menuBottom = menu?.bottom
+  if (typeof menuBottom === 'number' && menuBottom > 0) return Math.max(0, menuBottom - sizePx)
+  if (typeof statusBarHeight === 'number' && statusBarHeight > 0) return statusBarHeight + 8
+  return FALLBACK_TOP_INSET_PX - sizePx
+}
+
+function readMenuRect(): MenuRect | undefined {
+  try {
+    return getWxGlobal()?.getMenuButtonBoundingClientRect?.() as MenuRect | undefined
+  } catch {
+    return undefined
+  }
+}
+
+function readStatusBarHeight(): number | undefined {
   const wx = getWxGlobal()
   try {
     const info = (wx?.getWindowInfo?.() ?? wx?.getSystemInfoSync?.()) as WindowInfo | undefined
-    const menu = wx?.getMenuButtonBoundingClientRect?.() as MenuRect | undefined
-    return resolveTopInsetPx(menu, info?.statusBarHeight)
+    return info?.statusBarHeight
+  } catch {
+    return undefined
+  }
+}
+
+export function getTopInsetPx(): number {
+  try {
+    const info = (getWxGlobal()?.getWindowInfo?.() ?? getWxGlobal()?.getSystemInfoSync?.()) as WindowInfo | undefined
+    return resolveTopInsetPx(readMenuRect(), info?.statusBarHeight)
   } catch {
     return FALLBACK_TOP_INSET_PX
   }
@@ -49,4 +84,17 @@ export function applyTopInset(
 /** Taro 内联样式：`--page-top-inset: 88px`，页面根节点 style 属性直接展开 */
 export function topInsetStyle(): Record<string, string> {
   return { '--page-top-inset': `${getTopInsetPx()}px` }
+}
+
+/**
+ * 左上返回钮的悬浮定位：底边与右上角胶囊底边对齐，固定在视口不随页面滚动。
+ * 以 `--back-top` 变量注入页面根节点，`.test-*-__back` 用 position: fixed + top: var(...)。
+ */
+export function fixedBackTop(): number {
+  return resolveFixedBackTopPx(readMenuRect(), readStatusBarHeight())
+}
+
+/** Taro 内联样式：`--back-top: 40px`，返回钮 fixed top 由它驱动 */
+export function backButtonStyle(): Record<string, string> {
+  return { '--back-top': `${fixedBackTop()}px` }
 }

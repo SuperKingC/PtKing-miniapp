@@ -27,6 +27,7 @@ import { BREAKUP_TEST } from '../domain/tests/breakupTest'
 import { CRUSH_TEST } from '../domain/tests/crushTest'
 import { OFFICE_ROLE_TEST } from '../domain/tests/officeRoleTest'
 import { BOSS_STYLE_TEST } from '../domain/tests/bossStyleTest'
+import { CHIIKAWA_BOND_TEST } from '../domain/tests/chiikawaBondTest'
 
 /**
  * 测试注册表：静态内置定义兜底 + COS JSON 动态下发合并（M2）。
@@ -65,6 +66,7 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
   [CRUSH_TEST.id]: CRUSH_TEST,
   [OFFICE_ROLE_TEST.id]: OFFICE_ROLE_TEST,
   [BOSS_STYLE_TEST.id]: BOSS_STYLE_TEST,
+  [CHIIKAWA_BOND_TEST.id]: CHIIKAWA_BOND_TEST,
 }
 
 /** 首页卡片展示顺序：静态顺序为基，动态新增的测试排在其后 */
@@ -98,6 +100,8 @@ let listOrder: string[] = [
   CRUSH_TEST.id,
   OFFICE_ROLE_TEST.id,
   BOSS_STYLE_TEST.id,
+  // 2026-09-12 趣味扩批次
+  CHIIKAWA_BOND_TEST.id,
 ]
 
 let definitions: Record<string, TestDefinition> = { ...STATIC_DEFINITIONS }

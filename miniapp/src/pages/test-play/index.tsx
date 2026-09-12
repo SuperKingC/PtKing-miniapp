@@ -18,7 +18,7 @@ import {
 } from '../../services/testDrafts'
 import { tapFeedback } from '../../services/haptics'
 import { getPlayProgress, getTestPlayStage } from '../../domain/experience'
-import { topInsetStyle } from '../../services/navMetrics'
+import { backButtonStyle, topInsetStyle } from '../../services/navMetrics'
 import './index.scss'
 
 // 答题页（对应「做梦心理」答题版式）：顶部细进度条 + 右上角 n/N + 居中题干 + 双答案卡 + 左右翻页圆钮。
@@ -183,7 +183,7 @@ export default function TestPlayPage() {
 
   return (
     <View className={`test-play theme-${theme} motion-${motionPreference}`} style={topInsetStyle()}>
-      <View className="test-play__back" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-play__back" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       {restoring && (

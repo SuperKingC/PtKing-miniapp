@@ -7,7 +7,7 @@ import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from 
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
-import { topInsetStyle } from '../../services/navMetrics'
+import { backButtonStyle, topInsetStyle } from '../../services/navMetrics'
 import { renderShareCard } from '../../services/reportShareCard'
 import { showRewardedAd } from '../../services/rewardedAd'
 import { getTestDefinition, listTestDefinitions } from '../../services/testRegistry'
@@ -323,7 +323,7 @@ export default function TestReportPage() {
   if (locked) {
   return (
     <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       <View className="test-report__hero">
@@ -400,7 +400,7 @@ export default function TestReportPage() {
   }
   return (
     <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       <View className="test-report__hero">

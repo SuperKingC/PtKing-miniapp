@@ -14,7 +14,7 @@ import {
 } from '../../services/theme'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
-import meBannerImg from '../../assets/illus/me-banner-panel-v4.png'
+import meBannerImg from '../../assets/illus/me-banner-panel-v5.png'
 import iconClear from '../../assets/illus/icon-me-clear-v8.png'
 import iconPrivacy from '../../assets/illus/icon-me-privacy-v8.png'
 import iconShare from '../../assets/illus/icon-me-share-v8.png'

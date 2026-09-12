@@ -135,6 +135,7 @@ describe('dynamic content wiring', () => {
     expect(page).toContain('继续答题')
     expect(page).toContain('为你推荐')
     expect(page).toContain('pickRecommendedTests')
-    expect(page).toContain('setDefinitions(next)')
+    // 动态注册表刷新走幂等短路：内容未变不换新引用，避免 onShow 整页重渲染
+    expect(page).toContain('setDefinitions((prev) => (idsOf(prev) === idsOf(next) ? prev : next))')
   })
 })

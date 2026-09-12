@@ -5,7 +5,7 @@ import { APP_TAROT_SHARE_TITLE } from '../../services/brand'
 import { MiniappTarotFlow } from '../../features/tarot/MiniappTarotFlow'
 import { TAROT_HISTORY_OPEN_EVENT } from '../../features/tarot/tarotHistory'
 import type { MiniappTarotSpread } from '../../features/tarot/tarotSpreads'
-import { getTarotSanctuaryBackground } from '../../features/tarot/tarotAssets'
+import { getTarotSanctuaryBackground, isUsableTarotAssetUrl } from '../../features/tarot/tarotAssets'
 import { getTarotSkin, setTarotSkin, TAROT_SKIN_LABELS, TAROT_SKIN_ORDER, type TarotSkin } from '../../features/tarot/tarotSkin'
 import { TAROT_FLOW_VISIBILITY_EVENT } from '../../custom-tab-bar/tabBarVisibility'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
@@ -14,17 +14,17 @@ import { useMotionPreference } from '../../hooks/useMotionPreference'
 import { topInsetStyle } from '../../services/navMetrics'
 import { tapFeedback } from '../../services/haptics'
 import { trackEvent } from '../../services/monitor'
-import heroImage from '../../assets/illus/tarot-panel-v5.jpg'
-import singleCardImage from '../../assets/illus/tarot-card-single-v3.png'
-import cardsFanImage from '../../assets/illus/tarot-cards-fan-v3.png'
+import heroImage from '../../assets/illus/tarot-panel-v6.jpg'
+import singleCardImage from '../../assets/illus/tarot-card-single-v4.png'
+import cardsFanImage from '../../assets/illus/tarot-cards-fan-v4.png'
 import './index.scss'
 
-// 帘幕编排：合拢(布帘拉上/星星连线) → 帘后挂载流程（同时开始预加载）→
-// hold 到资源加载完成（有仪式感下限，加载慢时由 loaded 触发）→ 淡出帘幕。
+// 帘幕编排：合拢(布帘拉上/星星连线，期间帘后已挂载流程并预加载) →
+// hold 到资源加载完成(不设最短仪式时长，资源好即放行；合拢耗时本身兜底) → 淡出帘幕。
 // 不与资源预加载耦合：慢网时帘幕内显示预加载进度，完成后淡入正式界面。
-const CURTAIN_CLOSE_MS = 900
-const CURTAIN_HOLD_MIN_MS = 160
-const CURTAIN_OPEN_MS = 620
+const CURTAIN_CLOSE_MS = 420
+const CURTAIN_HOLD_MIN_MS = 0
+const CURTAIN_OPEN_MS = 360
 
 type CurtainPhase = 'idle' | 'closing' | 'holding' | 'opening'
 
@@ -50,7 +50,7 @@ export default function TarotPage() {
   }
   useEffect(() => () => clearCurtainTimers(), [])
 
-  // hold 阶段等加载：加载完成(或超最短仪式时长)才淡出帘幕。loading 层兜底慢网。
+  // hold 阶段等加载：资源完成即放行淡出(不设最短仪式时长，合拢本身已兜底)。
   useEffect(() => {
     if (curtain !== 'holding') return
     if (!curtainLoaded) return
@@ -152,6 +152,12 @@ export default function TarotPage() {
     trackEvent('tarot_skin_change', { skin: next })
   }
 
+  const skinThumbSrc = (option: TarotSkin): string => {
+    const remote = getTarotSanctuaryBackground(option)
+    // COS 资产根未配置时（占位域名/空），缩略图请求必然失败留白，退回包内 hero 兜底
+    return isUsableTarotAssetUrl(remote) ? remote : heroImage
+  }
+
   const curtainVisible = curtain !== 'idle'
   const curtainClass = [
     'tarot-curtain',
@@ -206,10 +212,11 @@ export default function TarotPage() {
                       onClick={() => changeSkin(option)}
                     >
                       <View className={`tarot-home__skin-thumb tarot-home__skin-thumb--${option}`}>
-                        {/* 原图放大铺满裁切：按皮肤主体位置上移裁切窗（clip 窗口 220rpx，图按满宽自然高） */}
+                        {/* 原图放大铺满裁切：按皮肤主体位置上移裁切窗（clip 窗口 220rpx，图按满宽自然高）。
+                            COS 资产根未配置（本地开发/未发布）时退回包内 hero——否则缩略图整块空白 */}
                         <Image
                           className="tarot-home__skin-thumb-img"
-                          src={getTarotSanctuaryBackground(option)}
+                          src={skinThumbSrc(option)}
                           mode="aspectFill"
                         />
                       </View>
@@ -290,7 +297,7 @@ export default function TarotPage() {
                 <View className="tarot-curtain__loading-fill" style={{ width: `${Math.round(curtainProgress * 100)}%` }} />
               </View>
               <Text className="tarot-curtain__loading-text">
-                {curtainLoaded ? '仪式准备就绪' : skin === 'classic' ? '星图绘制中' : '猫咪布置占卜屋中'}
+                {curtainLoaded ? '仪式准备就绪' : skin === 'classic' ? '星图绘制中' : '测测子布置牌桌中'}
               </Text>
             </View>
           )}

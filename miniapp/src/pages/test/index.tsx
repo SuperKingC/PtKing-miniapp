@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Image, ScrollView, Text, View } from '@tarojs/components'
 import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
+import type { TestDefinition } from '../../domain/testEngine'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
 import { pickRecommendedTests } from '../../services/testDiscovery'
 import { listActiveTestDrafts } from '../../services/testDrafts'
@@ -12,15 +13,20 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroCardImg from '../../assets/illus/hero-card-v7.png'
+import heroCardImg from '../../assets/illus/hero-card-v8.png'
 import tileMbtiImg from '../../assets/illus/tile-mbti-v10.png'
 import tileStarImg from '../../assets/illus/tile-star-v10.png'
 import tileLoveImg from '../../assets/illus/tile-love-v10.png'
-import tileCareerImg from '../../assets/illus/tile-career-v12.png'
-import tileFunImg from '../../assets/illus/tile-fun-v12.png'
+import tileCareerImg from '../../assets/illus/tile-career-v13.png'
+import tileFunImg from '../../assets/illus/tile-fun-v13.png'
 import './index.scss'
 
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tileStarImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
+
+/** 定义列表的内容指纹：id 序列一致即视为同一批，用于 onShow 幂等短路 */
+function idsOf(definitions: TestDefinition[]): string {
+  return definitions.map((definition) => definition.id).join(',')
+}
 
 function todayCategory() {
   const now = new Date()
@@ -77,10 +83,15 @@ export default function TestPage() {
 
   const refresh = () => {
     const next = listTestDefinitions()
-    setDefinitions(next)
-    setResume(listActiveTestDrafts(next)[0] ?? null)
-    setRecentIds(loadTestRecords().map((record) => record.testId))
-    setDailyCategory(todayCategory())
+    const nextResume = listActiveTestDrafts(next)[0] ?? null
+    const nextRecentIds = loadTestRecords().map((record) => record.testId)
+    const nextDailyCategory = todayCategory()
+    // 每次 onShow 都整批换新引用会让整页再渲染一遍（用户读作「刷新列表/闪一下」）：
+    // 数据未变时全部跳过 setState，首点 tab 不再有第二趟 render。
+    setDefinitions((prev) => (idsOf(prev) === idsOf(next) ? prev : next))
+    setResume((prev) => (prev?.definition.id === nextResume?.definition.id && prev?.draft.answers.length === nextResume?.draft.answers.length ? prev : nextResume))
+    setRecentIds((prev) => (prev.join(',') === nextRecentIds.join(',') ? prev : nextRecentIds))
+    setDailyCategory((prev) => (prev === nextDailyCategory ? prev : nextDailyCategory))
   }
   useEffect(() => {
     const unsubscribe = subscribeTestRegistry(refresh)

@@ -12,21 +12,27 @@
   font-size: var(--font-size-body);
 }
 
+/* 左上返回圆钮：固定悬浮在右上角胶囊同高（底边对齐胶囊底边），不随页面滚动 */
 .test-detail__back {
+  position: fixed;
+  left: 32rpx;
+  top: var(--back-top, 44px);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 88rpx;
   height: 88rpx;
-  margin-bottom: 16rpx;
   border-radius: 50%;
   background: var(--color-card-bg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 6rpx 14rpx rgba(108, 80, 50, 0.16), 0 2rpx 4rpx rgba(108, 80, 50, 0.1);
   color: var(--color-ink);
   font-size: 40rpx;
 }
 
 .test-detail__card {
+  /* 返回钮改为固定悬浮后不占文档流：用等量外边距维持原卡片起始位置 */
+  margin-top: 104rpx;
   overflow: hidden;
   border-radius: 32rpx;
   background: var(--color-card-bg);

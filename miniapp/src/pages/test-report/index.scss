@@ -5,14 +5,17 @@
   padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx calc(24rpx + env(safe-area-inset-bottom));
 }
 
-/* 左上返回圆钮：奶油圆片 + 细箭头 + 软投影（仅顶部导航用，勿复用于底部文字链） */
+/* 左上返回圆钮：固定悬浮在右上角胶囊同高（底边对齐胶囊底边），不随页面滚动 */
 .test-report__navback {
+  position: fixed;
+  left: 40rpx;
+  top: var(--back-top, 44px);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 88rpx;
   height: 88rpx;
-  margin-bottom: 20rpx;
   border-radius: 50%;
   background: var(--color-card-bg);
   box-shadow: 0 6rpx 14rpx rgba(108, 80, 50, 0.16), 0 2rpx 4rpx rgba(108, 80, 50, 0.1);
@@ -31,6 +34,8 @@
 /* ===== hero 结果卡：陶土橘渐变 + 白字 + 徽章行 ===== */
 .test-report__hero {
   position: relative;
+  /* 返回钮改为固定悬浮后不占文档流：用等量外边距维持原 hero 起始位置 */
+  margin-top: 108rpx;
   overflow: hidden;
   padding: 56rpx 40rpx 44rpx;
   border-radius: 36rpx;

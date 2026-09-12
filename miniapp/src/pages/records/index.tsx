@@ -13,8 +13,8 @@ import emptyRecordsImg from '../../assets/illus/empty-records-v3.png'
 import bookImage from '../../assets/illus/records-book-v4.png'
 import personalityIcon from '../../assets/illus/tile-star-v10.png'
 import loveIcon from '../../assets/illus/tile-love-v10.png'
-import careerIcon from '../../assets/illus/tile-career-v12.png'
-import funIcon from '../../assets/illus/tile-fun-v12.png'
+import careerIcon from '../../assets/illus/tile-career-v13.png'
+import funIcon from '../../assets/illus/tile-fun-v13.png'
 import './index.scss'
 
 const CATEGORIES: RecordCategory[] = ['全部', '人格', '情感', '职场', '趣味']
@@ -81,8 +81,12 @@ export default function RecordsPage() {
   const firstTest = pickRecommendedTests(definitions, [], undefined, 1)[0] ?? definitions[0]
 
   useDidShow(() => {
-    setRecords(loadTestRecords())
-    setResume(listActiveTestDrafts(listTestDefinitions())[0] ?? null)
+    // 每次 onShow 都换新数组引用会整页重渲染（用户读作「刷新/闪一下」）：
+    // 内容未变时跳过 setState，首点 tab 无第二趟 render。
+    const nextRecords = loadTestRecords()
+    setRecords((prev) => (prev.map((r) => `${r.testId}@${r.finishedAt}`).join('|') === nextRecords.map((r) => `${r.testId}@${r.finishedAt}`).join('|') ? prev : nextRecords))
+    const nextResume = listActiveTestDrafts(listTestDefinitions())[0] ?? null
+    setResume((prev) => (prev?.definition.id === nextResume?.definition.id && prev?.draft.answers.length === nextResume?.draft.answers.length ? prev : nextResume))
   })
 
   const removeRecord = (record: TestRecord) => {

@@ -13,7 +13,7 @@ const CLINICAL_HINTS = [/确诊/, /病理/, /用药建议/]
 describe('test registry sanity (all published tests)', () => {
   const definitions = listTestDefinitions()
 
-  it('publishes the 2026-09 twenty-eight-test lineup in a stable order', () => {
+  it('publishes the 2026-09 twenty-nine-test lineup in a stable order', () => {
     expect(TEST_LIST_ORDER).toEqual([
       'mbti',
       'xp-test',
@@ -44,8 +44,10 @@ describe('test registry sanity (all published tests)', () => {
       'crush-signal',
       'office-role',
       'boss-style',
+      // 2026-09-12 趣味扩批次
+      'chiikawa-bond',
     ])
-    expect(listTestDefinitions()).toHaveLength(28)
+    expect(listTestDefinitions()).toHaveLength(29)
   })
 
   it('covers every category with at least one test', () => {

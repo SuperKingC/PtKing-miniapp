@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { FALLBACK_TOP_INSET_PX, resolveTopInsetPx } from './navMetrics'
+import {
+  BACK_BUTTON_SIZE_PX,
+  FALLBACK_TOP_INSET_PX,
+  resolveFixedBackTopPx,
+  resolveTopInsetPx,
+} from './navMetrics'
 import { getWxGlobal } from './wxGlobal'
 
 describe('navMetrics resolveTopInsetPx', () => {
@@ -14,6 +19,25 @@ describe('navMetrics resolveTopInsetPx', () => {
 
   it('returns the conservative fallback with no metrics at all', () => {
     expect(resolveTopInsetPx(undefined, undefined)).toBe(FALLBACK_TOP_INSET_PX)
+  })
+})
+
+describe('navMetrics resolveFixedBackTopPx', () => {
+  it('aligns the back button bottom edge with the capsule bottom edge', () => {
+    // 胶囊底 80、钮高 44 → 钮顶 36，钮底 = 36 + 44 = 80 = 胶囊底
+    expect(resolveFixedBackTopPx({ bottom: 80 }, 47)).toBe(80 - BACK_BUTTON_SIZE_PX)
+  })
+
+  it('never yields a negative top when the capsule sits high', () => {
+    expect(resolveFixedBackTopPx({ bottom: 20 }, 20)).toBe(0)
+  })
+
+  it('falls back below the status bar without a capsule rect', () => {
+    expect(resolveFixedBackTopPx(undefined, 47)).toBe(55)
+  })
+
+  it('uses a conservative fallback with no metrics at all', () => {
+    expect(resolveFixedBackTopPx(undefined, undefined)).toBe(FALLBACK_TOP_INSET_PX - BACK_BUTTON_SIZE_PX)
   })
 })
 

@@ -5,9 +5,10 @@ const source = (file: string) => readFileSync(require('node:path').resolve(__dir
 describe('bright tarot entry wiring', () => {
   it('keeps the existing flow behind a light home and returns home on close', () => {
     const page = source('./index.tsx')
-    expect(page).toContain('tarot-panel-v5.jpg')
-    expect(page).toContain('tarot-card-single-v3.png')
-    expect(page).toContain('tarot-cards-fan-v3.png')
+    expect(page).toContain('tarot-panel-v6.jpg')
+    // v4 入口卡：v3 从参考稿裁切底部平切(切掉圆角)，回退 git 历史 v2 完整素材升版
+    expect(page).toContain('tarot-card-single-v4.png')
+    expect(page).toContain('tarot-cards-fan-v4.png')
     expect(page).toContain('快速获得指引')
     expect(page).toContain('深度探索指引')
     // 抽取今日指引保留流程内选牌阵；两个入口卡已定牌阵，跳过选牌阵阶段
@@ -41,7 +42,7 @@ describe('bright tarot entry wiring', () => {
     expect(page).toContain('tarot-curtain__loading-fill')
     expect(page).toContain('curtainLoaded ? \'仪式准备就绪\'')
     expect(page).toContain('星图绘制中')
-    expect(page).toContain('猫咪布置占卜屋中')
+    expect(page).toContain('测测子布置牌桌中')
     // 底栏随帘幕出现即藏：startFlow 先广播流程可见再开帘
     expect(page).toMatch(/setCurtainLoaded\(false\)[\s\S]*Taro\.eventCenter\.trigger\(TAROT_FLOW_VISIBILITY_EVENT, true\)/)
     const styles = source('./index.scss')
@@ -50,10 +51,15 @@ describe('bright tarot entry wiring', () => {
     expect(styles).toContain('.tarot-curtain--holding .tarot-curtain__glow')
     // 淡出式揭幕(不再横向拉开)：整帘 opacity 渐隐露出流程页
     expect(styles).toContain('@keyframes tarot-curtain-fade')
-    // clay 布帘精致化：三重竖褶 + 顶部帷幔(扇贝垂边/垂穗摇摆)
+    // clay 布帘精致化：三重竖褶 + 顶部帷幔(扇贝垂边/垂穗摇摆)；软化版：底摆弧形垂边+
+// 褶皱联动(横移缩放)+合拢回弹+opening 轻微回缩(swell)再淡出
     expect(styles).toContain('tarot-curtain__drape')
     expect(styles).toContain('tarot-curtain__valance-scallop')
     expect(styles).toContain('@keyframes tarot-tassel-sway')
+    expect(styles).toContain('@keyframes tarot-drape-follow')
+    expect(styles).toContain('@keyframes tarot-curtain-swell-left')
+    expect(styles).toMatch(/\.tarot-curtain--clay \.tarot-curtain__panel::after[\s\S]*?border-radius/)
+    expect(styles).toContain('tarot-tassel-whip')
     // classic 仪式三件套：流星斜掠、星星逐颗亮起连线
     expect(styles).toContain('tarot-curtain__meteor')
     expect(styles).toContain('@keyframes tarot-const-star-pop')
@@ -62,8 +68,13 @@ describe('bright tarot entry wiring', () => {
     // 加载宝珠环：百分比在环心，环轨旋转
     expect(styles).toContain('tarot-curtain__loading-ring')
     expect(styles).toContain('@keyframes tarot-curtain-orb-spin')
-    // hold 加载完成即快进淡出(160ms 呼吸底线)，慢网 12s 兜底放行
+    // hold 加载完成即放行淡出(不设最短仪式时长，资源好即进——用户反馈进塔罗太慢)，慢网 12s 兜底放行
     expect(page).toMatch(/if \(!curtainLoaded\) return[\s\S]*CURTAIN_HOLD_MIN_MS - elapsed/)
+    expect(page).toContain('CURTAIN_HOLD_MIN_MS = 0')
+    expect(page).toContain('CURTAIN_CLOSE_MS = 420')
+    expect(page).toContain('CURTAIN_OPEN_MS = 360')
+    expect(styles).toContain('tarot-curtain-close-left .42s')
+    expect(styles).toContain('tarot-curtain-fade .36s')
     expect(page).toContain('setTimeout(() => setCurtain(\'opening\'), 12000)')
     // 淡出播完后彻底卸载帘幕：WXSS 同节点 class 切换的 opacity 动画实测不重放，
     // 卸载是清屏的确定性兜底(用户反馈：帘幕卡住不消失)
