@@ -16,8 +16,8 @@ describe('bright records layout', () => {
     expect(source).toContain('我的记录')
     expect(source).toContain('records-book-v4.png')
     /* 气球/公文包走 v14：左+下方向性接触影（旧 v13 修黑晕边时把影一起洗掉了） */
-    expect(source).toContain('tile-fun-v19.png')
-    expect(source).toContain('tile-career-v19.png')
+    expect(source).toContain('tile-fun-v20.png')
+    expect(source).toContain('tile-career-v20.png')
     expect(source).not.toContain('tile-fun-v13.png')
     expect(source).not.toContain('tile-career-v13.png')
     expect(source).toContain('已探索 ')

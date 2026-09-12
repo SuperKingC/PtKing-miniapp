@@ -23,15 +23,20 @@ function decode(rel: string) {
   const png = PNG.sync.read(readFileSync(resolve(miniappRoot(), rel)))
   const lum = new Float64Array(png.width * png.height)
   const alpha = new Uint8Array(png.width * png.height)
+  // 按页面白合成后的通道，用于色相核对
+  const cr = new Float64Array(png.width * png.height)
+  const cg = new Float64Array(png.width * png.height)
+  const cb = new Float64Array(png.width * png.height)
   for (let i = 0; i < png.width * png.height; i += 1) {
     const a = png.data[i * 4 + 3] / 255
     const r = png.data[i * 4] * a + PAGE[0] * (1 - a)
     const g = png.data[i * 4 + 1] * a + PAGE[1] * (1 - a)
     const b = png.data[i * 4 + 2] * a + PAGE[2] * (1 - a)
     lum[i] = (r + g + b) / 3
+    cr[i] = r; cg[i] = g; cb[i] = b
     alpha[i] = png.data[i * 4 + 3]
   }
-  return { width: png.width, height: png.height, lum, alpha }
+  return { width: png.width, height: png.height, lum, alpha, cr, cg, cb }
 }
 
 /** 合成为页面白后，某像素相对页面的压暗量 */
@@ -106,7 +111,7 @@ describe('测试条 tile 与参考 tile 同族（影）', () => {
 
   const ref = edgeProfile(REF)
 
-  for (const rel of ['src/assets/illus/tile-fun-v19.png', 'src/assets/illus/tile-career-v19.png']) {
+  for (const rel of ['src/assets/illus/tile-fun-v20.png', 'src/assets/illus/tile-career-v20.png']) {
     it(`${rel.split('/').pop()} 影剖面与参考 love 同档`, () => {
       const got = edgeProfile(rel)
       for (let i = 0; i < ref.bot.length; i += 1) {
@@ -133,6 +138,32 @@ describe('测试条 tile 与参考 tile 同族（影）', () => {
         }
       }
       expect(odd, '边缘不应有孤立异色点').toBe(0)
+
+      // 板面不得有淡黄受光带：原图板面自带色相渐变（顶/右缘 hue 40~48° 偏黄，
+      // 板心 18~24° 橙），而参考稿顶缘只是同色相提亮（爱心顶缘 33° vs 板心 26°）。
+      // 逐像素核「高饱和板面」（饱和度 ≥18 即 clay 板面；奶油物件 sat 5~14）里，
+      // 色相高出中位 15° 以上的比例。旧实现 10.6%，修复后 0%，参考 love 亦 0%。
+      const hues: number[] = []
+      for (let i = 0; i < img.width * img.height; i += 1) {
+        if (img.alpha[i] < 200) continue
+        const r = img.cr[i]; const g = img.cg[i]; const b = img.cb[i]
+        const mx = Math.max(r, g, b); const mn = Math.min(r, g, b)
+        if (mx <= 0 || (mx - mn) / mx * 100 < 18) continue
+        const df = mx - mn
+        const h = mx === r ? ((g - b) / df) * 60
+          : mx === g ? ((b - r) / df + 2) * 60
+            : ((r - g) / df + 4) * 60
+        hues.push((h + 360) % 360)
+      }
+      hues.sort((a, b) => a - b)
+      const med = hues[hues.length >> 1]
+      const yellow = hues.filter((h) => h > med + 15).length
+      // 两条一起才够：只查 «高出中位» 会漏掉「整块都黄」的那种（公文包旧版中位 41.9°，
+      // 内部一致却也偏黄）；只查中位绝对值会漏掉「只有顶缘一条黄带」的那种（气球旧版
+      // 中位 23.3° 正常、但顶缘 40°+）。暖色 tile 的板面中位应落在橙色档（参考 love 26°）。
+      expect(med, '板面中位色相应落在橙色档（不应整体偏黄）').toBeLessThan(32)
+      expect(yellow / hues.length, '板面不应有淡黄受光带（色相高出中位 15° 的比例）')
+        .toBeLessThan(0.02)
 
       // 上/右不应有落影
       expect(bandMean(img, 'top', BOX, 3), '上缘不应有落影').toBeLessThan(10)
