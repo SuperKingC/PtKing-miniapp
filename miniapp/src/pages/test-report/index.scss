@@ -127,17 +127,6 @@
   box-shadow: var(--shadow-card);
 }
 
-.test-report__disclaimer {
-  position: relative;
-  z-index: 1;
-  display: block;
-  margin-top: 20rpx;
-  text-align: center;
-  font-size: var(--font-size-aux);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.78);
-}
-
 .test-report__panel-title {
   display: block;
   margin-bottom: 28rpx;

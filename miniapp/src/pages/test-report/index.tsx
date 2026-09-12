@@ -5,7 +5,7 @@ import { findBandIndex, radarAxisLabel, radarChartGeometry } from '../../domain/
 import { buildReportPresentation } from '../../domain/reportPresentation'
 import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from '../../domain/shareCopy'
 import { useAppTheme } from '../../hooks/useAppTheme'
-import { APP_ENTERTAINMENT_DISCLAIMER, APP_SHARE_TITLE } from '../../services/brand'
+import { APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
 import { topInsetStyle } from '../../services/navMetrics'
 import { renderShareCard } from '../../services/reportShareCard'
@@ -407,7 +407,6 @@ export default function TestReportPage() {
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">{report.title}</Text>
         <Text className="test-report__tagline">{report.tagline}</Text>
-        <Text className="test-report__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
         <View className="test-report__hero-badges">
           <View className="test-report__badge">
             <Text>{definition.meta.minutes} 分钟</Text>
