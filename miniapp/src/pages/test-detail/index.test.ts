@@ -22,19 +22,19 @@ describe('测试介绍页与测试中心同款按钮/卡片剖面', () => {
     expect(start).toContain('background: var(--action-btn-bg)')
     expect(start).toContain('box-shadow: var(--action-btn-shadow)')
     expect(start).toContain('color: #ffffff')
-    /* 胶囊形状在主 CTA/次级共用块里定义，与列表按钮同为 999rpx 全圆角 */
-    expect(styleBlock('.test-detail__start, .test-detail__restart')).toContain('border-radius: 999rpx')
+    /* 胶囊形状与列表按钮同为 999rpx 全圆角 */
+    expect(start).toContain('border-radius: 999rpx')
   })
 
   it('卡片 item 走全局 --shadow-card 实色接触带三层法，与列表/报告卡同层', () => {
     expect(styleBlock('.test-detail__card')).toContain('box-shadow: var(--shadow-card)')
   })
 
-  it('次级「重新开始」保持低层级：柔和主色描边 + 卡面底，不用主 CTA 剖面', () => {
-    const restart = styleBlock('.test-detail__restart')
-    expect(restart).toContain('border: 2rpx solid var(--color-primary-soft)')
-    expect(restart).toContain('background: var(--color-card-bg)')
-    expect(restart).not.toContain('var(--action-btn-bg)')
+  it('介绍页不再有「重新开始」次级按钮（重开走答题页离开确认）', () => {
+    const source = readFileSync(resolve(__dirname, 'index.tsx'), 'utf8')
+    expect(source).not.toContain('test-detail__restart')
+    expect(source).not.toContain('重新开始')
+    expect(flatStyles).not.toContain('test-detail__restart')
   })
 
   it('按钮剖面令牌在 app.scss 单处定义（参考稿逐像素采样值，主题稳定）', () => {
@@ -46,5 +46,34 @@ describe('测试介绍页与测试中心同款按钮/卡片剖面', () => {
     /* 只在 page 定义一次；暗色主题继承同色（参考稿按钮各主题同色） */
     expect([...appStyles.matchAll(/--action-btn-bg:/g)]).toHaveLength(1)
     expect([...appStyles.matchAll(/--action-btn-shadow:/g)]).toHaveLength(1)
+  })
+})
+
+describe('介绍卡与按钮组在 [返回钮底边, 屏幕底部] 区域内垂直居中', () => {
+  it('根节点纵向 flex + 顶部内边距以返回钮底边为界（不再用胶囊 inset）', () => {
+    const root = styleBlock('.test-detail')
+    expect(root).toContain('display: flex')
+    expect(root).toContain('flex-direction: column')
+    expect(root).toContain('min-height: 100vh')
+    /* 上界 = --back-top + 钮高 88rpx + 呼吸；下界对称，保证居中在 [钮底边, 屏底] 中点 */
+    expect(root).toContain('padding: calc(var(--back-top, 44px) + 88rpx + 24rpx) 32rpx 24rpx')
+    expect(root).not.toContain('--page-top-inset')
+    /* 下留白混入 env 安全区会打破上下对称、把整组顶高 */
+    expect(root).not.toContain('env(safe-area-inset-bottom)')
+  })
+
+  it('内容组用上下 auto 边距均分剩余空间；内容超高时 auto 归零、从顶部起可滚动', () => {
+    const body = styleBlock('.test-detail__body')
+    expect(body).toContain('margin-top: auto')
+    expect(body).toContain('margin-bottom: auto')
+  })
+
+  it('渲染把 card/disclaimer/start 都包进居中容器', () => {
+    const source = readFileSync(resolve(__dirname, 'index.tsx'), 'utf8')
+    const body = source.match(/<View className="test-detail__body">([\s\S]*?)\n      <\/View>/)
+    expect(body, '缺少 .test-detail__body 包裹容器').not.toBeNull()
+    for (const cls of ['test-detail__card', 'test-detail__disclaimer', 'test-detail__start']) {
+      expect(body![1]).toContain(cls)
+    }
   })
 })

@@ -77,8 +77,11 @@ describe('test flow pages (M1)', () => {
     expect(records).toContain('useDidShow')
     expect(records).toContain('setRecords(loadTestRecords())')
     expect(records).toMatch(/switchTab\(\{ url: '\/pages\/test\/index' \}\)/)
-    expect(detail).toContain('clearTestDraft')
-    expect(detail).toContain('重新开始')
+    /* 介绍页只保留续答入口（有草稿显示「继续测试」）；重开走答题页离开确认 */
+    expect(detail).toContain('getTestDraft')
+    expect(detail).toContain('继续测试')
+    expect(detail).not.toContain('重新开始')
+    expect(detail).not.toContain('clearTestDraft')
   })
 
   it('hides native scrollbars on the scrolling tab pages', () => {

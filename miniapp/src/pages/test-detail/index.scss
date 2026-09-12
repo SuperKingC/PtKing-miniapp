@@ -1,7 +1,19 @@
 .test-detail {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
   min-height: 100vh;
-  /* 无系统标题栏：顶部留胶囊安全距离 */
-  padding: calc(var(--page-top-inset, 88px) + 8rpx) 32rpx calc(64rpx + env(safe-area-inset-bottom));
+  /* 内容区上边界 = 返回钮底边（--back-top + 钮高 88rpx）再加 24rpx 呼吸，下边界 = 屏幕
+     底部再收 24rpx；上下留白等量，auto 边距才会把内容组居中在 [返回钮底边, 屏幕底部]
+     的几何中点上（混入 env 安全区会让下留白更大、整体被顶高）。 */
+  padding: calc(var(--back-top, 44px) + 88rpx + 24rpx) 32rpx 24rpx;
+}
+
+/* 介绍卡 + 免责 + 按钮 作为一组居中：上下 auto 边距均分剩余空间。
+   内容高于区域时 auto 归零 → 从顶部起、可正常滚动，不会裁掉顶部。 */
+.test-detail__body {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .test-detail__missing {
@@ -31,8 +43,6 @@
 }
 
 .test-detail__card {
-  /* 返回钮改为固定悬浮后不占文档流：用等量外边距维持原卡片起始位置 */
-  margin-top: 104rpx;
   overflow: hidden;
   border-radius: 32rpx;
   background: var(--color-card-bg);
@@ -121,8 +131,8 @@
   color: var(--color-ink-secondary);
 }
 
-.test-detail__start,
-.test-detail__restart {
+/* 主 CTA：与测试中心「开始测试」同一层奶杏暖陶剖面（全局 --action-btn-*） */
+.test-detail__start {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,20 +142,8 @@
   border-radius: 999rpx;
   font-size: var(--font-size-card-title);
   font-weight: var(--font-weight-semibold);
-}
-
-/* 主 CTA：与测试中心「开始测试」同一层奶杏暖陶剖面（全局 --action-btn-*） */
-.test-detail__start {
   background: var(--action-btn-bg);
   box-shadow: var(--action-btn-shadow);
   color: #ffffff;
   text-shadow: 0 1rpx 2rpx rgba(150, 94, 56, 0.18);
-}
-
-/* 次级动作：与报告页底部胶囊同法（柔和主色描边 + 卡面底），层级低于主 CTA */
-.test-detail__restart {
-  margin-top: 24rpx;
-  border: 2rpx solid var(--color-primary-soft);
-  background: var(--color-card-bg);
-  color: var(--color-primary);
 }

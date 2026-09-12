@@ -4,7 +4,7 @@ import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_ENTERTAINMENT_DISCLAIMER } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
-import { clearTestDraft, getTestDraft } from '../../services/testDrafts'
+import { getTestDraft } from '../../services/testDrafts'
 import { getTestDefinition } from '../../services/testRegistry'
 import { backButtonStyle, topInsetStyle } from '../../services/navMetrics'
 import './index.scss'
@@ -39,9 +39,9 @@ export default function TestDetailPage() {
     { label: '结果展示', value: definition.meta.resultLabel },
   ]
 
-  const startPlay = (restart: boolean) => {
-    trackEvent('test_start_click', { testId: definition.id, restart })
-    if (restart) clearTestDraft(definition.id)
+  // 有草稿则续答（草稿失效由 play 页兜底）；重开入口不在此页，交给答题页的离开确认。
+  const startPlay = () => {
+    trackEvent('test_start_click', { testId: definition.id })
     wx.navigateTo({ url: `/pages/test-play/index?testId=${definition.id}` })
   }
 
@@ -52,47 +52,41 @@ export default function TestDetailPage() {
   }
 
   return (
-    <View className={`test-detail theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-detail__back" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
+    <View className={`test-detail theme-${theme}`} style={{ ...topInsetStyle(), ...backButtonStyle() }}>
+      <View className="test-detail__back" hoverClass="pressable--pressed" onClick={goBack}>
         <Text>←</Text>
       </View>
-      <View className="test-detail__card">
-        <Text className="test-detail__title">{definition.title}</Text>
-        <View className="test-detail__capsules">
-          {capsules.map((capsule) => (
-            <View key={capsule.label} className="test-detail__capsule">
-              <Text className="test-detail__capsule-label">{capsule.label}</Text>
-              <Text className="test-detail__capsule-value">{capsule.value}</Text>
-            </View>
-          ))}
+      {/* 介绍卡与下方按钮作为一组，在 [返回钮底边, 屏幕底部] 区域内整体垂直居中 */}
+      <View className="test-detail__body">
+        <View className="test-detail__card">
+          <Text className="test-detail__title">{definition.title}</Text>
+          <View className="test-detail__capsules">
+            {capsules.map((capsule) => (
+              <View key={capsule.label} className="test-detail__capsule">
+                <Text className="test-detail__capsule-label">{capsule.label}</Text>
+                <Text className="test-detail__capsule-value">{capsule.value}</Text>
+              </View>
+            ))}
+          </View>
+          <View className="test-detail__intro">
+            {definition.intro.slice(0, 2).map((paragraph) => (
+              <Text key={paragraph.slice(0, 12)} className="test-detail__paragraph">{paragraph}</Text>
+            ))}
+          </View>
+          <View className="test-detail__notice">
+            <Text className="test-detail__notice-title">注意：</Text>
+            <Text className="test-detail__notice-body">没有标准答案，按最近的通常状态和第一反应选择即可。</Text>
+          </View>
         </View>
-        <View className="test-detail__intro">
-          {definition.intro.slice(0, 2).map((paragraph) => (
-            <Text key={paragraph.slice(0, 12)} className="test-detail__paragraph">{paragraph}</Text>
-          ))}
-        </View>
-        <View className="test-detail__notice">
-          <Text className="test-detail__notice-title">注意：</Text>
-          <Text className="test-detail__notice-body">没有标准答案，按最近的通常状态和第一反应选择即可。</Text>
-        </View>
-      </View>
-      <Text className="test-detail__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
-      <View
-        className="test-detail__start"
-        hoverClass="pressable--pressed"
-        onClick={() => startPlay(false)}
-      >
-        <Text>{hasDraft ? '继续测试' : '开始测试'}</Text>
-      </View>
-      {hasDraft && (
+        <Text className="test-detail__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
         <View
-          className="test-detail__restart"
+          className="test-detail__start"
           hoverClass="pressable--pressed"
-          onClick={() => startPlay(true)}
+          onClick={startPlay}
         >
-          <Text>重新开始</Text>
+          <Text>{hasDraft ? '继续测试' : '开始测试'}</Text>
         </View>
-      )}
+      </View>
     </View>
   )
 }
