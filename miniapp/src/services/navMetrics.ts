@@ -71,13 +71,22 @@ function readStatusBarHeight(): number | undefined {
   }
 }
 
+// 顶部安全距离在同一设备一次启动内不会变；topInsetStyle() 会在每次渲染被调用，
+// 不记忆就会在塔罗流程里读上百次窗口信息。按 wx 实例身份记忆，换 mock/冷启动自动失效。
+let cachedInsetWx: unknown
+let cachedInsetPx: number | null = null
+
 export function getTopInsetPx(): number {
+  const wx = getWxGlobal()
+  if (wx === cachedInsetWx && cachedInsetPx !== null) return cachedInsetPx
   try {
-    const info = (getWxGlobal()?.getWindowInfo?.() ?? getWxGlobal()?.getSystemInfoSync?.()) as WindowInfo | undefined
-    return resolveTopInsetPx(readMenuRect(), info?.statusBarHeight)
+    const info = (wx?.getWindowInfo?.() ?? wx?.getSystemInfoSync?.()) as WindowInfo | undefined
+    cachedInsetPx = resolveTopInsetPx(readMenuRect(), info?.statusBarHeight)
   } catch {
-    return FALLBACK_TOP_INSET_PX
+    cachedInsetPx = FALLBACK_TOP_INSET_PX
   }
+  cachedInsetWx = wx
+  return cachedInsetPx
 }
 
 /** 结果写入指定页面根元素的 CSS 变量；root 为空时静默跳过 */

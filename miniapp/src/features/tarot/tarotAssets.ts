@@ -1,6 +1,6 @@
 import { resolveAssetBaseUrl } from '../../services/assetBaseUrl'
 import { getWxGlobal } from '../../services/wxGlobal'
-import { isTarotAssetCached, resetTarotAssetCacheIfBaseChanged, saveTarotAssetFromTemp } from './tarotAssetCache'
+import { isTarotAssetCached, revalidateTarotAssetCache, resetTarotAssetCacheIfBaseChanged, saveTarotAssetFromTemp } from './tarotAssetCache'
 import type { TarotSkin } from './tarotSkin'
 
 export { resolveTarotAssetUrl } from './tarotAssetCache'
@@ -121,6 +121,8 @@ export async function preloadTarotAssetUrls(
 
   // 资产版本根变化时先作废旧档，后续按新 URL 重新建档
   resetTarotAssetCacheIfBaseChanged(resolveAssetBaseUrl())
+  // 本次进入重校验一次：剔除被系统回收的本地副本（会话内渲染不再重复查磁盘）
+  revalidateTarotAssetCache()
 
   let nextIndex = 0
   let completed = 0

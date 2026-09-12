@@ -22,6 +22,17 @@ interface TarotAssetCacheRecord {
 
 let memoryRecord: TarotAssetCacheRecord | null = null
 
+/**
+ * 会话级「URL → 已确认可用的本地路径」缓存。
+ * 渲染层每帧、每张图都会调 resolveTarotAssetUrl；若每次都 getFileSystemManager + accessSync，
+ * 进流程时会变成上千次跨进程同步 IO（实测 9 秒内 995 次），界面卡住像「加载完还等好久」。
+ * 这里记住解析结果，一次会话内同一 URL 最多查一次磁盘。
+ */
+const resolvedPaths = new Map<string, string>()
+
+/** getFileSystemManager 在开发者工具是跨进程调用，缓存实例避免重复获取。null = 尚未初始化。 */
+let fsManager: WxFileSystemManager | undefined | null = null
+
 function emptyRecord(): TarotAssetCacheRecord {
   return { base: '', files: {} }
 }
@@ -54,11 +65,13 @@ function writeRecord(record: TarotAssetCacheRecord): void {
 }
 
 function fileSystem(): WxFileSystemManager | undefined {
+  if (fsManager !== null) return fsManager
   try {
-    return getWxGlobal()?.getFileSystemManager?.()
+    fsManager = getWxGlobal()?.getFileSystemManager?.()
   } catch {
-    return undefined
+    fsManager = undefined
   }
+  return fsManager
 }
 
 function fileExists(path: string): boolean {
@@ -84,15 +97,44 @@ function removeFile(path: string): void {
 /** 该 URL 是否已有可用本地副本。 */
 export function isTarotAssetCached(url: string): boolean {
   if (!url) return false
+  if (resolvedPaths.has(url)) return true
   const path = readRecord().files[url]
-  return Boolean(path) && fileExists(path)
+  if (!path || !fileExists(path)) return false
+  resolvedPaths.set(url, path)
+  return true
 }
 
-/** 渲染用：命中缓存返回本地路径，否则原样返回远程 URL。 */
+/** 渲染用：命中缓存返回本地路径，否则原样返回远程 URL。解析结果会话内记忆，避免重复磁盘 IO。 */
 export function resolveTarotAssetUrl(url: string): string {
   if (!url) return url
+  const cached = resolvedPaths.get(url)
+  if (cached) return cached
   const path = readRecord().files[url]
-  return path && fileExists(path) ? path : url
+  if (path && fileExists(path)) {
+    resolvedPaths.set(url, path)
+    return path
+  }
+  return url
+}
+
+/**
+ * 进入流程时重校验一次：清掉会话记忆，逐条探测已记录文件是否还在磁盘上，
+ * 不存在（被系统回收 / 清缓存）的条目从映射里剔除，交给后续下载补回。
+ * 这样「每帧渲染免 IO」与「跨会话回收可感知」兼得。
+ * 返回被剔除的失效 URL 数。
+ */
+export function revalidateTarotAssetCache(): number {
+  resolvedPaths.clear()
+  const record = readRecord()
+  const dropped: string[] = []
+  for (const [url, path] of Object.entries(record.files)) {
+    if (!fileExists(path)) dropped.push(url)
+  }
+  if (dropped.length > 0) {
+    for (const url of dropped) delete record.files[url]
+    writeRecord(record)
+  }
+  return dropped.length
 }
 
 /** 资产版本根变化时清空旧缓存（含已落盘文件），返回是否发生了重置。 */
@@ -101,6 +143,8 @@ export function resetTarotAssetCacheIfBaseChanged(base: string): boolean {
   if (record.base === base) return false
   for (const path of Object.values(record.files)) removeFile(path)
   writeRecord({ base, files: {} })
+  // 旧版的本地路径已删，清掉会话记忆避免继续指向失效文件
+  resolvedPaths.clear()
   return true
 }
 
@@ -127,6 +171,8 @@ export function saveTarotAssetFromTemp(url: string, tempFilePath: string): Promi
           if (previous && previous !== savedPath) removeFile(previous)
           record.files[url] = savedPath
           writeRecord(record)
+          // 刚落盘即视为可用，登记会话记忆免掉下一次磁盘校验
+          resolvedPaths.set(url, savedPath)
           resolve(true)
         },
         fail: () => resolve(false),
@@ -142,6 +188,9 @@ export function clearTarotAssetCache(): void {
   const record = readRecord()
   for (const path of Object.values(record.files)) removeFile(path)
   writeRecord(emptyRecord())
-  // 置空内存档，让下次读取重新走 storage（换环境 / 测试重置时避免读到旧档）
+  // 置空内存档与会话记忆，让下次读取重新走 storage（换环境 / 测试重置时避免读到旧档）
   memoryRecord = null
+  resolvedPaths.clear()
+  // 同步丢弃缓存的 fs 实例：测试会在用例间替换 mock wx，必须重新获取
+  fsManager = null
 }

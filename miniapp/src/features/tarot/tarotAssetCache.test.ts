@@ -5,6 +5,7 @@ import {
   isTarotAssetCached,
   resetTarotAssetCacheIfBaseChanged,
   resolveTarotAssetUrl,
+  revalidateTarotAssetCache,
   saveTarotAssetFromTemp,
 } from './tarotAssetCache'
 
@@ -16,34 +17,42 @@ function installWx(options: {
   existing?: string[]
   saveFileThrows?: boolean
   garbageStorage?: boolean
+  seed?: unknown
 } = {}) {
   const storage = new Map<string, unknown>()
+  if (options.seed !== undefined) storage.set('ptking_tarot_asset_cache', options.seed)
   const removed: string[] = []
   const existing = new Set(options.existing ?? [])
+  // 计数 getFileSystemManager / accessSync：渲染热路径不应重复触发磁盘 IO
+  const io = { fsmCalls: 0, accessCalls: 0 }
   const wx = {
     getStorageSync: (key: string) => (options.garbageStorage ? 'not-an-object' : storage.get(key)),
     setStorageSync: (key: string, value: unknown) => { storage.set(key, value) },
-    getFileSystemManager: options.garbageStorage ? () => undefined : () => ({
-      saveFile: ({ tempFilePath, success, fail }: {
-        tempFilePath: string
-        success?: (result: { savedFilePath?: string }) => void
-        fail?: (error?: unknown) => void
-      }) => {
-        if (options.saveFileThrows) throw new Error('save boom')
-        if (options.saved === false) { fail?.(new Error('save failed')); return }
-        const savedFilePath = options.saved ?? `wxfile://${tempFilePath}`
-        existing.add(savedFilePath)
-        success?.({ savedFilePath })
-      },
-      accessSync: (path: string) => {
-        if (!existing.has(path)) throw new Error('ENOENT')
-        return undefined
-      },
-      unlinkSync: (path: string) => { removed.push(path); existing.delete(path) },
-    }),
+    getFileSystemManager: options.garbageStorage ? () => undefined : () => {
+      io.fsmCalls++
+      return {
+        saveFile: ({ tempFilePath, success, fail }: {
+          tempFilePath: string
+          success?: (result: { savedFilePath?: string }) => void
+          fail?: (error?: unknown) => void
+        }) => {
+          if (options.saveFileThrows) throw new Error('save boom')
+          if (options.saved === false) { fail?.(new Error('save failed')); return }
+          const savedFilePath = options.saved ?? `wxfile://${tempFilePath}`
+          existing.add(savedFilePath)
+          success?.({ savedFilePath })
+        },
+        accessSync: (path: string) => {
+          io.accessCalls++
+          if (!existing.has(path)) throw new Error('ENOENT')
+          return undefined
+        },
+        unlinkSync: (path: string) => { removed.push(path); existing.delete(path) },
+      }
+    },
   }
   ;(globalThis as { wx?: unknown }).wx = wx
-  return { storage, removed, existing }
+  return { storage, removed, existing, io }
 }
 
 const saveBase = () => resetTarotAssetCacheIfBaseChanged(BASE)
@@ -73,12 +82,50 @@ describe('tarot asset cache', () => {
     expect(resolveTarotAssetUrl(URL_A)).toBe(URL_A)
   })
 
-  it('treats a saved path that no longer exists on disk as uncached', async () => {
+  it('memoizes the resolved path within a session (no repeated disk IO)', async () => {
+    const { existing, io } = installWx({ existing: ['wxfile:///tmp/a'] })
+    saveBase()
+    await saveTarotAssetFromTemp(URL_A, '/tmp/a')
+
+    // 首次解析后即便磁盘文件消失，会话记忆仍返回本地路径（渲染层每帧调用不该触发 IO）
+    expect(resolveTarotAssetUrl(URL_A)).toBe('wxfile:///tmp/a')
+    existing.clear()
+    expect(resolveTarotAssetUrl(URL_A)).toBe('wxfile:///tmp/a')
+  })
+
+  it('does not touch the filesystem on repeated renders (regression: flow froze after load)', async () => {
+    // 复现线上症状：冷启动后 storage 已有 24 条映射（上次会话落的盘），流程里反复重渲染。
+    // 修复前每次 resolveTarotAssetUrl 都 getFileSystemManager + accessSync，
+    // 进流程 9 秒内实测 995 次 IO；现在同一 URL 会话内最多查一次磁盘。
+    const urls = Array.from({ length: 24 }, (_, i) => `${BASE}/tarot/cards/card-${i}.jpg`)
+    const files: Record<string, string> = {}
+    const existing: string[] = []
+    for (let i = 0; i < urls.length; i++) {
+      files[urls[i]] = `wxfile:///tmp/card-${i}`
+      existing.push(`wxfile:///tmp/card-${i}`)
+    }
+    const { io } = installWx({ existing, seed: { base: BASE, files } })
+
+    io.fsmCalls = 0
+    io.accessCalls = 0
+
+    // 模拟 10 轮渲染，每轮全部 24 张
+    for (let round = 0; round < 10; round++) {
+      for (const u of urls) expect(resolveTarotAssetUrl(u)).toContain('wxfile:///tmp/card-')
+    }
+
+    // 每张最多首次解析查一次磁盘（≤24），第二轮起全部命中记忆，不随轮次增长
+    expect(io.accessCalls).toBeLessThanOrEqual(urls.length)
+    expect(io.accessCalls).toBeGreaterThan(0)
+  })
+
+  it('drops files the system reclaimed on revalidate (entry-time check)', async () => {
     const { existing } = installWx({ existing: ['wxfile:///tmp/a'] })
     saveBase()
     await saveTarotAssetFromTemp(URL_A, '/tmp/a')
     existing.clear() // 模拟系统回收本地文件
 
+    expect(revalidateTarotAssetCache()).toBe(1)
     expect(isTarotAssetCached(URL_A)).toBe(false)
     expect(resolveTarotAssetUrl(URL_A)).toBe(URL_A)
   })
