@@ -10,7 +10,7 @@ const repo = path.resolve(root, '../../..')
 const kitGen = path.resolve(repo, '../miniapp-kit/art/gen.mjs')
 const baseCfg = JSON.parse(fs.readFileSync(path.join(repo, 'art.config.json'), 'utf8'))
 baseCfg.compress.tinypngKeyEnv = 'DESIGN_PREVIEW_NO_COMPRESSION' // 候选稿不落包,出图阶段不做 TinyPNG
-baseCfg.output.maxTotalMB = 250 // 候选稿不做 TinyPNG,2K 原图 ~3MB/张 × 30
+baseCfg.output.maxTotalMB = 400 // v6 后总量已超 250MB(候选不做 TinyPNG,2K 原图 ~3MB/张)
 const configPath = path.join(root, 'art.local.config.json')
 fs.writeFileSync(configPath, JSON.stringify(baseCfg, null, 2))
 
@@ -18,10 +18,13 @@ const argv = process.argv.slice(2)
 const dryRun = argv.includes('--dry-run')
 const onlyIdx = argv.indexOf('--only')
 const only = onlyIdx >= 0 ? argv.slice(onlyIdx + 1).filter((a) => !a.startsWith('--')) : []
+const promptsIdx = argv.indexOf('--prompts')
+const promptsFile = path.join(root, promptsIdx >= 0 ? argv[promptsIdx + 1] : 'prompts.txt')
 
-const raw = fs.readFileSync(path.join(root, 'prompts.txt'), 'utf8')
+const raw = fs.readFileSync(promptsFile, 'utf8')
   .split(/\r?\n/).filter((l) => l.trim() && !l.startsWith('#'))
 // 用法:node generate.mjs                      → 生成 prompts.txt 中缺图的条目
+//      node generate.mjs --prompts x.txt      → 换一批提示词(如重生的猫坐姿)
 //      node generate.mjs --only test-v18a ... → 只生成子串命中条目(已有图也强制重生)
 //      node generate.mjs --dry-run            → 只打印组装后的提示词,不出图不花钱
 const style = raw.find((l) => l.startsWith('STYLE=')).slice('STYLE='.length)
@@ -45,13 +48,17 @@ const promptsPath = path.join(root, 'prompts-expanded.local.txt')
 fs.writeFileSync(promptsPath, missing.map(({ name, text }) => `${name}|${text}`).join('\n'))
 console.log(`${dryRun ? '[dry-run] ' : ''}generating: ${missing.length} 条${dryRun ? '' : ' → ' + missing.slice(0, 6).map((m) => m.name).join(', ') + (missing.length > 6 ? ', …' : '')}`)
 
-// 风格锚点:优先 reference-ui.png(用户三页稿,不入库);缺盘时退本目录的本地锚点(me 品牌栏+今日推荐卡)
+// 参考图:①风格锚。reference-ui.png(用户三页稿,不入库)优先,缺盘退本地 style-ref.local.jpg;
+//        ②角色锚(可选,--char 指定,如猫坐姿重生用的 hero-card 裁切)——kit 上限 2 张。
 const styleRef = path.join(repo, 'miniapp/art/ref-pages-v3/reference-ui.png')
 const fallbackRef = path.join(root, 'style-ref.local.jpg')
 const refPath = fs.existsSync(styleRef) ? styleRef : fallbackRef
-console.log(`[tabbar-v18] style ref: ${path.basename(refPath)}`)
+const charIdx = argv.indexOf('--char')
+const refs = [refPath]
+if (charIdx >= 0) refs.push(path.join(root, argv[charIdx + 1]))
+console.log(`[tabbar-v18] refs: ${refs.map((r) => path.basename(r)).join(' + ')}`)
 
-const args = [kitGen, '-c', configPath, '-p', promptsPath, '--out', out, '--size', '2K', '--ref', refPath]
+const args = [kitGen, '-c', configPath, '-p', promptsPath, '--out', out, '--size', '2K', '--ref', refs.join(',')]
 if (dryRun) args.push('--dry-run')
 await new Promise((resolve, reject) => {
   const child = spawn(process.execPath, args, { stdio: 'inherit', cwd: repo })

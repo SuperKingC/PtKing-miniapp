@@ -40,7 +40,7 @@ def main() -> None:
     H = sum(c.height + lab_h + 18 for c in crops) + 60
     im = Image.new('RGB', (W, H), (254, 250, 245))
     d = ImageDraw.Draw(im)
-    d.text((16, 16), '实机验收：四页底栏（塔罗 v18s 已换，其余三枚未改）', fill=(111, 97, 82), font=font(30))
+    d.text((16, 16), '实机验收：四页底栏（塔罗/我的已换 v18s，测试/记录未改）', fill=(111, 97, 82), font=font(30))
     y = 58
     for (tag, lab), c in zip(PAGES, crops):
         d.text((20, y), lab, fill=(111, 97, 82), font=font(22))

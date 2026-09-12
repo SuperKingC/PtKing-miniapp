@@ -70,13 +70,19 @@ def largest_component_mask(alpha: np.ndarray) -> np.ndarray:
     return cleaned
 
 
-def matte(src: Path) -> Path:
-    """生成图 → prepared/floodfill/<stem>_floodfill.png(已存在则复用)。"""
+def matte(src: Path, tol: float | None, force: bool) -> Path:
+    """生成图 → prepared/floodfill/<stem>_floodfill.png(已存在且未 force 则复用)。
+
+    tol 是色距容差:奶白色主体(奶油#f3ead9 距白底仅约 50-63)必须调小,否则主体边缘像素落进
+    floodfill 的软过渡带被写成半透明 → 轮廓撕裂、头顶杏色条纹变空心。默认 42 只适合深色主体。
+    """
     out = FLOOD_OUT / f'{src.stem}_floodfill.png'
-    if out.exists():
+    if out.exists() and not force:
         return out
     FLOOD_OUT.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(KIT_FLOODFILL), str(src), str(PREPARED), '--no-compare']
+    if tol is not None:
+        cmd += ['--tol', str(tol)]
     r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8')
     sys.stdout.write(r.stdout)
     if r.returncode != 0 or not out.exists():
@@ -113,6 +119,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument('--no-matting', action='store_true', help='跳过抠图,只归一')
     ap.add_argument('--only', default='', help='只处理 name 含该子串的条目')
+    ap.add_argument('--tol', type=float, default=None, help='floodfill 色距容差(奶白主体调小,如 14)')
+    ap.add_argument('--force-matte', action='store_true', help='重跑抠图,不用已有缓存')
     args = ap.parse_args()
 
     PREPARED.mkdir(exist_ok=True)
@@ -120,7 +128,7 @@ def main() -> None:
     if not srcs:
         raise SystemExit(f'generated/ 没有候选图(only={args.only!r})')
     for src in srcs:
-        matted = src if args.no_matting else matte(src)
+        matted = src if args.no_matting else matte(src, args.tol, args.force_matte)
         print(normalize(matted, src.stem))
     print(f'[prepare-v18] {len(srcs)} 枚 → prepared/')
 
