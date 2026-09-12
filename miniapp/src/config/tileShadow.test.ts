@@ -68,58 +68,60 @@ function bandMean(img: ReturnType<typeof decode>, side: 'left' | 'right' | 'top'
 const BOX: [number, number, number, number] = [13, 9, 161, 156]
 const BOX_CAREER: [number, number, number, number] = [14, 9, 161, 156]
 
-describe('测试条 tile 左+下方向性接触影', () => {
+describe('测试条 tile 接触影（对齐参考稿 star 的 baked 影）', () => {
+  /* 参照：参考稿 star/mbti 的体外影剖面（合成为页面白后的压暗量）：
+       下缘 d1..8 = 96.6 56.8 51.2 42.9 36.5 31.0 24.6 19.3
+       左缘 d1..5 = 84.5 42.4 36.0 29.0 23.4
+     v17 直接从参考稿移植影层，故断言「落在参考同档」而不是各写一套阈值。 */
+  const REF_BOTTOM = [96.6, 56.8, 51.2, 42.9, 36.5, 31.0]
+  const REF_LEFT = [84.5, 42.4, 36.0, 29.0]
+
   for (const [rel, box] of [
-    ['src/assets/illus/tile-fun-v16.png', BOX],
-    ['src/assets/illus/tile-career-v16.png', BOX_CAREER],
+    ['src/assets/illus/tile-fun-v17.png', BOX],
+    ['src/assets/illus/tile-career-v17.png', BOX_CAREER],
   ] as [string, [number, number, number, number]][]) {
-    it(`${rel.split('/').pop()} 左/下有厚影，上/右为黏土软收边`, () => {
+    it(`${rel.split('/').pop()} 影剖面落在参考同档，上/右无落影`, () => {
       const img = decode(rel)
       const [x0, y0, x1, y1] = box
       const xa = x0 + Math.floor((x1 - x0) / 4)
       const xb = x1 - Math.floor((x1 - x0) / 4)
-      const ya = y0 + Math.floor((y1 - y0) / 4)
-      const yb = y1 - Math.floor((y1 - y0) / 4)
-      /* 方向：影集中在下/左（上/右只允许一圈很短的软收边，不该有落影） */
-      expect(bandMean(img, 'bottom', box, 6), '下缘影带厚度').toBeGreaterThan(36)
-      expect(bandMean(img, 'left', box, 4), '左缘影带厚度').toBeGreaterThan(40)
-      expect(bandMean(img, 'top', box, 3), '上缘不应有落影').toBeLessThan(bandMean(img, 'bottom', box, 6) * 0.9)
-      expect(bandMean(img, 'right', box, 3), '右缘不应有落影').toBeLessThan(bandMean(img, 'bottom', box, 6) * 0.35)
-      /* 厚度：紧贴实体的接触核心必须够厚。取边缘带上的最大值，避开逐列 1~2px 起伏
-         （v14 丢核心时整条下缘首格都只有 ~52、左缘 ~44）。 */
-      const coreBottom = Math.max(...Array.from({ length: xb - xa + 1 }, (_, i) => dark(img, xa + i, y1)))
-      const coreLeft = Math.max(...Array.from({ length: yb - ya + 1 }, (_, i) => dark(img, x0 - 1, ya + i)))
-      expect(coreBottom, '下缘接触核心').toBeGreaterThan(70)
-      expect(coreLeft, '左缘接触核心').toBeGreaterThan(70)
-      /* 影带必须「渐隐收尾」而不是被硬切。参考稿下缘外侧 alpha 在 d9..d12 依次
-         233/174/95/39 一路衰减；v15 是 255 平铺到 d12 再直接归零，合到卡面上会露一圈
-         平板边。断言 d10..d12 单调递减且末端已明显透明。 */
-      const aAt = (d: number) => {
-        const vals: number[] = []
-        for (let x = xa; x <= xb; x += 1) vals.push(img.alpha[(y1 + d) * img.width + x])
-        return vals.reduce((s, v) => s + v, 0) / vals.length
-      }
-      const a10 = aAt(10)
-      const a11 = aAt(11)
-      const a12 = aAt(12)
-      expect(a10, '影带 d10 应已开始淡出').toBeLessThan(250)
-      expect(a11, '影带 d11 应比 d10 更淡').toBeLessThan(a10)
-      expect(a12, '影带 d12 应接近收尾').toBeLessThan(120)
+      const cy = y0 + Math.floor((y1 - y0) / 2)
 
-      /* 上缘/右缘必须是「黏土色软收边」，不是 v13 那种把边缘洗白的硬边。
-         判据：上缘最外一行应是半透明的本体色（有 alpha 但明显透过页面），
-         且随距离快速收窄；旧实现上缘 alpha 会直接跳到 0（右缘）或只剩 18（上缘）。 */
-      const edgeAt = (side: 'top' | 'right', d: number) => {
-        const vals: number[] = []
-        if (side === 'top') for (let x = xa; x <= xb; x += 1) vals.push(img.alpha[(y0 - d) * img.width + x])
-        else for (let y = ya; y <= yb; y += 1) vals.push(img.alpha[y * img.width + x1 + d])
-        return vals.reduce((s, v) => s + v, 0) / vals.length
+      // 下缘逐格压暗（中线带），与参考逐格比对
+      for (let i = 0; i < REF_BOTTOM.length; i += 1) {
+        const d = i + 1
+        let sum = 0
+        // y1 是实体框的下开区间边界，即外侧第 1 行
+        for (let x = xa; x <= xb; x += 1) sum += dark(img, x, y1 + d - 1)
+        const got = sum / (xb - xa + 1)
+        expect(got, `下缘 d${d}`).toBeGreaterThan(REF_BOTTOM[i] - 12)
+        expect(got, `下缘 d${d}`).toBeLessThan(REF_BOTTOM[i] + 12)
       }
-      expect(edgeAt('top', 1), '上缘第 1 行应是半透明黏土收边').toBeGreaterThan(40)
-      expect(edgeAt('top', 1), '上缘收边不应是不透明实块').toBeLessThan(200)
-      expect(edgeAt('top', 3), '上缘收边应很快收窄').toBeLessThan(edgeAt('top', 1))
-      expect(edgeAt('right', 1), '右缘第 1 列应是半透明黏土收边').toBeGreaterThan(8)
-      expect(edgeAt('right', 1), '右缘收边不应是不透明实块').toBeLessThan(200)
+      for (let i = 0; i < REF_LEFT.length; i += 1) {
+        const d = i + 1
+        const got = dark(img, x0 - d, cy)
+        expect(got, `左缘 d${d}`).toBeGreaterThan(REF_LEFT[i] - 12)
+        expect(got, `左缘 d${d}`).toBeLessThan(REF_LEFT[i] + 12)
+      }
+      // 上/右不应有落影（参考稿上/右也是干净的）
+      expect(bandMean(img, 'top', box, 3), '上缘不应有落影').toBeLessThan(10)
+      expect(bandMean(img, 'right', box, 3), '右缘不应有落影').toBeLessThan(10)
+
+      /* 「第二块板」判据：影必须是**方向性投影**——沿左缘竖直方向只在偏下的位置出现，
+         而不是整条左边缘都被等量铺满。合成式影（v14-v16 沿轮廓等距铺一圈）会让左缘
+         每一行都带 alpha（v16 实测非零占比 1.00、std 仅 32.7，远看就是背后垫了一块板）；
+         参考稿与 v17 只在左缘下半段有影（非零占比 ≈0.34、std ≈90）。 */
+      // 动态取每行实体左缘（v17 移植了参考影，影核贴体且不透明，硬编码框会偏内）
+      const leftAlphas: number[] = []
+      for (let y = y0; y <= y1; y += 1) {
+        let ex = -1
+        for (let x = 0; x < img.width; x += 1) {
+          if (img.alpha[y * img.width + x] >= 250) { ex = x; break }
+        }
+        if (ex >= 2) leftAlphas.push(img.alpha[y * img.width + (ex - 2)])
+      }
+      const nonZero = leftAlphas.filter((v) => v > 8).length / leftAlphas.length
+      expect(nonZero, '影不应铺满整条左缘（否则是「第二块板」）').toBeLessThan(0.6)
     })
   }
 
