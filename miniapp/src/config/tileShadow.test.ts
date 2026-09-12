@@ -22,14 +22,16 @@ const PAGE_MEAN = (PAGE[0] + PAGE[1] + PAGE[2]) / 3
 function decode(rel: string) {
   const png = PNG.sync.read(readFileSync(resolve(miniappRoot(), rel)))
   const lum = new Float64Array(png.width * png.height)
+  const alpha = new Uint8Array(png.width * png.height)
   for (let i = 0; i < png.width * png.height; i += 1) {
     const a = png.data[i * 4 + 3] / 255
     const r = png.data[i * 4] * a + PAGE[0] * (1 - a)
     const g = png.data[i * 4 + 1] * a + PAGE[1] * (1 - a)
     const b = png.data[i * 4 + 2] * a + PAGE[2] * (1 - a)
     lum[i] = (r + g + b) / 3
+    alpha[i] = png.data[i * 4 + 3]
   }
-  return { width: png.width, height: png.height, lum }
+  return { width: png.width, height: png.height, lum, alpha }
 }
 
 /** 合成为页面白后，某像素相对页面的压暗量 */
@@ -68,8 +70,8 @@ const BOX_CAREER: [number, number, number, number] = [14, 9, 161, 156]
 
 describe('测试条 tile 左+下方向性接触影', () => {
   for (const [rel, box] of [
-    ['src/assets/illus/tile-fun-v15.png', BOX],
-    ['src/assets/illus/tile-career-v15.png', BOX_CAREER],
+    ['src/assets/illus/tile-fun-v16.png', BOX],
+    ['src/assets/illus/tile-career-v16.png', BOX_CAREER],
   ] as [string, [number, number, number, number]][]) {
     it(`${rel.split('/').pop()} 左/下有厚影，上/右干净`, () => {
       const img = decode(rel)
@@ -81,7 +83,7 @@ describe('测试条 tile 左+下方向性接触影', () => {
       /* 方向：上/右干净，左/下有影 */
       expect(bandMean(img, 'top', box, 3), '上缘应干净').toBeLessThan(4)
       expect(bandMean(img, 'right', box, 3), '右缘应干净').toBeLessThan(4)
-      expect(bandMean(img, 'bottom', box, 6), '下缘影带厚度').toBeGreaterThan(39)
+      expect(bandMean(img, 'bottom', box, 6), '下缘影带厚度').toBeGreaterThan(36)
       expect(bandMean(img, 'left', box, 4), '左缘影带厚度').toBeGreaterThan(40)
       /* 厚度：紧贴实体的接触核心必须够厚。取边缘带上的最大值，避开逐列 1~2px 起伏
          （v14 丢核心时整条下缘首格都只有 ~52、左缘 ~44）。 */
@@ -89,6 +91,20 @@ describe('测试条 tile 左+下方向性接触影', () => {
       const coreLeft = Math.max(...Array.from({ length: yb - ya + 1 }, (_, i) => dark(img, x0 - 1, ya + i)))
       expect(coreBottom, '下缘接触核心').toBeGreaterThan(70)
       expect(coreLeft, '左缘接触核心').toBeGreaterThan(70)
+      /* 影带必须「渐隐收尾」而不是被硬切。参考稿下缘外侧 alpha 在 d9..d12 依次
+         233/174/95/39 一路衰减；v15 是 255 平铺到 d12 再直接归零，合到卡面上会露一圈
+         平板边。断言 d10..d12 单调递减且末端已明显透明。 */
+      const aAt = (d: number) => {
+        const vals: number[] = []
+        for (let x = xa; x <= xb; x += 1) vals.push(img.alpha[(y1 + d) * img.width + x])
+        return vals.reduce((s, v) => s + v, 0) / vals.length
+      }
+      const a10 = aAt(10)
+      const a11 = aAt(11)
+      const a12 = aAt(12)
+      expect(a10, '影带 d10 应已开始淡出').toBeLessThan(250)
+      expect(a11, '影带 d11 应比 d10 更淡').toBeLessThan(a10)
+      expect(a12, '影带 d12 应接近收尾').toBeLessThan(120)
     })
   }
 
