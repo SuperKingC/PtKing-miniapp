@@ -99,6 +99,34 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).not.toContain('translateY(-72rpx)')
   })
 
+  it('moves the clay guidance into a speech bubble on the cat and drops the top progress rows', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // clay 场景里测测子就在牌桌对面说话：顶部进度点与洗牌进度条都压在猫头天际线上，一并去掉
+    expect(styles).toMatch(/\.miniapp-tarot__progress,\s*\n\s*\.miniapp-tarot__shuffle-bar \{\s*\n\s*display: none;/)
+    // 指引标题与状态行合并成一枚朝向猫头的气泡：两半都提到牌堆之前(order 负值)、
+    // 状态行负 margin 抵消 stage gap 后与标题贴成一体，尾巴挂在状态行下沿
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?order: -2;/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__hint,[\s\S]*?order: -1;[\s\S]*?margin: -26rpx auto 0;/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__hint::after,[\s\S]*?bottom: -12rpx;/)
+    // 翻牌阶段没有状态行，标题独立成泡（补回圆角 + 自带尾巴）
+    expect(styles).toMatch(/\.miniapp-tarot__stage--reveal > \.miniapp-tarot__title \{[\s\S]*?border-radius: 26rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--reveal > \.miniapp-tarot__title::after/)
+  })
+
+  it('shrinks and lowers the clay shuffle deck so the pile clears the cat paws', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // classic 的牌堆对准背景金环中心；clay 桌面更低、猫爪搭在桌沿，
+    // 同一套几何会顶到猫爪，故缩小并下移顶层牌，环/符文/波纹圆心同步下移
+    expect(styles).toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*top: 108rpx;\s*\n\s*width: 196rpx;\s*\n\s*height: 310rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::after,\s*\n\s*\.miniapp-tarot__shuffle-orbit,[\s\S]*?top: 288rpx;/)
+    // 软晕层只做 translateX，top 是圆上沿而非圆心
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::before \{[\s\S]*?top: 88rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-orbit--outer \{[\s\S]*?width: 348rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-burst \{[\s\S]*?width: 374rpx;/)
+  })
+
   it('restacks the deck as one pile with a top-first reorder once shuffling completes', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const shuffleStage = fs.readFileSync(shuffleStagePath, 'utf8')

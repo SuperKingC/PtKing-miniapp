@@ -1,5 +1,12 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 07:55：clay 洗牌牌堆缩小下移 + 顶部去进度 + 测测子头顶对话气泡（用户：牌堆大小不对且挡住猫；去掉猫头上的进度；把下面气泡当成测测子的话放到猫头上）。
+  ①**牌堆**：classic 的牌堆几何是对准背景金环中心的；clay 背景是浅色桌面、猫前爪搭在桌沿，同一套几何会顶到猫爪。在 `.skin-clay` 里把顶层牌 `top:18rpx→108rpx`、`226×356→196×310rpx`，环/符文/波纹圆心 `218rpx→288rpx`，软晕层(只有 translateX，top 是圆上沿)`top:-12rpx→88rpx`，各层直径同比例缩一档。
+  ②**去掉顶部进度**：`.miniapp-tarot__progress`(几枚短横)与 `.miniapp-tarot__shuffle-bar` 在 clay 都 `display:none`——前者正好压在猫头与云的天际线上，后者是同一区域第二行进度。
+  ③**气泡上移**：仪式四阶段(洗牌/切牌/选牌/翻牌)原来的做法是「标题裸在猫头顶 + 状态 hint 甩在屏幕底部」；改成合成一枚朝向猫头的对话气泡：标题(指引上半句)与 hint(状态下半句)用 `order:-2/-1` 提到牌堆之前，hint 用 `margin-top:-26rpx` 抵消 stage gap 后与标题贴成整块（上圆角在下圆角，只由下半投影），`::after` 尾巴朝下指向猫头；翻牌阶段没有 hint，标题独立成泡并补回下圆角。状态文案(百分比/已切次数/已选张数)原样保留。
+  ④**验证方法坑**：`getTarotSkin` 有会话级缓存，直接 `wx.setStorageSync('ptking_skin')` 再 reLaunch **不会**让已挂载的 Flow 换肤，会误判「样式没生效」；必须点首页「牌桌」选择器走 `setTarotSkin`。另外 automator 的 auto-port 被 IDE HTTP 端口占用时会顺延（本次 9420 被占用→automator 落在 9421），且 `cli auto --port <port>` 才是让 IDE HTTP server 固定端口的正确写法。
+  ⑤契约测试 `MiniappTarotFlow.styles.test.ts` 新增两条(clay 气泡/去进度、clay 牌堆几何)；`npx vitest run src/features/tarot` 23→ 全过、全量 **480** 过；清缓存重建 + automator 实机四图(洗牌/切牌/选牌/翻牌) + clay/classic 左右对照验收：clay 牌堆落在猫爪之下、气泡贴猫头、classic 几何与进度条原样未动。
+
 - 2026-09-12 19:05：塔罗 48 张资产传 COS（用户：之前配过 COS，补密钥后传最新资源）。
   ①**发现**：桶 `ptking-assets-1300973162`（`ap-guangzhou`）真实存在且仍公开可读，历史上有两个版本目录 `06b0a05`(classic 24 张) / `c6b24c4`(48 张)，但**都是 09-11 之前的旧图**——本地重出/重压过的 clay 资产没上传（如 `sanctuary-background-clay.jpg` 线上 48KB vs 本地 68KB）。
   ②**根因「换电脑密钥就丢」**：原脚本只读 `miniapp-kit/.env`，而 kit 是公开 GitHub 仓库、`.env` 被 gitignore 故不随 git 同步；SecretKey 又只在创建时显示一次，无法找回。

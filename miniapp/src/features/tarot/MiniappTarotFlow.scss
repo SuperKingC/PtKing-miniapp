@@ -1966,31 +1966,143 @@
     text-shadow: 0 0 12rpx #fff, 0 0 26rpx rgba(224, 152, 95, .7);
   }
 
-  // 测测子指引气泡：白底圆角 + 燕麦描边 + 左下小尾巴，贴在场景猫的斜下方
-  .miniapp-tarot__hint {
-    position: relative;
-    margin: 0 auto;
+  // 顶部阶段进度点(几枚短横)与洗牌进度条都正好压在猫头与云同一条天际线上：
+  // clay 场景两者都不再显示，进度由牌堆动画 + 按钮文案表达
+  .miniapp-tarot__progress,
+  .miniapp-tarot__shuffle-bar {
+    display: none;
+  }
+
+  // 测测子的对话气泡：仪式阶段(洗牌/切牌/选牌/翻牌)的指引不再裸放在猫头顶、
+  // 气泡也不再甩在屏幕最下方，而是合成一枚气泡挪到测测子头顶——上半句是这一
+  // 幕的指引(原标题)，下半句是实时状态(已切几次 / 已选几张 / 松手提示)，
+  // 气泡尾巴朝下指着猫头。两半用 order 提到牌堆之前、负 margin 贴成一整块。
+  .miniapp-tarot__stage--ritual,
+  .miniapp-tarot__stage--fan,
+  .miniapp-tarot__stage--reveal {
+    padding-top: 20rpx;
+  }
+
+  .miniapp-tarot__stage--ritual > .miniapp-tarot__title,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__title,
+  .miniapp-tarot__stage--reveal > .miniapp-tarot__title {
+    order: -2;
+    box-sizing: border-box;
     max-width: 560rpx;
-    padding: 18rpx 30rpx;
+    margin: 0 auto;
+    padding: 14rpx 28rpx 6rpx;
     border: 2rpx solid rgba(160, 118, 82, .24);
-    border-radius: 30rpx;
+    border-bottom: 0;
+    border-radius: 26rpx 26rpx 0 0;
     color: #6b4a33;
+    font-size: 26rpx;
+    line-height: 1.35;
     text-align: center;
     background: #fffef9;
-    box-shadow: 0 10rpx 26rpx rgba(122, 88, 58, .16);
+    // 上半句不投影：整枚气泡的投影交给下沿那半，避免中缝出现一道内阴影
+    box-shadow: none;
+  }
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: -14rpx;
-      width: 22rpx;
-      height: 22rpx;
-      border-left: 2rpx solid rgba(160, 118, 82, .24);
-      border-top: 2rpx solid rgba(160, 118, 82, .24);
-      background: #fffef9;
-      border-top-left-radius: 8rpx;
-      transform: translateX(-50%) rotate(45deg);
-    }
+  // 翻牌阶段没有状态行：标题独立成泡，补回下圆角
+  .miniapp-tarot__stage--reveal > .miniapp-tarot__title {
+    position: relative;
+    padding-bottom: 14rpx;
+    border-bottom: 2rpx solid rgba(160, 118, 82, .24);
+    border-radius: 26rpx;
+  }
+
+  .miniapp-tarot__stage--ritual > .miniapp-tarot__hint,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__hint {
+    order: -1;
+    position: relative;
+    box-sizing: border-box;
+    max-width: 560rpx;
+    // 抵消 stage 的 24rpx gap 并再压过 2rpx，避免两半交界处露出背景发丝线
+    margin: -26rpx auto 0;
+    padding: 4rpx 28rpx 16rpx;
+    border: 2rpx solid rgba(160, 118, 82, .24);
+    border-top: 0;
+    border-radius: 0 0 26rpx 26rpx;
+    color: rgba(107, 74, 51, .7);
+    font-size: 24rpx;
+    line-height: 1.35;
+    text-align: center;
+    background: #fffef9;
+    box-shadow: 0 10rpx 26rpx rgba(122, 88, 58, .14);
+  }
+
+  // 气泡尾巴：有状态行时挂在状态行下沿，翻牌阶段则挂在标题下沿
+  .miniapp-tarot__stage--ritual > .miniapp-tarot__hint::after,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__hint::after,
+  .miniapp-tarot__stage--reveal > .miniapp-tarot__title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -12rpx;
+    width: 22rpx;
+    height: 22rpx;
+    border-right: 2rpx solid rgba(160, 118, 82, .24);
+    border-bottom: 2rpx solid rgba(160, 118, 82, .24);
+    background: #fffef9;
+    border-bottom-right-radius: 8rpx;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  // 洗牌牌堆：classic 对准的是背景金环中心；clay 背景是浅色桌面、猫前爪搭在桌沿，
+  // 同一套几何会顶到猫爪上。整叠牌缩小一档并整体下移，顶层牌面稳稳落在猫爪之下。
+  .miniapp-tarot__deck-card {
+    top: 108rpx;
+    width: 196rpx;
+    height: 310rpx;
+  }
+
+  // 这几层的 top 是圆心(自身带 translate(-50%, -50%))，跟牌堆中心对齐
+  .miniapp-tarot__shuffle-deck::after,
+  .miniapp-tarot__shuffle-orbit,
+  .miniapp-tarot__shuffle-rune,
+  .miniapp-tarot__shuffle-burst {
+    top: 288rpx;
+  }
+
+  // 软晕层只有 translateX，top 是圆的上沿：圆心 288rpx - 半径 200rpx
+  .miniapp-tarot__shuffle-deck::before {
+    top: 88rpx;
+    width: 400rpx;
+    height: 400rpx;
+  }
+
+  .miniapp-tarot__shuffle-deck::after {
+    width: 374rpx;
+  }
+
+  .miniapp-tarot__shuffle-orbit--outer {
+    width: 348rpx;
+    height: 348rpx;
+  }
+
+  .miniapp-tarot__shuffle-orbit--inner {
+    width: 270rpx;
+    height: 270rpx;
+  }
+
+  .miniapp-tarot__shuffle-rune {
+    width: 78rpx;
+    height: 78rpx;
+    font-size: 35rpx;
+  }
+
+  .miniapp-tarot__shuffle-rune::before {
+    width: 374rpx;
+    height: 374rpx;
+  }
+
+  .miniapp-tarot__shuffle-rune::after {
+    width: 296rpx;
+    height: 296rpx;
+  }
+
+  .miniapp-tarot__shuffle-burst {
+    width: 374rpx;
+    height: 374rpx;
   }
 }
