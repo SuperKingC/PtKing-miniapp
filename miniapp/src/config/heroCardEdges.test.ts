@@ -4,13 +4,16 @@ import { resolve } from 'node:path'
 import { PNG } from 'pngjs'
 import { miniappRoot } from './testPaths'
 
-/* 今日推荐栏（hero-card）边缘抗锯齿契约。资产来自参考稿直裁（git e5df4de 的
+/* 今日推荐栏（hero-card）边缘契约。资产来自参考稿直裁（git e5df4de 的
    hero-card-v3.png），随后 v5-v8 一路「修」：v7 按 alpha>=200 二值化把真彩边压成
    1px 台阶（alpha 级数 64→16），v8 再对每列底缘盖固定斜坡 [235,120,36,0]。两处都
    不跟真实轮廓，页面上读作锯齿与硬线。v9 回到直裁源清残框后，用 4x 超采样重建轮廓
-   过渡，alpha 级数 47（v8 仅 15）。这里直接解码 PNG 核对剖面，防止再退回阶跃边。 */
+   过渡。v9 的残框清理不够彻底：底缘只清 alpha<200、右缘只清 x>=670，漏下的暖灰
+   像素（RGB 150-240，非黑）又不在 v9 的 RGB<120 修复范围内，于是面板底/右留了一圈
+   不跟圆角的暖灰「方块边」（2026-09-12 用户反馈）。v10 清残框清到底并把暖灰像素
+   也换成最近本体色。这里直接解码 PNG 核对剖面与边缘颜色，防止再退回阶跃边或暖灰框。 */
 
-const ASSET = 'src/assets/illus/hero-card-v9.png'
+const ASSET = 'src/assets/illus/hero-card-v10.png'
 
 function decode(rel: string) {
   const png = PNG.sync.read(readFileSync(resolve(miniappRoot(), rel)))
@@ -95,5 +98,32 @@ describe('今日推荐栏边缘抗锯齿', () => {
     expect(ringCount, 'AA 环像素数').toBeGreaterThan(1000)
     expect(minLum, 'AA 环最暗合成亮度').toBeGreaterThan(196)
     expect(dark, '合成为页面底后明显压暗的 AA 环像素').toBeLessThan(300)
+  })
+
+  it('面板底/右外圈是面板蓝，不是参考稿带进的暖灰方块边', () => {
+    /* v9 的残框清理漏下的暖灰像素（RGB 150-240）合成为页面底后比面板亮、且不跟圆角，
+       读作 L 形「方块边」。暖灰 b-r 为负、面板蓝 b-r 为正，用 b-r 的符号区分。
+       云/猫（右侧 x>=466）不算面板外圈，排除。 */
+    const BOTTOM_X_MAX = 466
+    const bands: [string, number, number, number, number][] = [
+      ['底缘', 307, img.height, 2, BOTTOM_X_MAX],
+      ['右缘', 110, 286, 669, img.width],
+      ['左缘', 109, 286, 0, 2],
+    ]
+    for (const [name, y0, y1, x0, x1] of bands) {
+      let n = 0
+      let cool = 0
+      for (let y = y0; y < y1; y += 1) {
+        for (let x = x0; x < x1; x += 1) {
+          const i = y * img.width + x
+          if (img.alpha[i] === 0) continue
+          n += 1
+          if (img.rgb[i * 3 + 2] > img.rgb[i * 3]) cool += 1
+        }
+      }
+      expect(n, `${name}外圈像素数`).toBeGreaterThan(80)
+      /* 面板蓝应占压倒多数；v9 该处只有 15-44% */
+      expect(cool / n, `${name}外圈偏蓝占比`).toBeGreaterThan(0.85)
+    }
   })
 })
