@@ -96,17 +96,24 @@
   top: 0;
   height: 100%;
   width: 50%;
-  /* 内缘的弧线用 border-radius + 裁切实现，必须裁切，否则弧形之外会漏出布料 */
+  /* 帘身裁切：帘内旋转的褶皱不越出面板边界 */
   overflow: hidden;
+  /* 铰点在帘杆(顶端)：开合时顶端挂着不动、底摆先甩出去，读作「从帘子下面拨开」 */
+  transform-origin: 50% 0;
 }
 .tarot-curtain__panel--left { left: 0; }
 .tarot-curtain__panel--right { right: 0; }
 /* 关上：挂载即播的 keyframes（不依赖初始 class 帧序）。0.72s 慢速版：
    布料被拉动——缓起(张力)→中段顺滑→末段轻微过冲后落位；起手带纵向微拉伸，
-   落位时收回，读作软布垂坠而非滑块。
-   内缘弧线：起手时内侧角是大圆弧(布边被拽得鼓起)，拉合过程中逐渐拉直，
-   到落位时完全平直——读作「帘边被拉平」。右帘延后 50ms 起手，两片不同步。
-   时长必须与 index.tsx 的 CURTAIN_CLOSE_MS 一致 */
+   落位时收回，读作软布垂坠而非滑块。skewX 绕顶端铰点：布片被拽回时底摆先甩进来。
+   【硬约束·卡顿根因】transform 只能出现在 0% 和 100% 两个关键帧上！
+   CSS 的 timing-function 是按关键帧【区间】生效的：transform 一旦出现在中间关键帧，
+   动画就被切成多段、每段各自 ease-in-out，速度曲线出现多个波峰(加速→停→再加速)，
+   关上/拉开都会肉眼「一卡一卡」。中间关键帧只准改 border-radius。
+   内缘顶端半径全程为 0，只有底摆鼓弧，所以不会有「) (」鱼眼形。
+   底摆弧用椭圆半径 `H V`：弧高 = V，弦相对竖直的倾角 = atan(H/V)。
+   所以「更高」要加 V，「更斜」必须同步加 H —— 只加 V 会让弧更高但更竖直(更不斜)。
+   右帘延后 50ms 起手，两片不同步。时长必须与 index.tsx 的 CURTAIN_CLOSE_MS 一致 */
 .tarot-curtain--closing .tarot-curtain__panel--left,
 .tarot-curtain--holding .tarot-curtain__panel--left {
   transform: translateX(0);
@@ -119,33 +126,25 @@
 }
 @keyframes tarot-curtain-close-left {
   0% {
-    transform: translateX(-101%) scaleY(1.04);
-    border-top-right-radius: 96rpx 46%;
-    border-bottom-right-radius: 96rpx 46%;
+    transform: translateX(-101%) scaleY(1.04) skewX(-2.6deg);
+    border-bottom-right-radius: 0;
   }
-  55% {
-    border-top-right-radius: 62rpx 32%;
-    border-bottom-right-radius: 62rpx 32%;
-  }
+  42% { border-bottom-right-radius: 150rpx 275rpx; }
+  76% { border-bottom-right-radius: 230rpx 420rpx; }
   100% {
-    transform: translateX(0) scaleY(1);
-    border-top-right-radius: 0;
+    transform: translateX(0) scaleY(1) skewX(0deg);
     border-bottom-right-radius: 0;
   }
 }
 @keyframes tarot-curtain-close-right {
   0% {
-    transform: translateX(101%) scaleY(1.04);
-    border-top-left-radius: 96rpx 46%;
-    border-bottom-left-radius: 96rpx 46%;
+    transform: translateX(101%) scaleY(1.04) skewX(2.6deg);
+    border-bottom-left-radius: 0;
   }
-  55% {
-    border-top-left-radius: 62rpx 32%;
-    border-bottom-left-radius: 62rpx 32%;
-  }
+  42% { border-bottom-left-radius: 150rpx 275rpx; }
+  76% { border-bottom-left-radius: 230rpx 420rpx; }
   100% {
-    transform: translateX(0) scaleY(1);
-    border-top-left-radius: 0;
+    transform: translateX(0) scaleY(1) skewX(0deg);
     border-bottom-left-radius: 0;
   }
 }
@@ -171,8 +170,12 @@
   82% { transform: translateX(-2rpx) scaleY(1.001); }
   100% { transform: translateX(0) scaleY(1); }
 }
-/* 打开帘子：资源就绪后两片帘向两侧真实拉开，露出帘后已挂载的流程页。
-   拉开时内缘重新鼓成弧线（与合拢反向，读作布被推开），到展开时已滑出屏外。
+/* 打开帘子：资源就绪后两片帘向两侧拨开，露出帘后已挂载的流程页。
+   铰点在顶端，整体带着一点 skewX 扫出去，读作手从帘子下面把它拨到两边；
+   底摆内缘圆角在起手阶段先鼓到最大(帘底先被扒开)、再随帘身收平——中缝在最下缘
+   先张开、上缘还拢着。
+   【硬约束·卡顿根因】同合拢：transform 只准出现在 0% 和 100%，中间关键帧只改
+   border-radius。否则动画被切成多段、速度曲线多峰，拨帘会一卡一卡。
    与合拢用不同的 animation-name —— 同节点换名才会重新播放，同名不会重播。
    时长必须与 index.tsx 的 CURTAIN_OPEN_MS 一致 */
 .tarot-curtain--opening .tarot-curtain__panel--left {
@@ -185,34 +188,26 @@
 }
 @keyframes tarot-curtain-open-left {
   0% {
-    transform: translateX(0);
-    border-top-right-radius: 0;
+    transform: translateX(0) skewX(0deg);
     border-bottom-right-radius: 0;
   }
-  55% {
-    border-top-right-radius: 72rpx 38%;
-    border-bottom-right-radius: 72rpx 38%;
-  }
+  22% { border-bottom-right-radius: 230rpx 420rpx; }
+  62% { border-bottom-right-radius: 150rpx 275rpx; }
   100% {
-    transform: translateX(-101%);
-    border-top-right-radius: 108rpx 52%;
-    border-bottom-right-radius: 108rpx 52%;
+    transform: translateX(-101%) skewX(-1.8deg);
+    border-bottom-right-radius: 0;
   }
 }
 @keyframes tarot-curtain-open-right {
   0% {
-    transform: translateX(0);
-    border-top-left-radius: 0;
+    transform: translateX(0) skewX(0deg);
     border-bottom-left-radius: 0;
   }
-  55% {
-    border-top-left-radius: 72rpx 38%;
-    border-bottom-left-radius: 72rpx 38%;
-  }
+  22% { border-bottom-left-radius: 230rpx 420rpx; }
+  62% { border-bottom-left-radius: 150rpx 275rpx; }
   100% {
-    transform: translateX(101%);
-    border-top-left-radius: 108rpx 52%;
-    border-bottom-left-radius: 108rpx 52%;
+    transform: translateX(101%) skewX(1.8deg);
+    border-bottom-left-radius: 0;
   }
 }
 
@@ -223,8 +218,10 @@
     radial-gradient(120% 60% at 50% 0%, rgba(255, 250, 238, .9), rgba(255, 250, 238, 0) 60%),
     linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%);
 }
-/* 布帘底摆：软布垂坠的弧形下摆。面板已 overflow 裁切，下摆收在帘身内，
-   随内缘弧线一起被裁，读作布料底缘而非色块矩形 */
+/* 布帘底摆：软布垂坠的弧形下摆，同时负责内缘下角的软弧。
+   内缘弧线不逐帧动画（动画圆角会让全屏帘片每帧重裁，造成卡顿），
+   改由这条常驻底摆的圆角提供——顶端到中段是绷直的直边、只有底摆收软弧，
+   既不会有「) (」的鱼眼形，也不占用每帧重绘。 */
 .tarot-curtain--clay .tarot-curtain__panel::after {
   content: '';
   position: absolute;
@@ -303,7 +300,8 @@
 }
 .tarot-curtain__valance-scallop--b { left: 35%; }
 .tarot-curtain__valance-scallop--c { left: 66%; }
-/* 垂穗：帷幔下的两枚小流苏，开合期间随帘甩动，合拢到位后轻轻摇摆 */
+/* 垂穗：帷幔下的两枚小流苏。只在静置(holding)阶段轻轻摇摆——开合期间帘片正在做
+   动画裁切，子元素动画会阻止复用栅格（同褶皱，实测开合掉帧 12→0）。 */
 .tarot-curtain__tassel {
   position: absolute;
   top: 108rpx;
@@ -312,6 +310,10 @@
   background: linear-gradient(180deg, #d99e6b, #c97a4a);
   transform-origin: 50% 0;
 }
+.tarot-curtain__panel--left .tarot-curtain__tassel--a { left: 30%; }
+.tarot-curtain__panel--left .tarot-curtain__tassel--b { left: 64%; height: 36rpx; }
+.tarot-curtain__panel--right .tarot-curtain__tassel--a { right: 30%; }
+.tarot-curtain__panel--right .tarot-curtain__tassel--b { right: 64%; height: 36rpx; }
 .tarot-curtain--closing .tarot-curtain__tassel {
   animation: tarot-tassel-whip .72s cubic-bezier(.3, .1, .3, 1.2) both;
 }
@@ -322,10 +324,6 @@
   55% { transform: rotate(calc(var(--tassel-whip, 14deg) * -.35)); }
   100% { transform: rotate(var(--tassel-whip, 14deg)); }
 }
-.tarot-curtain__panel--left .tarot-curtain__tassel--a { left: 30%; }
-.tarot-curtain__panel--left .tarot-curtain__tassel--b { left: 64%; height: 36rpx; }
-.tarot-curtain__panel--right .tarot-curtain__tassel--a { right: 30%; }
-.tarot-curtain__panel--right .tarot-curtain__tassel--b { right: 64%; height: 36rpx; }
 .tarot-curtain--holding .tarot-curtain__tassel {
   animation: tarot-tassel-sway 2.2s ease-in-out .3s infinite;
 }

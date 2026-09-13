@@ -89,8 +89,33 @@ describe('bright tarot entry wiring', () => {
     expect(styles).toMatch(/tarot-curtain-open-left[\s\S]*?translateX\(-101%\)/)
     expect(styles).toMatch(/tarot-curtain-open-right[\s\S]*?translateX\(101%\)/)
     expect(styles).toMatch(/\.tarot-curtain--opening \.tarot-curtain__panel--left\s*{[\s\S]*?animation:\s*tarot-curtain-open-left/)
-    // 拉开时内缘重新鼓成弧线（与合拢反向），到展开时已成大弧
-    expect(styles).toMatch(/tarot-curtain-open-left[\s\S]*?border-top-right-radius:\s*108rpx/)
+    const keyframeValues = (block: string, prop: string) =>
+      [...block.matchAll(new RegExp(`${prop}:\\s*([^;]+);`, 'g'))].map((m) => m[1].trim())
+    const openLeft = styles.slice(styles.indexOf('@keyframes tarot-curtain-open-left'), styles.indexOf('@keyframes tarot-curtain-open-right'))
+    const openRight = styles.slice(styles.indexOf('@keyframes tarot-curtain-open-right'), styles.indexOf('/* clay：奶油布帘剧场'))
+    const closeLeft = styles.slice(styles.indexOf('@keyframes tarot-curtain-close-left'), styles.indexOf('@keyframes tarot-curtain-close-right'))
+    const closeRight = styles.slice(styles.indexOf('@keyframes tarot-curtain-close-right'), styles.indexOf('/* 合拢落位后的余摆'))
+    // ── 卡顿回归护栏 ────────────────────────────────────────────────────────
+    // CSS 的 timing-function 按关键帧【区间】生效：transform 一旦出现在中间关键帧，
+    // 动画就被切成多段、每段各自 ease-in-out，速度曲线出现多个波峰(加速→停→再加速)，
+    // 关上/拉开都会肉眼「一卡一卡」。所以 transform 只准出现在每条关键帧的首末两帧。
+    // （实测速度峰数：transform 只在首末=1 个峰(顺滑)；放 4 个关键帧=2 个峰(卡)。）
+    for (const kf of [openLeft, openRight, closeLeft, closeRight]) {
+      expect(keyframeValues(kf, 'transform')).toHaveLength(2)
+    }
+    // 「从帘子下面拨开」：铰点在顶端 + skewX 扫出（顶端挂着不动、底摆先出去）
+    expect(styles).toMatch(/\.tarot-curtain__panel\s*{[^}]*transform-origin:\s*50%\s*0/)
+    expect(keyframeValues(openLeft, 'transform')).toEqual(['translateX(0) skewX(0deg)', 'translateX(-101%) skewX(-1.8deg)'])
+    expect(keyframeValues(openRight, 'transform')).toEqual(['translateX(0) skewX(0deg)', 'translateX(101%) skewX(1.8deg)'])
+    // 内缘顶端半径全程为 0（否则上下双弧拼成「) (」鱼眼形）；只有底摆鼓弧
+    for (const kf of [openLeft, openRight, closeLeft, closeRight]) {
+      expect(kf).not.toMatch(/border-top-[\w-]*radius/)
+    }
+    // 「从帘子下面拨开」+「更高更斜」：底摆椭圆半径。弧高=V，弦倾角=atan(H/V)。
+    expect(keyframeValues(openLeft, 'border-bottom-right-radius')).toEqual(['0', '230rpx 420rpx', '150rpx 275rpx', '0'])
+    expect(keyframeValues(openRight, 'border-bottom-left-radius')).toEqual(['0', '230rpx 420rpx', '150rpx 275rpx', '0'])
+    expect(keyframeValues(closeLeft, 'border-bottom-right-radius')).toEqual(['0', '150rpx 275rpx', '230rpx 420rpx', '0'])
+    expect(keyframeValues(closeRight, 'border-bottom-left-radius')).toEqual(['0', '150rpx 275rpx', '230rpx 420rpx', '0'])
     // 旧的淡出式揭幕与回缩(swell)已移除
     expect(styles).not.toContain('@keyframes tarot-curtain-fade')
     expect(styles).not.toContain('tarot-curtain-swell-left')
@@ -102,9 +127,17 @@ describe('bright tarot entry wiring', () => {
     // 褶皱联动(横移+绕顶端倾斜)+每道错相位+合拢回弹
     expect(styles).toContain('tarot-curtain__drape')
     expect(styles).toContain('tarot-curtain__valance-scallop')
-    // 帘子内缘是曲线（起手大圆弧）并随合拢拉直，不是从头到尾的直边
-    expect(styles).toMatch(/tarot-curtain-close-left[\s\S]*?border-top-right-radius:\s*96rpx/)
-    expect(styles).toMatch(/tarot-curtain-close-left[\s\S]*?border-top-right-radius:\s*0/)
+    // 合拢落位时位移归零、纵向拉伸收回（同样只有首末两帧带 transform）
+    expect(keyframeValues(closeLeft, 'transform')).toEqual([
+      'translateX(-101%) scaleY(1.04) skewX(-2.6deg)',
+      'translateX(0) scaleY(1) skewX(0deg)',
+    ])
+    expect(keyframeValues(closeRight, 'transform')).toEqual([
+      'translateX(101%) scaleY(1.04) skewX(2.6deg)',
+      'translateX(0) scaleY(1) skewX(0deg)',
+    ])
+    // 底摆常驻圆角仍在（帘底软边，静态不参与动画）
+    expect(styles).toMatch(/\.tarot-curtain--clay \.tarot-curtain__panel::after[\s\S]*?border-radius:\s*0 0 44rpx 44rpx/)
     expect(styles).toMatch(/\.tarot-curtain__panel\s*{[^}]*overflow:\s*hidden/)
     // 每道褶皱各自摆动：绕顶端摆动 + 错开相位
     expect(styles).toMatch(/\.tarot-curtain__drape\s*{[^}]*transform-origin:\s*50%\s*0/)
