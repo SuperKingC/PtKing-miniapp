@@ -82,6 +82,30 @@ function archetypeFixture(): TestDefinition {
   }
 }
 
+function tieBreakArchetypeFixture(): TestDefinition {
+  return {
+    ...dimensionFixture(),
+    id: 'fixture-arch-tie-break',
+    title: '平票类型测试',
+    questions: Array.from({ length: 10 }, (_, index) => ({
+      text: 'q' + (index + 1),
+      options: [
+        { text: 'fox', reportId: 'fox' },
+        { text: 'owl', reportId: 'owl' },
+      ],
+    })),
+    scoring: {
+      type: 'archetype',
+      reports: ['fox', 'owl'],
+      tieBreak: { type: 'recent-answers', window: 2 },
+    },
+    reports: {
+      fox: { id: 'fox', title: '狐狸型', tagline: 't', summary: 's', detail: [] },
+      owl: { id: 'owl', title: '猫头鹰型', tagline: 't', summary: 's', detail: [] },
+    },
+  }
+}
+
 describe('testEngine dimension scoring', () => {
   it('maps majority votes to letters per dimension', () => {
     const result = scoreTest(dimensionFixture(), [0, 1, 1, 1])
@@ -158,6 +182,30 @@ describe('testEngine archetype scoring', () => {
   it('leaves archetypeVotes empty for non-archetype modes', () => {
     expect(scoreTest(bandFixture(), [2, 1]).archetypeVotes).toEqual([])
     expect(scoreTest(dimensionFixture(), [0, 0, 0, 0]).archetypeVotes).toEqual([])
+  })
+
+  it('uses the recent answer window to resolve an overall tie', () => {
+    const result = scoreTest(tieBreakArchetypeFixture(), [0, 0, 0, 1, 1, 1, 1, 1, 0, 0])
+    expect(result.reportId).toBe('fox')
+    expect(result.archetypeVotes).toEqual([
+      { reportId: 'fox', count: 5 },
+      { reportId: 'owl', count: 5 },
+    ])
+  })
+
+  it('falls back to report order when the recent window is also tied', () => {
+    const result = scoreTest(tieBreakArchetypeFixture(), [0, 0, 0, 0, 1, 1, 1, 1, 0, 1])
+    expect(result.reportId).toBe('fox')
+  })
+
+  it('keeps the old report-order tie behavior when no tie-break is configured', () => {
+    expect(scoreTest(archetypeFixture(), [0, 1, 0]).reportId).toBe('fox')
+  })
+
+  it('rejects a non-positive recent-answer window', () => {
+    const broken = tieBreakArchetypeFixture()
+    broken.scoring = { type: 'archetype', reports: ['fox', 'owl'], tieBreak: { type: 'recent-answers', window: 0 } }
+    expect(() => scoreTest(broken, new Array(10).fill(0))).toThrow('invalid_test_definition')
   })
 })
 

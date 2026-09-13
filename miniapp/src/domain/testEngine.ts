@@ -54,7 +54,15 @@ export type TestScoring =
       dims: Array<{ id: string; letters: [string, string]; labels: [string, string] }>
     }
   | { type: 'band'; max: number; bands: Array<{ min: number; max: number; reportId: string }> }
-  | { type: 'archetype'; reports: string[] }
+  | {
+      type: 'archetype'
+      reports: string[]
+      /** 可选平票策略：仅在总票最高者并列时统计末段答案，仍并列才按 reports 顺序兜底 */
+      tieBreak?: {
+        type: 'recent-answers'
+        window: number
+      }
+    }
   | {
       type: 'factor'
       /** 因素定义：id/名称；报告按主导因素（含反向因素取反后）映射 */
@@ -206,6 +214,14 @@ function scoreFactor(def: TestDefinition, answers: number[]): TestResult {
 
 function scoreArchetype(def: TestDefinition, answers: number[]): TestResult {
   const scoring = def.scoring as Extract<TestScoring, { type: 'archetype' }>
+  const tieBreak = scoring.tieBreak
+  if (
+    tieBreak &&
+    (tieBreak.type !== 'recent-answers' || !Number.isInteger(tieBreak.window) || tieBreak.window <= 0)
+  ) {
+    invalidDefinition(def.id, 'tie_break')
+  }
+
   const counts = new Map<string, number>()
   def.questions.forEach((question, qIndex) => {
     const chosen = question.options[answers[qIndex]]
@@ -225,6 +241,21 @@ function scoreArchetype(def: TestDefinition, answers: number[]): TestResult {
       reportId = id
     }
   }
+
+  const tied = scoring.reports.filter((id) => (counts.get(id) ?? 0) === best)
+  if (tied.length > 1 && tieBreak?.type === 'recent-answers') {
+    const start = Math.max(0, answers.length - tieBreak.window)
+    const recentCounts = new Map<string, number>()
+    answers.forEach((answer, qIndex) => {
+      if (qIndex < start) return
+      const recentReportId = def.questions[qIndex].options[answer].reportId
+      if (recentReportId) recentCounts.set(recentReportId, (recentCounts.get(recentReportId) ?? 0) + 1)
+    })
+    const recentBest = Math.max(...tied.map((id) => recentCounts.get(id) ?? 0))
+    const recentWinners = tied.filter((id) => (recentCounts.get(id) ?? 0) === recentBest)
+    if (recentWinners.length === 1) reportId = recentWinners[0]
+  }
+
   if (best <= 0) invalidDefinition(def.id, 'archetype_no_votes')
   if (!def.reports[reportId]) invalidDefinition(def.id, `missing_report_${reportId}`)
   // 票数分布按 scoring.reports 定义顺序输出（含 0 票），供报告页画「人格倾向分布」
