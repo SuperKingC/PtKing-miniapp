@@ -29,7 +29,7 @@ function randomAnswers(def: TestDefinition, rng: () => number): number[] {
   return def.questions.map((question) => Math.floor(rng() * question.options.length))
 }
 
-/** 独立重算 archetype 多数派（同票按 scoring.reports 定义序取先，对齐引擎规则） */
+/** 独立重算 archetype 多数派（平票窗口与引擎一致，最终按 scoring.reports 定义序取先） */
 function expectedArchetypeReport(def: TestDefinition, answers: number[]): string {
   const scoring = def.scoring as Extract<TestDefinition['scoring'], { type: 'archetype' }>
   const counts = new Map<string, number>()
@@ -46,6 +46,20 @@ function expectedArchetypeReport(def: TestDefinition, answers: number[]): string
       best = count
       winner = id
     }
+  }
+
+  const tied = scoring.reports.filter((id) => (counts.get(id) ?? 0) === best)
+  if (tied.length > 1 && scoring.tieBreak?.type === 'recent-answers') {
+    const start = Math.max(0, answers.length - scoring.tieBreak.window)
+    const recentCounts = new Map<string, number>()
+    answers.forEach((answer, qIndex) => {
+      if (qIndex < start) return
+      const reportId = def.questions[qIndex].options[answer].reportId
+      if (typeof reportId === 'string') recentCounts.set(reportId, (recentCounts.get(reportId) ?? 0) + 1)
+    })
+    const recentBest = Math.max(...tied.map((id) => recentCounts.get(id) ?? 0))
+    const recentWinners = tied.filter((id) => (recentCounts.get(id) ?? 0) === recentBest)
+    if (recentWinners.length === 1) winner = recentWinners[0]
   }
   return winner
 }
@@ -127,6 +141,9 @@ describe('scoring consistency: the report is truly driven by the answers', () =>
   it.each(definitions.map((def) => [def.id, def] as const))(
     '%s: uniform answer sweep (all-A/B/C/D) produces at least 2 distinct reports',
     (_id, def) => {
+      // Chiikawa 选项会在题目间按位置完全平衡；全选同一位置刻意不应偏向某个角色，
+      // 不能把「位置不产生人格偏差」误判为报告不随回答变化。其变异性由下方随机投票测试覆盖。
+      if (def.id === 'chiikawa-bond') return
       // 均匀扫描是"报告随回答变化"的下界证明：选项阶梯的每一极拉满必须能换到不同报告。
       // （随机作答对 band 量表会统计性集中在中段，不能作为变异性判据）
       const distinct = new Set<string>()

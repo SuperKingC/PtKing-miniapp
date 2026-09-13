@@ -14,6 +14,7 @@
 
 - Modify: miniapp/src/domain/testEngine.ts — 为 archetype 增加可选平票配置和末窗口判定。
 - Modify: miniapp/src/domain/testEngine.test.ts — 先锁定平票窗口、回退和旧行为不变。
+- Modify: miniapp/src/config/scoringConsistency.test.ts — 独立重算支持末窗口平票，并跳过 Chiikawa 的位置均衡扫描特例。
 - Modify: miniapp/src/domain/tests/chiikawaBondTest.ts — 保留八个报告，重写为 32 题 × 4 选项，并配置末 8 题平票策略。
 - Create: miniapp/src/domain/tests/chiikawaBondTest.test.ts — 锁定题量、选项数、角色曝光矩阵、文案和报告可达性。
 - Modify: docs/features/test-engine.md — 更新通用 archetype 平票能力和测试数量说明。
@@ -207,10 +208,22 @@ npm --prefix miniapp run test -- src/domain/testEngine.test.ts
 
 预期：testEngine 全部通过，且未配置 tieBreak 的既有 archetype 夹具结果不变。
 
-- [ ] **Step 5: 提交通用引擎变更**
+- [ ] **Step 5: 同步评分一致性契约**
+
+在 `miniapp/src/config/scoringConsistency.test.ts` 的 `expectedArchetypeReport` 中复刻 `recent-answers` 末窗口判定，确保独立重算与引擎一致；在“全 A/B/C/D 扫描”测试中仅跳过 `chiikawa-bond`，因为它按设计让每个角色在 A/B/C/D 各出现 4 次，全选同一位置不应产生位置偏置。其他 archetype 仍保留原有变异性检查。
+
+运行：
 
 ~~~powershell
-git add miniapp/src/domain/testEngine.ts miniapp/src/domain/testEngine.test.ts
+npm --prefix miniapp run test -- src/config/scoringConsistency.test.ts
+~~~
+
+预期：90 项评分一致性测试全部通过。
+
+- [ ] **Step 6: 提交通用引擎变更**
+
+~~~powershell
+git add miniapp/src/domain/testEngine.ts miniapp/src/domain/testEngine.test.ts miniapp/src/config/scoringConsistency.test.ts
 git commit -m "增加 archetype 末题窗口平票判定"
 ~~~
 
