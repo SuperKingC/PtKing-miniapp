@@ -1,5 +1,12 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 16:45：clay 三项续修：月亮露出/气泡不压帽 + 抽牌飞牌被裁 + 翻牌下移。
+  ①**月亮只剩一角 + 气泡压住帽子**：同一个根因——上一轮把场景层做成**底锚** `scale(1.16)`，放大时顶边被顶出屏幕（视图 y' = H + (y-H)s）：图上月亮顶在视图 66px，1.16 后 = -58px，只剩一角；猫头同时抬到 81px，被气泡（47..85）压住帽子。改 `translateY(88rpx) scale(1.08)`：月亮顶回到 51px（完整可见，落在状态栏之下）、猫头顶回到 177px（气泡彻底让开帽子），代价是底部裁 44px 桌面前沿（无内容）。**量测模型**（y' = H + (y-H)s + T）与实测吻合：猫头/球顶/球底都能反推对上。
+  ②**抽牌飞牌被裁**：`card-flight` 结尾 `translateY(-390rpx)` 是 classic 的值，而 clay 的牌扇离已选槽更近，牌会冲过槽位、贴到阶段上沿。改为 `--fly-y`（结尾）/`--fly-y-mid`（中段）两个变量，**默认值就是 classic 原值 -390/-300rpx**（不用比例换算，避免挪动 classic），clay 覆盖为 -328/-243rpx。实测飞牌终点 389..503，正好落在已选槽 381..511 内。
+  ③**翻牌阶段下移**：只对 `.miniapp-tarot__stage--reveal .miniapp-tarot__reveal-row` 加 `translateY(56rpx)`。试过加大上 spacer 比例，但 spacer 是 `flex: 0 1 28%`、翻牌内容高时会被压回去（实测改成 36% 落位没变），故用视觉位移（阶段已 overflow:visible）。
+  ④**验证台修正（重要）**：headless Chrome 最小视口宽是 500，`--window-size=390,844` 实际给 500×746，之前几次量测的「溢出」多半是设备框失真造成的假象。改为把 `vw/vh` 也按设计视口折算成 px、并把根节点 `fixed` 覆盖成 `absolute`（相对 390×844 的 #vp），量测才与手机一一对应。临时量测台已删除。
+  ⑤三条改动全部只落在 `.skin-clay` 内；关键帧默认值保持 classic 原值，故 classic 星夜模式未受影响。契约测试同步 + 新增用例；全量 **488 通过**。
+
 - 2026-09-13 16:05：clay 三项：气泡浮到猫头上方让开胶囊 + 抽牌/翻牌顶部牌被裁切 + 洗牌与切牌牌位不一致。
   ①**气泡**：用户要「气泡在测测子头上方、别被微信三个点挡住、可以往左延展」。做法：把气泡从「居中 560rpx」改成 `position:relative` + `top:-118rpx`（纯视觉上提，保留流内高度 → 下面 28% spacer 与牌组落位不动）+ `align-self:flex-start` / `margin-left:120rpx` / `max-width:400rpx`（左缘从叉叉钮右侧起、右端停在胶囊左沿约 76% 处）。**坑**：阶段容器 `overflow-y:auto` 会把上提的气泡整块裁掉 → clay 三阶段改 `overflow:visible`（牌组已 flex:none、spacer 可收缩，短屏无需滚动兜底）。另加 Flow 状态类 `--clay-ritual`（shuffle/cut/fan/reveal）隐藏 header 的牌阵名（`visibility:hidden` 保占位），避免「单牌速抽」与气泡同一行压字。**坑**：Taro 会把 WXSS 里写死的 px 换算成 rpx，做「px 变量 + rpx」的 calc 混算会错位，故偏移只用 rpx。
   ②**抽牌/翻牌顶部牌被裁切（真 bug）**：根因是**短屏下 flex 把牌组容器压扁**——375×667 实测牌扇容器被压到 20px 高（inset 后可用空间不足），牌随即溢出阶段被裁。修法：spacer 改 `flex: 0 1 28%`（有余量时恒为阶段高 28% 保证位置一致；空间不足时**先收缩 spacer**而不是压牌组），五个牌组容器（shuffle/cut/picked-row/fan/reveal-row）统一 `flex:none`。375/390/414 三档实测 overflow 全 0、按钮都在屏内。
