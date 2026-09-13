@@ -363,4 +363,30 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(shuffleStage).toContain('stopPulseHaptics()')
     expect(shuffleStage).toContain("impactFeedback('heavy')")
   })
+
+  it('draws the clay candle flame as a CSS overlay anchored on the wick, not baked into the artwork', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+    const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+
+    // 只有 clay 牌桌挂火焰层：背景图里的蜡烛已画成未点燃
+    expect(flowSource).toContain("skin === 'clay'")
+    expect(flowSource).toContain('miniapp-tarot__flame-scene')
+    expect(flowSource).toContain('miniapp-tarot__flame-body')
+    expect(flowSource).toContain('miniapp-tarot__flame-core')
+    // 覆盖层按背景图比例定位：宽度复刻 aspectFill 的 cover 宽（竖屏 = 56.26vh，图比例 0.5626）
+    expect(styles).toMatch(/\.miniapp-tarot__flame-scene \{[\s\S]*?max\(100vw, 56\.26vh\)/)
+    // 火焰锚在 sanctuary-background-clay.jpg 上量得的烛芯比例坐标（底边压在蜡面）
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?left: 64\.8%/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?top: 45\.6%/)
+    // 「一线」S 形：两段反向微弯细带叠出 S，再各有一条流动 keyframe
+    expect(styles).toContain('.miniapp-tarot__flame-body::before')
+    expect(styles).toContain('.miniapp-tarot__flame-body::after')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-flow-low')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-flow-high')
+    // 四层动效：烛焰摇摆 + 火苗闪烁 + 光晕/蜡面溢光呼吸
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-sway')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-flicker')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-glow')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-pool')
+  })
 })

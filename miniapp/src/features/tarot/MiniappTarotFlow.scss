@@ -149,6 +149,156 @@
     var(--tarot-stars-image);
 }
 
+// ── 蜡烛火焰（clay）：火焰不画进背景图，由 CSS 叠一条细长的 S 形火线在烛芯上 ──
+// 背景图 768x1365（比例 0.5626）按 aspectFill 铺满：竖屏手机按高适配，显示宽 = 图高比 × 视口高。
+// 这层覆盖层复刻同一几何：宽 = max(100vw, 56.26vh)、高 = max(100vh, 177.73vw)，
+// 竖屏时 = 56.26vh（图上任意比例坐标 = 覆盖层同比例坐标），宽屏时 = 100vw，图与火焰永远同步缩放。
+// 火焰锚点取自 sanctuary-background-clay.jpg：烛芯中轴 (x 64.8%)、芯尖 (y 44.3%)、蜡面 (y 45.4%)。
+// 火线底边压到蜡面偏下 (y 45.6%)：火线根部吃进烛芯，不露出悬空的芯尖。
+.miniapp-tarot__flame-scene {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100vw, 56.26vh);
+  height: max(100vh, 177.73vw);
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+// 「一线」：细长火线，宽约烛径一半、高约烛径的四倍
+.miniapp-tarot__flame {
+  position: absolute;
+  left: 64.8%;
+  top: 45.6%;
+  width: calc(max(100vw, 56.26vh) * .023);
+  height: calc(max(100vw, 56.26vh) * .098);
+  transform: translate(-50%, -100%);
+  transform-origin: 50% 100%;
+  animation: miniapp-tarot-flame-sway 3.2s ease-in-out infinite;
+}
+
+// 烛顶蜡面上的暖光圈：火线落在蜡面的一点溢光（收窄，保持"一线"的轻）
+.miniapp-tarot__flame-pool {
+  position: absolute;
+  left: 50%;
+  bottom: -4%;
+  width: 150%;
+  height: 30%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 214, 138, .46), rgba(255, 196, 108, .14) 54%, rgba(255, 196, 108, 0) 76%);
+  animation: miniapp-tarot-flame-pool 3.2s ease-in-out infinite;
+}
+
+// 外层暖光：贴着细火线的柔光，不铺成圆团
+.miniapp-tarot__flame-glow {
+  position: absolute;
+  left: 50%;
+  bottom: -6%;
+  width: 200%;
+  height: 116%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 66%, rgba(255, 205, 122, .42), rgba(255, 190, 96, .15) 44%, rgba(255, 190, 96, 0) 70%);
+  animation: miniapp-tarot-flame-glow 2.1s ease-in-out infinite;
+}
+
+// 火线主体：容器本身不画，两个伪元素各画一段反向微弯的细带，上下叠接成 S 形
+.miniapp-tarot__flame-body {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-50%);
+  animation: miniapp-tarot-flame-flow 2.6s ease-in-out infinite;
+}
+
+.miniapp-tarot__flame-body::before,
+.miniapp-tarot__flame-body::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform-origin: 50% 100%;
+  border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%;
+}
+
+// 下段：较粗较亮，底端坐在烛芯上，向上升时向右偏
+.miniapp-tarot__flame-body::before {
+  left: 50%;
+  bottom: 0;
+  width: 40%;
+  height: 54%;
+  transform: translateX(-50%) rotate(9deg);
+  background: linear-gradient(to top, #fff3cf 0 8%, #ffd27a 30%, #f9a23f 62%, rgba(249, 162, 63, .32) 86%, rgba(249, 162, 63, 0) 100%);
+  animation: miniapp-tarot-flame-flow-low 2.6s ease-in-out infinite;
+}
+
+// 上段：更细更淡，起点接下段顶端，向上升时再折回左侧 → 整条成 S
+.miniapp-tarot__flame-body::after {
+  left: 68%;
+  bottom: 46%;
+  width: 32%;
+  height: 58%;
+  transform: translateX(-50%) rotate(-13deg);
+  background: linear-gradient(to top, rgba(255, 216, 140, .9) 0 12%, rgba(250, 176, 84, .7) 46%, rgba(250, 176, 84, .22) 78%, rgba(250, 176, 84, 0) 100%);
+  animation: miniapp-tarot-flame-flow-high 2.6s ease-in-out infinite;
+}
+
+// 火线内芯：一条更亮的奶白细线，让火苗有发光芯
+.miniapp-tarot__flame-core {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  width: 12%;
+  height: 66%;
+  transform: translateX(-50%) rotate(5deg);
+  transform-origin: 50% 100%;
+  border-radius: 50%;
+  background: linear-gradient(to top, #fffdf4 0 14%, #fff1bd 44%, rgba(255, 236, 166, .5) 76%, rgba(255, 236, 166, 0) 100%);
+  animation: miniapp-tarot-flame-flicker 1.5s ease-in-out infinite;
+}
+
+@keyframes miniapp-tarot-flame-sway {
+  0%, 100% { transform: translate(-50%, -100%) rotate(-2deg); }
+  50% { transform: translate(-50%, -100%) rotate(2deg); }
+}
+
+// 整条火线轻微纵向呼吸
+@keyframes miniapp-tarot-flame-flow {
+  0%, 100% { transform: translateX(-50%) scale(1, 1); }
+  50% { transform: translateX(-50%) scale(.94, 1.05); }
+}
+
+// S 的下弯：角度随时间收放
+@keyframes miniapp-tarot-flame-flow-low {
+  0%, 100% { transform: translateX(-50%) rotate(9deg); }
+  50% { transform: translateX(-50%) rotate(3deg); }
+}
+
+// S 的上弯：与下弯反相，形成流动感
+@keyframes miniapp-tarot-flame-flow-high {
+  0%, 100% { transform: translateX(-50%) rotate(-13deg); }
+  50% { transform: translateX(-50%) rotate(-6deg); }
+}
+
+@keyframes miniapp-tarot-flame-flicker {
+  0%, 100% { opacity: .96; transform: translateX(-50%) rotate(5deg) scale(1, 1); }
+  48% { opacity: 1; transform: translateX(-50%) rotate(5deg) scale(1.08, .95); }
+  76% { opacity: .9; transform: translateX(-50%) rotate(5deg) scale(.94, 1.05); }
+}
+
+@keyframes miniapp-tarot-flame-glow {
+  0%, 100% { transform: translateX(-50%) scale(1, 1); opacity: .82; }
+  50% { transform: translateX(-50%) scale(1.06, 1.08); opacity: 1; }
+}
+
+@keyframes miniapp-tarot-flame-pool {
+  0%, 100% { transform: translateX(-50%) scale(1, 1); opacity: .78; }
+  50% { transform: translateX(-50%) scale(1.05, 1.12); opacity: 1; }
+}
+
 .miniapp-tarot__header {
   position: relative;
   display: flex;

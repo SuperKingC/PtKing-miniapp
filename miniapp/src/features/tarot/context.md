@@ -1,5 +1,14 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 08:30：clay 牌桌背景重出（换玻璃星云水晶球 + 长桌）+ 蜡烛火焰改 CSS「一线 S 形」。
+  ①**需求**：测测子塔罗背景重出十种候选，水晶球要好看（不要原来的纯白素球）、背景蜡烛不画火焰（火焰留给前端特效）；用户看对照图后选定「通透玻璃球+球内旋涡星云、蜡烛未点燃、长桌」那版。
+  ②**出图**：新增 `art/prompts-tarot-bg-options.txt`（10 条统一构图变体）→ 对照图脚本 `miniapp/art/ref-pages-v3/build-tarot-bg-contact-sheet.py`；用户选定后二次迭代——首版 opt1 是 2:3 宽板桌，用户指出「桌子要像之前一样长长的」，改用 `art/prompts-tarot-bg-long.txt` 并以**旧背景为 --ref** 重出（旧版是细长长桌、远端窄约 0.5 画宽落在画高 0.41、向观者外扩到满幅），long3 几何最贴近（远端 0.424 / 满幅 0.521，旧版 0.416 / 0.501）。
+  ③**落位**：`miniapp/art/ref-pages-v3/install-tarot-bg-choice.py` 把 long3 等比缩到 768×1365（q88，78KB）→ `art/generated-art/tarot/ui/sanctuary-background-clay.jpg`（gitignore，走 COS 下发）。**只等比缩放不裁切**：火焰叠加依赖「烛芯在图上的比例坐标」，裁切会改比例导致火焰错位。
+  ④**火焰 CSS**：`MiniappTarotFlow.tsx` 在 clay 皮肤挂 `.miniapp-tarot__flame-scene` 覆盖层（`skin === 'clay'` 才挂，classic 星夜不受影响），内含 glow/pool/body/core 四层。覆盖层宽 `max(100vw, 56.26vh)`（图比例 0.5626，复刻 aspectFill 的 cover 宽），火焰锚在图上量得的烛芯中轴 `left:64.8% / top:45.6%`。body 用两个伪元素各画一段反向微弯细带（`translateX(-50%) rotate(9deg)` 下段 + `left:68% rotate(-13deg)` 上段）叠成**一线 S 形**，配 `flame-sway/flow/flow-low/flow-high/flicker/glow/pool` 动效；motion-reduced 由既有 mixin 统一压掉。
+  ⑤**坑**：中转站 `/models` 目录已无出图条目、`openai/gpt-5.4-image-2` 直连超时，但实测仍可出图（本轮 10+3+3 张全由它出）；本地 `art.config.json`（gitignore）已把风格锚点从旧「奶油扁平」更新为「高调奶油软陶」，并注明模型现状。
+  ⑥**验证**：`MiniappTarotFlow.styles.test.ts` 增契约用例（classic 不挂火焰层 / 覆盖层 56.26vh / 锚点 64.8%·45.6% / S 两段伪元素 + 流动 keyframe），全量 480 测试过。因火焰是纯 CSS，另用 headless Chrome 按同款 CSS + `object-fit:cover` 复刻渲染逐帧核对：渲染图里烛芯列 x=265 与火焰锚点 265.3 重合、四相位 S 形流动正常。**微信开发者工具 automator 本轮未能连上（IDE auto 端口被自身 HTTP 服务占用、自动化端点起不来），实机截图待用户验收。**
+  ⑦**维护提醒**：火焰坐标是绑在 `sanctuary-background-clay.jpg` 这张图上的——以后换背景图必须重量烛芯比例坐标并同步改 SCSS 与契约测试。
+
 - 2026-09-13 07:55：clay 洗牌牌堆缩小下移 + 顶部去进度 + 测测子头顶对话气泡（用户：牌堆大小不对且挡住猫；去掉猫头上的进度；把下面气泡当成测测子的话放到猫头上）。
   ①**牌堆**：classic 的牌堆几何是对准背景金环中心的；clay 背景是浅色桌面、猫前爪搭在桌沿，同一套几何会顶到猫爪。在 `.skin-clay` 里把顶层牌 `top:18rpx→108rpx`、`226×356→196×310rpx`，环/符文/波纹圆心 `218rpx→288rpx`，软晕层(只有 translateX，top 是圆上沿)`top:-12rpx→88rpx`，各层直径同比例缩一档。
   ②**去掉顶部进度**：`.miniapp-tarot__progress`(几枚短横)与 `.miniapp-tarot__shuffle-bar` 在 clay 都 `display:none`——前者正好压在猫头与云的天际线上，后者是同一区域第二行进度。
