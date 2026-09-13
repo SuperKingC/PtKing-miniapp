@@ -33,28 +33,29 @@ const CLASSIC: TarotStageCopy = {
   revealTitle: (allFlipped) => (allFlipped ? '牌已全部翻开' : '逐张点开，翻开你的牌'),
 }
 
-// clay：气泡里是测测子在说话——用第一人称邀请，实时进度并进同句，
-// 不再是「操作提示 + 状态行」两段拼接。状态行函数在 clay 不渲染（见 scss）。
+// clay：气泡里是测测子在说话——像一位守牌多年的行家，语气沉静、带点玄意：
+// 不说「点击牌堆」这类操作指令，而是「落下一刀」「牌面自会应答」；实时进度并进同句。
+// 状态行函数在 clay 不渲染（见 scss）。过审红线仍是禁「占卜/算命/改运」。
 const CLAY: TarotStageCopy = {
-  questionTitle: '想问点什么呢？告诉测测子吧',
-  spreadTitle: '今天的牌，想怎么摆？',
+  questionTitle: '把心里那句话交给我，牌都听得见',
+  spreadTitle: '选一副牌阵，为今晚的问题铺开',
   shuffleTitle: (progress) => {
-    if (progress >= 100) return '牌都洗香啦，接下来交给我吧'
-    if (progress > 0) return `已经洗到 ${Math.round(progress)}% 啦，松手歇口气再按住`
-    return '按住牌堆别松手，我帮你把牌洗得香香的'
+    if (progress >= 100) return '牌已洗净杂音，剩下的交给我'
+    if (progress > 0) return `牌面泛起 ${Math.round(progress)}% 的光，松手歇一歇再按住`
+    return '按住牌堆，让心里的话慢慢渗进牌里'
   },
   shuffleHint: () => '',
   cutTitle: (cutCount) => (cutCount > 0
-    ? `你切了 ${cutCount} 次啦，想再来一下我也等你`
-    : '凭直觉轻轻切开这叠牌，我都听你的'),
+    ? `已为你切过 ${cutCount} 次，想再落一刀也无妨`
+    : '凭直觉落下一刀，剩下的交给我与牌'),
   cutHint: () => '',
   fanTitle: (needCount, pickedCount) => {
-    if (pickedCount >= needCount) return '挑好啦，让我帮你翻开吧'
-    if (pickedCount > 0) return `已经挑好 ${pickedCount} 张啦，还差 ${needCount - pickedCount} 张给我`
-    return `心里想着问题，挑出 ${needCount} 张牌递给我吧`
+    if (pickedCount >= needCount) return '牌已就位，让我为你揭开它们'
+    if (pickedCount > 0) return `已挑好 ${pickedCount} 张，还差 ${needCount - pickedCount} 张落进我掌心`
+    return `让直觉带你挑出 ${needCount} 张牌，递到我掌心`
   },
   fanHint: () => '',
-  revealTitle: (allFlipped) => (allFlipped ? '都翻开啦，我帮你记在心里咯' : '点开看看，我帮你翻到了什么'),
+  revealTitle: (allFlipped) => (allFlipped ? '牌已尽数翻开，答案就在其中' : '翻开每一张，让我听牌面低语'),
 }
 
 export function getTarotStageCopy(skin: TarotSkin): TarotStageCopy {

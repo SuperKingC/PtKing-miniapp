@@ -1,6 +1,25 @@
 import { describe, expect, it } from 'vitest'
 import { getTarotStageCopy } from './tarotSkinCopy'
 
+/** clay 各阶段的用户可见句子（含分支），用于统一做语气与合规检查 */
+function clayLines(): string[] {
+  const copy = getTarotStageCopy('clay')
+  return [
+    copy.questionTitle,
+    copy.spreadTitle,
+    copy.shuffleTitle(0),
+    copy.shuffleTitle(40),
+    copy.shuffleTitle(100),
+    copy.cutTitle(0),
+    copy.cutTitle(2),
+    copy.fanTitle(3, 0),
+    copy.fanTitle(3, 2),
+    copy.fanTitle(3, 3),
+    copy.revealTitle(false),
+    copy.revealTitle(true),
+  ]
+}
+
 describe('tarot stage copy per skin', () => {
   it('keeps classic wording identical to the original literal copy', () => {
     const copy = getTarotStageCopy('classic')
@@ -20,7 +39,7 @@ describe('tarot stage copy per skin', () => {
     expect(copy.cutTitle(3)).toBe(copy.cutTitle(0))
   })
 
-  it('speaks one line of cat voice in the clay bubble, state folded into the sentence', () => {
+  it('folds the live state into one clay sentence spoken by the cat', () => {
     const copy = getTarotStageCopy('clay')
     expect(copy.questionTitle).not.toBe(getTarotStageCopy('classic').questionTitle)
     // 实时状态并进同一句话（猫的口吻），不再是底部第二行状态提示
@@ -28,30 +47,30 @@ describe('tarot stage copy per skin', () => {
     expect(copy.cutTitle(2)).toContain('2 次')
     expect(copy.fanTitle(3, 2)).toContain('2 张')
     expect(copy.fanTitle(3, 2)).toContain('还差 1 张')
-    // 是测测子在说话（第一人称），不是「点击牌堆」这类操作提示
+    // 是测测子在说话（第一人称）
     expect(copy.cutTitle(0)).toContain('我')
     expect(copy.fanTitle(3, 0)).toContain('我')
     expect(copy.revealTitle(false)).toContain('我')
-    expect(copy.cutTitle(0)).not.toContain('点击')
-    expect(copy.revealTitle(false)).not.toContain('逐张点开')
     // clay 不再单独渲染状态行
     for (const hint of [copy.shuffleHint(40), copy.cutHint(2), copy.fanHint(2, 3)]) {
       expect(hint).toBe('')
     }
-    // 猫一律称「测测子」，不再用「猫咪」泛称(过审约束)
-    for (const value of [
-      copy.questionTitle,
-      copy.spreadTitle,
-      copy.shuffleTitle(0),
-      copy.shuffleTitle(40),
-      copy.cutTitle(0),
-      copy.cutTitle(2),
-      copy.fanTitle(3, 0),
-      copy.fanTitle(3, 2),
-      copy.revealTitle(false),
-    ]) {
-      expect(value).not.toMatch(/占卜|算命|改运/)
-      expect(value).not.toContain('猫咪')
+  })
+
+  it('keeps the clay register mystic and professional, never a plain tap hint', () => {
+    // 占卜师口吻：不说「长按/点击/点一下/逐张点开」这类操作指令，也不口语化（啦/咯）
+    for (const line of clayLines()) {
+      expect(line).not.toMatch(/长按|点击|点一下|逐张点开|请操作/)
+      expect(line).not.toMatch(/啦|咯/)
+    }
+    // 牌与玄意的意象在句子中：直觉 / 掌心 / 低语 / 光 / 应答 / 答案
+    expect(clayLines().join('')).toMatch(/直觉|掌心|低语|光|应答|答案|杂音/)
+  })
+
+  it('never uses banned words or the generic cat name', () => {
+    for (const line of clayLines()) {
+      expect(line).not.toMatch(/占卜|算命|改运/)
+      expect(line).not.toContain('猫咪')
     }
   })
 })
