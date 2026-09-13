@@ -1,5 +1,12 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 15:35：clay 四项：场景整体放大上移（露按钮）+ 桌子变大 + 火苗加粗成水滴 + 修切牌奇数刀两叠同飞。
+  ①**布局根因**：clay 背景 768x1365 比例 .5626，竖屏按高适屏显示宽仅约 475px 而视口 390px —— 桌面近端本就超出下沿，底部按钮被挤出屏幕。做法：把背景/纱罩/火焰/星点收进新节点 `.miniapp-tarot__scene`，clay 对该层做 **底锚 `scale(1.16)`、origin 50% 100%**：放大时底边钉住、画面向上长，于是桌子变大、场景整体上移、底部不留缝；**火焰与背景同处一层，天然同步缩放，不脱开烛芯**（比给两层各写一遍变换可靠）。配 `--spacer--top` 由 44% 收到 **28%**，牌组上移到球座之下、按钮之上。实测（headless Chrome + dist 编译后的 wxss）三幕按钮回到 y640-709、跳过文字 676-709，全在屏内；球由 220..421px 抬到 126..353px，牌组顶端 331px 落在球座之下不挡球。
+  ②**火焰**：用户要「粗一点、像水滴、玄幻一点动」。焰格外框宽 .028→**.042**（水滴更胖），水滴 clip-path 重切为更圆润轮廓（最宽 46%、肩部 62% 才收尖），新增 `.miniapp-tarot__flame::before` 一层**灵气暖雾** + `@keyframes miniapp-tarot-flame-aura`（涨落 + 向上轻飘），并把 sway 周期放长到 4.4s。
+  ③**切牌 bug（真 bug）**：用户报「正常一次、不正常一次，不正常时整个牌一起动」。根因是 specificity：clay 覆盖块里「起牌侧移」选择器 `.miniapp-tarot__cut-deck--cutting .miniapp-tarot__cut-half--right` 权重 (0,4,0)，压过基类里用来**复位** right 半叠的 `.miniapp-tarot__cut-deck--swapped.--cutting .--right{translateY(4rpx)}` (0,3,0)。于是奇数刀（已 swapped）时，left 按 swapped 规则抬起、right 又被 clay 那条抬一次 → 两叠同飞。修复：给 clay 那条加 `:not(.miniapp-tarot__cut-deck--swapped)` 守卫。实测两刀各只抬一叠（computed transform 一叠是 rotate+translate、另一叠是纯 translateY）。
+  ④**验证**：契约测试 +3 例（场景层 wrapper 与底锚缩放 / 两刀各只抬一叠 / 火焰加粗与灵气）；全量 **486 通过**。另建 headless Chrome 量测台（读 `dist` 编译后的 wxss，rpx→px，按 TSX 同构 DOM）量三幕元素位置与两刀 transform —— 该量测台是临时脚本，已删除，方法记在此备查。
+  ⑤**仍未上传 COS**：新背景图只在本地 `generated-art/`，运行时（真机/正式包）读的仍是 COS 旧图。本地预览走 8790 + `TARO_ASSET_DEV_BASE_URL=http://127.0.0.1:8790/ptking-web/tarot-bg-v3`。要上线须跑 `npm run assets`。
+
 - 2026-09-13 15:20：clay 切牌/抽牌/翻牌三幕牌位下移到水晶球之下 + 翻牌名牌框改奶油配色（用户：这三阶段牌的位置都要下移，别挡住水晶球；翻牌下面的框颜色不对）。
   ①**牌位挡住水晶球**：clay 背景里水晶球立在桌面中上部（球身约占视口 37%~52%），而四仪式阶段的牌组按「落在阶段垂直中线」排布，切牌牌堆顶边 ≈ 视口 43%、翻牌牌卡顶边 ≈ 43%，正好压在球身与球座上（截图里牌尖切进球体）。三幕的牌组统一下移。
   ②**改法定量，不用 flex 碰运气**：一开始只把上 spacer 的 `flex-grow` 调大（3→6），但 flex 分的是「剩余」自由高度——短屏剩余少、牌会往回涨（实测 375×667 仍叠 −35px）。改成**上 spacer 取阶段高度的定比** `flex: 0 0 auto; height: 44%`，三幕（`--cut/--fan/--reveal`）共用。逐视口反推所需比例落在 0.419~0.444（背景 aspectFill 后球位随视口等比缩放，球座底边恒定落在视口高度约 53%），取 **0.44** 保证短屏也有安全间隙。
