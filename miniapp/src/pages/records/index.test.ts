@@ -15,9 +15,9 @@ describe('bright records layout', () => {
   it('uses real counts, a standalone book and date groups', () => {
     expect(source).toContain('我的记录')
     expect(source).toContain('records-book-v4.png')
-    /* 气球/公文包走 v14：左+下方向性接触影（旧 v13 修黑晕边时把影一起洗掉了） */
-    expect(source).toContain('tile-fun-v20.png')
-    expect(source).toContain('tile-career-v20.png')
+    /* 气球/公文包走 v21：下/左内翻接触棱对齐参考稿 + 光滑圆角抗锯齿 */
+    expect(source).toContain('tile-fun-v21.png')
+    expect(source).toContain('tile-career-v21.png')
     expect(source).not.toContain('tile-fun-v13.png')
     expect(source).not.toContain('tile-career-v13.png')
     expect(source).toContain('已探索 ')

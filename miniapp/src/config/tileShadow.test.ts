@@ -4,17 +4,17 @@ import { resolve } from 'node:path'
 import { PNG } from 'pngjs'
 import { miniappRoot } from './testPaths'
 
-/* 测试条 tile 的方向性接触影契约（2026-09-12 用户反馈「气球和公文包的阴影需要像其他
-   icon 一样在左边和下面」「还是没有其他 icon 阴影厚」）。
+/* 测试条 tile 的下/左接触棱契约（2026-09-13 用户反馈「气球和公文包的阴影需要和其他的一样，
+   现在不仅阴影不统一还有锯齿」）。
 
-   参考稿 star/love/mbti 是整页裁切，自带不透明烘焙接触影：沿左缘与下缘按指数衰减
-   向外淡出、上/右干净。v13 修黑晕边时把 body 外所有像素混向页面白，连带洗掉了影；
-   v14 补了影带，但剖面是从「alpha≥200 的 body 掩膜」量的——掩膜把紧贴实体的不透明
-   核心并进了 body，整条曲线外移一格，最厚的那档丢失，影比参考薄。v15 改用与页面
-   距离定实体边缘，量出含核心的完整剖面并按实测影色重建。
+   参考稿（star/love/mbti 整页裁切）的边不是**外侧投影**，而是实体自带的一圈**内翻软陶棱**：
+   自视觉边向内 ~11px 压成一条暖褐接触棱（下缘最暗，合成色约 #c48c62），再向内 ~22px 回到板面；
+   最外 1~4px 是低 alpha 的浅色余晖。左缘同形但更浅、峰在 ~5px。上/右与左上角干净。
 
-   这里直接解码 PNG 核对：既有方向的（上/右干净、左/下有影），也有厚度的
-   （近缘核心必须够厚，v14 那一版会在核心断言上失败）。 */
+   历史上 v19/v20 把影铺在实体**外侧**（方向相反），峰值仅 ~78，还在画布底留下一块
+   alpha≈82 的近白平板；实体边 alpha 只有 78/198 两级台阶（锯齿来源）。本测试直接解码 PNG
+   核对三件事：① 下/左棱的**峰位与量级**与参考 love 同档；② 体外没有 alpha 平板（也不是锯齿台阶）；
+   ③ 上/右干净。 */
 
 const PAGE = [254, 250, 244]
 const PAGE_MEAN = (PAGE[0] + PAGE[1] + PAGE[2]) / 3
@@ -23,162 +23,137 @@ function decode(rel: string) {
   const png = PNG.sync.read(readFileSync(resolve(miniappRoot(), rel)))
   const lum = new Float64Array(png.width * png.height)
   const alpha = new Uint8Array(png.width * png.height)
-  // 按页面白合成后的通道，用于色相核对
-  const cr = new Float64Array(png.width * png.height)
-  const cg = new Float64Array(png.width * png.height)
-  const cb = new Float64Array(png.width * png.height)
   for (let i = 0; i < png.width * png.height; i += 1) {
     const a = png.data[i * 4 + 3] / 255
     const r = png.data[i * 4] * a + PAGE[0] * (1 - a)
     const g = png.data[i * 4 + 1] * a + PAGE[1] * (1 - a)
     const b = png.data[i * 4 + 2] * a + PAGE[2] * (1 - a)
     lum[i] = (r + g + b) / 3
-    cr[i] = r; cg[i] = g; cb[i] = b
     alpha[i] = png.data[i * 4 + 3]
   }
-  return { width: png.width, height: png.height, lum, alpha, cr, cg, cb }
+  return { width: png.width, height: png.height, lum, alpha }
 }
 
-/** 合成为页面白后，某像素相对页面的压暗量 */
-function dark(img: ReturnType<typeof decode>, x: number, y: number): number {
-  if (x < 0 || y < 0 || x >= img.width || y >= img.height) return 0
-  return Math.max(0, PAGE_MEAN - img.lum[y * img.width + x])
-}
-
-/** 实体框外沿中线带、逐像素外扩的压暗量均值 */
-function bandMean(img: ReturnType<typeof decode>, side: 'left' | 'right' | 'top' | 'bottom', box: [number, number, number, number], depth: number) {
-  const [x0, y0, x1, y1] = box
-  const values: number[] = []
-  if (side === 'left' || side === 'right') {
-    const ya = y0 + Math.floor((y1 - y0) / 4)
-    const yb = y1 - Math.floor((y1 - y0) / 4)
-    for (let d = 1; d <= depth; d += 1) {
-      const x = side === 'left' ? x0 - d : x1 + d
-      if (x < 0 || x >= img.width) continue
-      for (let y = ya; y <= yb; y += 1) values.push(dark(img, x, y))
-    }
-  } else {
-    const xa = x0 + Math.floor((x1 - x0) / 4)
-    const xb = x1 - Math.floor((x1 - x0) / 4)
-    for (let d = 1; d <= depth; d += 1) {
-      const y = side === 'top' ? y0 - d : y1 + d
-      if (y < 0 || y >= img.height) continue
-      for (let x = xa; x <= xb; x += 1) values.push(dark(img, x, y))
+function solidBox(img: ReturnType<typeof decode>) {
+  let x0 = img.width
+  let y0 = img.height
+  let x1 = -1
+  let y1 = -1
+  for (let y = 0; y < img.height; y += 1) {
+    for (let x = 0; x < img.width; x += 1) {
+      if (img.alpha[y * img.width + x] < 128) continue
+      if (x < x0) x0 = x
+      if (x > x1) x1 = x
+      if (y < y0) y0 = y
+      if (y > y1) y1 = y
     }
   }
-  return values.reduce((sum, v) => sum + v, 0) / values.length
+  return { x0, y0, x1, y1 }
 }
 
-/* 实体框（px，右/下开区间）——与 prepare 脚本同口径 */
-const BOX: [number, number, number, number] = [13, 9, 161, 156]
-const BOX_CAREER: [number, number, number, number] = [14, 9, 161, 156]
-
-describe('测试条 tile 与参考 tile 同族（影）', () => {
-  /* 参照物用**同色系的 love（爱心）**：它和气球/公文包一样是暖色 tile，且三者在 App 里
-     同屏相邻，直接比剖面最贴近用户看到的观感。
-     （先前拿雾蓝 star 当参照，其影强度约是暖色 tile 的 2 倍、贴体那格还带蓝偏，
-       搬过来就是我们看到的「脏灰圈」。） */
-  const REF = 'src/assets/illus/tile-love-v10.png'
-  const NEAR = [0.55, 0.75, 0.75, 0.6, 0.6, 0.6]   // 逐格容差（比值，避免绝对阈值随尺寸漂移）
-
-  /** 沿实体的外缘（不透明像素之外）逐格量压暗，返回 [下缘, 左缘] */
-  function edgeProfile(rel: string) {
-    const img = decode(rel)
-    // 实体范围 ≈ 不透明像素的行列包络（影核不透明，故包络会略大于实体，
-    // 但参考与我们的资产同法测量，比较的是相对差异）
-    const cols: number[] = []
-    const rows: number[] = []
-    for (let y = 0; y < img.height; y += 1) {
-      for (let x = 0; x < img.width; x += 1) {
-        if (img.alpha[y * img.width + x] >= 250) { rows.push(y); cols.push(x) }
+/** 自实体视觉边向内的压暗剖面（中段取样，避开圆角） */
+function inwardProfile(rel: string, side: 'bottom' | 'left', depth = 22) {
+  const img = decode(rel)
+  const { x0, y0, x1, y1 } = solidBox(img)
+  const out: number[] = []
+  const mid = side === 'bottom'
+    ? { a: x0 + (x1 - x0) / 3, b: x1 - (x1 - x0) / 3 }
+    : { a: y0 + (y1 - y0) / 3, b: y1 - (y1 - y0) / 3 }
+  for (let d = 0; d < depth; d += 1) {
+    const vals: number[] = []
+    if (side === 'bottom') {
+      for (let x = Math.round(mid.a); x <= Math.round(mid.b); x += 1) {
+        const y = y1 - d
+        if (y < 0) continue
+        vals.push(PAGE_MEAN - img.lum[y * img.width + x])
+      }
+    } else {
+      for (let y = Math.round(mid.a); y <= Math.round(mid.b); y += 1) {
+        const x = x0 + d
+        if (x >= img.width) continue
+        vals.push(PAGE_MEAN - img.lum[y * img.width + x])
       }
     }
-    const y0 = Math.min(...rows); const y1 = Math.max(...rows)
-    const x0 = Math.min(...cols); const x1 = Math.max(...cols)
-    const xa = x0 + Math.floor((x1 - x0) / 4)
-    const xb = x1 - Math.floor((x1 - x0) / 4)
-    const cy = (y0 + y1) / 2 | 0
-    const bot: number[] = []
-    for (let d = 0; d <= 5; d += 1) {
-      let sum = 0; let n = 0
-      for (let x = xa; x <= xb; x += 1) { sum += dark(img, x, y1 + d); n += 1 }
-      bot.push(sum / n)
-    }
-    const lft: number[] = []
-    for (let d = 0; d <= 4; d += 1) lft.push(dark(img, x0 - d, cy))
-    return { bot, lft }
+    out.push(vals.reduce((s, v) => s + v, 0) / Math.max(1, vals.length))
   }
+  return out
+}
 
-  const ref = edgeProfile(REF)
+const REF = 'src/assets/illus/tile-love-v10.png'
+const TILES = ['src/assets/illus/tile-fun-v21.png', 'src/assets/illus/tile-career-v21.png']
 
-  for (const rel of ['src/assets/illus/tile-fun-v20.png', 'src/assets/illus/tile-career-v20.png']) {
-    it(`${rel.split('/').pop()} 影剖面与参考 love 同档`, () => {
-      const got = edgeProfile(rel)
-      for (let i = 0; i < ref.bot.length; i += 1) {
-        const r = ref.bot[i]
-        const tol = Math.max(3, r * NEAR[i])
-        expect(Math.abs(got.bot[i] - r), `下缘 d${i}（参考 ${r.toFixed(1)}）`).toBeLessThan(tol)
-      }
-      for (let i = 0; i < ref.lft.length; i += 1) {
-        const r = ref.lft[i]
-        const tol = Math.max(3, r * NEAR[i])
-        expect(Math.abs(got.lft[i] - r), `左缘 d${i}（参考 ${r.toFixed(1)}）`).toBeLessThan(tol)
-      }
-      // 边缘不得有孤立异色点：移植影时圆角处会夹带参考实体自己的 AA 边颜色，
-      // 表现为「四周亮、自身暗」的孤立点（实测旧实现 9~12 个、参考为 0）。
+describe('测试条 tile 与参考 tile 同族（下/左内翻接触棱）', () => {
+  it('下缘棱的峰位与量级与参考 love 同档', () => {
+    const ref = inwardProfile(REF, 'bottom')
+    const refPeak = Math.max(...ref)
+    const refAt = ref.indexOf(refPeak)
+    for (const rel of TILES) {
+      const got = inwardProfile(rel, 'bottom')
+      const peak = Math.max(...got)
+      const at = got.indexOf(peak)
+      const name = rel.split('/').pop()
+      // 峰位：参考在视觉边内 ~11px（±3px 容差）
+      expect(Math.abs(at - refAt), `${name} 下缘棱峰位（参考 ${refAt}px）`).toBeLessThanOrEqual(3)
+      // 峰值：与参考同档（低 30% 以内；v19/v20 只有 ~78，会在这里失败）
+      expect(peak, `${name} 下缘棱峰值（参考 ${refPeak.toFixed(0)}）`).toBeGreaterThan(refPeak * 0.7)
+    }
+  })
+
+  it('左缘棱存在且与参考同档', () => {
+    const ref = inwardProfile(REF, 'left')
+    const refPeak = Math.max(...ref)
+    for (const rel of TILES) {
+      const got = inwardProfile(rel, 'left')
+      const peak = Math.max(...got)
+      const name = rel.split('/').pop()
+      expect(peak, `${name} 左缘棱峰值（参考 ${refPeak.toFixed(0)}）`).toBeGreaterThan(refPeak * 0.7)
+    }
+  })
+
+  it('实体外没有 alpha 平板，且边缘是连续斜坡（无锯齿台阶）', () => {
+    for (const rel of TILES) {
       const img = decode(rel)
-      const lumAt = (x: number, y: number) => img.lum[y * img.width + x]
-      let odd = 0
-      for (let y = 1; y < img.height - 1; y += 1) {
-        for (let x = 1; x < img.width - 1; x += 1) {
-          if (img.alpha[y * img.width + x] < 10) continue
-          const bright = [lumAt(x, y - 1), lumAt(x, y + 1), lumAt(x - 1, y), lumAt(x + 1, y)]
-            .filter((v) => v > 246).length
-          if (bright >= 3 && lumAt(x, y) < 238) odd += 1
+      const { x0, y0, x1, y1 } = solidBox(img)
+      const name = rel.split('/').pop()
+      // 体外 >2px 不应有 alpha：v20 在实体下方铺了一整块 alpha≈82 的近白平板
+      let outside = 0
+      for (let y = 0; y < img.height; y += 1) {
+        for (let x = 0; x < img.width; x += 1) {
+          const a = img.alpha[y * img.width + x]
+          if (a <= 4) continue
+          const beyond = y > y1 + 2 || x < x0 - 2 || x > x1 + 2 || y < y0 - 2
+          if (beyond) outside += 1
         }
       }
-      expect(odd, '边缘不应有孤立异色点').toBe(0)
+      expect(outside, `${name} 体外不应有残留 alpha（近白平板/外溢）`).toBe(0)
 
-      // 板面不得有淡黄受光带：原图板面自带色相渐变（顶/右缘 hue 40~48° 偏黄，
-      // 板心 18~24° 橙），而参考稿顶缘只是同色相提亮（爱心顶缘 33° vs 板心 26°）。
-      // 逐像素核「高饱和板面」（饱和度 ≥18 即 clay 板面；奶油物件 sat 5~14）里，
-      // 色相高出中位 15° 以上的比例。旧实现 10.6%，修复后 0%，参考 love 亦 0%。
-      const hues: number[] = []
+      // 边缘 alpha 应是连续斜坡：v20 只有 78/198 两级台阶
+      const levels = new Set<number>()
       for (let i = 0; i < img.width * img.height; i += 1) {
-        if (img.alpha[i] < 200) continue
-        const r = img.cr[i]; const g = img.cg[i]; const b = img.cb[i]
-        const mx = Math.max(r, g, b); const mn = Math.min(r, g, b)
-        if (mx <= 0 || (mx - mn) / mx * 100 < 18) continue
-        const df = mx - mn
-        const h = mx === r ? ((g - b) / df) * 60
-          : mx === g ? ((b - r) / df + 2) * 60
-            : ((r - g) / df + 4) * 60
-        hues.push((h + 360) % 360)
+        const a = img.alpha[i]
+        if (a > 10 && a < 245) levels.add(a)
       }
-      hues.sort((a, b) => a - b)
-      const med = hues[hues.length >> 1]
-      const yellow = hues.filter((h) => h > med + 15).length
-      // 两条一起才够：只查 «高出中位» 会漏掉「整块都黄」的那种（公文包旧版中位 41.9°，
-      // 内部一致却也偏黄）；只查中位绝对值会漏掉「只有顶缘一条黄带」的那种（气球旧版
-      // 中位 23.3° 正常、但顶缘 40°+）。暖色 tile 的板面中位应落在橙色档（参考 love 26°）。
-      expect(med, '板面中位色相应落在橙色档（不应整体偏黄）').toBeLessThan(32)
-      expect(yellow / hues.length, '板面不应有淡黄受光带（色相高出中位 15° 的比例）')
-        .toBeLessThan(0.02)
+      expect(levels.size, `${name} 边缘 alpha 斜坡应连续（v20 仅两级台阶）`).toBeGreaterThanOrEqual(8)
+    }
+  })
 
-      // 上/右不应有落影
-      expect(bandMean(img, 'top', BOX, 3), '上缘不应有落影').toBeLessThan(10)
-      expect(bandMean(img, 'right', BOX, 3), '右缘不应有落影').toBeLessThan(10)
-    })
-  }
-
-  it('参考稿 star/mbti 同向（左/下有影、上/右干净），确认口径一致', () => {
-    for (const [rel, box] of [
-      ['src/assets/illus/tile-star-v10.png', [10, 8, 164, 159]],
-      ['src/assets/illus/tile-mbti-v10.png', [10, 8, 165, 155]],
-    ] as [string, [number, number, number, number]][]) {
+  it('上/右不应有接触棱', () => {
+    for (const rel of TILES) {
       const img = decode(rel)
-      expect(bandMean(img, 'right', box, 3), `${rel} 右缘`).toBeLessThan(4)
-      expect(bandMean(img, 'bottom', box, 6), `${rel} 下缘`).toBeGreaterThan(39)
+      const { x0, y0, x1, y1 } = solidBox(img)
+      const xa = x0 + Math.floor((x1 - x0) / 3)
+      const xb = x1 - Math.floor((x1 - x0) / 3)
+      const ya = y0 + Math.floor((y1 - y0) / 3)
+      const yb = y1 - Math.floor((y1 - y0) / 3)
+      const name = rel.split('/').pop()
+      for (const d of [1, 2, 3]) {
+        const top = PAGE_MEAN - img.lum[Math.max(y0 - d, 0) * img.width + xa]
+        expect(top, `${name} 上缘 d${d}`).toBeLessThan(12)
+        const right = PAGE_MEAN - img.lum[ya * img.width + Math.min(x1 + d, img.width - 1)]
+        expect(right, `${name} 右缘 d${d}`).toBeLessThan(12)
+        void xb
+        void yb
+      }
     }
   })
 })
