@@ -107,8 +107,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 气泡只有标题这一枚（完整圆角 + 收窄宽度），不会出现两半拼贴的接缝
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?max-width: 400rpx;[\s\S]*?border-radius: 26rpx;/)
     // 气泡浮到测测子头顶之上：视口固定定位（不参与阶段布局、不受阶段裁切），
-    // 左缘从叉叉钮右侧起（left），右端靠 max-width 停在微信胶囊左侧
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: 3\.4vh;/)
+    // 左缘从叉叉钮右侧起（left），右端靠 max-width 停在微信胶囊左侧；
+    // top 13.8vh 让气泡底边落在帽子顶上一点（用户 2026-09-13「比帽子高一点就好」）
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: 13\.8vh;/)
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?left: 124rpx;/)
     // 气泡改成 fixed 不再占流内高度，阶段用 padding-top 补回那截高度；
     // 短屏给回滚动兜底（气泡 fixed 不受裁切）
@@ -154,7 +155,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 洗牌必须同列（否则洗牌牌堆比切牌低一截、换幕时牌位跳动）；
     // flex 用 `0 1 28%`：有余量时恒为 28%（位置一致），短屏内容放不下时先收缩 spacer，
     // 而不是把牌组压扁（375×667 曾把牌扇压到 20px 高 → 牌溢出被裁）。
-    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?height: calc\(44vh - 212rpx\);/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?height: calc\(40vh - 200rpx\);/)
     // 下 spacer 钉死，上 spacer 唯一决定牌组位置（否则弹性 spacer 会吸走空间、牌组原地不动）
     expect(styles).toMatch(/\.miniapp-tarot__spacer:not\(\.miniapp-tarot__spacer--top\) \{[\s\S]*?height: 0;/)
     // 牌组容器不被 flex 压缩：牌扇/牌位/翻牌行都设 flex: none
@@ -465,8 +466,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 曾经用 s=1.16（顶出屏幕、月亮只剩一角），现为 translateY(88rpx) scale(1.08)。
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: translateY\(88rpx\) scale\(1\.08\)/)
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform-origin: 50% 100%/)
-    // 牌组下移到球座之下、按钮之上：四幕（含洗牌）上 spacer 定高 calc(44vh - 212rpx)
-    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?height: calc\(44vh - 212rpx\)/)
+    // 牌组上移让出底部按钮：四幕（含洗牌）上 spacer 定高 calc(40vh - 200rpx)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?height: calc\(40vh - 200rpx\)/)
   })
 
   it('lifts only the top half on the swapped (odd) cut, so both halves never fly together', () => {
@@ -484,8 +485,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
 
-    // 气泡上提只做视觉偏移（relative + top），保留流内高度，牌组落位不受影响
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: 3\.4vh;/)
+    // 气泡上提只做视觉偏移（fixed + top），top 13.8vh 让底边只高出帽子一点
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: 13\.8vh;/)
     // 向左侧延展：左对齐 + 限宽，右端停在微信三点胶囊左侧
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?left: 124rpx;[\s\S]*?max-width: 400rpx;/)
     // 气泡 fixed 不参与阶段布局，故阶段用 padding-top 补回它原来的流内高度
@@ -514,7 +515,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/translateY\(var\(--fly-y-mid, -300rpx\)\)/)
     expect(styles).toMatch(/translateY\(var\(--fly-y, -390rpx\)\) rotate\(0deg\) scale\(1\)/)
 
-    // 翻牌阶段的牌位下移改由统一的上 spacer（calc(44vh - 212rpx)）达成，不再单独位移；
+    // 翻牌阶段的牌位上移改由统一的上 spacer（calc(40vh - 200rpx)）达成，不再单独位移；
     // 这里只确认短屏媒体查询给了压矮兜底（牌组 + 按钮同时收得进 SE）
   })
 })

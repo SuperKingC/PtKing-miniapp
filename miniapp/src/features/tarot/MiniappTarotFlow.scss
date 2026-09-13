@@ -2169,8 +2169,10 @@
     // （fixed/absolute 会把它从流里摘掉，牌组会整体上跳约 51px）。
     // 视口固定定位：不参与阶段布局（避免被阶段 flex/滚动影响），也不受阶段
     // overflow 裁切。top 用 vh（随视口缩放最佳、且不会被 Taro 折算 rpx）。
+    // 13.8vh：气泡底边落在帽子顶上约 13px（实测 390×844 帽子顶 y≈185px、气泡高 55px）；
+    // 旧值 3.4vh 贴在状态栏下方，离帽子近百像素，用户嫌太高。
     position: fixed;
-    top: 3.4vh;
+    top: 13.8vh;
     // 往左边延展：左缘从叉叉钮右侧起，右缘靠 max-width 停在胶囊左侧
     left: 124rpx;
     right: auto;
@@ -2408,12 +2410,16 @@
   // 木座下沿 ≈ 0.54×视口高，阶段顶 ≈ 0.10×视口高，故 spacer ≈ 0.44×视口高 − 188rpx，
   // 三档视口（375x667 / 390x844 / 414x896）实测牌组顶端都落在木座下沿之下 +4~14px。
   // 用 vh 而不是百分比：百分比基于阶段高度，滚动/内容变化时会漂。
+  // 2026-09-13 用户「牌的部分上移，按钮也看不到了」：旧值 44vh−212rpx 在 390×844 上
+  // 实测牌组顶端 y≈501、底 y≈724，而阶段底只有约 844px，底部两个按钮被 flex 压成 0 高。
+  // 改为 40vh−200rpx：牌组顶端抬到 ≈470px（仍在水晶球球座 y≈456 之下），
+  // 底部余量约 150px，够「下一步」+「跳过」两个按钮原样显示。
   .miniapp-tarot__stage--shuffle > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
     flex: 0 0 auto;
-    height: calc(44vh - 212rpx);
+    height: calc(40vh - 200rpx);
     min-height: 24rpx;
   }
 
@@ -2442,6 +2448,15 @@
     flex: none;
   }
 
+  // 底部两个按钮也不许被压：仪式阶段内容比阶段高时，默认 flex-shrink:1 会把
+  // 「下一步」「跳过」挤到 height:0（用户 2026-09-13「按钮也看不到」的根因，
+  // 实测 .miniapp-tarot__next 的 height 变成 0）。钉成 flex:none，改由牌组上移让位。
+  .miniapp-tarot__next,
+  .miniapp-tarot__secondary,
+  .miniapp-tarot__text-action {
+    flex: none;
+  }
+
   // 抽牌飞牌：clay 的牌扇与已选槽比 classic 更近，沿用 classic 的 390rpx 抬升会让牌
   // 冲过槽位、贴着水晶球飞（用户反馈「飞上去的牌被裁剪」）。牌组整体下移后，实测
   // -284rpx 让牌终点正落在已选槽里（-328 时终点比槽顶高 23px）。
@@ -2464,7 +2479,7 @@
     .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
     .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
     .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
-      height: calc(44vh - 212rpx);
+      height: calc(40vh - 200rpx);
     }
 
     .miniapp-tarot__shuffle-deck,

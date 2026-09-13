@@ -1,5 +1,11 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 18:50：clay 两处布局修正（用户：①气泡太高，比帽子高一点就好；②牌的部分上移，按钮也看不到了）。
+  ①**气泡太高**：`.miniapp-tarot__stage--* > .miniapp-tarot__title` 是 fixed 气泡，`top: 3.4vh` 贴在状态栏下方。实测 390×844 帽子顶 y≈185px、气泡高 55px，故改成 **`top: 13.8vh`**，气泡底边落在帽子顶上方约 13px。指纹测试两处（styles.test.ts:111/489）同步。
+  ②**按钮消失（真根因）**：`.miniapp-tarot__next` 在仪式阶段被 flex 压成 **height:0**——阶段内容总高超出阶段（`overflow-y:auto` 但内容按 flex 收缩），`flex-shrink` 默认 1，牌组容器已 `flex:none` 而按钮没设，于是按钮被挤没。修法：clay 里给 `.miniapp-tarot__next / __secondary / __text-action` 也加 **`flex: none`**（与牌组容器同策略）。
+  ③**牌组上移定量**：上 spacer `calc(44vh - 212rpx)` → **`calc(40vh - 200rpx)`**（390×844 实测牌组顶端 501→474、按钮从 height 0 → 38px 复原；牌组仍在球座 y≈456 之下）。两份（主块 + 短屏媒体查询）与三处测试断言同步。短屏媒体查询里同值。
+  ④**验证**：`wechatide` CLI 实机四幕（洗牌/切牌/扇形 10 张/翻牌）逐张确认——气泡只高出帽子一点、牌组在水晶球之下、底部「下一步 / 跳过」两个按钮完整可见；另用真实编译产物 `dist/pages/tarot/index.wxss`（rpx→px 按 375 基准折算）在 Chromium 渲染 375×667 短屏复核，同上。聚焦 84、全量 **491** 测试过。
+
 - 2026-09-13 18:05：clay 22 张牌面「边缘有其他颜色/切图不干净」全量体检与修复（用户：24 张牌也有切图不干净或边缘有其他颜色的情况，检查每一张，不对就重生或切）。
   ①**体检结论**：22 张 `tarot/cards/*-clay.jpg` 里 **14 张** 与牌背同病——生图时被画成「一块圆角牌摆在素色底上」，四周一圈素色底（白/奶油/浅蓝）+ 四角圆角；牌位实框 190×300rpx（比例 0.6333）aspectFill 后会露出那圈底。**8 张**（justice/strength/temperance/the-chariot/the-empress/the-hierophant/the-magician/the-moon）本来就是满幅场景，不动。判据：取最外 2-3px 为底色，沿中间 40% 行/列找「首次偏离底色」的中位数当面板边——面板四边留白 55~207px 且残留底色**不伸到边中点**（圆角只在四角）；素底场景（如 temperance 的白底、the-fool 的浅蓝天）底色会一直连到边中点，据此排除。
   ②**修法**：14 张全部以**各卡自己当前的 -clay.jpg 作 --ref** 重出满幅出血版（`art/prompts-tarot-cards-bleed.txt`，每张提示词在原描述前加「满幅出血构图，场景铺满四边不留底板、没有外圈素色、没有牌自己的边框/圆角/投影」）。kit 的 `--ref` 是全局的，故新增 `miniapp/art/tarot-cards/regen-bleed.sh` 按卡单独调用 gen.mjs（1 条提示词 + 1 张参考图），并发 3-4。
