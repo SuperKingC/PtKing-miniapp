@@ -1,5 +1,14 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 18:05：clay 22 张牌面「边缘有其他颜色/切图不干净」全量体检与修复（用户：24 张牌也有切图不干净或边缘有其他颜色的情况，检查每一张，不对就重生或切）。
+  ①**体检结论**：22 张 `tarot/cards/*-clay.jpg` 里 **14 张** 与牌背同病——生图时被画成「一块圆角牌摆在素色底上」，四周一圈素色底（白/奶油/浅蓝）+ 四角圆角；牌位实框 190×300rpx（比例 0.6333）aspectFill 后会露出那圈底。**8 张**（justice/strength/temperance/the-chariot/the-empress/the-hierophant/the-magician/the-moon）本来就是满幅场景，不动。判据：取最外 2-3px 为底色，沿中间 40% 行/列找「首次偏离底色」的中位数当面板边——面板四边留白 55~207px 且残留底色**不伸到边中点**（圆角只在四角）；素底场景（如 temperance 的白底、the-fool 的浅蓝天）底色会一直连到边中点，据此排除。
+  ②**修法**：14 张全部以**各卡自己当前的 -clay.jpg 作 --ref** 重出满幅出血版（`art/prompts-tarot-cards-bleed.txt`，每张提示词在原描述前加「满幅出血构图，场景铺满四边不留底板、没有外圈素色、没有牌自己的边框/圆角/投影」）。kit 的 `--ref` 是全局的，故新增 `miniapp/art/tarot-cards/regen-bleed.sh` 按卡单独调用 gen.mjs（1 条提示词 + 1 张参考图），并发 3-4。
+  ③**为什么不纯切**：这些面板牌的牌比例只有 0.53~0.60，切掉底后按 190×300 aspectFill 还要再裁掉 10~17% 高度（重出的 2:3 只裁 5%），会切到主体；`miniapp/art/tarot-cards/fix-panels.py`（纯裁+圆角 BFS 补平）保留作兜底，本次未用于最终成品。
+  ④**落位**：`miniapp/art/tarot-cards/install-bleed.py` 把重出图降到 768 宽 q90 覆盖同名 `-clay.jpg`；14 张里 11 张 768×1152(2:3)、gemini 回退的 3 张 768×1145、the-lovers 因生成 768×1376。全部 ≤180KB（最大 the-star 160KB）。
+  ⑤**生图接口坑**：本轮中转站 image 接口极不稳，14 张里反复 `terminated`；靠「按卡多次重试 + 换模型回退」凑齐（death/the-emperor/the-star/the-sun/the-world/wheel-of-fortune 各失败 3~6 次才成）。gemini 回退版分辨率为 848×1264、细节弱一档但构图/色板仍在同一风格内。
+  ⑥**验证**：本机 8787 静态服务 + `TARO_ASSET_DEV_BASE_URL=.../cardback-v2` 重建 dist；微信开发者工具 `debug_clear_cache cleanAllSimulatorCache` 清掉旧图文件缓存后走实机——洗牌牌堆（牌背）、扇形 10 张（牌背）、翻牌（the-devil / the-chariot 逆位 / the-empress）逐张确认铺满方框、无素色边/圆角。全量 **490** 测试过（本轮只动资产、无代码改动）。
+  ⑦**流程更新**：本机这版微信开发者工具的 `miniprogram-automator` ws 端口仍起不来，但自带的 **`wechatide` CLI** 完全可用：`check_wechatide_status` → `open_project_window` → `simulator_refresh` / `simulator_screenshot --path` / `automation_navigate --action reLaunch --url` / `automation_element_action --selector .. --action tap|input --value` / `automation_page_action --action querySelectorAll` / `debug_clear_cache --action cleanAllSimulatorCache`。以后实机取证一律走这条；`wechatide` 必须在非沙箱 shell 运行。
+
 - 2026-09-13 17:25：clay 三项复核：气泡下移 + 四幕牌组下移到水晶球之下 + 飞牌落槽。
   ①**气泡**：用户要求「下移一点、别压帽子」。改 `position:fixed` + `top:3.4vh`（不再参与阶段布局、也不被阶段的 `overflow-y:auto` 裁切），左缘 `left:124rpx` 让开叉叉钮、右端 `max-width:400rpx` 停在微信胶囊左侧。**关键**：fixed 后气泡不再占流内高度（原约 51px），必须用阶段 `padding-top:190rpx` 把那截高度补回来，否则牌组整体上跳、又压回球上。
   ②**牌组下移到球座之下（真根因）**：前面几轮「加大上 spacer」一直无效，根因是**下面那根弹性 spacer（`flex: 1 1 0`）会把多出来的空间全部吸走**，牌组原地不动。修法：上 spacer 改**定高** `calc(44vh - 212rpx)`（木座下沿 ≈0.54×视口高、阶段顶 ≈0.10×视口高），下 spacer **钉成 `height: 0`**，使上 spacer 唯一决定牌组位置。用 vh 而非百分比：百分比基于阶段高度，会随内容/滚动漂移。三档视口（375x667 / 390x844 / 414x896）实测四幕牌组顶端都落在木座下沿之下 +4~56px。
