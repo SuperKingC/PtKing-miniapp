@@ -48,7 +48,7 @@ describe('share capability wiring', () => {
     expect(me).toContain("changeTheme(on ? 'dark' : 'light')")
     expect(me).not.toContain('跟随系统')
     expect(me).not.toContain('动效')
-    expect(me).toContain('me-banner-panel-v8.png')
+    expect(me).toContain('me-banner-panel-v9.png')
     expect(me).toContain('className="me-page__banner-img" src={meBannerImg} mode="widthFix"')
     expect(me).toContain('版本 {APP_VERSION}')
     expect(me).toContain('icon-me-clear-v8.png')
