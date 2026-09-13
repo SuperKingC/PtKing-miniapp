@@ -2123,10 +2123,9 @@
     display: none;
   }
 
-  // 测测子的对话气泡：仪式阶段(洗牌/切牌/选牌/翻牌)的指引不再裸放在猫头顶、
-  // 气泡也不再甩在屏幕最下方，而是合成一枚气泡挪到测测子头顶——上半句是这一
-  // 幕的指引(原标题)，下半句是实时状态(已切几次 / 已选几张 / 松手提示)，
-  // 气泡尾巴朝下指着猫头。两半用 order 提到牌堆之前、负 margin 贴成一整块。
+  // 测测子的对话气泡：仪式四阶段(洗牌/切牌/选牌/翻牌)只渲染标题这一枚气泡，
+  // 里面就是测测子说的一句话(实时进度/已切次数/已选张数都并进同句)，classic 甩在
+  // 屏幕底部的状态行在 clay 不再显示，所以气泡是完整的一块、不会出现两半拼贴的接缝。
   .miniapp-tarot__stage--ritual,
   .miniapp-tarot__stage--fan,
   .miniapp-tarot__stage--reveal {
@@ -2136,59 +2135,30 @@
   .miniapp-tarot__stage--ritual > .miniapp-tarot__title,
   .miniapp-tarot__stage--fan > .miniapp-tarot__title,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__title {
-    order: -2;
+    position: relative;
     box-sizing: border-box;
-    max-width: 560rpx;
+    width: 560rpx;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 14rpx 28rpx 6rpx;
+    padding: 16rpx 30rpx;
     border: 2rpx solid rgba(160, 118, 82, .24);
-    border-bottom: 0;
-    border-radius: 26rpx 26rpx 0 0;
+    border-radius: 26rpx;
     color: #6b4a33;
     font-size: 26rpx;
-    line-height: 1.35;
-    text-align: center;
-    background: #fffef9;
-    // 上半句不投影：整枚气泡的投影交给下沿那半，避免中缝出现一道内阴影
-    box-shadow: none;
-  }
-
-  // 翻牌阶段没有状态行：标题独立成泡，补回下圆角
-  .miniapp-tarot__stage--reveal > .miniapp-tarot__title {
-    position: relative;
-    padding-bottom: 14rpx;
-    border-bottom: 2rpx solid rgba(160, 118, 82, .24);
-    border-radius: 26rpx;
-  }
-
-  .miniapp-tarot__stage--ritual > .miniapp-tarot__hint,
-  .miniapp-tarot__stage--fan > .miniapp-tarot__hint {
-    order: -1;
-    position: relative;
-    box-sizing: border-box;
-    max-width: 560rpx;
-    // 抵消 stage 的 24rpx gap 并再压过 2rpx，避免两半交界处露出背景发丝线
-    margin: -26rpx auto 0;
-    padding: 4rpx 28rpx 16rpx;
-    border: 2rpx solid rgba(160, 118, 82, .24);
-    border-top: 0;
-    border-radius: 0 0 26rpx 26rpx;
-    color: rgba(107, 74, 51, .7);
-    font-size: 24rpx;
-    line-height: 1.35;
+    line-height: 1.45;
     text-align: center;
     background: #fffef9;
     box-shadow: 0 10rpx 26rpx rgba(122, 88, 58, .14);
   }
 
-  // 气泡尾巴：有状态行时挂在状态行下沿，翻牌阶段则挂在标题下沿
-  .miniapp-tarot__stage--ritual > .miniapp-tarot__hint::after,
-  .miniapp-tarot__stage--fan > .miniapp-tarot__hint::after,
+  // 气泡尾巴：朝下指着测测子
+  .miniapp-tarot__stage--ritual > .miniapp-tarot__title::after,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__title::after,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__title::after {
     content: '';
     position: absolute;
     left: 50%;
-    bottom: -12rpx;
+    bottom: -11rpx;
     width: 22rpx;
     height: 22rpx;
     border-right: 2rpx solid rgba(160, 118, 82, .24);
@@ -2196,6 +2166,12 @@
     background: #fffef9;
     border-bottom-right-radius: 8rpx;
     transform: translateX(-50%) rotate(45deg);
+  }
+
+  // classic 的底部状态行在 clay 已并进气泡那句话，这里不再单独显示
+  .miniapp-tarot__stage--ritual > .miniapp-tarot__hint,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__hint {
+    display: none;
   }
 
   // 洗牌牌堆：classic 对准的是背景金环中心；clay 背景是浅色桌面、猫前爪搭在桌沿，

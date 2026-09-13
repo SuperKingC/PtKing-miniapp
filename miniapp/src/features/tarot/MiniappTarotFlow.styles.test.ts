@@ -99,19 +99,18 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).not.toContain('translateY(-72rpx)')
   })
 
-  it('moves the clay guidance into a speech bubble on the cat and drops the top progress rows', () => {
+  it('moves the clay guidance into a single speech bubble on the cat and drops the top progress rows', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
     // clay 场景里测测子就在牌桌对面说话：顶部进度点与洗牌进度条都压在猫头天际线上，一并去掉
     expect(styles).toMatch(/\.miniapp-tarot__progress,\s*\n\s*\.miniapp-tarot__shuffle-bar \{\s*\n\s*display: none;/)
-    // 指引标题与状态行合并成一枚朝向猫头的气泡：两半都提到牌堆之前(order 负值)、
-    // 状态行负 margin 抵消 stage gap 后与标题贴成一体，尾巴挂在状态行下沿
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?order: -2;/)
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__hint,[\s\S]*?order: -1;[\s\S]*?margin: -26rpx auto 0;/)
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__hint::after,[\s\S]*?bottom: -12rpx;/)
-    // 翻牌阶段没有状态行，标题独立成泡（补回圆角 + 自带尾巴）
-    expect(styles).toMatch(/\.miniapp-tarot__stage--reveal > \.miniapp-tarot__title \{[\s\S]*?border-radius: 26rpx;/)
-    expect(styles).toMatch(/\.miniapp-tarot__stage--reveal > \.miniapp-tarot__title::after/)
+    // 气泡只有标题这一枚（完整圆角 + 固定宽度），不会出现两半拼贴的接缝
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?width: 560rpx;[\s\S]*?border-radius: 26rpx;/)
+    // 尾巴挂在标题下沿、朝下指着猫
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title::after,[\s\S]*?bottom: -11rpx;/)
+    // classic 的底部状态行已并进气泡那句话，clay 不再单独显示
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__hint,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__hint \{\s*\n\s*display: none;/)
+    expect(styles).not.toContain('order: -2;')
   })
 
   it('shrinks and lowers the clay shuffle deck so the pile clears the cat paws', () => {

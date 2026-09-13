@@ -1,5 +1,12 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 09:30：clay 气泡「两半拼贴」修正为单枚气泡 + 文案改成测测子口吻（用户：气泡割裂；气泡里要是测测子说的话，不是提示语）。
+  ①**症状**：上一版把「指引标题（上半句）」和「底部状态行（下半句）」用两个节点负 margin 贴成一枚气泡，实际渲染出两道独立的圆角矩形、中间一道缝，看着像两个气泡叠在一起（截图量测：上块 x83..313、下块 x74..322，宽度与圆角都各算各的）。
+  ②**气泡改法**：clay 只保留 `.miniapp-tarot__title` 这一个节点当气泡——`width:560rpx` + 完整 `border-radius:26rpx` + 自重投影，`::after` 尾巴挂在标题下沿朝下指猫；classic 的 `.miniapp-tarot__hint` 状态行在 clay `display:none`（其内容已并进标题那句），删掉 `order:-2/-1` 与 `margin:-26rpx` 的拼贴 hack。翻牌阶段原本靠单独补圆角，现在四个阶段同一套规则。
+  ③**文案改法**：clay 的状态不再另起一行，而是**并进标题同一句**——`tarotSkinCopy.ts` 把 `shuffleTitle/cutTitle/fanTitle` 从纯字符串改成吃实时入参（洗牌进度 / 已切次数 / 已选张数），句子用第一人称邀请（「按住牌堆别松手，我帮你把牌洗得香香的」「你切了 2 次啦，想再来一下我也等你」「挑好啦，让我帮你翻开吧」）；`shuffleHint/cutHint/fanHint` 在 clay 返回空串（不再渲染）。`MiniappTarotShuffleStage/CutStage/FanStage` 三处调用点同步传参。classic 文案与结构一字未动（标题仍不吃入参、状态行仍在底部）。
+  ④**验证**：`tarotSkinCopy.test.ts` 覆盖「状态并进同句 + 第一人称 + 不再有操作提示词（点击/逐张点开）+ clay hint 为空」；`MiniappTarotFlow.styles.test.ts` 改断「单枚气泡 width560/完整圆角/尾巴 -11rpx/hint display:none/无 order:-2」；聚焦 76 项、全量 **480** 全过。
+  ⑤**自动化坑（沿用上一条结论）**：微信开发者工具 automator 仍连不上（IDE auto 端口被自身 HTTP 服务占用、`--auto-port` 被本版 CLI 忽略，自动化端点起不来），改按 AGENTS.md 既有的 headless Chrome 路子：新增 `art/verify-shots/render-bubble.cjs`——把 dist 的 **真实编译产物** `app.wxss` + `pages/tarot/index.wxss` 按 750rpx=375px 换算（1rpx=0.5px）后在 Chromium 渲染，逐阶段出图（洗牌 0/40%、切牌 0/2 次、选牌 0/1、翻牌全部）核对：气泡是一整块圆角 + 居中尾巴，接缝消失；classic 对照图仍是裸标题 + 底部状态行（未受影响）。实机截图待用户验收。
+
 - 2026-09-13 08:30：clay 牌桌背景重出（换玻璃星云水晶球 + 长桌）+ 蜡烛火焰改 CSS「一线 S 形」。
   ①**需求**：测测子塔罗背景重出十种候选，水晶球要好看（不要原来的纯白素球）、背景蜡烛不画火焰（火焰留给前端特效）；用户看对照图后选定「通透玻璃球+球内旋涡星云、蜡烛未点燃、长桌」那版。
   ②**出图**：新增 `art/prompts-tarot-bg-options.txt`（10 条统一构图变体）→ 对照图脚本 `miniapp/art/ref-pages-v3/build-tarot-bg-contact-sheet.py`；用户选定后二次迭代——首版 opt1 是 2:3 宽板桌，用户指出「桌子要像之前一样长长的」，改用 `art/prompts-tarot-bg-long.txt` 并以**旧背景为 --ref** 重出（旧版是细长长桌、远端窄约 0.5 画宽落在画高 0.41、向观者外扩到满幅），long3 几何最贴近（远端 0.424 / 满幅 0.521，旧版 0.416 / 0.501）。

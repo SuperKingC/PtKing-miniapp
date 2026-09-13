@@ -58,7 +58,7 @@ export function MiniappTarotShuffleStage({
 
   return (
     <View className="miniapp-tarot__stage miniapp-tarot__stage--ritual miniapp-tarot__stage--shuffle">
-      <Text className="miniapp-tarot__title">{copy.shuffleTitle}</Text>
+      <Text className="miniapp-tarot__title">{copy.shuffleTitle(progress)}</Text>
       <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
       <Button
         className={`miniapp-tarot__shuffle-deck${isShuffling ? ' miniapp-tarot__shuffle-deck--active' : ''}${progress >= 100 && !isShuffling ? ' miniapp-tarot__shuffle-deck--complete' : ''}`}
