@@ -11,7 +11,8 @@
 
 - `domain/testEngine.ts`：`TestDefinition` + 四种计分模式纯函数——
   `dimension`（维度二分多数票定字母拼 reportId，同票取第一极）、`band`（权重求和落区间）、
-  `archetype`（选项投票最高票人格，同票按定义序；同时返回全部类型票数分布 `archetypeVotes`
+  `archetype`（选项投票最高票人格，同票按定义序；可选 `tieBreak: { type: 'recent-answers', window }`
+  在总票平局时先比较末窗口答案；同时返回全部类型票数分布 `archetypeVotes`
   供报告页画「人格倾向分布」，旧记录无此字段读侧须 `?? []` 兜底）、
   `factor`（因素加权百分位，反向因素取反）。答案长度/下标严格校验；
   reportId 命不中 reports 一律抛 `invalid_test_definition:*` 不静默兜底。
@@ -19,8 +20,9 @@
   16personalities 约 130 题/大五 BFI-2 60 题/EPQ 88 题，国内趣味爆款主流 15-30 题，20 为「显得准」
   与完成率的平衡下限；静态 sanity 与 COS 新内容共同遵守）、`findBandIndex`（band 报告页刻度高亮）、
   `radarChartGeometry`（雷达图顶点几何纯函数，canvas 绘制层用）。
-- `domain/tests/*.ts`：22 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
-  +8 到 20；band 测试满分随之 24→36→60、三档 0-20/21-40/41-60；MBTI 28 / 大五 30 / 暗黑 27 不动）。
+- `domain/tests/*.ts`：29 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
+  +8 到 20；band 测试满分随之 24→36→60、三档 0-20/21-40/41-60；MBTI 44 / 大五 30 / 暗黑 27 不动）。
+  Chiikawa 缘分测试为 32 题、每题 4 个短选项，八角色曝光与选项位置平衡；总票平局时先用末 8 题二次判定，仍平局才按定义顺序兜底。
   吸睛位与猎奇位：`xpTest.ts`（XP 测试，archetype 4 型「心动触发器」：反差感/氛围感/灵魂共振/独占欲，
   文案全程心动场景、无低俗表述）、`repressionTest.ts`（性压抑指数测试，band 0-60 三档，
   「情绪与需求的表达压抑度」自查向，非临床措辞；标题若平台审核受限可降级为「压抑指数测试」）、
@@ -29,7 +31,7 @@
   `loserTalentTest.ts`（废柴天赋鉴定，archetype 4 型：锦鲤废柴/人间清醒废柴/究极睡神/气人天才，
   自嘲向反差萌）。
   **深度报告 v2 全量覆盖（2026-09）**：`TestReport` 可选 v2 字段（deep 纵深长文/strengths 三优势/
-  blindSpots 三盲区/scenes 职场恋爱社交/actions 行动清单）已铺满全部 22 个测试约 89 型，
+  blindSpots 三盲区/scenes 职场恋爱社交/actions 行动清单）已铺满全部 29 个测试约 124 型，
   每型约 500 字聚焦心理动因（样稿口径：恋爱人格 4 型）；报告页渲染四张深度卡
   （深度解读/优势与盲区/场景适配/行动清单）；sanity 契约校验 v2 字段质量
   （deep>150 字、三优势三盲区三场景、行动≥3）。付费拆分（M4）待定，
