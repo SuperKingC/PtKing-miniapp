@@ -63,8 +63,8 @@ describe('miniapp tarot assets', () => {
   })
 
   it('suffices clay skin asset files with -clay', () => {
-    expect(getTarotCardBack('clay')).toContain('/tarot/ui/card-back-clay.jpg')
-    expect(getTarotSanctuaryBackground('clay')).toContain('/tarot/ui/sanctuary-background-clay.jpg')
+    expect(getTarotCardBack('clay')).toContain('/tarot/ui/card-back-clay-v2.jpg')
+    expect(getTarotSanctuaryBackground('clay')).toContain('/tarot/ui/sanctuary-background-clay-v2.jpg')
     expect(getTarotArtworkUrl(0, 'clay')).toContain('/tarot/cards/the-fool-clay.jpg')
     expect(getTarotArtworkUrl(21, 'clay')).toContain('/tarot/cards/the-world-clay.jpg')
   })
@@ -78,8 +78,8 @@ describe('miniapp tarot assets', () => {
     for (const skin of ['classic', 'clay'] as const) {
       const urls = getTarotResourceUrls(skin)
       expect(urls).toHaveLength(24)
-      expect(urls[0]).toContain(`sanctuary-background${skin === 'clay' ? '-clay' : ''}.jpg`)
-      expect(urls[1]).toContain(`card-back${skin === 'clay' ? '-clay' : ''}.jpg`)
+      expect(urls[0]).toContain(`sanctuary-background${skin === 'clay' ? '-clay-v2' : ''}.jpg`)
+      expect(urls[1]).toContain(`card-back${skin === 'clay' ? '-clay-v2' : ''}.jpg`)
       expect(urls[2]).toContain(`the-fool${skin === 'clay' ? '-clay' : ''}.jpg`)
       expect(urls[23]).toContain(`the-world${skin === 'clay' ? '-clay' : ''}.jpg`)
     }

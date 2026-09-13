@@ -32,14 +32,16 @@ const artworkFiles = [
 
 // clay 皮肤资产用 -clay 后缀同名文件，与 classic 原文件并存于同一目录
 const skinSuffix = (skin: TarotSkin): string => (skin === 'clay' ? '-clay' : '')
+// clay UI 资源独立升版，避免旧背景/牌背被缓存继续复用；牌面 artwork 仍沿用 -clay。
+const skinUiSuffix = (skin: TarotSkin): string => (skin === 'clay' ? '-clay-v2' : '')
 
 // 塔罗资源统一挂在资产版本根的 /tarot 子路径下；路径由塔罗功能自持，与其它功能解耦
 export function getTarotSanctuaryBackground(skin: TarotSkin = 'clay'): string {
-  return `${resolveAssetBaseUrl()}/tarot/ui/sanctuary-background${skinSuffix(skin)}.jpg`
+  return `${resolveAssetBaseUrl()}/tarot/ui/sanctuary-background${skinUiSuffix(skin)}.jpg`
 }
 
 export function getTarotCardBack(skin: TarotSkin = 'clay'): string {
-  return `${resolveAssetBaseUrl()}/tarot/ui/card-back${skinSuffix(skin)}.jpg`
+  return `${resolveAssetBaseUrl()}/tarot/ui/card-back${skinUiSuffix(skin)}.jpg`
 }
 
 export function getTarotArtworkUrl(cardId: number, skin: TarotSkin = 'clay'): string {
