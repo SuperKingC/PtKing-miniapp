@@ -149,18 +149,21 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
         mode="aspectFill"
         fadeIn={false}
       />
-      {/* clay 牌桌背景把蜡烛画成未点燃，火焰改由这层 CSS 叠加：坐标按背景图比例锚在烛芯上 */}
+      <View className="miniapp-tarot__veil" />
+      {/* clay 牌桌背景把蜡烛画成未点燃，火焰改由这层 CSS 叠加：坐标按背景图比例锚在烛芯上。
+          挂在纱罩之后，火苗读作画面里的光源，不被纱罩压暗一层 */}
       {skin === 'clay' && (
         <View className="miniapp-tarot__flame-scene" aria-hidden>
           <View className="miniapp-tarot__flame">
             <View className="miniapp-tarot__flame-glow" />
             <View className="miniapp-tarot__flame-pool" />
-            <View className="miniapp-tarot__flame-body" />
-            <View className="miniapp-tarot__flame-core" />
+            <View className="miniapp-tarot__flame-body">
+              <View className="miniapp-tarot__flame-core" />
+              <View className="miniapp-tarot__flame-ember" />
+            </View>
           </View>
         </View>
       )}
-      <View className="miniapp-tarot__veil" />
       <View className="miniapp-tarot__stars" />
       <View className="miniapp-tarot__fade" />
 

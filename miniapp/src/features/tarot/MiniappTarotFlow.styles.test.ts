@@ -113,17 +113,34 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).not.toContain('order: -2;')
   })
 
-  it('shrinks and lowers the clay shuffle deck so the pile clears the cat paws', () => {
+  it('shrinks and lowers the clay ritual piles so the pile clears the cat paws', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
     // classic 的牌堆对准背景金环中心；clay 桌面更低、猫爪搭在桌沿，
     // 同一套几何会顶到猫爪，故缩小并下移顶层牌，环/符文/波纹圆心同步下移
-    expect(styles).toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*top: 108rpx;\s*\n\s*width: 196rpx;\s*\n\s*height: 310rpx;/)
-    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::after,\s*\n\s*\.miniapp-tarot__shuffle-orbit,[\s\S]*?top: 288rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*top: 148rpx;\s*\n\s*width: 176rpx;\s*\n\s*height: 278rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::after,\s*\n\s*\.miniapp-tarot__shuffle-orbit,[\s\S]*?top: 312rpx;/)
     // 软晕层只做 translateX，top 是圆上沿而非圆心
-    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::before \{[\s\S]*?top: 88rpx;/)
-    expect(styles).toMatch(/\.miniapp-tarot__shuffle-orbit--outer \{[\s\S]*?width: 348rpx;/)
-    expect(styles).toMatch(/\.miniapp-tarot__shuffle-burst \{[\s\S]*?width: 374rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::before \{[\s\S]*?top: 132rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-orbit--outer \{[\s\S]*?width: 313rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-burst \{[\s\S]*?width: 337rpx;/)
+
+    // 切牌是洗牌的下一幕，牌面/整叠必须同一套缩小下移，否则一切牌牌就"变大变高"：
+    // 牌面 214×326 → 167×254，整叠 230×356 → 179×278 并随之下移(中心 187→214rpx)
+    expect(styles).toMatch(/\.miniapp-tarot__cut-half \{\s*\n\s*top: 87rpx;\s*\n\s*width: 179rpx;\s*\n\s*height: 278rpx;\s*\n\s*margin-left: -90rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__cut-sheet,\s*\n\s*\.miniapp-tarot__cut-face \{\s*\n\s*width: 167rpx;\s*\n\s*height: 254rpx;/)
+    // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽
+    expect(styles).toMatch(/\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--right,[\s\S]*?translate\(117rpx, -66rpx\) rotate\(7deg\)/)
+  })
+
+  it('picks a legible ink for the clay skip action instead of the accent orange', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // 底部的「跳过…」原来用 --tarot-accent-strong(#c97a4a) 橙字直接压在米色桌面上，
+    // 橙字与同色桌面糊成一片；clay 换成最深深棕实字 + 浅奶油描边光晕托起笔画
+    expect(styles).toMatch(/clay 换成最深的深棕实字[\s\S]*?\.miniapp-tarot__text-action \{\s*\n\s*color: #5d3f2c;\s*\n\s*font-weight: var\(--font-weight-semibold\);\s*\n\s*text-shadow:/)
+    // classic 一字未动：基础 .miniapp-tarot__text-action 仍走 accent
+    expect(styles).toMatch(/\.miniapp-tarot__text-action \{\s*\n\s*margin: 0;\s*\n\s*padding: 8rpx 24rpx;\s*\n\s*color: var\(--tarot-accent-strong\);/)
   })
 
   it('restacks the deck as one pile with a top-first reorder once shuffling completes', () => {
@@ -363,7 +380,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(shuffleStage).toContain("impactFeedback('heavy')")
   })
 
-  it('draws the clay candle flame as a CSS overlay anchored on the wick, not baked into the artwork', () => {
+  it('draws a layered clay candle flame as a CSS overlay anchored on the wick, not baked into the artwork', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
 
@@ -372,20 +389,29 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(flowSource).toContain('miniapp-tarot__flame-scene')
     expect(flowSource).toContain('miniapp-tarot__flame-body')
     expect(flowSource).toContain('miniapp-tarot__flame-core')
+    expect(flowSource).toContain('miniapp-tarot__flame-ember')
     // 覆盖层按背景图比例定位：宽度复刻 aspectFill 的 cover 宽（竖屏 = 56.26vh，图比例 0.5626）
     expect(styles).toMatch(/\.miniapp-tarot__flame-scene \{[\s\S]*?max\(100vw, 56\.26vh\)/)
-    // 火焰锚在 sanctuary-background-clay.jpg 上量得的烛芯比例坐标（底边压在蜡面）
-    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?left: 64\.8%/)
-    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?top: 45\.6%/)
-    // 「一线」S 形：两段反向微弯细带叠出 S，再各有一条流动 keyframe
-    expect(styles).toContain('.miniapp-tarot__flame-body::before')
-    expect(styles).toContain('.miniapp-tarot__flame-body::after')
-    expect(styles).toContain('@keyframes miniapp-tarot-flame-flow-low')
-    expect(styles).toContain('@keyframes miniapp-tarot-flame-flow-high')
-    // 四层动效：烛焰摇摆 + 火苗闪烁 + 光晕/蜡面溢光呼吸
+    // 火焰锚在 sanctuary-background-clay.jpg 上量得的烛芯比例坐标（底边坐在蜡面的芯根上）
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?left: 64\.7%/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?top: 45\.5%/)
+    // 水滴形火苗：clip-path 切出尖顶肥底的真火轮廓——整朵火只有一个形体，
+    // 焰尖不能再叠第二团（那会叠出中间的糖葫芦腰），内填径向渐变出暖色焰心
+    expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?clip-path: polygon\(50% 0%, 70% 30%/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?radial-gradient\(ellipse 66% 50% at 50% 84%/)
+    expect(styles).not.toContain('.miniapp-tarot__flame-body::before')
+    expect(styles).not.toContain('.miniapp-tarot__flame-body::after')
+    // 暖白内芯 + 焰根蓝焰：真实蜡焰的亮芯与底部冷光
+    expect(styles).toMatch(/\.miniapp-tarot__flame-core \{[\s\S]*?#fffef8/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame-ember \{[\s\S]*?rgba\(122, 176, 255/)
+    // 多层动效：摇摆 + 焰身形状呼吸 + 内芯快闪 + 光晕/蜡面溢光呼吸（不同频率才不机械）
     expect(styles).toContain('@keyframes miniapp-tarot-flame-sway')
     expect(styles).toContain('@keyframes miniapp-tarot-flame-flicker')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-core')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-ember')
     expect(styles).toContain('@keyframes miniapp-tarot-flame-glow')
     expect(styles).toContain('@keyframes miniapp-tarot-flame-pool')
+    // 火苗挂在纱罩之后：作为画面光源，不被纱罩压暗一层
+    expect(flowSource.indexOf('miniapp-tarot__veil')).toBeLessThan(flowSource.indexOf('miniapp-tarot__flame-scene'))
   })
 })
