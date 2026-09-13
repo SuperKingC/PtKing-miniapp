@@ -1,5 +1,12 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-13 09:35：clay 牌背重出修「没有铺满」（用户：塔罗牌感觉没铺满，怀疑原图切图有问题、需重切）。
+  ①**根因不在切图，在生图构图**：旧 `card-back-clay.jpg`（768×1376，2:3）把牌画成画面正中一张小牌，牌本体只占画面中央、四周留奶油底色，牌外沿比例 ~0.55；而牌位实框 196×310rpx = 0.632。`mode="aspectFill"` 会按框比例裁切，牌比例比框窄 → 左右两侧被切、上下露出底色。量测：旧图按 196×310 aspectFill 后牌面只覆盖 **66.5%**，左侧一条 **9.5%** 奶油带（右侧仅 3.4%，明显不均，这正是「没铺满」的观感）。纯重切也救不了：要切掉奶油带就得连牌自己的奶油白边框一起切掉。
+  ②**修法=重出满幅出血版**：以旧牌背为 `--ref`（锁色板/菱格/八角星徽章），只改构图要求「牌外沿圆角紧贴画面四边、画面里只有这张牌」，2:3 出三张候选（`art/prompts-tarot-cardback-v2r.txt`）；另先出一版无参考图的 4 张（`-v2.txt`，色板偏浓，弃用）。按 196×310 实框逐张 aspectFill 量测选 **v2r3**：覆盖 **77.6%**、四边留白 2.4%~3.4%（均匀）、徽章居中偏差 <6%、菱格密度最贴近旧图。落位脚本 `miniapp/art/tarot-cardback/prepare-cardback.py`（768 宽 q90 → 166KB，≤180KB 红线），覆盖 `art/generated-art/tarot/ui/card-back-clay.jpg`（768×1152）。
+  ③**验证（本机 8787 静态服务模拟 COS）**：清缓存重建 dist（注入 `TARO_ASSET_DEV_BASE_URL=http://127.0.0.1:8787/ptking-web/cardback-v2`，换路径根防磁盘缓存命中旧图）→ **微信开发者工具实机**走到洗牌阶段截图，牌背铺满方框、徽章居中，与旧图对照明显。聚焦 76 项、全量 **480** 全过。
+  ④**自动化路径更新（重要，推翻上一条「automator 连不上」的结论）**：本机这版微信开发者工具（2.02.2608212 Nightly）`cli.bat auto` 的自动化端点确实起不来（`--auto-port` 被忽略、9420/32123 只回 404/403），但工具自带 **`wechatide` CLI** 可用：`wechatide -c <client> check_wechatide_status`（loginExpired:false）→ `open_project_window` → `simulator_screenshot --path` / `automation_navigate --action reLaunch --url` / `automation_element_action --selector .. --action tap|input --value` / `automation_page_action --action querySelectorAll`。以后实机取证优先走这条，不要再跟 `miniprogram-automator` 的 ws 端口死磕。注意 `wechatide` 必须在非沙箱 shell 运行。
+  ⑤**未做**：正式 COS 上传（`npm run assets`）与真机预览——按 AGENTS.md「视觉改动需用户验收后才能合 main 或部署」，本次只做到包内/本机服务验证，等用户验收后再发布资产版本根。
+
 - 2026-09-13 09:30：clay 气泡「两半拼贴」修正为单枚气泡 + 文案改成测测子口吻（用户：气泡割裂；气泡里要是测测子说的话，不是提示语）。
   ①**症状**：上一版把「指引标题（上半句）」和「底部状态行（下半句）」用两个节点负 margin 贴成一枚气泡，实际渲染出两道独立的圆角矩形、中间一道缝，看着像两个气泡叠在一起（截图量测：上块 x83..313、下块 x74..322，宽度与圆角都各算各的）。
   ②**气泡改法**：clay 只保留 `.miniapp-tarot__title` 这一个节点当气泡——`width:560rpx` + 完整 `border-radius:26rpx` + 自重投影，`::after` 尾巴挂在标题下沿朝下指猫；classic 的 `.miniapp-tarot__hint` 状态行在 clay `display:none`（其内容已并进标题那句），删掉 `order:-2/-1` 与 `margin:-26rpx` 的拼贴 hack。翻牌阶段原本靠单独补圆角，现在四个阶段同一套规则。
