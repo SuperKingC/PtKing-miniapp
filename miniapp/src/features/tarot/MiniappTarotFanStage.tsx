@@ -45,7 +45,7 @@ export function MiniappTarotFanStage({
               : 'miniapp-tarot__picked-slot'}
           >
             {picked[order] !== undefined && (
-              <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFit" fadeIn={false} />
+              <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
             )}
           </View>
         ))}
@@ -65,7 +65,7 @@ export function MiniappTarotFanStage({
             disabled={picked.includes(index) || flyingCard !== undefined}
             onClick={() => onPick(index)}
           >
-            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFit" fadeIn={false} />
+            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
           </Button>
         ))}
       </View>

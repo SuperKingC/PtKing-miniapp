@@ -882,7 +882,6 @@
 
 .miniapp-tarot__deck-card {
   position: absolute;
-  box-sizing: border-box;
   top: 18rpx;
   left: 50%;
   width: 226rpx;
@@ -1337,7 +1336,6 @@
 
 .miniapp-tarot__fan-card {
   position: absolute;
-  box-sizing: border-box;
   bottom: 20rpx;
   left: calc(50% - 64rpx);
   width: 128rpx;
@@ -1436,7 +1434,7 @@
   }
   55% {
     opacity: 1;
-    transform: translateX(calc(var(--fly-x, 0rpx) * .6)) translateY(var(--fly-y-mid, -300rpx)) rotate(0deg) scale(1.08);
+    transform: translateX(calc(var(--fly-x, 0rpx) * .6)) translateY(var(--fly-y-mid, -300rpx)) rotate(0deg) scale(var(--fly-scale-mid, 1.18));
   }
   100% {
     opacity: 1;
@@ -2126,6 +2124,7 @@
   --tarot-shadow-float: 0 24rpx 64rpx rgba(122, 88, 58, .32);
   --tarot-card-back-gap: 16rpx;
   --tarot-picked-gap: 14rpx;
+  --fly-scale-mid: 1.08;
   --fly-scale-end: .86;
 
   // 背景图明亮，不需要加深色罩；星星在奶油天上改为浅金
@@ -2176,10 +2175,15 @@
     margin: 0;
   }
 
+  .miniapp-tarot__deck-card,
+  .miniapp-tarot__fan-card {
+    box-sizing: border-box;
+  }
+
   .miniapp-tarot__hint,
   .miniapp-tarot__next,
   .miniapp-tarot__text-action {
-    margin-top: var(--tarot-card-back-gap);
+    margin-top: 0;
   }
 
   .miniapp-tarot__stage--ritual > .miniapp-tarot__title,

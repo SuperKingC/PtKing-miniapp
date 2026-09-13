@@ -69,7 +69,7 @@ export function MiniappTarotShuffleStage({
       >
         {Array.from({ length: 10 }, (_, index) => (
           <View key={index} className={`miniapp-tarot__deck-card miniapp-tarot__deck-card--${index + 1}`}>
-            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFit" fadeIn={false} />
+            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
           </View>
         ))}
         <View className="miniapp-tarot__shuffle-orbit miniapp-tarot__shuffle-orbit--outer" />

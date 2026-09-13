@@ -526,10 +526,10 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 这里只确认短屏媒体查询给了压矮兜底（牌组 + 按钮同时收得进 SE）
   })
 
-  it('renders every tarot card back with aspectFit while keeping artwork aspectFill', () => {
+  it('uses clay aspectFit card backs while preserving classic aspectFill', () => {
     for (const fileName of cardBackStagePaths) {
       const source = fs.readFileSync(path.resolve(__dirname, fileName), 'utf8')
-      expect(source).toMatch(/getTarotCardBack\(skin\)[\s\S]*?mode="aspectFit"/)
+      expect(source).toMatch(/getTarotCardBack\(skin\)[\s\S]*?mode=\{skin === 'clay' \? 'aspectFit' : 'aspectFill'\}/)
     }
 
     const cardSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotCard.tsx'), 'utf8')
@@ -547,5 +547,18 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/@keyframes miniapp-tarot-card-flight[\s\S]*?translateY\(var\(--fly-y, -390rpx\)\) rotate\(0deg\) scale\(var\(--fly-scale-end, 1\)\)/)
     expect(styles).toMatch(/\.miniapp-tarot__next,[\s\S]*?flex: none;/)
     expect(styles).toMatch(/\.miniapp-tarot__fan \{[\s\S]*?margin: 0;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__hint,[\s\S]*?\.miniapp-tarot__next,[\s\S]*?\.miniapp-tarot__text-action \{[\s\S]*?margin-top: 0;/)
+    expect(styles).toMatch(/\.miniapp-tarot__fan \{[\s\S]*?gap: var\(--tarot-picked-gap\)/)
+    expect(styles).not.toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*position: absolute;\s*\n\s*box-sizing: border-box;/)
+    expect(styles).not.toMatch(/\.miniapp-tarot__fan-card \{\s*\n\s*position: absolute;\s*\n\s*box-sizing: border-box;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__deck-card,[\s\S]*?\.miniapp-tarot__fan-card \{[\s\S]*?box-sizing: border-box;/)
+  })
+
+  it('keeps classic flight midpoint scale while clay opts into a smaller endpoint', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    expect(styles).toMatch(/translateY\(var\(--fly-y-mid, -300rpx\)\) rotate\(0deg\) scale\(var\(--fly-scale-mid, 1\.18\)\)/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--fly-scale-mid: 1\.08;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--fly-scale-end: \.86;/)
   })
 })
