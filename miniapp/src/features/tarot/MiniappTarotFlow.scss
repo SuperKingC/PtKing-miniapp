@@ -2175,6 +2175,20 @@
     margin: 0;
   }
 
+  // clay 容器按可见牌堆的最高层计算，牌组与下方按钮保持一个阶段 gap；
+  // classic 使用基础高度，短屏媒体查询再覆盖为 300rpx。
+  .miniapp-tarot__shuffle-deck {
+    height: 410rpx;
+  }
+
+  .miniapp-tarot__cut-deck {
+    height: 368rpx;
+  }
+
+  .miniapp-tarot__fan-card {
+    bottom: 32rpx;
+  }
+
   .miniapp-tarot__deck-card,
   .miniapp-tarot__fan-card {
     box-sizing: border-box;

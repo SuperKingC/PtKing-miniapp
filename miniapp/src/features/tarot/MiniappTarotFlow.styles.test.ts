@@ -562,4 +562,16 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--fly-scale-mid: 1\.08;/)
     expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--fly-scale-end: \.86;/)
   })
+
+  it('sizes clay ritual containers to their visible piles without changing classic geometry', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck,\s*\n\.miniapp-tarot__cut-deck \{[\s\S]*?height: 392rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck \{\s*\n\s*height: 430rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__fan-card \{[\s\S]*?bottom: 20rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__shuffle-deck \{[\s\S]*?height: 410rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__cut-deck \{[\s\S]*?height: 368rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__fan-card \{[\s\S]*?bottom: 32rpx;/)
+    expect(styles).toMatch(/@media \(max-height: 720px\)[\s\S]*?\.miniapp-tarot__shuffle-deck,[\s\S]*?\.miniapp-tarot__cut-deck \{[\s\S]*?height: 300rpx;/)
+  })
 })
