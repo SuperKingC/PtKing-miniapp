@@ -458,8 +458,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 背景/纱罩/火焰/星点同处一层：clay 整层放大+上移时四层保持同一几何
     expect(flowSource).toContain('miniapp-tarot__scene')
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?position: absolute/)
-    // clay 把场景层底锚放大（底边钉住、画面向上长）：桌子变大且整体上移，底部不留缝
-    expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: scale\(1\.16\)/)
+    // clay 把场景层底锚缩放 + 下移：桌子可见放大，同时月亮完整露出、气泡不压帽子。
+    // 曾经用 s=1.16（顶出屏幕、月亮只剩一角），现为 translateY(88rpx) scale(1.08)。
+    expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: translateY\(88rpx\) scale\(1\.08\)/)
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform-origin: 50% 100%/)
     // 牌组上移到球座之下、按钮之上：四幕（含洗牌）上 spacer 收到阶段高度 28%
     expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?flex: 0 1 28%/)
@@ -491,5 +492,26 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(flowSource).toMatch(/state\.stage === 'shuffle'[\s\S]*?state\.stage === 'reveal'/)
     expect(flowSource).toContain('miniapp-tarot--clay-ritual')
     expect(styles).toMatch(/&\.miniapp-tarot--clay-ritual \.miniapp-tarot__header-title \{\s*\n\s*visibility: hidden;/)
+  })
+
+  it('keeps the clay moon in frame and the flying card inside the picked slot (clay-only)', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // 月亮/星云区完整露出：底锚放大 s=1.16 会把顶部顶出屏幕（月亮只剩一角），
+    // 收成 scale(1.08) + translateY(88rpx) 后月亮顶回到视口内、气泡也不压帽子。
+    expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: translateY\(88rpx\) scale\(1\.08\)/)
+    expect(styles).not.toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: scale\(1\.16\)/)
+
+    // 飞牌抬升量改走 --fly-y（默认 -390rpx 保持 classic 原样），clay 覆盖成 -328rpx，
+    // 让牌落进已选槽而不是冲过槽位贴住阶段上沿
+    expect(styles).toContain('var(--fly-y, -390rpx)')
+    expect(styles).toMatch(/\.miniapp-tarot__fan \{\s*--fly-y: -328rpx;[\s\S]*?--fly-y-mid: -243rpx;/)
+    // 关键帧两个节点各用独立变量、默认值就是 classic 原值（-300rpx / -390rpx），
+    // classic 不设变量时算出来与改动前完全一致（不用比例换算，避免 classic 被挪动）
+    expect(styles).toMatch(/translateY\(var\(--fly-y-mid, -300rpx\)\)/)
+    expect(styles).toMatch(/translateY\(var\(--fly-y, -390rpx\)\) rotate\(0deg\) scale\(1\)/)
+
+    // 翻牌阶段整排再下移一点：只对 reveal-row 做视觉位移（阶段已 overflow:visible）
+    expect(styles).toMatch(/\.miniapp-tarot__stage--reveal \.miniapp-tarot__reveal-row \{[\s\S]*?transform: translateY\(56rpx\);/)
   })
 })

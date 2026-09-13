@@ -1422,7 +1422,11 @@
   }
 }
 
-// flight arcs from the fan pose straight into the picked slot being filled
+// flight arcs from the fan pose straight into the picked slot being filled.
+// 抬升距离走两个变量，默认值都保持 classic 原值（-300rpx / -390rpx，未改）：
+// clay 因为牌扇与已选槽间距更近，覆盖成更小的值，否则牌会冲过槽位、贴到阶段上沿
+// （用户反馈「抽出来飞上去的牌被裁剪」）。用两个独立变量而不是比例换算，
+// 保证 classic 不设变量时算出来与改动前一模一样。
 @keyframes miniapp-tarot-card-flight {
   0% {
     opacity: 1;
@@ -1430,11 +1434,11 @@
   }
   55% {
     opacity: 1;
-    transform: translateX(calc(var(--fly-x, 0rpx) * .6)) translateY(-300rpx) rotate(0deg) scale(1.18);
+    transform: translateX(calc(var(--fly-x, 0rpx) * .6)) translateY(var(--fly-y-mid, -300rpx)) rotate(0deg) scale(1.18);
   }
   100% {
     opacity: 1;
-    transform: translateX(var(--fly-x, 0rpx)) translateY(-390rpx) rotate(0deg) scale(1);
+    transform: translateX(var(--fly-x, 0rpx)) translateY(var(--fly-y, -390rpx)) rotate(0deg) scale(1);
   }
 }
 
@@ -2382,10 +2386,13 @@
   //   ① 桌子跟着放大（远端桌沿往上走、近端桌面更满）；
   //   ② 底部不留缝（原始 cover 内容本来就填满 844，底锚放大后仍填满）；
   //   ③ 火焰和背景同处这一层，天然同步缩放，火苗不会脱开烛芯。
-  // 放大倍数 1.16 是「桌子明显变大」与「猫头不被顶到气泡/标题下」之间的折中：
-  // 猫头原在 0.22×844≈186px，底锚 1.16 后 ≈ 844-(844-186)×1.16 ≈ 81px，仍在头部之下。
+  // 放大倍数 1.08 + 下移 44px 是「桌子可见放大」与「月亮完整露出」之间的折中：
+  // 背景图是 768×1365，月亮顶在图上 y=107（视图 66px）。底锚放大 s 倍会把顶部顶出屏幕
+  // （视图 y' = 844 + (y-844)s）：s=1.16 时月亮顶 = -58px，只剩一角可见（用户反馈）。
+  // 取 s=1.08 + translateY(44px)：月亮顶 ≈ 48px（落在状态栏之下、完整可见），
+  // 猫头顶 ≈ 177px（气泡因此不再压帽子），底部裁掉 44px（桌面前沿，无影响）。
   .miniapp-tarot__scene {
-    transform: scale(1.16);
+    transform: translateY(88rpx) scale(1.08);
     transform-origin: 50% 100%;
   }
 
@@ -2415,8 +2422,24 @@
     flex: none;
   }
 
+  // 抽牌飞牌：clay 的牌扇与已选槽比 classic 更近，沿用 classic 的 390rpx 抬升会让牌
+  // 冲过槽位、贴到阶段上沿（用户反馈「飞上去的牌被裁剪」）。实测线性关系后取 -328rpx，
+  // 让牌终点正好落在已选槽里居中（-390 时卡顶 357 高于槽顶 381；-300 时 404 低于槽顶）。
+  .miniapp-tarot__fan {
+    --fly-y: -328rpx;
+    --fly-y-mid: -243rpx;
+  }
+
   // 洗牌牌堆顶上那条 6rpx 边距会让它的牌比切牌再低 3px，抹平后两幕牌面中心对齐
   .miniapp-tarot__shuffle-deck {
     margin-top: 0;
+  }
+
+  // 翻牌阶段：整排牌位再下移一点（用户 2026-09-13）。只改这一幕。
+  // 用视觉偏移而不是加大上 spacer：上 spacer 已是 flex `0 1 28%`，翻牌内容较高、
+  // 剩余空间不足时它会被压回去（实测改成 36% 后落位没变），而阶段已 overflow:visible，
+  // 直接位移最直接可控。按钮在 640px，牌排底 ≈586px，下移 28px 后仍留 26px 间隙。
+  .miniapp-tarot__stage--reveal .miniapp-tarot__reveal-row {
+    transform: translateY(56rpx);
   }
 }
