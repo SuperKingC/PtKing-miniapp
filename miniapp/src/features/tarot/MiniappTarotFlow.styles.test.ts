@@ -129,17 +129,17 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 牌面 214×326 → 167×254，整叠 230×356 → 179×278 并随之下移(中心 187→214rpx)
     expect(styles).toMatch(/\.miniapp-tarot__cut-half \{\s*\n\s*top: 87rpx;\s*\n\s*width: 179rpx;\s*\n\s*height: 278rpx;\s*\n\s*margin-left: -90rpx;/)
     expect(styles).toMatch(/\.miniapp-tarot__cut-sheet,\s*\n\s*\.miniapp-tarot__cut-face \{\s*\n\s*width: 167rpx;\s*\n\s*height: 254rpx;/)
-    // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽
-    expect(styles).toMatch(/\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--right,[\s\S]*?translate\(117rpx, -66rpx\) rotate\(7deg\)/)
+    // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽；
+    // 必须带 :not(--swapped) 守卫，否则奇数刀两叠同时起飞（详见下方专门用例）
+    expect(styles).toMatch(/\.miniapp-tarot__cut-deck--cutting:not\(\.miniapp-tarot__cut-deck--swapped\) \.miniapp-tarot__cut-half--right,[\s\S]*?translate\(117rpx, -66rpx\) rotate\(7deg\)/)
   })
 
   it('lowers the clay cut/fan/reveal cards below the crystal ball and recolors the name plate', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
     // 水晶球立在桌面中上部，切牌/抽牌/翻牌三幕的牌组原来落在阶段中线、牌顶压住球身。
-    // 上 spacer 改成阶段高度的定比（不是 flex 分配剩余空间——短屏剩余空间变小、牌会往回涨），
-    // 三幕共用同一比例，牌组稳定落在球座之下。
-    expect(styles).toMatch(/clay 牌位下移[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?flex: 0 0 auto;[\s\S]*?height: 44%;/)
+    // 场景层底锚放大上移后球座抬到约视口 37%，牌组顶端收到阶段高度 28%，落在球座之下。
+    expect(styles).toMatch(/\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?flex: 0 0 auto;[\s\S]*?height: 28%;/)
     // 抽牌组的牌扇压矮一档，下移后才不会顶到「翻开所选牌」按钮
     expect(styles).toMatch(/\.miniapp-tarot__fan \{\s*\n\s*height: 320rpx;/)
     // 翻牌名牌框：classic 暗紫星夜牌盒换成与气泡/卡片同一支奶白底 + 软棕边 + 深棕字
@@ -412,10 +412,15 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?top: 45\.5%/)
     // 水滴形火苗：clip-path 切出尖顶肥底的真火轮廓——整朵火只有一个形体，
     // 焰尖不能再叠第二团（那会叠出中间的糖葫芦腰），内填径向渐变出暖色焰心
-    expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?clip-path: polygon\(50% 0%, 70% 30%/)
-    expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?radial-gradient\(ellipse 66% 50% at 50% 84%/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?clip-path: polygon\(50% 0%, 63% 16%/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?radial-gradient\(ellipse 60% 46% at 50% 84%/)
     expect(styles).not.toContain('.miniapp-tarot__flame-body::before')
     expect(styles).not.toContain('.miniapp-tarot__flame-body::after')
+    // 加粗一档：焰格外框宽从 .028 提到 .042（水滴更"胖"，读作水滴而非细线）
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?\* \.042\)/)
+    // 玄幻灵气：焰外一圈缓慢涨落、向上轻飘的暖雾（::before，读作火气而非第二朵火）
+    expect(styles).toContain('.miniapp-tarot__flame::before')
+    expect(styles).toContain('@keyframes miniapp-tarot-flame-aura')
     // 暖白内芯 + 焰根蓝焰：真实蜡焰的亮芯与底部冷光
     expect(styles).toMatch(/\.miniapp-tarot__flame-core \{[\s\S]*?#fffef8/)
     expect(styles).toMatch(/\.miniapp-tarot__flame-ember \{[\s\S]*?rgba\(122, 176, 255/)
@@ -428,5 +433,30 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toContain('@keyframes miniapp-tarot-flame-pool')
     // 火苗挂在纱罩之后：作为画面光源，不被纱罩压暗一层
     expect(flowSource.indexOf('miniapp-tarot__veil')).toBeLessThan(flowSource.indexOf('miniapp-tarot__flame-scene'))
+  })
+
+  it('wraps the backdrop layers in one scene node so clay can scale and lift them together', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+    const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+
+    // 背景/纱罩/火焰/星点同处一层：clay 整层放大+上移时四层保持同一几何
+    expect(flowSource).toContain('miniapp-tarot__scene')
+    expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?position: absolute/)
+    // clay 把场景层底锚放大（底边钉住、画面向上长）：桌子变大且整体上移，底部不留缝
+    expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: scale\(1\.16\)/)
+    expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform-origin: 50% 100%/)
+    // 牌组上移到球座之下、按钮之上：三幕上 spacer 收到阶段高度 28%
+    expect(styles).toMatch(/\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?height: 28%/)
+  })
+
+  it('lifts only the top half on the swapped (odd) cut, so both halves never fly together', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // 起牌位移那条必须带 :not(--swapped) 守卫：在 .skin-clay 里它的权重 (0,4,0)
+    // 压过基类用来复位 right 半叠的 (0,3,0)，否则奇数刀两叠同时起飞＝「整个牌一起动」
+    expect(styles).toContain('.miniapp-tarot__cut-deck--cutting:not(.miniapp-tarot__cut-deck--swapped) .miniapp-tarot__cut-half--right')
+    expect(styles).toMatch(/\.miniapp-tarot__cut-deck--swapped\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--left \{[\s\S]*?translate\(117rpx, -66rpx\)/)
+    // 基类仍保留「交换后把 right 复位成下压」的规则，供上面的 :not 守卫配合
+    expect(styles).toMatch(/\.miniapp-tarot__cut-deck--swapped\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--right \{[\s\S]*?translateY\(4rpx\)/)
   })
 })

@@ -122,6 +122,14 @@
   opacity: 1;
 }
 
+// 场景层：把背景/纱罩/火焰/星点收进一层，clay 皮肤对它整体放大+上移（见文件末尾），
+// 四层同处一变换，火苗与背景永远保持同一几何。
+.miniapp-tarot__scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 .miniapp-tarot__background,
 .miniapp-tarot__veil {
   position: absolute;
@@ -168,16 +176,30 @@
   pointer-events: none;
 }
 
-// 火苗外框：宽约烛径三倍半、高约烛径十四倍；形由下方 clip-path 给出
+// 火苗外框：宽约等于烛径（比上一版粗一档）、高约三倍半，形由下方 clip-path 给出
 .miniapp-tarot__flame {
   position: absolute;
   left: 64.7%;
   top: 45.5%;
-  width: calc(max(100vw, 56.26vh) * .028);
-  height: calc(max(100vw, 56.26vh) * .108);
+  width: calc(max(100vw, 56.26vh) * .042);
+  height: calc(max(100vw, 56.26vh) * .105);
   transform: translate(-50%, -100%);
   transform-origin: 50% 100%;
-  animation: miniapp-tarot-flame-sway 3.6s ease-in-out infinite;
+  animation: miniapp-tarot-flame-sway 4.4s ease-in-out infinite;
+}
+
+// 玄幻灵气：整朵火背后缓慢涨落、又向上轻飘的一圈暖雾（读作火气，不是第二个火苗）
+.miniapp-tarot__flame::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  width: 320%;
+  height: 138%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 72%, rgba(255, 206, 132, .34), rgba(255, 190, 96, .13) 46%, rgba(255, 190, 96, 0) 74%);
+  animation: miniapp-tarot-flame-aura 4.4s ease-in-out infinite;
 }
 
 // 烛顶蜡面上的暖光圈：火苗落在蜡面的一点溢光
@@ -206,10 +228,11 @@
   animation: miniapp-tarot-flame-glow 2.3s ease-in-out infinite;
 }
 
-// 焰身：一枚尖顶肥底的水滴。用 clip-path 切出真火轮廓（描边与 border-radius 都做不到尖顶），
-// 内填一层贴着底部的暖色径向渐变——蓝白焰根 → 亮黄焰心 → 橙焰缘，上端渐隐收成尖。
-// 关键：整朵火**只有一个形体**，焰尖不再是叠上去的第二团（那会叠出中间的糖葫芦腰）。
-// 外描 1px 柔化，边缘像被光晕吃掉，不显硬剪纸边。
+// 焰身：一枚尖顶肥底的水滴（水滴轮廓 = 下身浑圆、上身收成尖）。
+// 用 clip-path 切轮廓（描边与 border-radius 做不到尖顶），内填一层贴底的暖色径向渐变
+// ——蓝白焰根 → 亮黄焰心 → 橙焰缘，上端渐隐收尖。
+// 关键：整朵火**只有一个形体**，焰尖不是另叠的第二团（会叠出糖葫芦腰）。
+// 轮廓取「胖水滴」：最宽处 46%（比上一版 90% 窄一圈 → 更粗更结实），肩部推到 62% 才收。
 .miniapp-tarot__flame-body {
   position: absolute;
   left: 50%;
@@ -218,23 +241,23 @@
   height: 100%;
   transform: translateX(-50%);
   transform-origin: 50% 100%;
-  background: radial-gradient(ellipse 66% 50% at 50% 84%, #fffaf0 0%, #ffe4a4 24%, #ffb95a 54%, rgba(248, 152, 52, .42) 78%, rgba(248, 152, 52, 0) 96%);
-  clip-path: polygon(50% 0%, 70% 30%, 86% 56%, 90% 74%, 78% 90%, 50% 100%, 22% 90%, 10% 74%, 14% 56%, 30% 30%);
+  background: radial-gradient(ellipse 60% 46% at 50% 84%, #fffaf0 0%, #ffe4a4 22%, #ffb95a 52%, rgba(248, 152, 52, .44) 78%, rgba(248, 152, 52, 0) 96%);
+  clip-path: polygon(50% 0%, 63% 16%, 74% 34%, 80% 52%, 78% 70%, 68% 86%, 50% 100%, 32% 86%, 22% 70%, 20% 52%, 26% 34%, 37% 16%);
   filter: blur(calc(max(100vw, 56.26vh) * .0021));
-  animation: miniapp-tarot-flame-flicker 1.9s ease-in-out infinite;
+  animation: miniapp-tarot-flame-flicker 2.1s ease-in-out infinite;
 }
 
 // 火苗内芯：真正发亮的那一小团，偏下——真实蜡焰最亮处在焰根上方一点
 .miniapp-tarot__flame-core {
   position: absolute;
   left: 50%;
-  bottom: 9%;
-  width: 54%;
-  height: 52%;
+  bottom: 8%;
+  width: 62%;
+  height: 54%;
   transform: translateX(-50%);
   border-radius: 50%;
   background: radial-gradient(ellipse at 50% 62%, #fffef8 0%, #fff7d8 34%, rgba(255, 232, 156, .55) 64%, rgba(255, 226, 146, 0) 84%);
-  animation: miniapp-tarot-flame-core 1.15s ease-in-out infinite;
+  animation: miniapp-tarot-flame-core 1.3s ease-in-out infinite;
 }
 
 // 焰根蓝焰：真实蜡烛火苗贴着烛芯的一小圈冷光
@@ -242,21 +265,28 @@
   position: absolute;
   left: 50%;
   bottom: 1%;
-  width: 52%;
-  height: 15%;
+  width: 58%;
+  height: 16%;
   transform: translateX(-50%);
   border-radius: 50%;
   background: radial-gradient(ellipse at 50% 100%, rgba(122, 176, 255, .7) 0%, rgba(122, 176, 255, .18) 52%, rgba(122, 176, 255, 0) 80%);
-  animation: miniapp-tarot-flame-ember 2.4s ease-in-out infinite;
+  animation: miniapp-tarot-flame-ember 2.6s ease-in-out infinite;
 }
 
-// 摇摆：真实火苗不是来回正弦，是被气流带着走的不规则摆——中途带一次小回摆
+// 摇摆：被气流带着走的不规则摆——中途两次小回摆，周期放长读作"缓缓晃动"
 @keyframes miniapp-tarot-flame-sway {
-  0% { transform: translate(-50%, -100%) rotate(-1.4deg); }
-  22% { transform: translate(-50%, -100%) rotate(1.1deg); }
-  46% { transform: translate(-50%, -100%) rotate(-.5deg); }
-  68% { transform: translate(-50%, -100%) rotate(1.8deg); }
-  100% { transform: translate(-50%, -100%) rotate(-1.4deg); }
+  0% { transform: translate(-50%, -100%) rotate(-1.8deg); }
+  18% { transform: translate(-50%, -100%) rotate(1.4deg); }
+  38% { transform: translate(-50%, -100%) rotate(-.6deg); }
+  56% { transform: translate(-50%, -100%) rotate(2.1deg); }
+  78% { transform: translate(-50%, -100%) rotate(.4deg); }
+  100% { transform: translate(-50%, -100%) rotate(-1.8deg); }
+}
+
+// 玄幻灵气：与 sway 同周期(a)同步涨落，火气像在缓慢地吸气/吐气，并整体向上飘一点
+@keyframes miniapp-tarot-flame-aura {
+  0%, 100% { transform: translateX(-50%) scale(1, 1); opacity: .72; }
+  50% { transform: translate(-50%, -6%) scale(1.1, 1.14); opacity: 1; }
 }
 
 // 焰身：拉长变瘦 / 缩短变胖交替（每次"呼吸"都在改火形），配极轻微左右飘
@@ -2256,8 +2286,11 @@
     height: 254rpx;
   }
 
-  // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽
-  .miniapp-tarot__cut-deck--cutting .miniapp-tarot__cut-half--right,
+  // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽。
+  // 必须带 :not(--swapped) 守卫：这个覆盖块在 .skin-clay 里，(0,4,0) 压过基类那条
+  // 用来复位 right 半叠的 `--swapped…--cutting .--right{translateY}`(0,3,0)，
+  // 于是奇数刀（已交换）时 right 与 left 同时起飞＝用户看到的「整个牌一起动」。
+  .miniapp-tarot__cut-deck--cutting:not(.miniapp-tarot__cut-deck--swapped) .miniapp-tarot__cut-half--right,
   .miniapp-tarot__cut-deck--swapped.miniapp-tarot__cut-deck--cutting .miniapp-tarot__cut-half--left {
     transform: translate(117rpx, -66rpx) rotate(7deg);
   }
@@ -2302,17 +2335,7 @@
     height: 250rpx;
   }
 
-  // 牌组下移的定量依据：背景 aspectFill 后水晶球随视口等比缩放，球座底边恒落在
-  // 视口高度约 53% 处；切牌/抽牌/翻牌三幕的牌组原来落在阶段中线，牌顶正好压住球身。
-  // 上 spacer 改成阶段高度的定比（而不是 flex 分配剩余空间——短屏上剩余空间变小、
-  // 牌会往回涨，长屏空隙又浪费），三幕同一比例，牌组稳定停在球座之下。
-  // 逐视口反推所需比例在 0.419~0.444 之间，取 0.44 保证短屏也有安全间隙。
-  .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
-  .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
-  .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
-    flex: 0 0 auto;
-    height: 44%;
-  }
+  // （牌组顶端比例见下方「牌桌放大」块：场景放大上移后由 28% 统一给出）
 
   // 翻牌名牌框：classic 是暗紫底星夜牌盒，clay 桌面是奶油色，暗盒像贴错皮肤的一小块。
   // 换成与气泡/卡片同一支：奶白底 + 细软棕边 + 深棕字。
@@ -2325,5 +2348,29 @@
 
   .miniapp-tarot-card__labels text:last-child {
     color: rgba(107, 74, 51, .66);
+  }
+
+  // ── 牌桌放大 + 场景整体上移（2026-09-13）──
+  // 需求：测测子模式下桌子要大一点、整个场景（连牌）上移，露出底部按钮，且牌不挡水晶球。
+  // 做法：把四层场景（背景/纱罩/火焰/星点）收进一个 wrapper，整层做一次等比放大，
+  // 锚点放底部（origin 50% 100%）——放大时底边钉住不动、画面向上长，于是
+  //   ① 桌子跟着放大（远端桌沿往上走、近端桌面更满）；
+  //   ② 底部不留缝（原始 cover 内容本来就填满 844，底锚放大后仍填满）；
+  //   ③ 火焰和背景同处这一层，天然同步缩放，火苗不会脱开烛芯。
+  // 放大倍数 1.16 是「桌子明显变大」与「猫头不被顶到气泡/标题下」之间的折中：
+  // 猫头原在 0.22×844≈186px，底锚 1.16 后 ≈ 844-(844-186)×1.16 ≈ 81px，仍在头部之下。
+  .miniapp-tarot__scene {
+    transform: scale(1.16);
+    transform-origin: 50% 100%;
+  }
+
+  // 牌组上移定量依据：底锚放大后桌面远端与球座整体上抬——
+  // 球身由 0.26..0.50 抬到约 0.10..0.34、球座底边约 0.37（×视口高），
+  // 故牌组顶端收到阶段高度约 28% 处，既在球座之下、又把底部让给按钮。
+  .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
+  .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
+    flex: 0 0 auto;
+    height: 28%;
   }
 }

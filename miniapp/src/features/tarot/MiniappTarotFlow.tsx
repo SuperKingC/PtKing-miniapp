@@ -143,28 +143,31 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
 
   return (
     <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')} style={topInsetStyle()}>
-      <Image
-        className="miniapp-tarot__background"
-        src={resolveTarotAssetUrl(getTarotSanctuaryBackground(skin))}
-        mode="aspectFill"
-        fadeIn={false}
-      />
-      <View className="miniapp-tarot__veil" />
-      {/* clay 牌桌背景把蜡烛画成未点燃，火焰改由这层 CSS 叠加：坐标按背景图比例锚在烛芯上。
-          挂在纱罩之后，火苗读作画面里的光源，不被纱罩压暗一层 */}
-      {skin === 'clay' && (
-        <View className="miniapp-tarot__flame-scene" aria-hidden>
-          <View className="miniapp-tarot__flame">
-            <View className="miniapp-tarot__flame-glow" />
-            <View className="miniapp-tarot__flame-pool" />
-            <View className="miniapp-tarot__flame-body">
-              <View className="miniapp-tarot__flame-core" />
-              <View className="miniapp-tarot__flame-ember" />
+      {/* 场景层包住背景/纱罩/火焰/星点：clay 皮肤对它整体放大+上移，四层同一几何 */}
+      <View className="miniapp-tarot__scene">
+        <Image
+          className="miniapp-tarot__background"
+          src={resolveTarotAssetUrl(getTarotSanctuaryBackground(skin))}
+          mode="aspectFill"
+          fadeIn={false}
+        />
+        <View className="miniapp-tarot__veil" />
+        {/* clay 牌桌背景把蜡烛画成未点燃，火焰改由这层 CSS 叠加：坐标按背景图比例锚在烛芯上。
+            挂在纱罩之后，火苗读作画面里的光源，不被纱罩压暗一层 */}
+        {skin === 'clay' && (
+          <View className="miniapp-tarot__flame-scene" aria-hidden>
+            <View className="miniapp-tarot__flame">
+              <View className="miniapp-tarot__flame-glow" />
+              <View className="miniapp-tarot__flame-pool" />
+              <View className="miniapp-tarot__flame-body">
+                <View className="miniapp-tarot__flame-core" />
+                <View className="miniapp-tarot__flame-ember" />
+              </View>
             </View>
           </View>
-        </View>
-      )}
-      <View className="miniapp-tarot__stars" />
+        )}
+        <View className="miniapp-tarot__stars" />
+      </View>
       <View className="miniapp-tarot__fade" />
 
       {!resourcesLoaded ? (
