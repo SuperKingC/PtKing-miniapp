@@ -2283,3 +2283,47 @@
     text-shadow: 0 1rpx 0 rgba(255, 253, 246, .75), 0 0 12rpx rgba(255, 250, 240, .5);
   }
 }
+
+// ── clay 牌位下移 + 翻牌名牌框改奶油配色（2026-09-13）──
+// 水晶球立在桌面中上部（视口 y≈37%..52%），而四仪式阶段的牌组原来落在阶段中线，
+// 牌顶正好压住球身与球座。clay 把牌组整体下移，收在球座之下、按钮之上。
+.miniapp-tarot.skin-clay {
+  // 上 spacer 多分一份自由高度：气泡留在顶部不动，牌组往下走
+  .miniapp-tarot__spacer--top {
+    flex-grow: 6;
+  }
+
+  // 抽牌组（已选槽 + 牌扇）整体压矮一档：下移到球座之下后仍能收在「翻开所选牌」之上
+  .miniapp-tarot__fan {
+    height: 320rpx;
+  }
+
+  .miniapp-tarot__picked-row--1 .miniapp-tarot__picked-slot {
+    height: 250rpx;
+  }
+
+  // 牌组下移的定量依据：背景 aspectFill 后水晶球随视口等比缩放，球座底边恒落在
+  // 视口高度约 53% 处；切牌/抽牌/翻牌三幕的牌组原来落在阶段中线，牌顶正好压住球身。
+  // 上 spacer 改成阶段高度的定比（而不是 flex 分配剩余空间——短屏上剩余空间变小、
+  // 牌会往回涨，长屏空隙又浪费），三幕同一比例，牌组稳定停在球座之下。
+  // 逐视口反推所需比例在 0.419~0.444 之间，取 0.44 保证短屏也有安全间隙。
+  .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
+  .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
+  .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
+    flex: 0 0 auto;
+    height: 44%;
+  }
+
+  // 翻牌名牌框：classic 是暗紫底星夜牌盒，clay 桌面是奶油色，暗盒像贴错皮肤的一小块。
+  // 换成与气泡/卡片同一支：奶白底 + 细软棕边 + 深棕字。
+  .miniapp-tarot-card__labels {
+    border-color: rgba(160, 118, 82, .24);
+    color: #6b4a33;
+    background: #fffef9;
+    box-shadow: 0 8rpx 20rpx rgba(122, 88, 58, .16);
+  }
+
+  .miniapp-tarot-card__labels text:last-child {
+    color: rgba(107, 74, 51, .66);
+  }
+}

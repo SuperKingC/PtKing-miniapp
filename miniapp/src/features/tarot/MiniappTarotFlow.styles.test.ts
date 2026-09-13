@@ -133,6 +133,21 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--right,[\s\S]*?translate\(117rpx, -66rpx\) rotate\(7deg\)/)
   })
 
+  it('lowers the clay cut/fan/reveal cards below the crystal ball and recolors the name plate', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // 水晶球立在桌面中上部，切牌/抽牌/翻牌三幕的牌组原来落在阶段中线、牌顶压住球身。
+    // 上 spacer 改成阶段高度的定比（不是 flex 分配剩余空间——短屏剩余空间变小、牌会往回涨），
+    // 三幕共用同一比例，牌组稳定落在球座之下。
+    expect(styles).toMatch(/clay 牌位下移[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?flex: 0 0 auto;[\s\S]*?height: 44%;/)
+    // 抽牌组的牌扇压矮一档，下移后才不会顶到「翻开所选牌」按钮
+    expect(styles).toMatch(/\.miniapp-tarot__fan \{\s*\n\s*height: 320rpx;/)
+    // 翻牌名牌框：classic 暗紫星夜牌盒换成与气泡/卡片同一支奶白底 + 软棕边 + 深棕字
+    expect(styles).toMatch(/\.miniapp-tarot-card__labels \{[\s\S]*?border-color: rgba\(160, 118, 82, \.24\);[\s\S]*?color: #6b4a33;[\s\S]*?background: #fffef9;/)
+    // 基础（classic）名牌框仍走暗紫底，clay 只是覆盖
+    expect(styles).toMatch(/\.miniapp-tarot-card__labels \{[\s\S]*?background: rgba\(17, 11, 28, \.88\);/)
+  })
+
   it('picks a legible ink for the clay skip action instead of the accent orange', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
