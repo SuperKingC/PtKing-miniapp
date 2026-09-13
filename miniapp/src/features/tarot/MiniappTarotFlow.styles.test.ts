@@ -434,9 +434,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(flowSource).toContain('miniapp-tarot__flame-ember')
     // 覆盖层按背景图比例定位：宽度复刻 aspectFill 的 cover 宽（竖屏 = 56.26vh，图比例 0.5626）
     expect(styles).toMatch(/\.miniapp-tarot__flame-scene \{[\s\S]*?max\(100vw, 56\.26vh\)/)
-    // 火焰锚在 sanctuary-background-clay.jpg 上量得的烛芯比例坐标（底边坐在蜡面的芯根上）
-    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?left: 64\.7%/)
-    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?top: 45\.5%/)
+    // 火焰锚在 sanctuary-background-clay-v2.jpg（背景 2）上量得的烛芯比例坐标
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?left: 63\.4%/)
+    expect(styles).toMatch(/\.miniapp-tarot__flame \{[\s\S]*?top: 47\.2%/)
     // 水滴形火苗：clip-path 切出尖顶肥底的真火轮廓——整朵火只有一个形体，
     // 焰尖不能再叠第二团（那会叠出中间的糖葫芦腰），内填径向渐变出暖色焰心
     expect(styles).toMatch(/\.miniapp-tarot__flame-body \{[\s\S]*?clip-path: polygon\(50% 0%, 63% 16%/)
