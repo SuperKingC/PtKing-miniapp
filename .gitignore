@@ -23,3 +23,4 @@ project.private.config.json
 
 # 验收截图统一落这里,一律不入库(automator 实机截图/放大对照)
 miniapp/art/verify-shots/
+.worktrees/
