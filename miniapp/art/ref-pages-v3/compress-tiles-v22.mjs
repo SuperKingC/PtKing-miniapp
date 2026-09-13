@@ -1,8 +1,8 @@
-// 一次性：TinyPNG 压缩 v21 两枚 tile（prepared/ → src/assets/illus，升版文件名）
-// v21 把气球/公文包的下/左接触棱重建为与参考稿（爱心/星星/MBTI）同族：参考稿的边是
-// 一圈内翻软陶棱（自视觉边向内 ~11px 压出暖褐接触棱），v20 的影却铺在实体外侧且方向相反，
-// 又有一块近白平板与 78/198 两级台阶导致的锯齿。v21 用光滑圆角矩形轮廓重出 alpha、
-// 按参考实测剖面重绘下/左棱。
+// 一次性：TinyPNG 压缩 v22 两枚 tile（prepared/ → src/assets/illus，升版文件名）
+// v22 在 v21 基础上：① 棱权重 k≤16 全力（v21 从边缘线性衰减，最深 k≈11 只剩 ~56% 力度，
+// 峰值 92 对参考 105~114，棱发虚）；② 暗棱改乘性比率（clamp ≤1.02 只允许压暗），
+// 修掉 v21「参考色+板面偏移」把公文包棱染成脏紫灰的问题；③ 乘 base0（透明缝隙已垫
+// 板面色），修掉首版左缘黑洞。
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -14,7 +14,7 @@ for (const line of fs.readFileSync('D:/Mine/miniapp-kit/.env', 'utf8').split(/\r
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '')
 }
 const keys = ['TINYPNG_API_KEY', 'TINYPNG_API_KEY_2', 'TINYPNG_API_KEY_3'].map((n) => process.env[n]).filter(Boolean)
-const files = ['tile-fun-v21.png', 'tile-career-v21.png']
+const files = ['tile-fun-v22.png', 'tile-career-v22.png']
 for (const name of files) {
   const input = fs.readFileSync(path.join(root, 'prepared', name))
   let done = false

@@ -54,8 +54,8 @@ describe('测试首页软陶单列布局', () => {
     expect(source).toContain('hero-card-v11.png')
     /* 气球/公文包 tile 走 v21：下/左内翻接触棱对齐参考稿（参考稿的边是实体自带的一圈
        内翻软陶棱，不是外侧投影）＋光滑圆角抗锯齿（v20 的 78/198 两级台阶是锯齿来源） */
-    expect(source).toContain('tile-fun-v21.png')
-    expect(source).toContain('tile-career-v21.png')
+    expect(source).toContain('tile-fun-v22.png')
+    expect(source).toContain('tile-career-v22.png')
     expect(source).not.toContain('tile-fun-v13.png')
     expect(source).not.toContain('tile-career-v13.png')
     expect(source).toContain('pickDailyTest(definitions, now.getFullYear(), now.getMonth() + 1, now.getDate())')

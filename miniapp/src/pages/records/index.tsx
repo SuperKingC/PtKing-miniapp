@@ -13,8 +13,8 @@ import emptyRecordsImg from '../../assets/illus/empty-records-v3.png'
 import bookImage from '../../assets/illus/records-book-v4.png'
 import personalityIcon from '../../assets/illus/tile-star-v10.png'
 import loveIcon from '../../assets/illus/tile-love-v10.png'
-import careerIcon from '../../assets/illus/tile-career-v21.png'
-import funIcon from '../../assets/illus/tile-fun-v21.png'
+import careerIcon from '../../assets/illus/tile-career-v22.png'
+import funIcon from '../../assets/illus/tile-fun-v22.png'
 import './index.scss'
 
 const CATEGORIES: RecordCategory[] = ['全部', '人格', '情感', '职场', '趣味']

@@ -16,8 +16,8 @@ describe('bright records layout', () => {
     expect(source).toContain('我的记录')
     expect(source).toContain('records-book-v4.png')
     /* 气球/公文包走 v21：下/左内翻接触棱对齐参考稿 + 光滑圆角抗锯齿 */
-    expect(source).toContain('tile-fun-v21.png')
-    expect(source).toContain('tile-career-v21.png')
+    expect(source).toContain('tile-fun-v22.png')
+    expect(source).toContain('tile-career-v22.png')
     expect(source).not.toContain('tile-fun-v13.png')
     expect(source).not.toContain('tile-career-v13.png')
     expect(source).toContain('已探索 ')

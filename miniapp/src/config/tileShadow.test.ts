@@ -12,8 +12,11 @@ import { miniappRoot } from './testPaths'
    最外 1~4px 是低 alpha 的浅色余晖。左缘同形但更浅、峰在 ~5px。上/右与左上角干净。
 
    历史上 v19/v20 把影铺在实体**外侧**（方向相反），峰值仅 ~78，还在画布底留下一块
-   alpha≈82 的近白平板；实体边 alpha 只有 78/198 两级台阶（锯齿来源）。本测试直接解码 PNG
-   核对三件事：① 下/左棱的**峰位与量级**与参考 love 同档；② 体外没有 alpha 平板（也不是锯齿台阶）；
+   alpha≈82 的近白平板；实体边 alpha 只有 78/198 两级台阶（锯齿来源）。v21 修了方向但
+   权重从边缘线性衰减，最深 k≈11 只剩 ~56% 力度（峰值 92 对参考 105~114，棱发虚），
+   且「参考色+板面偏移」重绘把公文包的棱染成脏紫灰；v22 改为 k≤16 全力 + 乘性比率
+   （clamp ≤1.02 只允许压暗）。本测试直接解码 PNG 核对三件事：
+   ① 下/左棱的**峰位与量级**与参考 love 同档；② 体外没有 alpha 平板（也不是锯齿台阶）；
    ③ 上/右干净。 */
 
 const PAGE = [254, 250, 244]
@@ -80,7 +83,7 @@ function inwardProfile(rel: string, side: 'bottom' | 'left', depth = 22) {
 }
 
 const REF = 'src/assets/illus/tile-love-v10.png'
-const TILES = ['src/assets/illus/tile-fun-v21.png', 'src/assets/illus/tile-career-v21.png']
+const TILES = ['src/assets/illus/tile-fun-v22.png', 'src/assets/illus/tile-career-v22.png']
 
 describe('测试条 tile 与参考 tile 同族（下/左内翻接触棱）', () => {
   it('下缘棱的峰位与量级与参考 love 同档', () => {
