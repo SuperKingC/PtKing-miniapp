@@ -2458,8 +2458,7 @@
   .miniapp-tarot__stage--ritual > .miniapp-tarot__spacer:not(.miniapp-tarot__spacer--top),
   .miniapp-tarot__stage--fan > .miniapp-tarot__spacer:not(.miniapp-tarot__spacer--top),
   .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer:not(.miniapp-tarot__spacer--top) {
-    flex: 0 0 auto;
-    height: 0;
+    display: none;
   }
 
   // 牌组容器不许被压：短屏上原本会被 flex 挤压（375×667 实测牌扇被压到 20px 高，

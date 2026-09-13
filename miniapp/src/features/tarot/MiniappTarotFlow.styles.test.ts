@@ -164,7 +164,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 而不是把牌组压扁（375×667 曾把牌扇压到 20px 高 → 牌溢出被裁）。
     expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?height: calc\(40vh - 200rpx\);/)
     // 下 spacer 钉死，上 spacer 唯一决定牌组位置（否则弹性 spacer 会吸走空间、牌组原地不动）
-    expect(styles).toMatch(/\.miniapp-tarot__spacer:not\(\.miniapp-tarot__spacer--top\) \{[\s\S]*?height: 0;/)
+    expect(styles).toMatch(/\.miniapp-tarot__spacer:not\(\.miniapp-tarot__spacer--top\) \{[\s\S]*?display: none;/)
     // 牌组容器不被 flex 压缩：牌扇/牌位/翻牌行都设 flex: none
     expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck,[\s\S]*?\.miniapp-tarot__cut-deck,[\s\S]*?\.miniapp-tarot__picked-row,[\s\S]*?\.miniapp-tarot__fan,[\s\S]*?\.miniapp-tarot__reveal-row \{\s*\n\s*flex: none;/)
     // 抽牌组的牌扇压矮一档（容器须 ≥ 牌高 218rpx + bottom 20rpx 才不溢出压按钮）
@@ -548,6 +548,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__next,[\s\S]*?flex: none;/)
     expect(styles).toMatch(/\.miniapp-tarot__fan \{[\s\S]*?margin: 0;/)
     expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__hint,[\s\S]*?\.miniapp-tarot__next,[\s\S]*?\.miniapp-tarot__text-action \{[\s\S]*?margin-top: 0;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__stage--ritual > \.miniapp-tarot__spacer:not\(\.miniapp-tarot__spacer--top\),[\s\S]*?display: none;/)
     expect(styles).toMatch(/\.miniapp-tarot__fan \{[\s\S]*?gap: var\(--tarot-picked-gap\)/)
     expect(styles).not.toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*position: absolute;\s*\n\s*box-sizing: border-box;/)
     expect(styles).not.toMatch(/\.miniapp-tarot__fan-card \{\s*\n\s*position: absolute;\s*\n\s*box-sizing: border-box;/)
