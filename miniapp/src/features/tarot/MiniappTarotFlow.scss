@@ -2150,34 +2150,56 @@
   .miniapp-tarot__stage--fan,
   .miniapp-tarot__stage--reveal {
     padding-top: 20rpx;
+    // 气泡用相对偏移提到猫头上方，而阶段盒原本 overflow-y:auto 会把超出的部分裁掉
+    // （气泡整个消失）。改为 visible；牌组容器已设 flex:none、spacer 可收缩，
+    // 短屏内容仍收得下（375×667 实测 overflow 0），不需要靠滚动兜底。
+    overflow: visible;
   }
 
   .miniapp-tarot__stage--ritual > .miniapp-tarot__title,
   .miniapp-tarot__stage--fan > .miniapp-tarot__title,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__title {
+    // 气泡浮到测测子头顶之上，并让开微信三点胶囊。用 position:relative + top 做纯视觉
+    // 偏移：它原本占的高度仍在，下面 28% 的 spacer 与牌组落位完全不受影响
+    // （fixed/absolute 会把它从流里摘掉，牌组会整体上跳约 51px）。
     position: relative;
+    // -96rpx 提到猫头上沿（猫头顶约视口 9.7%）：气泡落在状态栏之下、叉叉钮右侧、
+    // 胶囊左侧那块安全区，既不压猫头也不被系统/胶囊挡。
+    top: -118rpx;
+    // 往左边延展：左对齐，左缘从叉叉钮右侧起，右缘靠 max-width 停在胶囊左侧
+    align-self: flex-start;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 120rpx;
     box-sizing: border-box;
-    width: 560rpx;
-    max-width: 100%;
-    margin: 0 auto;
+    width: auto;
+    max-width: 400rpx;
     padding: 16rpx 30rpx;
     border: 2rpx solid rgba(160, 118, 82, .24);
     border-radius: 26rpx;
     color: #6b4a33;
     font-size: 26rpx;
     line-height: 1.45;
-    text-align: center;
+    text-align: left;
     background: #fffef9;
     box-shadow: 0 10rpx 26rpx rgba(122, 88, 58, .14);
   }
 
-  // 气泡尾巴：朝下指着测测子
+  // clay 四仪式阶段隐藏 header 里的牌阵名：那条带要让给气泡，否则「单牌速抽」与
+  // 气泡在同一行互相压字。visibility 保留占位，头部高度不变、舞台起点不受影响。
+  // 注意 & 合写在根上：两个类同在根节点，写成后代会选择不到。
+  &.miniapp-tarot--clay-ritual .miniapp-tarot__header-title {
+    visibility: hidden;
+  }
+
+  // 气泡尾巴：朝下指着测测子的头
   .miniapp-tarot__stage--ritual > .miniapp-tarot__title::after,
   .miniapp-tarot__stage--fan > .miniapp-tarot__title::after,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__title::after {
     content: '';
     position: absolute;
-    left: 50%;
+    left: 96rpx;
     bottom: -11rpx;
     width: 22rpx;
     height: 22rpx;
@@ -2185,7 +2207,7 @@
     border-bottom: 2rpx solid rgba(160, 118, 82, .24);
     background: #fffef9;
     border-bottom-right-radius: 8rpx;
-    transform: translateX(-50%) rotate(45deg);
+    transform: rotate(45deg);
   }
 
   // classic 的底部状态行在 clay 已并进气泡那句话，这里不再单独显示
@@ -2195,25 +2217,28 @@
   }
 
   // 洗牌牌堆：classic 对准的是背景金环中心；clay 背景是浅色桌面、猫前爪搭在桌沿，
-  // 同一套几何会顶到猫爪上。整叠牌比 classic 再缩一档并整体下移（牌中心 263→287rpx），
-  // 顶层牌面落在猫爪之下、与底部按钮之间也留出更宽的呼吸。
+  // 同一套几何会顶到猫爪上。整叠牌比 classic 再缩一档。
+  // 落位与切牌牌堆对齐（用户要求「洗牌结算后的牌位和下一幕一致」，避免换幕时牌往下跳）：
+  // 切牌牌面 top 87rpx、牌高 278rpx → 牌面中心 226rpx；洗牌原为 top148rpx → 中心 287rpx，
+  // 比切牌低 61rpx。这里整组（牌面 + 环/符文/灵气，保持彼此相对关系）统一上移 61rpx。
   .miniapp-tarot__deck-card {
-    top: 148rpx;
+    top: 87rpx;
     width: 176rpx;
     height: 278rpx;
   }
 
-  // 这几层的 top 是圆心(自身带 translate(-50%, -50%))，跟牌堆中心对齐
+  // 这几层的 top 是圆心(自身带 translate(-50%, -50%))，跟牌堆中心对齐：
+  // 312rpx 是原值，随牌面一起上移 61rpx → 251rpx（与牌面中心 226rpx 的相对关系不变）
   .miniapp-tarot__shuffle-deck::after,
   .miniapp-tarot__shuffle-orbit,
   .miniapp-tarot__shuffle-rune,
   .miniapp-tarot__shuffle-burst {
-    top: 312rpx;
+    top: 251rpx;
   }
 
-  // 软晕层只有 translateX，top 是圆的上沿：圆心 312rpx - 半径 180rpx
+  // 软晕层只有 translateX，top 是圆的上沿：圆心 251rpx - 半径 180rpx
   .miniapp-tarot__shuffle-deck::before {
-    top: 132rpx;
+    top: 71rpx;
     width: 360rpx;
     height: 360rpx;
   }
@@ -2367,10 +2392,31 @@
   // 牌组上移定量依据：底锚放大后桌面远端与球座整体上抬——
   // 球身由 0.26..0.50 抬到约 0.10..0.34、球座底边约 0.37（×视口高），
   // 故牌组顶端收到阶段高度约 28% 处，既在球座之下、又把底部让给按钮。
+  // 洗牌阶段必须同列：之前漏了 --shuffle，洗牌沿用了 .spacer--top 的 flex-grow:6，
+  // 于是洗牌牌堆比切牌牌堆低一截——洗牌结算后进切牌，牌位会跳。
+  // flex 用 `0 1 28%`：有余量时恒为阶段高的 28%（位置一致），短屏内容放不下时
+  // 由它先收缩（牌组和按钮优先保证完整），而不是让牌组被压扁。
+  .miniapp-tarot__stage--shuffle > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
-    flex: 0 0 auto;
-    height: 28%;
+    flex: 0 1 28%;
+    min-height: 24rpx;
+    height: auto;
+  }
+
+  // 牌组容器不许被压：短屏上原本会被 flex 挤压（375×667 实测牌扇被压到 20px 高，
+  // 牌随即溢出阶段被裁切）。设 flex: none 后由上面的 spacer 先收缩。
+  .miniapp-tarot__shuffle-deck,
+  .miniapp-tarot__cut-deck,
+  .miniapp-tarot__picked-row,
+  .miniapp-tarot__fan,
+  .miniapp-tarot__reveal-row {
+    flex: none;
+  }
+
+  // 洗牌牌堆顶上那条 6rpx 边距会让它的牌比切牌再低 3px，抹平后两幕牌面中心对齐
+  .miniapp-tarot__shuffle-deck {
+    margin-top: 0;
   }
 }

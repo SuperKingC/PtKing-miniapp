@@ -60,6 +60,9 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
     [chooseSpread],
   )
   const activeStageIndex = stages.indexOf(state.stage)
+  // clay 的四仪式阶段：标题那行让位给「测测子气泡」（气泡要有位置浮到猫头上方，
+  // 不能和 header 里的牌阵名/胶囊挤同一条带），故根节点挂状态类供 CSS 隐藏标题。
+  const clayRitual = state.stage === 'shuffle' || state.stage === 'cut' || state.stage === 'fan' || state.stage === 'reveal'
 
   const loadResources = () => {
     const attempt = ++loadAttemptRef.current
@@ -142,7 +145,7 @@ export function MiniappTarotFlow({ onClose, onShareTitleChange, initialSpread = 
   }
 
   return (
-    <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')} style={topInsetStyle()}>
+    <View className={['miniapp-tarot', `motion-${motionPreference}`, `skin-${skin}`, skin === 'clay' && clayRitual ? 'miniapp-tarot--clay-ritual' : '', leaving ? 'miniapp-tarot--leaving' : ''].filter(Boolean).join(' ')} style={topInsetStyle()}>
       {/* 场景层包住背景/纱罩/火焰/星点：clay 皮肤对它整体放大+上移，四层同一几何 */}
       <View className="miniapp-tarot__scene">
         <Image

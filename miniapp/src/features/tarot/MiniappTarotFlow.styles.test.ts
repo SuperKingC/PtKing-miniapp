@@ -104,8 +104,16 @@ describe('miniapp tarot WXSS compatibility', () => {
 
     // clay 场景里测测子就在牌桌对面说话：顶部进度点与洗牌进度条都压在猫头天际线上，一并去掉
     expect(styles).toMatch(/\.miniapp-tarot__progress,\s*\n\s*\.miniapp-tarot__shuffle-bar \{\s*\n\s*display: none;/)
-    // 气泡只有标题这一枚（完整圆角 + 固定宽度），不会出现两半拼贴的接缝
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?width: 560rpx;[\s\S]*?border-radius: 26rpx;/)
+    // 气泡只有标题这一枚（完整圆角 + 收窄宽度），不会出现两半拼贴的接缝
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?max-width: 400rpx;[\s\S]*?border-radius: 26rpx;/)
+    // 气泡浮到测测子头顶之上并左对齐、向左侧延展（right 端靠 max-width 停在微信胶囊左侧），
+    // 用相对偏移上提，不改变它原本占的高度（下面 28% 的 spacer 与牌组落位不受影响）
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: relative;[\s\S]*?top: -118rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?align-self: flex-start;/)
+    // 阶段容器不能裁掉上提的气泡：clay 把 overflow 改回 visible
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,\s*\n\s*\.miniapp-tarot__stage--fan,\s*\n\s*\.miniapp-tarot__stage--reveal \{\s*\n\s*padding-top: 20rpx;[\s\S]*?overflow: visible;/)
+    // clay 四仪式阶段把 header 的牌阵名藏掉（visibility 保留占位），那条带让给气泡
+    expect(styles).toMatch(/&\.miniapp-tarot--clay-ritual \.miniapp-tarot__header-title \{\s*\n\s*visibility: hidden;/)
     // 尾巴挂在标题下沿、朝下指着猫
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title::after,[\s\S]*?bottom: -11rpx;/)
     // classic 的底部状态行已并进气泡那句话，clay 不再单独显示
@@ -113,20 +121,23 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).not.toContain('order: -2;')
   })
 
-  it('shrinks and lowers the clay ritual piles so the pile clears the cat paws', () => {
+  it('aligns the clay shuffle pile with the cut pile so the deck does not jump between stages', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
-    // classic 的牌堆对准背景金环中心；clay 桌面更低、猫爪搭在桌沿，
-    // 同一套几何会顶到猫爪，故缩小并下移顶层牌，环/符文/波纹圆心同步下移
-    expect(styles).toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*top: 148rpx;\s*\n\s*width: 176rpx;\s*\n\s*height: 278rpx;/)
-    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::after,\s*\n\s*\.miniapp-tarot__shuffle-orbit,[\s\S]*?top: 312rpx;/)
+    // classic 的牌堆对准背景金环中心；clay 桌面更低、猫爪搭在桌沿，故整叠缩小一档。
+    // 落位与切牌牌堆对齐：切牌牌面 top 87rpx（中心 226rpx），洗牌原 148rpx（中心 287rpx）
+    // 会低 61rpx，用户要求「洗牌结算后的牌位和下一幕一致」，故整组统一上移到同一中心。
+    expect(styles).toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*top: 87rpx;\s*\n\s*width: 176rpx;\s*\n\s*height: 278rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::after,\s*\n\s*\.miniapp-tarot__shuffle-orbit,[\s\S]*?top: 251rpx;/)
     // 软晕层只做 translateX，top 是圆上沿而非圆心
-    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::before \{[\s\S]*?top: 132rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck::before \{[\s\S]*?top: 71rpx;/)
     expect(styles).toMatch(/\.miniapp-tarot__shuffle-orbit--outer \{[\s\S]*?width: 313rpx;/)
     expect(styles).toMatch(/\.miniapp-tarot__shuffle-burst \{[\s\S]*?width: 337rpx;/)
+    // 洗牌牌堆顶上那条 6rpx 边距会让它比切牌再低 3px，clay 抹平
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck \{\s*\n\s*margin-top: 0;/)
 
-    // 切牌是洗牌的下一幕，牌面/整叠必须同一套缩小下移，否则一切牌牌就"变大变高"：
-    // 牌面 214×326 → 167×254，整叠 230×356 → 179×278 并随之下移(中心 187→214rpx)
+    // 切牌是洗牌的下一幕，牌面/整叠必须同一套缩小，否则一切牌牌就"变大变高"：
+    // 牌面 214×326 → 167×254，整叠 230×356 → 179×278
     expect(styles).toMatch(/\.miniapp-tarot__cut-half \{\s*\n\s*top: 87rpx;\s*\n\s*width: 179rpx;\s*\n\s*height: 278rpx;\s*\n\s*margin-left: -90rpx;/)
     expect(styles).toMatch(/\.miniapp-tarot__cut-sheet,\s*\n\s*\.miniapp-tarot__cut-face \{\s*\n\s*width: 167rpx;\s*\n\s*height: 254rpx;/)
     // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽；
@@ -139,8 +150,13 @@ describe('miniapp tarot WXSS compatibility', () => {
 
     // 水晶球立在桌面中上部，切牌/抽牌/翻牌三幕的牌组原来落在阶段中线、牌顶压住球身。
     // 场景层底锚放大上移后球座抬到约视口 37%，牌组顶端收到阶段高度 28%，落在球座之下。
-    expect(styles).toMatch(/\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?flex: 0 0 auto;[\s\S]*?height: 28%;/)
-    // 抽牌组的牌扇压矮一档，下移后才不会顶到「翻开所选牌」按钮
+    // 洗牌必须同列（否则洗牌牌堆比切牌低一截、换幕时牌位跳动）；
+    // flex 用 `0 1 28%`：有余量时恒为 28%（位置一致），短屏内容放不下时先收缩 spacer，
+    // 而不是把牌组压扁（375×667 曾把牌扇压到 20px 高 → 牌溢出被裁）。
+    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?flex: 0 1 28%;/)
+    // 牌组容器不被 flex 压缩：牌扇/牌位/翻牌行都设 flex: none
+    expect(styles).toMatch(/\.miniapp-tarot__shuffle-deck,[\s\S]*?\.miniapp-tarot__cut-deck,[\s\S]*?\.miniapp-tarot__picked-row,[\s\S]*?\.miniapp-tarot__fan,[\s\S]*?\.miniapp-tarot__reveal-row \{\s*\n\s*flex: none;/)
+    // 抽牌组的牌扇压矮一档，收在「翻开所选牌」之上
     expect(styles).toMatch(/\.miniapp-tarot__fan \{\s*\n\s*height: 320rpx;/)
     // 翻牌名牌框：classic 暗紫星夜牌盒换成与气泡/卡片同一支奶白底 + 软棕边 + 深棕字
     expect(styles).toMatch(/\.miniapp-tarot-card__labels \{[\s\S]*?border-color: rgba\(160, 118, 82, \.24\);[\s\S]*?color: #6b4a33;[\s\S]*?background: #fffef9;/)
@@ -445,8 +461,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     // clay 把场景层底锚放大（底边钉住、画面向上长）：桌子变大且整体上移，底部不留缝
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: scale\(1\.16\)/)
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform-origin: 50% 100%/)
-    // 牌组上移到球座之下、按钮之上：三幕上 spacer 收到阶段高度 28%
-    expect(styles).toMatch(/\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?height: 28%/)
+    // 牌组上移到球座之下、按钮之上：四幕（含洗牌）上 spacer 收到阶段高度 28%
+    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?flex: 0 1 28%/)
   })
 
   it('lifts only the top half on the swapped (odd) cut, so both halves never fly together', () => {
@@ -458,5 +474,22 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__cut-deck--swapped\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--left \{[\s\S]*?translate\(117rpx, -66rpx\)/)
     // 基类仍保留「交换后把 right 复位成下压」的规则，供上面的 :not 守卫配合
     expect(styles).toMatch(/\.miniapp-tarot__cut-deck--swapped\.miniapp-tarot__cut-deck--cutting \.miniapp-tarot__cut-half--right \{[\s\S]*?translateY\(4rpx\)/)
+  })
+
+  it('floats the clay bubble above the cat and clear of the wechat capsule', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+    const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
+
+    // 气泡上提只做视觉偏移（relative + top），保留流内高度，牌组落位不受影响
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: relative;[\s\S]*?top: -118rpx;/)
+    // 向左侧延展：左对齐 + 限宽，右端停在微信三点胶囊左侧
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?align-self: flex-start;[\s\S]*?margin-left: 120rpx;[\s\S]*?max-width: 400rpx;/)
+    // 阶段原本 overflow-y:auto 会把上提的气泡裁掉，clay 改回 visible
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,\s*\n\s*\.miniapp-tarot__stage--fan,\s*\n\s*\.miniapp-tarot__stage--reveal \{\s*\n\s*padding-top: 20rpx;[\s\S]*?overflow: visible;/)
+    // Flow 在 clay 的四仪式阶段挂状态类，CSS 借它藏掉 header 的牌阵名（visibility 保占位）
+    expect(flowSource).toContain('clayRitual')
+    expect(flowSource).toMatch(/state\.stage === 'shuffle'[\s\S]*?state\.stage === 'reveal'/)
+    expect(flowSource).toContain('miniapp-tarot--clay-ritual')
+    expect(styles).toMatch(/&\.miniapp-tarot--clay-ritual \.miniapp-tarot__header-title \{\s*\n\s*visibility: hidden;/)
   })
 })
