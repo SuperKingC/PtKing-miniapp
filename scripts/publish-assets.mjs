@@ -62,8 +62,8 @@ export const TAROT_FILES = [
   'tarot/ui/sanctuary-background.jpg',
   'tarot/ui/card-back.jpg',
   ...TAROT_MAJORS.flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
-  'tarot/ui/sanctuary-background-clay.jpg',
-  'tarot/ui/card-back-clay.jpg',
+  'tarot/ui/sanctuary-background-clay-v2.jpg',
+  'tarot/ui/card-back-clay-v2.jpg',
 ]
 
 const args = new Set(process.argv.slice(2))

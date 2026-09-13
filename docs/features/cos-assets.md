@@ -60,20 +60,22 @@ COS_PUBLIC_BASE=https://ptking-assets-1300973162.cos.ap-guangzhou.myqcloud.com
 art/generated-art/tarot/ui/sanctuary-background.jpg
 art/generated-art/tarot/ui/card-back.jpg
 art/generated-art/tarot/cards/{22 张 majors}.jpg
-art/generated-art/tarot/ui/sanctuary-background-clay.jpg
-art/generated-art/tarot/ui/card-back-clay.jpg
+art/generated-art/tarot/ui/sanctuary-background-clay-v2.jpg
+art/generated-art/tarot/ui/card-back-clay-v2.jpg
 art/generated-art/tarot/cards/{22 张 majors}-clay.jpg
 ```
 
 （majors 清单见 `scripts/publish-assets.mjs` 的 `TAROT_FILES`。）
 
-牌面原图像素约 768×1152（clay 批次为 2:3 竖幅），背景约 900×1350。界面上牌面大约 190×300 rpx，真机按 2～3 倍屏也就需要约 400×600 像素。因此：
+本次 clay UI 资源版本说明：`sanctuary-background-clay-v2.jpg` 来源为 `tarot-bg-long2.png`（背景 2），`card-back-clay-v2.jpg` 来源为 `tarot-clay-cardback-v2r1.png`（牌背 1）。文件名显式升级为 `-v2`，避免客户端与 COS/CDN 沿用旧文件名缓存；上传目录仍使用 git SHA 版本目录，48 张清单与 COS 根路径规则不变。
+
+牌面原图像素约 768×1152（clay 批次为 2:3 竖幅），背景约 768×1365。界面上牌面大约 190×300 rpx，真机按 2～3 倍屏也就需要约 400×600 像素。因此：
 
 - **只做 TinyPNG、不降分辨率**：像素不变，主要减 JPEG 体积，观感几乎不变。这是当前做法。
 - **适度缩小（例如收到 560×840）**：手机上看不出差别，体积会再小一截。
 - **收到显示尺寸（190×300）**：会发糊，不要这样做。
 
-换内容覆盖同名即可（上传带 git SHA 新目录，缓存自然失效）。文件名已与代码锁定，不要改名。
+换内容应按版本升名（例如 `-v3`）并同步代码清单；上传带 git SHA 新目录，文件名与目录双重版本化，确保缓存自然失效。文件名已与代码锁定，不要擅自改名。
 
 ## 日常更新（一键）
 

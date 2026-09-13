@@ -19,8 +19,8 @@ function expectedTarotFiles(): string[] {
     'tarot/ui/sanctuary-background.jpg',
     'tarot/ui/card-back.jpg',
     ...majors.flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
-    'tarot/ui/sanctuary-background-clay.jpg',
-    'tarot/ui/card-back-clay.jpg',
+    'tarot/ui/sanctuary-background-clay-v2.jpg',
+    'tarot/ui/card-back-clay-v2.jpg',
   ]
 }
 
@@ -50,8 +50,8 @@ describe('COS asset publish workflow', () => {
     expect(expectedTarotFiles()).toHaveLength(48)
     expect(publishSource).toContain("'tarot/ui/sanctuary-background.jpg'")
     expect(publishSource).toContain("'tarot/ui/card-back.jpg'")
-    expect(publishSource).toContain("'tarot/ui/sanctuary-background-clay.jpg'")
-    expect(publishSource).toContain("'tarot/ui/card-back-clay.jpg'")
+    expect(publishSource).toContain("'tarot/ui/sanctuary-background-clay-v2.jpg'")
+    expect(publishSource).toContain("'tarot/ui/card-back-clay-v2.jpg'")
     expect(publishSource).toContain("'the-fool'")
     expect(publishSource).toContain("'the-world'")
     expect(publishSource).toContain('`tarot/cards/${name}.jpg`')
