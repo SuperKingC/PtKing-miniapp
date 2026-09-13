@@ -11,9 +11,15 @@ import { miniappRoot } from './testPaths'
    过渡。v9 的残框清理不够彻底：底缘只清 alpha<200、右缘只清 x>=670，漏下的暖灰
    像素（RGB 150-240，非黑）又不在 v9 的 RGB<120 修复范围内，于是面板底/右留了一圈
    不跟圆角的暖灰「方块边」（2026-09-12 用户反馈）。v10 清残框清到底并把暖灰像素
-   也换成最近本体色。这里直接解码 PNG 核对剖面与边缘颜色，防止再退回阶跃边或暖灰框。 */
+   也换成最近本体色。
 
-const ASSET = 'src/assets/illus/hero-card-v10.png'
+   2026-09-13 用户反馈「今日推荐栏边缘有锯齿，周围还被一个浅色方形包裹」：v10 的
+   AA 重建（NEAREST 放大 + 过小高斯）实际只有 1px 过渡（0/47/254），TinyPNG 量化
+   后曲线全是台阶锯齿；外圈裙边是参考稿灰蓝（合成后 ~236,234,231 的浅灰框）。
+   v11 按 50% 等高线重建 2-3px 干净过渡（几何零漂移），裙边换最近本体色。这里
+   直接解码 PNG 核对剖面与边缘颜色，防止再退回阶跃边或暖灰框。 */
+
+const ASSET = 'src/assets/illus/hero-card-v11.png'
 
 function decode(rel: string) {
   const png = PNG.sync.read(readFileSync(resolve(miniappRoot(), rel)))
@@ -124,6 +130,26 @@ describe('今日推荐栏边缘抗锯齿', () => {
       expect(n, `${name}外圈像素数`).toBeGreaterThan(80)
       /* 面板蓝应占压倒多数；v9 该处只有 15-44% */
       expect(cool / n, `${name}外圈偏蓝占比`).toBeGreaterThan(0.85)
+    }
+  })
+
+  it('右缘过渡带均匀收紧（不是 1px 硬边，也不是 9px+ 不规则晕带）', () => {
+    /* v10 病根：AA 重建后过渡只有 1px（0/47/254），量化后曲线成台阶锯齿。
+       v11 按 50% 等高线重建为均匀 2-3px 坡。沿右缘直段（y 100..260）统计每行
+       0<alpha<255 的过渡像素数：必须存在、且不超过 5（v10 病态是 0 或 9-16）。 */
+    const widths: number[] = []
+    for (let y = 100; y < 260; y += 4) {
+      let n = 0
+      for (let x = img.width - 1; x >= img.width - 20; x -= 1) {
+        const a = img.alpha[y * img.width + x]
+        if (a > 0 && a < 255) n += 1
+        else if (n > 0) break
+      }
+      widths.push(n)
+    }
+    expect(widths.some((n) => n > 0), '右缘存在过渡像素').toBe(true)
+    for (const w of widths) {
+      expect(w, '右缘过渡像素数').toBeLessThanOrEqual(5)
     }
   })
 })
