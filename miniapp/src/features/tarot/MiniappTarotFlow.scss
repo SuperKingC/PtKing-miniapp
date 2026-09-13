@@ -2153,11 +2153,12 @@
   .miniapp-tarot__stage--ritual,
   .miniapp-tarot__stage--fan,
   .miniapp-tarot__stage--reveal {
-    padding-top: 20rpx;
-    // 气泡用相对偏移提到猫头上方，而阶段盒原本 overflow-y:auto 会把超出的部分裁掉
-    // （气泡整个消失）。改为 visible；牌组容器已设 flex:none、spacer 可收缩，
-    // 短屏内容仍收得下（375×667 实测 overflow 0），不需要靠滚动兜底。
-    overflow: visible;
+    // 气泡改成 fixed 后不再占流内高度（原约 51px≈98rpx），这里补回来，
+    // 否则牌组整体上跳、又压回水晶球上。
+    padding-top: 190rpx;
+    // 短屏（375x667）内容高于阶段，给回滚动兜底，按钮才够得着；
+    // 气泡已是 fixed，不受这里裁切。
+    overflow-y: auto;
   }
 
   .miniapp-tarot__stage--ritual > .miniapp-tarot__title,
@@ -2166,16 +2167,14 @@
     // 气泡浮到测测子头顶之上，并让开微信三点胶囊。用 position:relative + top 做纯视觉
     // 偏移：它原本占的高度仍在，下面 28% 的 spacer 与牌组落位完全不受影响
     // （fixed/absolute 会把它从流里摘掉，牌组会整体上跳约 51px）。
-    position: relative;
-    // -96rpx 提到猫头上沿（猫头顶约视口 9.7%）：气泡落在状态栏之下、叉叉钮右侧、
-    // 胶囊左侧那块安全区，既不压猫头也不被系统/胶囊挡。
-    top: -118rpx;
-    // 往左边延展：左对齐，左缘从叉叉钮右侧起，右缘靠 max-width 停在胶囊左侧
-    align-self: flex-start;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 120rpx;
+    // 视口固定定位：不参与阶段布局（避免被阶段 flex/滚动影响），也不受阶段
+    // overflow 裁切。top 用 vh（随视口缩放最佳、且不会被 Taro 折算 rpx）。
+    position: fixed;
+    top: 3.4vh;
+    // 往左边延展：左缘从叉叉钮右侧起，右缘靠 max-width 停在胶囊左侧
+    left: 124rpx;
+    right: auto;
+    margin: 0;
     box-sizing: border-box;
     width: auto;
     max-width: 400rpx;
@@ -2355,13 +2354,15 @@
     flex-grow: 6;
   }
 
-  // 抽牌组（已选槽 + 牌扇）整体压矮一档：下移到球座之下后仍能收在「翻开所选牌」之上
+  // 抽牌组（已选槽 + 牌扇）压矮：整组要收在「球座之下、按钮之上」。
+  // 牌扇容器必须 ≥ 牌高 218rpx + bottom 20rpx + 弧线抬升，否则牌会溢出容器压到按钮，
+  // 故容器保留 270rpx、把「已选槽」压到 150rpx 来省空间。
   .miniapp-tarot__fan {
-    height: 320rpx;
+    height: 270rpx;
   }
 
   .miniapp-tarot__picked-row--1 .miniapp-tarot__picked-slot {
-    height: 250rpx;
+    height: 150rpx;
   }
 
   // （牌组顶端比例见下方「牌桌放大」块：场景放大上移后由 28% 统一给出）
@@ -2403,13 +2404,32 @@
   // 于是洗牌牌堆比切牌牌堆低一截——洗牌结算后进切牌，牌位会跳。
   // flex 用 `0 1 28%`：有余量时恒为阶段高的 28%（位置一致），短屏内容放不下时
   // 由它先收缩（牌组和按钮优先保证完整），而不是让牌组被压扁。
+  // 上 spacer 定高（不可收缩）：牌组位置 = 阶段顶 + 标题 + 上 spacer，唯一、不随余量漂移。
+  // 木座下沿 ≈ 0.54×视口高，阶段顶 ≈ 0.10×视口高，故 spacer ≈ 0.44×视口高 − 188rpx，
+  // 三档视口（375x667 / 390x844 / 414x896）实测牌组顶端都落在木座下沿之下 +4~14px。
+  // 用 vh 而不是百分比：百分比基于阶段高度，滚动/内容变化时会漂。
   .miniapp-tarot__stage--shuffle > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
   .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
-    flex: 0 1 28%;
+    flex: 0 0 auto;
+    height: calc(44vh - 212rpx);
     min-height: 24rpx;
-    height: auto;
+  }
+
+  // 牌组下移到水晶球之下（用户 2026-09-13「每个阶段牌的位置下移，不要挡住水晶球」）。
+  // 放大 1.08 后木座下沿约视口 47%（y≈432px），牌组顶端必须落在这条线之下：
+  // 实测每加 1% 上 spacer ≈ 下移 7px，故洗牌/切牌 +9%（→37%）、翻牌 +11%（→39%）；
+  // 抽牌（牌扇是最后一组、下面只压着按钮）余量有限，改用位移落到球座之下。
+  // 牌组下移到木座之下：牌堆自带 transform（洗牌 settle 关键帧、deck-card 的
+  // translateX(-50%)），再给牌组叠位移会打架；而加大上 spacer 也没用——下面那根
+  // 弹性 spacer 会把多出来的空间全部吸走，牌组原地不动。
+  // 故把**下 spacer 钉死**成小固定值，让上 spacer 的大小唯一决定牌组位置。
+  .miniapp-tarot__stage--ritual > .miniapp-tarot__spacer:not(.miniapp-tarot__spacer--top),
+  .miniapp-tarot__stage--fan > .miniapp-tarot__spacer:not(.miniapp-tarot__spacer--top),
+  .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer:not(.miniapp-tarot__spacer--top) {
+    flex: 0 0 auto;
+    height: 0;
   }
 
   // 牌组容器不许被压：短屏上原本会被 flex 挤压（375×667 实测牌扇被压到 20px 高，
@@ -2423,23 +2443,46 @@
   }
 
   // 抽牌飞牌：clay 的牌扇与已选槽比 classic 更近，沿用 classic 的 390rpx 抬升会让牌
-  // 冲过槽位、贴到阶段上沿（用户反馈「飞上去的牌被裁剪」）。实测线性关系后取 -328rpx，
-  // 让牌终点正好落在已选槽里居中（-390 时卡顶 357 高于槽顶 381；-300 时 404 低于槽顶）。
+  // 冲过槽位、贴着水晶球飞（用户反馈「飞上去的牌被裁剪」）。牌组整体下移后，实测
+  // -284rpx 让牌终点正落在已选槽里（-328 时终点比槽顶高 23px）。
   .miniapp-tarot__fan {
-    --fly-y: -328rpx;
-    --fly-y-mid: -243rpx;
+    --fly-y: -284rpx;
+    --fly-y-mid: -218rpx;
   }
 
   // 洗牌牌堆顶上那条 6rpx 边距会让它的牌比切牌再低 3px，抹平后两幕牌面中心对齐
   .miniapp-tarot__shuffle-deck {
     margin-top: 0;
   }
+}
 
-  // 翻牌阶段：整排牌位再下移一点（用户 2026-09-13）。只改这一幕。
-  // 用视觉偏移而不是加大上 spacer：上 spacer 已是 flex `0 1 28%`，翻牌内容较高、
-  // 剩余空间不足时它会被压回去（实测改成 36% 后落位没变），而阶段已 overflow:visible，
-  // 直接位移最直接可控。按钮在 640px，牌排底 ≈586px，下移 28px 后仍留 26px 间隙。
-  .miniapp-tarot__stage--reveal .miniapp-tarot__reveal-row {
-    transform: translateY(56rpx);
+// 短屏（iPhone SE 类，高 ≤720px）：牌组既要落在球座之下、又要留出两个按钮，
+// 竖高只有 667px 装不下，故整体压矮一档（长屏不受影响）。
+@media (max-height: 720px) {
+  .miniapp-tarot.skin-clay {
+    .miniapp-tarot__stage--shuffle > .miniapp-tarot__spacer--top,
+    .miniapp-tarot__stage--cut > .miniapp-tarot__spacer--top,
+    .miniapp-tarot__stage--fan > .miniapp-tarot__spacer--top,
+    .miniapp-tarot__stage--reveal > .miniapp-tarot__spacer--top {
+      height: calc(44vh - 212rpx);
+    }
+
+    .miniapp-tarot__shuffle-deck,
+    .miniapp-tarot__cut-deck {
+      height: 300rpx;
+    }
+
+    .miniapp-tarot__fan {
+      height: 220rpx;
+    }
+
+    .miniapp-tarot__picked-row--1 .miniapp-tarot__picked-slot {
+      height: 130rpx;
+    }
+
+    .miniapp-tarot__reveal-row {
+      transform: scale(.84);
+      transform-origin: 50% 0;
+    }
   }
 }
