@@ -15,9 +15,11 @@ describe('bright records layout', () => {
   it('uses real counts, a standalone book and date groups', () => {
     expect(source).toContain('我的记录')
     expect(source).toContain('records-book-v4.png')
-    /* 气球/公文包走 v21：下/左内翻接触棱对齐参考稿 + 光滑圆角抗锯齿 */
-    expect(source).toContain('tile-fun-v22.png')
-    expect(source).toContain('tile-career-v22.png')
+    /* 气球/公文包走 v23：v20 主体 + 参考 tile 外部空气影 + 连续抗锯齿 */
+    expect(source).toContain('tile-fun-v23.png')
+    expect(source).toContain('tile-career-v23.png')
+    expect(source).not.toContain('tile-fun-v22.png')
+    expect(source).not.toContain('tile-career-v22.png')
     expect(source).not.toContain('tile-fun-v13.png')
     expect(source).not.toContain('tile-career-v13.png')
     expect(source).toContain('已探索 ')
