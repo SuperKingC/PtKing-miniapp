@@ -5,6 +5,13 @@ import { describe, expect, it } from 'vitest'
 const stylesPath = path.resolve(__dirname, 'MiniappTarotFlow.scss')
 const shuffleStagePath = path.resolve(__dirname, 'MiniappTarotShuffleStage.tsx')
 
+const cardBackStagePaths = [
+  'MiniappTarotShuffleStage.tsx',
+  'MiniappTarotCutStage.tsx',
+  'MiniappTarotFanStage.tsx',
+  'MiniappTarotCard.tsx',
+]
+
 describe('miniapp tarot WXSS compatibility', () => {
   it('drops the flow header below the wechat capsule via the injected top inset', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
@@ -513,9 +520,32 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 关键帧两个节点各用独立变量、默认值就是 classic 原值（-300rpx / -390rpx），
     // classic 不设变量时算出来与改动前完全一致（不用比例换算，避免 classic 被挪动）
     expect(styles).toMatch(/translateY\(var\(--fly-y-mid, -300rpx\)\)/)
-    expect(styles).toMatch(/translateY\(var\(--fly-y, -390rpx\)\) rotate\(0deg\) scale\(1\)/)
+    expect(styles).toMatch(/translateY\(var\(--fly-y, -390rpx\)\) rotate\(0deg\) scale\(var\(--fly-scale-end, 1\)\)/)
 
     // 翻牌阶段的牌位上移改由统一的上 spacer（calc(40vh - 200rpx)）达成，不再单独位移；
     // 这里只确认短屏媒体查询给了压矮兜底（牌组 + 按钮同时收得进 SE）
+  })
+
+  it('renders every tarot card back with aspectFit while keeping artwork aspectFill', () => {
+    for (const fileName of cardBackStagePaths) {
+      const source = fs.readFileSync(path.resolve(__dirname, fileName), 'utf8')
+      expect(source).toMatch(/getTarotCardBack\(skin\)[\s\S]*?mode="aspectFit"/)
+    }
+
+    const cardSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotCard.tsx'), 'utf8')
+    expect(cardSource).toContain('getTarotArtworkUrl(drawn.card.id, skin)')
+    expect(cardSource).toMatch(/getTarotArtworkUrl\(drawn\.card\.id, skin\)[\s\S]*?mode="aspectFill"/)
+  })
+
+  it('keeps clay card groups and actions on one compact spacing rhythm', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--tarot-card-back-gap: 16rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--tarot-picked-gap: 14rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay \{[\s\S]*?--fly-scale-end: \.86;/)
+    expect(styles).toMatch(/\.miniapp-tarot__picked-row--1 \.miniapp-tarot__picked-slot \{[\s\S]*?height: 264rpx;/)
+    expect(styles).toMatch(/@keyframes miniapp-tarot-card-flight[\s\S]*?translateY\(var\(--fly-y, -390rpx\)\) rotate\(0deg\) scale\(var\(--fly-scale-end, 1\)\)/)
+    expect(styles).toMatch(/\.miniapp-tarot__next,[\s\S]*?flex: none;/)
+    expect(styles).toMatch(/\.miniapp-tarot__fan \{[\s\S]*?margin: 0;/)
   })
 })

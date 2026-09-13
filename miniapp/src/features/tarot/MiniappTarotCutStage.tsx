@@ -21,7 +21,7 @@ function CutPile() {
         <View key={index} className="miniapp-tarot__cut-sheet" style={{ top: `${index * 3}rpx` }} />
       ))}
       <View className="miniapp-tarot__cut-face">
-        <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
+        <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFit" fadeIn={false} />
       </View>
     </View>
   )

@@ -882,6 +882,7 @@
 
 .miniapp-tarot__deck-card {
   position: absolute;
+  box-sizing: border-box;
   top: 18rpx;
   left: 50%;
   width: 226rpx;
@@ -1330,12 +1331,13 @@
   position: relative;
   width: min(680rpx, 94vw);
   height: 360rpx;
-  // keeps the -12rpx overlap with the slot row; spacers handle centering
+  // classic keeps its original overlap; clay removes it in the skin override
   margin: -12rpx 0 0;
 }
 
 .miniapp-tarot__fan-card {
   position: absolute;
+  box-sizing: border-box;
   bottom: 20rpx;
   left: calc(50% - 64rpx);
   width: 128rpx;
@@ -1434,11 +1436,11 @@
   }
   55% {
     opacity: 1;
-    transform: translateX(calc(var(--fly-x, 0rpx) * .6)) translateY(var(--fly-y-mid, -300rpx)) rotate(0deg) scale(1.18);
+    transform: translateX(calc(var(--fly-x, 0rpx) * .6)) translateY(var(--fly-y-mid, -300rpx)) rotate(0deg) scale(1.08);
   }
   100% {
     opacity: 1;
-    transform: translateX(var(--fly-x, 0rpx)) translateY(var(--fly-y, -390rpx)) rotate(0deg) scale(1);
+    transform: translateX(var(--fly-x, 0rpx)) translateY(var(--fly-y, -390rpx)) rotate(0deg) scale(var(--fly-scale-end, 1));
   }
 }
 
@@ -2122,6 +2124,9 @@
   --tarot-shadow-panel: 0 18rpx 38rpx rgba(122, 88, 58, .16);
   --tarot-shadow-active: 0 22rpx 48rpx rgba(122, 88, 58, .3);
   --tarot-shadow-float: 0 24rpx 64rpx rgba(122, 88, 58, .32);
+  --tarot-card-back-gap: 16rpx;
+  --tarot-picked-gap: 14rpx;
+  --fly-scale-end: .86;
 
   // 背景图明亮，不需要加深色罩；星星在奶油天上改为浅金
   .miniapp-tarot__background {
@@ -2159,6 +2164,22 @@
     // 短屏（375x667）内容高于阶段，给回滚动兜底，按钮才够得着；
     // 气泡已是 fixed，不受这里裁切。
     overflow-y: auto;
+    gap: var(--tarot-card-back-gap);
+  }
+
+  .miniapp-tarot__picked-row {
+    gap: var(--tarot-picked-gap);
+  }
+
+  .miniapp-tarot__fan {
+    gap: var(--tarot-picked-gap);
+    margin: 0;
+  }
+
+  .miniapp-tarot__hint,
+  .miniapp-tarot__next,
+  .miniapp-tarot__text-action {
+    margin-top: var(--tarot-card-back-gap);
   }
 
   .miniapp-tarot__stage--ritual > .miniapp-tarot__title,
@@ -2356,15 +2377,14 @@
     flex-grow: 6;
   }
 
-  // 抽牌组（已选槽 + 牌扇）压矮：整组要收在「球座之下、按钮之上」。
-  // 牌扇容器必须 ≥ 牌高 218rpx + bottom 20rpx + 弧线抬升，否则牌会溢出容器压到按钮，
-  // 故容器保留 270rpx、把「已选槽」压到 150rpx 来省空间。
+  // 牌扇容器须容纳牌高、底部偏移和弧线抬升；已选槽恢复为完整 2:3 牌形。
   .miniapp-tarot__fan {
     height: 270rpx;
   }
 
   .miniapp-tarot__picked-row--1 .miniapp-tarot__picked-slot {
-    height: 150rpx;
+    width: 176rpx;
+    height: 264rpx;
   }
 
   // （牌组顶端比例见下方「牌桌放大」块：场景放大上移后由 28% 统一给出）
@@ -2492,7 +2512,8 @@
     }
 
     .miniapp-tarot__picked-row--1 .miniapp-tarot__picked-slot {
-      height: 130rpx;
+      width: 88rpx;
+      height: 132rpx;
     }
 
     .miniapp-tarot__reveal-row {

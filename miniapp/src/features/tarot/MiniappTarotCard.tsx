@@ -38,7 +38,7 @@ export function MiniappTarotCard({ drawn, flipped, compact = false }: MiniappTar
     >
       <View className="miniapp-tarot-card__body">
         <View className="miniapp-tarot-card__face miniapp-tarot-card__back">
-          <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
+          <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFit" fadeIn={false} />
         </View>
         <View className="miniapp-tarot-card__face miniapp-tarot-card__front">
           {!artFailed ? (
