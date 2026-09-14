@@ -264,12 +264,6 @@
   color: var(--color-ink-secondary);
 }
 
-/* chip 按压只叠一层暖底：不用全局 opacity 突变（五层影卡整块重绘会视觉闪屏） */
-.records-page__chip--press {
-  background: rgba(150, 94, 56, 0.08);
-  opacity: 1;
-}
-
 .records-page__chip--on {
   /* 选中剖面同主页 chip--active：顶高光 → 主体陶土 → 底缘实色暗线 + 渐散软影 */
   background: linear-gradient(180deg, #fce2c6 0%, #f5c29c 30%, #f4c098 55%, #eeb48a 85%, #e2a577 100%);

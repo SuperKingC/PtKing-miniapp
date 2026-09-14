@@ -91,6 +91,10 @@ page {
     --color-runner-bg: #2e2720;
     --color-runner-border: #4a3a2c;
   }
+
+  custom-tab-bar {
+    background: #191411;
+  }
 }
 
 /* 手动主题切换：页面根节点挂 theme-light / theme-dark 类（useAppTheme 解析偏好+系统主题），
@@ -142,8 +146,10 @@ page {
   color: var(--color-ink);
 }
 
-.pressable--pressed {
-  opacity: 0.72;
+/* 全包去掉按压变浅：微信 Button 默认 .button-hover 会把整颗按钮压暗 */
+.button-hover {
+  background-color: inherit !important;
+  opacity: 1 !important;
 }
 
 .theme-dark image {
@@ -161,10 +167,12 @@ button {
   box-sizing: border-box;
 }
 
-/* 官方 custom-tab-bar 宿主默认不传导高度，子节点 height:100% 会塌成 0：图标看得到、点不中 */
+/* 官方 custom-tab-bar 宿主默认不传导高度，子节点 height:100% 会塌成 0：图标看得到、点不中。
+   宿主默认白底改成页面底色，胶囊下不再露一条白带。 */
 custom-tab-bar {
   width: 100%;
   height: 100%;
+  background: #fefaf5;
 }
 
 /* 全局隐藏滚动条（滚动能力保留）。微信页滚动条要 width/color，单靠 display:none 真机仍会露灰条 */

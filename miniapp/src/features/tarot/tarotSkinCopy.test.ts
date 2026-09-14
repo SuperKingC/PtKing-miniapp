@@ -47,6 +47,8 @@ describe('tarot stage copy per skin', () => {
     expect(copy.cutTitle(2)).toContain('2 次')
     expect(copy.fanTitle(3, 2)).toContain('2 张')
     expect(copy.fanTitle(3, 2)).toContain('还差 1 张')
+    expect(copy.fanTitle(3, 2)).toContain('牌位')
+    expect(copy.fanTitle(3, 0)).toContain('阵上')
     // 是测测子在说话（第一人称）
     expect(copy.cutTitle(0)).toContain('我')
     expect(copy.fanTitle(3, 0)).toContain('我')
@@ -63,8 +65,9 @@ describe('tarot stage copy per skin', () => {
       expect(line).not.toMatch(/长按|点击|点一下|逐张点开|请操作/)
       expect(line).not.toMatch(/啦|咯/)
     }
-    // 牌与玄意的意象在句子中：直觉 / 掌心 / 低语 / 光 / 应答 / 答案
-    expect(clayLines().join('')).toMatch(/直觉|掌心|低语|光|应答|答案|杂音/)
+    // 牌与玄意的意象在句子中：直觉 / 牌位 / 低语 / 光 / 应答 / 答案
+    expect(clayLines().join('')).toMatch(/直觉|牌位|低语|光|应答|答案|杂音/)
+    expect(clayLines().join('')).not.toContain('掌心')
   })
 
   it('never uses banned words or the generic cat name', () => {

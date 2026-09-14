@@ -1,7 +1,11 @@
 import type { TestDefinition } from '../domain/testEngine'
 
+/** 新用户（无完成记录）「为你推荐」固定顺序，从上到下。 */
+export const NEW_USER_RECOMMEND_IDS = ['mbti', 'love-persona', 'xp-test', 'chiikawa-bond'] as const
+
 /**
- * 首页推荐：按分类轮转取件，保证「每个分类至少一个」——避免整块推荐全是同一类型。
+ * 首页推荐：无完成记录时按 NEW_USER_RECOMMEND_IDS 固定位；有记录后按分类轮转取件，
+ * 保证「每个分类至少一个」——避免整块推荐全是同一类型。
  * 分类顺序按近期热度降序（并列保持注册表原序），分类内未测过优先、其余按原顺序。
  * 纯函数，便于单测；页面只负责把近期记录 id 传进来。
  */
@@ -10,6 +14,43 @@ export function pickRecommendedTests(
   recentTestIds: string[],
   skipId?: string,
   count = 4,
+): TestDefinition[] {
+  if (recentTestIds.length === 0) {
+    const seeded = pickNewUserDefaults(definitions, skipId, count)
+    if (seeded.length >= count) return seeded
+    const used = new Set(seeded.map((item) => item.id))
+    const rest = pickByCategoryRotation(
+      definitions.filter((item) => !used.has(item.id)),
+      recentTestIds,
+      skipId,
+      count - seeded.length,
+    )
+    return [...seeded, ...rest]
+  }
+  return pickByCategoryRotation(definitions, recentTestIds, skipId, count)
+}
+
+function pickNewUserDefaults(
+  definitions: TestDefinition[],
+  skipId: string | undefined,
+  count: number,
+): TestDefinition[] {
+  const byId = new Map(definitions.map((item) => [item.id, item]))
+  const picked: TestDefinition[] = []
+  for (const id of NEW_USER_RECOMMEND_IDS) {
+    if (picked.length >= count) break
+    if (id === skipId) continue
+    const item = byId.get(id)
+    if (item) picked.push(item)
+  }
+  return picked
+}
+
+function pickByCategoryRotation(
+  definitions: TestDefinition[],
+  recentTestIds: string[],
+  skipId: string | undefined,
+  count: number,
 ): TestDefinition[] {
   const completed = new Set(recentTestIds)
   const categoryWeight = new Map<string, number>()

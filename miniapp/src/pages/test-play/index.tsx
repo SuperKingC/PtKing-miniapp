@@ -183,7 +183,7 @@ export default function TestPlayPage() {
 
   return (
     <View className={`test-play theme-${theme} motion-${motionPreference}`} style={topInsetStyle()}>
-      <View className="test-play__back" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
+      <View className="test-play__back" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       {restoring && (
@@ -209,7 +209,6 @@ export default function TestPlayPage() {
                 ? 'test-play__option test-play__option--active'
                 : 'test-play__option'
             }
-            hoverClass="pressable--pressed"
             onClick={() => choose(optionIndex)}
           >
             {question.options.length > 2 && (
@@ -224,7 +223,6 @@ export default function TestPlayPage() {
       <View className="test-play__nav">
         <View
           className={qIndex > 0 ? 'test-play__nav-btn' : 'test-play__nav-btn test-play__nav-btn--disabled'}
-          hoverClass={qIndex > 0 ? 'pressable--pressed' : 'none'}
           onClick={goPrev}
         >
           <Text>←</Text>
@@ -235,7 +233,6 @@ export default function TestPlayPage() {
               ? 'test-play__nav-btn'
               : 'test-play__nav-btn test-play__nav-btn--disabled'
           }
-          hoverClass={qIndex < answers.length && qIndex < total - 1 ? 'pressable--pressed' : 'none'}
           onClick={goNext}
         >
           <Text>→</Text>

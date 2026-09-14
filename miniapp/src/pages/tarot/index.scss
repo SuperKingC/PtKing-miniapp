@@ -20,8 +20,9 @@
 
 .tarot-home-shell.theme-light { background: #fefaf5; }
 .tarot-home { padding: calc(var(--page-top-inset, 88px) + 8rpx) 36rpx calc(220rpx + env(safe-area-inset-bottom)); }
-/* 横幅自带雾蓝天空与云，矩形直接满宽铺，靠宽软投影浮起 */
-.tarot-home__hero { display: block; width: 100%; height: auto; margin: 8rpx 0 30rpx; border-radius: 36rpx; box-shadow: 0 6rpx 0 #e9dcc3, -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.12); }
+/* 横幅自带雾蓝天空与云，矩形直接满宽铺，只留软投影。
+   不加 0 6rpx 0 实色接触带：雾蓝 JPEG 底缘会露出一条米黄厚度。 */
+.tarot-home__hero { display: block; width: 100%; height: auto; margin: 8rpx 0 30rpx; border-radius: 36rpx; box-shadow: -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.12); }
 .tarot-home__draw {
   display: flex; align-items: center; justify-content: center; gap: 12rpx;
   width: 100%; margin: 0 auto 36rpx; padding: 0 20rpx; height: 104rpx;
@@ -66,9 +67,9 @@
   border-color: #e5ab7e;
   box-shadow: 0 5rpx 0 #d8a67c, 0 0 0 6rpx rgba(229, 171, 126, 0.22), -2rpx 10rpx 18rpx rgba(116, 86, 55, 0.14);
 }
-/* 缩略图：包内横版小图（由真背景裁出 654x440），直接铺满 327x220rpx 窗口，无需负 margin */
+/* 缩略图：clay 4:3 长桌 / classic 3:2 月门，铺满约 327x248rpx，无需负 margin */
 .tarot-home__skin-thumb {
-  display: block; width: 100%; height: 220rpx; overflow: hidden;
+  display: block; width: 100%; height: 248rpx; overflow: hidden;
   background: #f2ede2;
 }
 .tarot-home__skin-thumb-img {
@@ -218,23 +219,26 @@
     radial-gradient(120% 60% at 50% 0%, rgba(255, 250, 238, .9), rgba(255, 250, 238, 0) 60%),
     linear-gradient(180deg, #fbf3e4 0%, #f3e7d0 100%);
 }
-/* 布帘底摆：软布垂坠的弧形下摆，同时负责内缘下角的软弧。
-   内缘弧线不逐帧动画（动画圆角会让全屏帘片每帧重裁，造成卡顿），
-   改由这条常驻底摆的圆角提供——顶端到中段是绷直的直边、只有底摆收软弧，
-   既不会有「) (」的鱼眼形，也不占用每帧重绘。 */
-.tarot-curtain--clay .tarot-curtain__panel::after {
-  content: '';
+/* 布帘底摆：实节点比 ::after 更稳（微信对全屏 View 伪元素偶发不绘）。
+   弧形下摆 + 织纹，同时负责内缘下角的软弧。不逐帧动画圆角。 */
+.tarot-curtain__hem { display: none; }
+.tarot-curtain--clay .tarot-curtain__panel::after,
+.tarot-curtain--clay .tarot-curtain__hem {
+  display: block;
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 46rpx;
+  height: 72rpx;
   border-radius: 0 0 44rpx 44rpx / 0 0 46rpx 46rpx;
   background:
-    radial-gradient(120% 100% at 20% 0%, rgba(122, 88, 58, .12), rgba(122, 88, 58, 0) 52%),
-    linear-gradient(180deg, #f3e7d0 0%, #ecd9ba 100%);
-  box-shadow: inset 0 -6rpx 0 rgba(207, 148, 100, .38);
+    repeating-linear-gradient(90deg, rgba(184, 132, 82, .28) 0 10rpx, rgba(184, 132, 82, 0) 10rpx 20rpx),
+    radial-gradient(120% 100% at 20% 0%, rgba(122, 88, 58, .16), rgba(122, 88, 58, 0) 52%),
+    linear-gradient(180deg, #efe0c6 0%, #e2c394 100%);
+  box-shadow: inset 0 -10rpx 0 rgba(184, 132, 82, .46);
 }
-/* 布帘褶皱：帘片内竖向明暗条模拟垂坠布纹，一宽两窄错位；
-   底部沿圆弧收窄，褶皱有"垂到地上散开"的透视，不再是等宽通顶硬条 */
+.tarot-curtain--clay .tarot-curtain__panel::after {
+  content: '';
+}
+/* 布帘褶皱：帘片内竖向明暗条模拟垂坠布纹，一宽两窄错位，通到帘底 */
 .tarot-curtain__drape {
   position: absolute;
   top: 0; bottom: 0;
@@ -246,13 +250,14 @@
   opacity: .8;
 }
 .tarot-curtain--clay .tarot-curtain__drape {
-  -webkit-mask-image: radial-gradient(140% 120% at 50% 0%, #000 62%, rgba(0, 0, 0, .35) 86%, transparent 100%);
-  mask-image: radial-gradient(140% 120% at 50% 0%, #000 62%, rgba(0, 0, 0, .35) 86%, transparent 100%);
+  /* 褶皱通到帘底，与底摆织纹相接；不再用顶锚径向蒙版把下缘抹掉 */
+  bottom: 0;
 }
 .tarot-curtain__drape--b { left: 40%; width: 14%; opacity: .55; }
 .tarot-curtain__drape--c { left: 66%; width: 26%; opacity: .55; }
 .tarot-curtain__panel--right .tarot-curtain__drape { left: auto; right: 8%; }
 .tarot-curtain__panel--right .tarot-curtain__drape--b { left: auto; right: 46%; }
+.tarot-curtain__panel--right .tarot-curtain__drape--c { left: auto; right: 66%; }
 /* 褶皱联动：帘身移动时每道布褶各自被拽动——横向摆 + 绕顶端的倾斜，
    三道褶给不同幅度与错开相位(延迟 0/.08/.16s)，读作「一道一道荡过去」而非整片同步 */
 .tarot-curtain--closing .tarot-curtain__drape,

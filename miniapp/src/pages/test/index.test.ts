@@ -51,11 +51,26 @@ describe('测试首页软陶单列布局', () => {
   it('品牌行与今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('hero-card-v11.png')
-    /* 气球/公文包 tile 走 v23：保留 v20 主体并重组参考 tile 的外部空气影，
-       同时保留连续抗锯齿与主体内翻棱；v22 只作为历史视觉对照。 */
-    expect(source).toContain('tile-fun-v23.png')
-    expect(source).toContain('tile-career-v23.png')
+    expect(source).toContain('hero-card-v13.png')
+    /* 气球走 v39（v28 清晰圆球+J 线 + love 外圈）；公文包仍 v35。 */
+    expect(source).toContain('tile-fun-v39.png')
+    expect(source).toContain('tile-career-v35.png')
+    expect(source).not.toContain('tile-fun-v38.png')
+    expect(source).not.toContain('tile-fun-v37.png')
+    expect(source).not.toContain('tile-fun-v36.png')
+    expect(source).not.toContain('tile-fun-v35.png')
+    expect(source).not.toContain('tile-fun-v34.png')
+    expect(source).not.toContain('tile-career-v34.png')
+    expect(source).not.toContain('tile-fun-v31.png')
+    expect(source).not.toContain('tile-career-v31.png')
+    expect(source).not.toContain('tile-fun-v28.png')
+    expect(source).not.toContain('tile-career-v28.png')
+    expect(source).not.toContain('tile-fun-v27.png')
+    expect(source).not.toContain('tile-career-v27.png')
+    expect(source).not.toContain('tile-fun-v25.png')
+    expect(source).not.toContain('tile-career-v25.png')
+    expect(source).not.toContain('tile-fun-v23.png')
+    expect(source).not.toContain('tile-career-v23.png')
     expect(source).not.toContain('tile-fun-v22.png')
     expect(source).not.toContain('tile-career-v22.png')
     expect(source).not.toContain('tile-fun-v13.png')
@@ -67,6 +82,7 @@ describe('测试首页软陶单列布局', () => {
   it('保留五分类、注册表订阅与继续答题入口（搜索栏已移除）', () => {
     for (const contract of [
       'TEST_CATEGORIES.map', 'useState(listTestDefinitions)', 'subscribeTestRegistry(refresh)', 'useDidShow(refresh)',
+      '${definition.id}:${definition.title}',
       'filterByCategory(definitions, activeCategory)',
       'pickRecommendedTests(definitions, recentIds, resume?.definition.id, 4)',
       'pickCategory(category.key)',
@@ -146,9 +162,14 @@ describe('测试首页软陶单列布局', () => {
     const card = styleBlock('.test-page__card')
     expect(card).toContain('background: #fefaf4')
     expect(card).toContain('box-shadow: var(--shadow-card)')
+    const hero = styleBlock('.test-page__hero')
     const heroImg = styleBlock('.test-page__hero-img')
-    expect(heroImg).toContain('drop-shadow')
+    expect(hero).toContain('height: 317rpx')
+    expect(heroImg).toContain('width: 100%')
+    expect(heroImg).toContain('height: 317rpx')
+    expect(heroImg).not.toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
+    expect(styles).not.toContain('test-page__hero-shade')
     /* 按钮剖面提为全局令牌，与二级页主 CTA 同层（值逐像素采样，见 app.scss） */
     const go = styleBlock('.test-page__card-go')
     expect(go).toContain('background: var(--action-btn-bg)')
@@ -157,5 +178,12 @@ describe('测试首页软陶单列布局', () => {
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
     expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
+    /* 今日推荐不挂滤镜/底托：两者都会在圆角外画出方框缝 */
+    expect(source).toContain('className="test-page__hero-img" src={heroCardImg} mode="scaleToFill" fadeIn={false} />')
+    expect(source).not.toContain('hero-shade')
+    expect(source).not.toMatch(/hero-card-v\d+\.png" mode="widthFix"/)
+    expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill" lazyLoad/)
+    expect(source).not.toContain('hoverClass')
+    expect(styles).not.toContain('--press')
   })
 })

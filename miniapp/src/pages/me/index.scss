@@ -1,24 +1,33 @@
+page {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tab-page__scroll {
+  overflow: hidden;
+}
+
 .me-page {
   box-sizing: border-box;
 
   /* 无系统标题栏：顶部留胶囊安全距离 */
-  padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx 40rpx;
+  padding: calc(var(--page-top-inset, 88px) + 8rpx) 40rpx calc(220rpx + env(safe-area-inset-bottom));
 }
 
-/* 透明圆角 PNG（几何圆角 alpha 蒙版，见 art/ref-pages-v3/fix-banner-corners.py）：
-   圆角与边缘自带 alpha，蒙版半径须与这里 40rpx 对齐——蒙版圆角大于 CSS 圆角时，
-   角部会透出页面底色（2026-09-12 修：radius_ratio 0.19 折 81px 病根）。
+/* 透明圆角 PNG（几何圆角 alpha 蒙版，见 art/ref-pages-v3/rebuild-edges-v13.py）：
+   圆角与边缘自带 alpha，蒙版半径须与这里 40rpx 对齐。
+   容器禁止 overflow:hidden——图已经是圆角透明 PNG，再裁一次会在 AA 上叠出浅边。
    盒式 box-shadow 绕矩形盒走，会在透明圆角外露出灰边与角部楔形——
    投影必须挂在图上随 alpha 轮廓走（drop-shadow）。 */
 .me-page__banner {
   border-radius: 40rpx;
   margin-bottom: 28rpx;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .me-page__banner-clip {
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 40rpx;
 }
 
@@ -27,12 +36,13 @@
   width: 100%;
   height: auto;
   /* 随形轻投影：贴边近影 + 弥散远影，勿加重（图底缘已烘焙厚度渐变） */
-  filter: drop-shadow(0 3rpx 6rpx rgba(150, 116, 78, 0.12)) drop-shadow(0 12rpx 26rpx rgba(150, 116, 78, 0.12));
+  /* 位移大于模糊，避免顶/左侧冒浅边；blur>offset 时滤镜会在轮廓外描一圈 */
+  filter: drop-shadow(0 8rpx 5rpx rgba(150, 116, 78, 0.12)) drop-shadow(0 20rpx 14rpx rgba(150, 116, 78, 0.1));
 }
 
 /* 保留暗色图像调色；drop-shadow 随 alpha 轮廓，dark 下同挂避免投影丢失。 */
 .theme-dark .me-page__banner-img {
-  filter: brightness(0.88) saturate(0.92) drop-shadow(0 3rpx 6rpx rgba(0, 0, 0, 0.28)) drop-shadow(0 12rpx 26rpx rgba(0, 0, 0, 0.22));
+  filter: brightness(0.88) saturate(0.92) drop-shadow(0 8rpx 5rpx rgba(0, 0, 0, 0.26)) drop-shadow(0 20rpx 14rpx rgba(0, 0, 0, 0.18));
 }
 
 .me-page__entries {

@@ -12,7 +12,7 @@ interface MiniappTarotShuffleStageProps {
   onSkip(): void
 }
 
-const shuffleDurationMs = 3000
+const shuffleDurationMs = 2000
 
 export function MiniappTarotShuffleStage({
   progress,
@@ -60,6 +60,7 @@ export function MiniappTarotShuffleStage({
     <View className="miniapp-tarot__stage miniapp-tarot__stage--ritual miniapp-tarot__stage--shuffle">
       <Text className="miniapp-tarot__title">{copy.shuffleTitle(progress)}</Text>
       <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
+      <View className="miniapp-tarot__fit">
       <Button
         className={`miniapp-tarot__shuffle-deck${isShuffling ? ' miniapp-tarot__shuffle-deck--active' : ''}${progress >= 100 && !isShuffling ? ' miniapp-tarot__shuffle-deck--complete' : ''}`}
         aria-label="长按洗牌"
@@ -69,7 +70,7 @@ export function MiniappTarotShuffleStage({
       >
         {Array.from({ length: 10 }, (_, index) => (
           <View key={index} className={`miniapp-tarot__deck-card miniapp-tarot__deck-card--${index + 1}`}>
-            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
+            <Image className={skin === 'clay' ? 'miniapp-tarot__card-back-art' : undefined} src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
           </View>
         ))}
         <View className="miniapp-tarot__shuffle-orbit miniapp-tarot__shuffle-orbit--outer" />
@@ -77,6 +78,7 @@ export function MiniappTarotShuffleStage({
         <View className="miniapp-tarot__shuffle-rune">✦</View>
         <View className="miniapp-tarot__shuffle-burst" />
       </Button>
+      </View>
       <View className="miniapp-tarot__spacer" />
       <View className="miniapp-tarot__shuffle-bar">
         <View style={{ width: `${progress}%` }} />

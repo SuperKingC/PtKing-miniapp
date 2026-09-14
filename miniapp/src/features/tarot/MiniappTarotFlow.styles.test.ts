@@ -21,8 +21,10 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__header\s*{[^}]*padding:\s*var\(--page-top-inset, 88px\)/)
     expect(styles).not.toContain('calc(72rpx + env(safe-area-inset-top))')
     // Flow 根节点注入该变量，叉叉/标题/历史钮整体下移到三个点按钮之下
-    expect(flow).toContain("import { topInsetStyle } from '../../services/navMetrics'")
-    expect(flow).toMatch(/className=\{\['miniapp-tarot'[\s\S]*?style=\{topInsetStyle\(\)\}/)
+    expect(flow).toContain("import { getTopInsetPx, topInsetStyle } from '../../services/navMetrics'")
+    expect(flow).toContain('getTarotStageFit')
+    expect(flow).toContain('--tarot-stage-scale')
+    expect(flow).toMatch(/className=\{\['miniapp-tarot'[\s\S]*?style=\{\{/)
   })
 
   it('does not emit universal selectors unsupported by the WeChat WXSS compiler', () => {
@@ -98,6 +100,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     // stage bottom in the WeChat renderer); the top spacer grows more so
     // the deck lands on the sanctuary ring's center (measured y≈53%)
     expect(shuffleStage).toContain('miniapp-tarot__spacer--top')
+    expect(shuffleStage).toContain('miniapp-tarot__fit')
     expect(styles).toMatch(/\.miniapp-tarot__spacer \{[\s\S]*?flex: 1 1 0/)
     expect(styles).toMatch(/\.miniapp-tarot__spacer \{[\s\S]*?min-height: 48rpx/)
     expect(styles).toMatch(/\.miniapp-tarot__spacer--top \{[\s\S]*?flex-grow: 3/)
@@ -115,12 +118,12 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?max-width: 400rpx;[\s\S]*?border-radius: 26rpx;/)
     // 气泡浮到测测子头顶之上：视口固定定位（不参与阶段布局、不受阶段裁切），
     // 左缘从叉叉钮右侧起（left），右端靠 max-width 停在微信胶囊左侧；
-    // top 13.8vh 让气泡底边落在帽子顶上一点（用户 2026-09-13「比帽子高一点就好」）
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: 13\.8vh;/)
+    // 钉住 bottom 79.7vh，文字变高只抬上沿，箭头位置不变
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: auto;[\s\S]*?bottom: 79\.7vh;/)
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?left: 124rpx;/)
     // 气泡改成 fixed 不再占流内高度，阶段用 padding-top 补回那截高度；
-    // 短屏给回滚动兜底（气泡 fixed 不受裁切）
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,[\s\S]*?padding-top: 190rpx;[\s\S]*?overflow-y: auto;/)
+    // 牌组按视口缩放收进一屏，不再靠滚动露按钮
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,[\s\S]*?padding-top: 190rpx;[\s\S]*?overflow: hidden;/)
     // clay 四仪式阶段把 header 的牌阵名藏掉（visibility 保留占位），那条带让给气泡
     expect(styles).toMatch(/&\.miniapp-tarot--clay-ritual \.miniapp-tarot__header-title \{\s*\n\s*visibility: hidden;/)
     // 尾巴挂在标题下沿、朝下指着猫
@@ -162,7 +165,7 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 洗牌必须同列（否则洗牌牌堆比切牌低一截、换幕时牌位跳动）；
     // flex 用 `0 1 28%`：有余量时恒为 28%（位置一致），短屏内容放不下时先收缩 spacer，
     // 而不是把牌组压扁（375×667 曾把牌扇压到 20px 高 → 牌溢出被裁）。
-    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?height: calc\(40vh - 200rpx\);/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--cut > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--fan > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal > \.miniapp-tarot__spacer--top \{[\s\S]*?max-height: calc\(40vh - 200rpx\);/)
     // 下 spacer 钉死，上 spacer 唯一决定牌组位置（否则弹性 spacer 会吸走空间、牌组原地不动）
     expect(styles).toMatch(/\.miniapp-tarot__spacer:not\(\.miniapp-tarot__spacer--top\) \{[\s\S]*?display: none;/)
     // 牌组容器不被 flex 压缩：牌扇/牌位/翻牌行都设 flex: none
@@ -265,9 +268,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const fanStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFanStage.tsx'), 'utf8')
 
-    // fan pose lives in CSS vars so keyframes can reuse it; only the flying card gets an inline --fly-x
+    // fan pose lives in CSS vars so keyframes can reuse it; flight x/y come from getFanFlightVars
     expect(fanStage).not.toContain('rotate(${offset')
-    expect(fanStage).toContain('--fly-x')
+    expect(fanStage).toContain('getFanFlightVars')
     expect(styles).toContain('--fx')
     expect(styles).toContain('translateX(var(--fx)) translateY(var(--fy)) rotate(var(--fr))')
     // staggered deal-in: cards rise from the deck position below and settle into the fan
@@ -351,6 +354,39 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(failureBranch?.match(/退出塔罗/g)).toHaveLength(2)
   })
 
+  it('lays five-card reveals as three on top and two below', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+    const revealStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotRevealStage.tsx'), 'utf8')
+
+    expect(revealStage).toContain('miniapp-tarot__reveal-row--5')
+    expect(revealStage).toContain('drawn.length === 5')
+    // width is exactly 3×152 + 2×24 so the 4th card must wrap
+    expect(styles).toMatch(/\.miniapp-tarot__reveal-row--5 \{[\s\S]*?max-width: 504rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot__reveal-row--5 \{[\s\S]*?gap: 16rpx 24rpx/)
+    expect(styles).toMatch(/reveal-row--5 \.miniapp-tarot-card--compact \{[\s\S]*?width: 152rpx/)
+    expect(styles).toMatch(/reveal-row--5 \.miniapp-tarot-card--compact \{[\s\S]*?height: 240rpx/)
+  })
+
+  it('lifts classic one- and three-card reveals and stacks five pick slots 3+2', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+    const revealStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotRevealStage.tsx'), 'utf8')
+    const fanStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFanStage.tsx'), 'utf8')
+
+    expect(revealStage).toContain('miniapp-tarot__stage--reveal-${drawn.length}')
+    expect(styles).toMatch(/\.miniapp-tarot__stage--reveal-1 > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal-3 > \.miniapp-tarot__spacer--top \{[\s\S]*?flex-grow: 1/)
+    expect(fanStage).toContain('miniapp-tarot__stage--fan-${needCount}')
+    expect(fanStage).toContain('getFanFlightVars(needCount, picked.length, skin)')
+    // 3×152 + 2×28 so the 4th slot wraps; clay 136×212 / 20（仍小于 classic）
+    expect(styles).toMatch(/\.miniapp-tarot__picked-row--5 \{[\s\S]*?flex-wrap: wrap/)
+    expect(styles).toMatch(/\.miniapp-tarot__picked-row--5 \{[\s\S]*?max-width: 512rpx/)
+    expect(styles).toMatch(/picked-row--5 \.miniapp-tarot__picked-slot \{[\s\S]*?width: 152rpx/)
+    expect(styles).toMatch(/picked-row--5 \.miniapp-tarot__picked-slot \{[\s\S]*?height: 238rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__picked-row--5 \{[\s\S]*?max-width: 448rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__picked-row--5 \{[\s\S]*?gap: 20rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?picked-row--5 \.miniapp-tarot__picked-slot \{[\s\S]*?width: 136rpx/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?picked-row--5 \.miniapp-tarot__picked-slot \{[\s\S]*?height: 212rpx/)
+  })
+
   it('scales single-card spreads up and wires the result share to friend invitations', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const readingStage = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotReadingStage.tsx'), 'utf8')
@@ -400,12 +436,14 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(historyPanel).toContain('MiniappTarotReadingBody')
     expect(historyPanel).toContain('返回记录')
     expect(historyPanel).toContain('查看详情')
+    expect(historyPanel).toContain('miniapp-tarot-history__list')
     expect(readingStage).toContain('MiniappTarotReadingBody')
     expect(readingBody).toContain('核心结论')
     expect(readingBody).toContain('牌阵之间的关系')
     expect(readingBody).toContain('未来 24 小时')
     expect(styles).toContain('.miniapp-tarot-history__item-more')
     expect(styles).toContain('.miniapp-tarot-history__scroll')
+    expect(styles).toMatch(/\.miniapp-tarot-history__list\s*\{[^}]*gap:\s*24rpx/)
   })
 
   it('wires ritual haptics through the shared service instead of calling wx directly', () => {
@@ -473,8 +511,9 @@ describe('miniapp tarot WXSS compatibility', () => {
     // 曾经用 s=1.16（顶出屏幕、月亮只剩一角），现为 translateY(88rpx) scale(1.08)。
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform: translateY\(88rpx\) scale\(1\.08\)/)
     expect(styles).toMatch(/\.miniapp-tarot__scene \{[\s\S]*?transform-origin: 50% 100%/)
-    // 牌组上移让出底部按钮：四幕（含洗牌）上 spacer 定高 calc(40vh - 200rpx)
-    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?height: calc\(40vh - 200rpx\)/)
+    // 牌组上移让出底部按钮：四幕上 spacer 有余量时顶到 max-height，装不下先收缩
+    expect(styles).toMatch(/\.miniapp-tarot__stage--shuffle > \.miniapp-tarot__spacer--top,[\s\S]*?max-height: calc\(40vh - 200rpx\)/)
+    expect(styles).toMatch(/\.miniapp-tarot__fit \{[\s\S]*?scale\(var\(--tarot-stage-scale, 1\)\)/)
   })
 
   it('lifts only the top half on the swapped (odd) cut, so both halves never fly together', () => {
@@ -492,12 +531,12 @@ describe('miniapp tarot WXSS compatibility', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
     const flowSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotFlow.tsx'), 'utf8')
 
-    // 气泡上提只做视觉偏移（fixed + top），top 13.8vh 让底边只高出帽子一点
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: 13\.8vh;/)
+    // 气泡钉住底边（fixed + bottom），箭头不随字数下移
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?position: fixed;[\s\S]*?top: auto;[\s\S]*?bottom: 79\.7vh;/)
     // 向左侧延展：左对齐 + 限宽，右端停在微信三点胶囊左侧
     expect(styles).toMatch(/\.miniapp-tarot__stage--ritual > \.miniapp-tarot__title,[\s\S]*?left: 124rpx;[\s\S]*?max-width: 400rpx;/)
     // 气泡 fixed 不参与阶段布局，故阶段用 padding-top 补回它原来的流内高度
-    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,[\s\S]*?padding-top: 190rpx;[\s\S]*?overflow-y: auto;/)
+    expect(styles).toMatch(/\.miniapp-tarot__stage--ritual,[\s\S]*?padding-top: 190rpx;[\s\S]*?overflow: hidden;/)
     // Flow 在 clay 的四仪式阶段挂状态类，CSS 借它藏掉 header 的牌阵名（visibility 保占位）
     expect(flowSource).toContain('clayRitual')
     expect(flowSource).toMatch(/state\.stage === 'shuffle'[\s\S]*?state\.stage === 'reveal'/)
@@ -524,12 +563,14 @@ describe('miniapp tarot WXSS compatibility', () => {
 
     // 翻牌阶段的牌位上移改由统一的上 spacer（calc(40vh - 200rpx)）达成，不再单独位移；
     // 这里只确认短屏媒体查询给了压矮兜底（牌组 + 按钮同时收得进 SE）
+    expect(styles).toMatch(/\.miniapp-tarot__stage--fan-5 > \.miniapp-tarot__spacer--top,[\s\S]*?\.miniapp-tarot__stage--reveal-5 > \.miniapp-tarot__spacer--top \{[\s\S]*?max-height: calc\(18vh - 80rpx\)/)
   })
 
-  it('uses clay aspectFit card backs while preserving classic aspectFill', () => {
+  it('bleeds clay card backs to crop the baked-in white frame', () => {
     for (const fileName of cardBackStagePaths) {
       const source = fs.readFileSync(path.resolve(__dirname, fileName), 'utf8')
-      expect(source).toMatch(/getTarotCardBack\(skin\)[\s\S]*?mode=\{skin === 'clay' \? 'aspectFit' : 'aspectFill'\}/)
+      expect(source).toMatch(/className=\{skin === 'clay' \? 'miniapp-tarot__card-back-art' : undefined\}/)
+      expect(source).toMatch(/getTarotCardBack\(skin\)[\s\S]*?mode="aspectFill"/)
     }
 
     const cardSource = fs.readFileSync(path.resolve(__dirname, 'MiniappTarotCard.tsx'), 'utf8')
@@ -552,7 +593,8 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot__fan \{[\s\S]*?gap: var\(--tarot-picked-gap\)/)
     expect(styles).not.toMatch(/\.miniapp-tarot__deck-card \{\s*\n\s*position: absolute;\s*\n\s*box-sizing: border-box;/)
     expect(styles).not.toMatch(/\.miniapp-tarot__fan-card \{\s*\n\s*position: absolute;\s*\n\s*box-sizing: border-box;/)
-    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__deck-card,[\s\S]*?\.miniapp-tarot__fan-card \{[\s\S]*?box-sizing: border-box;/)
+    expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__deck-card,[\s\S]*?\.miniapp-tarot__fan-card,[\s\S]*?\.miniapp-tarot__cut-face,[\s\S]*?\.miniapp-tarot-card__face \{[\s\S]*?box-sizing: border-box;[\s\S]*?box-shadow: none;/)
+    expect(styles).toMatch(/\.miniapp-tarot__card-back-art \{[\s\S]*?width: 136%;[\s\S]*?height: 136%;/)
   })
 
   it('keeps classic flight midpoint scale while clay opts into a smaller endpoint', () => {
@@ -573,5 +615,6 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__cut-deck \{[\s\S]*?height: 368rpx;/)
     expect(styles).toMatch(/\.miniapp-tarot\.skin-clay[\s\S]*?\.miniapp-tarot__fan-card \{[\s\S]*?bottom: 32rpx;/)
     expect(styles).toMatch(/@media \(max-height: 720px\)[\s\S]*?\.miniapp-tarot__shuffle-deck,[\s\S]*?\.miniapp-tarot__cut-deck \{[\s\S]*?height: 300rpx;/)
+    expect(styles).toMatch(/@media \(max-height: 720px\)[\s\S]*?picked-row--5 \.miniapp-tarot__picked-slot \{[\s\S]*?width: 104rpx;[\s\S]*?height: 162rpx;/)
   })
 })

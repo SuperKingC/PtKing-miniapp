@@ -51,8 +51,8 @@ const CLAY: TarotStageCopy = {
   cutHint: () => '',
   fanTitle: (needCount, pickedCount) => {
     if (pickedCount >= needCount) return '牌已就位，让我为你揭开它们'
-    if (pickedCount > 0) return `已挑好 ${pickedCount} 张，还差 ${needCount - pickedCount} 张落进我掌心`
-    return `让直觉带你挑出 ${needCount} 张牌，递到我掌心`
+    if (pickedCount > 0) return `已挑好 ${pickedCount} 张，还差 ${needCount - pickedCount} 张落到牌位上`
+    return `让直觉带你挑出 ${needCount} 张牌，放到我铺好的阵上`
   },
   fanHint: () => '',
   revealTitle: (allFlipped) => (allFlipped ? '牌已尽数翻开，答案就在其中' : '翻开每一张，让我听牌面低语'),

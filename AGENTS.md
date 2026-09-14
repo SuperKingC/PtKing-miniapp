@@ -19,7 +19,7 @@
 
 - 用最小改动达成目标。
 - 行为变更前先补/改对应聚焦测试（vitest）。
-- 小程序改动全部留在 `miniapp/` 内；每次改动后清缓存重编译，保证预览的是最新构建。
+- 小程序改动全部留在 `miniapp/` 内；每次改动后只对锁定目录清缓存重编译，保证预览的是最新构建。
 - 图片资产遵守：运行时图片先降分辨率再压质量；打进包内资产走 TinyPNG、禁 WebP、单图 ≤180KB、PNG8/JPEG。
 - 打进主包的图（`miniapp/src/assets/`）可以覆盖同名：开发者工具清「全部缓存」后重编译即可；升文件名只是可选保险，不再强制。COS 热更图（塔罗等）同名覆盖，靠 `assets:hot` 的 `assetRev` 加 `?r=` 刷新，不必升名、不必发新版。
 - WXSS 绝对定位写显式四边 + 显式宽高；内联尺寸写 rpx 不写 px。
@@ -48,10 +48,26 @@
 - 新环境先跑 `npm run doctor:kit` 体检，缺失项征得用户同意再装。
 - 模拟器本地预览资产：`npm run art:preview` + 构建时注入 `TARO_ASSET_DEV_BASE_URL`（细则见 `docs/features/miniapp-kit.md`）。
 
+## 构建与预览目录（锁定）
+
+本机唯一合法路径，写死，禁止自行改指：
+
+| 用途 | 路径 |
+| --- | --- |
+| 仓库 / 工作区 | `D:\Mine\PtKing-miniapp` |
+| 微信开发者工具项目目录 | `D:\Mine\PtKing-miniapp\miniapp` |
+| Taro 构建产物 | `D:\Mine\PtKing-miniapp\miniapp\dist` |
+
+- 构建命令只在仓库根执行：`npm run build:weapp` 或 `npm run dev:weapp`。`miniapp/project.config.json` 的 `miniprogramRoot` 是 `dist/`，不要改。
+- 开发者工具、`wechatide`、`cli.bat` 一律打开 `D:\Mine\PtKing-miniapp\miniapp`，不要打开仓库根、不要打开 `miniapp/dist`、不要打开其它 worktree。
+- 禁止当项目导入：仓库根（根上有误导性 `project.config.json`）、`miniapp/dist`、`D:\Mine\PtKing-polish`、`D:\Mine\PtKing-bright-pages`、`D:\Pet10` 及其它旧工作区。
+- 每次重编译前先核对开发者工具当前项目路径。路径不对先改回来再编译，不要在错误目录上清缓存或重编。
+- 预览入口必须写成上述绝对路径，禁止只写相对 `miniapp/` / `dist` 让下次猜错目录。
+
 ## 验证
 
 - 开发期用最快相关检查（vitest 单文件）。
-- UI/交互改动必须在微信开发者工具用 freshly built `miniapp/dist` 预览。
+- UI/交互改动必须在微信开发者工具打开 `D:\Mine\PtKing-miniapp\miniapp`，用 freshly built `D:\Mine\PtKing-miniapp\miniapp\dist` 预览。
 - 不报告命令、结果、未验区域与预览入口就不算完成。
 - 合并或部署前跑 `npm run test`（后续引入 verify:full）。
 - 视觉改动需用户验收后才能合 `main` 或部署。

@@ -39,7 +39,7 @@ export function MiniappTarotHistoryPanel({ history, onClose }: MiniappTarotHisto
               <MiniappTarotReadingBody reading={selected} />
             </View>
           ) : (
-            <>
+            <View className="miniapp-tarot-history__list">
               {history.length === 0 && <Text className="miniapp-tarot__hint">还没有解读记录。</Text>}
               {history.map((item) => (
                 <View
@@ -61,7 +61,7 @@ export function MiniappTarotHistoryPanel({ history, onClose }: MiniappTarotHisto
                   <Text className="miniapp-tarot-history__item-more">查看详情 ›</Text>
                 </View>
               ))}
-            </>
+            </View>
           )}
         </ScrollView>
         {selected ? (

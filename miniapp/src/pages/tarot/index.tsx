@@ -17,8 +17,8 @@ import { trackEvent } from '../../services/monitor'
 import heroImage from '../../assets/illus/tarot-panel-v6.jpg'
 import singleCardImage from '../../assets/illus/tarot-card-single-v4.png'
 import cardsFanImage from '../../assets/illus/tarot-cards-fan-v4.png'
-import skinThumbClassic from '../../assets/illus/tarot-skin-classic-v1.jpg'
-import skinThumbClay from '../../assets/illus/tarot-skin-clay-v1.jpg'
+import skinThumbClassic from '../../assets/illus/tarot-skin-classic-v2.jpg'
+import skinThumbClay from '../../assets/illus/tarot-skin-clay-v4.jpg'
 import './index.scss'
 
 // 帘幕编排：合拢(布帘拉上，期间帘后已挂载流程并预加载) → hold 等资源就绪 →
@@ -162,8 +162,8 @@ export default function TarotPage() {
     trackEvent('tarot_skin_change', { skin: next })
   }
 
-  // 牌桌缩略图：两套皮肤各自本地裁剪的横版小图（由真背景裁出，随包下发，不走网络）。
-  // 旧版铺远程 2:3 竖幅背景，资产根未配置时整块空白/退同一张 hero，用户判为「图片不对」。
+  // 牌桌缩略图：包内预览小图（随包下发，不走网络）。
+  // clay 跟背景长桌 4:3 重生（大云托桌+烛火）；classic 仍是 3:2 完整月门。
   const skinThumbSrc = (option: TarotSkin): string =>
     option === 'classic' ? skinThumbClassic : skinThumbClay
 
@@ -182,6 +182,7 @@ export default function TarotPage() {
             'tarot-page',
             curtain === 'opening' ? 'tarot-page--reveal' : '',
           ].filter(Boolean).join(' ')}
+          style={topInsetStyle()}
         >
             <MiniappTarotFlow initialSpread={spread} chooseSpread={chooseSpread} historyRequest={historyRequest} onClose={closeFlow} onShareTitleChange={handleShareTitleChange} onLoadProgress={handleLoadProgress} onLoadDone={handleLoadDone} onLoadNetworkNeeded={handleLoadNetworkNeeded} />
         </View>
@@ -191,17 +192,17 @@ export default function TarotPage() {
             <View className="tarot-home">
               {/* 参考图整面板：标题/副标题/月牙云朵三牌猫全部烘焙在图内 */}
               <Image className="tarot-home__hero" src={heroImage} mode="widthFix" />
-              <Button className="tarot-home__draw" onClick={() => startFlow('single', true)}>
+              <Button className="tarot-home__draw" hoverClass="none" onClick={() => startFlow('single', true)}>
                 <Text className="tarot-home__draw-star">✦</Text>
                 <Text className="tarot-home__draw-text">抽取今日指引</Text>
               </Button>
               <View className="tarot-home__entries">
-                <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('single', false)}>
+                <View className="tarot-home__entry" onClick={() => startFlow('single', false)}>
                   <Text className="tarot-home__entry-title">单张指引</Text>
                   <Text className="tarot-home__entry-sub">快速获得指引</Text>
                   <Image className="tarot-home__single-card" src={singleCardImage} mode="aspectFit" />
                 </View>
-                <View className="tarot-home__entry" hoverClass="pressable--pressed" onClick={() => startFlow('triple', false)}>
+                <View className="tarot-home__entry" onClick={() => startFlow('triple', false)}>
                   <Text className="tarot-home__entry-title">三牌牌阵</Text>
                   <Text className="tarot-home__entry-sub">深度探索指引</Text>
                   <Image className="tarot-home__cards" src={cardsFanImage} mode="aspectFit" />
@@ -217,7 +218,6 @@ export default function TarotPage() {
                         'tarot-home__skin',
                         skin === option ? 'tarot-home__skin--active' : '',
                       ].filter(Boolean).join(' ')}
-                      hoverClass="pressable--pressed"
                       onClick={() => changeSkin(option)}
                     >
                       <View className={`tarot-home__skin-thumb tarot-home__skin-thumb--${option}`}>
@@ -239,11 +239,12 @@ export default function TarotPage() {
         </View>
       )}
       {curtainVisible && (
-        <View className={curtainClass} aria-hidden>
+        <View className={curtainClass} style={topInsetStyle()} aria-hidden>
           <View className="tarot-curtain__panel tarot-curtain__panel--left">
             <View className="tarot-curtain__drape" />
             <View className="tarot-curtain__drape tarot-curtain__drape--b" />
             <View className="tarot-curtain__drape tarot-curtain__drape--c" />
+            <View className="tarot-curtain__hem" />
             <View className="tarot-curtain__valance">
               <View className="tarot-curtain__valance-scallop" />
               <View className="tarot-curtain__valance-scallop tarot-curtain__valance-scallop--b" />
@@ -263,6 +264,8 @@ export default function TarotPage() {
           <View className="tarot-curtain__panel tarot-curtain__panel--right">
             <View className="tarot-curtain__drape" />
             <View className="tarot-curtain__drape tarot-curtain__drape--b" />
+            <View className="tarot-curtain__drape tarot-curtain__drape--c" />
+            <View className="tarot-curtain__hem" />
             <View className="tarot-curtain__valance">
               <View className="tarot-curtain__valance-scallop" />
               <View className="tarot-curtain__valance-scallop tarot-curtain__valance-scallop--b" />

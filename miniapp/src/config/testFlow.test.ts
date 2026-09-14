@@ -97,8 +97,9 @@ describe('test flow pages (M1)', () => {
       expect(source).toContain('tab-page')
       expect(source).toContain('tab-page__scroll')
     }
-    // 我的页去掉 enhanced（避免 ScrollView 裁投影），滚动条由全局 CSS 兜底
-    expect(me).toContain('showScrollbar={false}')
+    // 我的页不挂 ScrollView：版本号露出来时页面不能拖
+    expect(me).not.toContain('ScrollView')
+    expect(me).toContain('catchMove')
     expect(me).not.toContain('enhanced')
     expect(me).toContain('tab-page')
     expect(me).toContain('tab-page__scroll')

@@ -21,7 +21,7 @@ function CutPile() {
         <View key={index} className="miniapp-tarot__cut-sheet" style={{ top: `${index * 3}rpx` }} />
       ))}
       <View className="miniapp-tarot__cut-face">
-        <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
+        <Image className={skin === 'clay' ? 'miniapp-tarot__card-back-art' : undefined} src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
       </View>
     </View>
   )
@@ -47,6 +47,7 @@ export function MiniappTarotCutStage({
     <View className="miniapp-tarot__stage miniapp-tarot__stage--ritual miniapp-tarot__stage--cut">
       <Text className="miniapp-tarot__title">{copy.cutTitle(cutCount)}</Text>
       <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
+      <View className="miniapp-tarot__fit">
       <Button
         className={[
           'miniapp-tarot__cut-deck',
@@ -59,6 +60,7 @@ export function MiniappTarotCutStage({
         <View className="miniapp-tarot__cut-half miniapp-tarot__cut-half--left"><CutPile /></View>
         <View className="miniapp-tarot__cut-half miniapp-tarot__cut-half--right"><CutPile /></View>
       </Button>
+      </View>
       <View className="miniapp-tarot__spacer" />
       <Text className="miniapp-tarot__hint">
         {copy.cutHint(cutCount)}

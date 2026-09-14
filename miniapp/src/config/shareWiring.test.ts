@@ -48,9 +48,12 @@ describe('share capability wiring', () => {
     expect(me).toContain("changeTheme(on ? 'dark' : 'light')")
     expect(me).not.toContain('跟随系统')
     expect(me).not.toContain('动效')
-    expect(me).toContain('me-banner-panel-v9.png')
+    expect(me).toContain('me-banner-panel-v12.png')
     expect(me).toContain('className="me-page__banner-img" src={meBannerImg} mode="widthFix"')
     expect(me).toContain('版本 {APP_VERSION}')
+    const pkg = JSON.parse(readFileSync(resolve(miniappRoot(), 'package.json'), 'utf8')) as { version: string }
+    expect(pkg.version).toBe('1.0.0')
+    expect(me).toContain(`export const APP_VERSION = '${pkg.version}'`)
     expect(me).toContain('icon-me-clear-v8.png')
     expect(me).toContain('icon-me-theme-v8.png')
     expect(me).toContain('icon-me-haptics-v8.png')
@@ -63,6 +66,9 @@ describe('share capability wiring', () => {
     expect(me).toContain('me-page__entries-clip')
     expect(me).toContain('me-page__prefs-clip')
     expect(me).toContain('className="tab-page__scroll"')
+    expect(me).toContain('catchMove')
+    expect(me).not.toContain('ScrollView')
+    expect(me).toContain('me-page__foot')
     expect(me).not.toContain('enhanced')
     expect(me).toContain('me-page__icon')
     expect(me).not.toContain('me-page__banner-text')
@@ -79,7 +85,7 @@ describe('share capability wiring', () => {
   it('fills the me-page brand card and keeps version in the footer', () => {
     const styles = readFileSync(resolve(miniappRoot(), 'src/pages/me/index.scss'), 'utf8')
     const appStyles = readFileSync(resolve(miniappRoot(), 'src/app.scss'), 'utf8')
-    expect(styles).toMatch(/\.me-page__banner \{[^}]*overflow: hidden/)
+    expect(styles).toMatch(/\.me-page__banner \{[^}]*overflow: visible/)
     expect(styles).toMatch(/\.me-page__banner \{[^}]*border-radius: 40rpx/)
     expect(styles).toMatch(/\.me-page__banner-img \{[^}]*width: 100%;[^}]*height: auto;/)
     // 横幅不画 box-shadow 内阴影（透明圆角 PNG，投影由容器 --shadow-card 承担）；safe-area/padding 的 inset 字样不在此限
@@ -100,7 +106,7 @@ describe('share capability wiring', () => {
     expect(styles).not.toContain('.me-page__banner-veil')
     expect(styles).toMatch(/\.me-page__foot \{[\s\S]*?justify-content: center/)
     expect(styles).toMatch(/\.me-page__foot-version \{[\s\S]*?text-align: center/)
-    expect(styles).toMatch(/\.me-page \{[\s\S]*?padding: calc\(var\(--page-top-inset, 88px\) \+ 8rpx\) 40rpx 40rpx/)
+    expect(styles).toMatch(/\.me-page \{[\s\S]*?padding: calc\(var\(--page-top-inset, 88px\) \+ 8rpx\) 40rpx calc\(220rpx \+ env\(safe-area-inset-bottom\)\)/)
     expect(styles).not.toContain('.me-page__slab-shadow')
     // 品牌图沿透明轮廓投影；列表/偏好卡走标准实色接触带三层法（0 6rpx 0）。
     expect(styles).toMatch(/\.me-page__entries \{[^}]*box-shadow:[^;]*0 6rpx 0/)

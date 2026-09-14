@@ -1,0 +1,31 @@
+---
+description: 锁定微信小程序构建与开发者工具目录，禁止指到仓库根、dist 或旧 worktree
+alwaysApply: true
+---
+
+# 构建与预览目录（锁定）
+
+本机唯一合法路径：
+
+- 仓库 / 工作区：`D:\Mine\PtKing-miniapp`
+- 微信开发者工具项目目录：`D:\Mine\PtKing-miniapp\miniapp`
+- Taro 构建产物：`D:\Mine\PtKing-miniapp\miniapp\dist`
+
+构建只在仓库根执行 `npm run build:weapp` 或 `npm run dev:weapp`。`miniapp/project.config.json` 的 `miniprogramRoot` 是 `dist/`，不要改。
+
+```text
+❌ BAD
+打开 D:\Mine\PtKing-miniapp
+打开 D:\Mine\PtKing-miniapp\miniapp\dist
+打开 D:\Mine\PtKing-polish\miniapp
+打开 D:\Mine\PtKing-bright-pages\miniapp
+打开 D:\Pet10\miniapp
+wechatide / cli 传入上述任一错误路径后再清缓存重编译
+
+✅ GOOD
+打开 D:\Mine\PtKing-miniapp\miniapp
+产物确认是 D:\Mine\PtKing-miniapp\miniapp\dist
+路径核对正确后再清缓存、重编译、预览
+```
+
+重编译前必须先读开发者工具当前项目路径。路径不对先改回来，不要在错误目录上继续编译。预览入口写绝对路径，不要只写 `miniapp/` 或 `dist`。

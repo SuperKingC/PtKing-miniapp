@@ -1,6 +1,7 @@
-import { useEffect, type CSSProperties } from 'react'
+import { useEffect } from 'react'
 import { Button, Image, Text, View } from '@tarojs/components'
 import type { TarotCandidate } from './tarotCards'
+import { getFanFlightVars } from './fanFlight'
 import { getTarotCardBack, resolveTarotAssetUrl } from './tarotAssets'
 import { getTarotSkin } from './tarotSkin'
 import { getTarotStageCopy } from './tarotSkinCopy'
@@ -33,9 +34,10 @@ export function MiniappTarotFanStage({
   }, [flyingCard, onFinishPick])
 
   return (
-    <View className="miniapp-tarot__stage miniapp-tarot__stage--fan">
+    <View className={`miniapp-tarot__stage miniapp-tarot__stage--fan miniapp-tarot__stage--fan-${needCount}`}>
       <Text className="miniapp-tarot__title">{copy.fanTitle(needCount, picked.length)}</Text>
       <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
+      <View className="miniapp-tarot__fit">
       <View className={`miniapp-tarot__picked-row miniapp-tarot__picked-row--${needCount}`}>
         {Array.from({ length: needCount }, (_, order) => (
           <View
@@ -45,7 +47,7 @@ export function MiniappTarotFanStage({
               : 'miniapp-tarot__picked-slot'}
           >
             {picked[order] !== undefined && (
-              <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
+              <Image className={skin === 'clay' ? 'miniapp-tarot__card-back-art' : undefined} src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
             )}
           </View>
         ))}
@@ -60,14 +62,15 @@ export function MiniappTarotFanStage({
               picked.includes(index) ? 'miniapp-tarot__fan-card--picked' : '',
             ].filter(Boolean).join(' ')}
             style={flyingCard === index
-              ? { '--fly-x': `${(picked.length - (needCount - 1) / 2) * (needCount === 5 ? 94 : 158)}rpx` } as CSSProperties
+              ? getFanFlightVars(needCount, picked.length, skin)
               : undefined}
             disabled={picked.includes(index) || flyingCard !== undefined}
             onClick={() => onPick(index)}
           >
-            <Image src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode={skin === 'clay' ? 'aspectFit' : 'aspectFill'} fadeIn={false} />
+            <Image className={skin === 'clay' ? 'miniapp-tarot__card-back-art' : undefined} src={resolveTarotAssetUrl(getTarotCardBack(skin))} mode="aspectFill" fadeIn={false} />
           </Button>
         ))}
+      </View>
       </View>
       <View className="miniapp-tarot__spacer" />
       <Text className="miniapp-tarot__hint">{copy.fanHint(picked.length, needCount)}</Text>

@@ -32,10 +32,11 @@ export function MiniappTarotRevealStage({
   }, [allFlipped])
 
   return (
-    <View className="miniapp-tarot__stage miniapp-tarot__stage--reveal">
+    <View className={`miniapp-tarot__stage miniapp-tarot__stage--reveal miniapp-tarot__stage--reveal-${drawn.length}`}>
       <Text className="miniapp-tarot__title">{copy.revealTitle(allFlipped)}</Text>
       <View className="miniapp-tarot__spacer miniapp-tarot__spacer--top" />
-      <View className="miniapp-tarot__reveal-row">
+      <View className="miniapp-tarot__fit">
+      <View className={drawn.length === 5 ? 'miniapp-tarot__reveal-row miniapp-tarot__reveal-row--5' : 'miniapp-tarot__reveal-row'}>
         {drawn.map((item, index) => (
           <Button
             key={`${item.card.id}-${index}`}
@@ -46,6 +47,7 @@ export function MiniappTarotRevealStage({
             <MiniappTarotCard drawn={item} flipped={flipped[index]} compact={drawn.length >= 5} />
           </Button>
         ))}
+      </View>
       </View>
       <View className="miniapp-tarot__spacer" />
       <Button className="miniapp-tarot__next" disabled={!ready} onClick={onContinue}>

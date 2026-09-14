@@ -60,7 +60,7 @@ export default function PrivacyPage() {
   }
   return (
     <View className={`privacy-page theme-${theme}`} style={topInsetStyle()}>
-      <View className="privacy-page__back" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="privacy-page__back" onClick={goBack}>
         <Text>←</Text>
       </View>
       <View className="privacy-page__header">

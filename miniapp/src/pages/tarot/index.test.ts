@@ -6,7 +6,12 @@ describe('bright tarot entry wiring', () => {
   it('keeps the existing flow behind a light home and returns home on close', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-panel-v6.jpg')
-    // v4 入口卡：v3 从参考稿裁切底部平切(切掉圆角)，回退 git 历史 v2 完整素材升版
+    // 塔罗时光横幅是雾蓝 JPEG，实色接触带会在底缘露出米黄厚度
+    const hero = source('./index.scss').match(/\.tarot-home__hero\s*\{[^}]+\}/)?.[0] ?? ''
+    expect(hero).toContain('box-shadow:')
+    expect(hero).not.toMatch(/0\s+\d+rpx\s+0\s+#e9dcc3/)
+    expect(hero).not.toContain('--shadow-card')
+    // 入口卡回到 v4：菱形四角钉 + 中间菱纹扇牌，比 v5 空月牙更耐看
     expect(page).toContain('tarot-card-single-v4.png')
     expect(page).toContain('tarot-cards-fan-v4.png')
     expect(page).toContain('快速获得指引')
@@ -20,10 +25,10 @@ describe('bright tarot entry wiring', () => {
     expect(page).toContain('onClose={closeFlow}')
     expect(page).toContain('initialSpread={spread}')
   })
-  it('renders skin thumbnails from bundled per-skin crops (no network, no CSS fallback)', () => {
+  it('renders skin thumbnails from bundled per-skin previews (no network, no CSS fallback)', () => {
     const page = source('./index.tsx')
-    expect(page).toContain('tarot-skin-classic-v1.jpg')
-    expect(page).toContain('tarot-skin-clay-v1.jpg')
+    expect(page).toContain('tarot-skin-classic-v2.jpg')
+    expect(page).toContain('tarot-skin-clay-v4.jpg')
     expect(page).toContain('tarot-home__skin-thumb--${option}')
     expect(page).toContain('className="tarot-home__skin-thumb-img"')
     expect(page).toContain('mode="aspectFill"')
@@ -33,7 +38,7 @@ describe('bright tarot entry wiring', () => {
     expect(page).not.toContain('skin-thumb-fallback')
     expect(page).not.toContain('isUsableTarotAssetUrl')
     const styles = source('./index.scss')
-    expect(styles).toMatch(/\.tarot-home__skin-thumb\s*{[^}]*height:\s*220rpx[^}]*overflow:\s*hidden/)
+    expect(styles).toMatch(/\.tarot-home__skin-thumb\s*{[^}]*height:\s*248rpx[^}]*overflow:\s*hidden/)
     expect(styles).toMatch(/\.tarot-home__skin-thumb-img\s*{[^}]*width:\s*100%[^}]*height:\s*100%/)
     // 旧版 CSS 兜底卡已随本地图移除
     expect(styles).not.toContain('tarot-home__skin-thumb-fallback')
@@ -56,6 +61,7 @@ describe('bright tarot entry wiring', () => {
   it('curtain entrance layers drape close and fade-out reveal', () => {
     const page = source('./index.tsx')
     expect(page).toContain('tarot-curtain__glow')
+    expect(page).toContain('tarot-curtain__hem')
     expect(page).toContain('tarot-curtain__star--a')
     expect(page).toContain("curtain === 'opening' ? 'tarot-page--reveal' : ''")
     // 星点只挂 clay：classic 星夜不再有月亮和星星（用户反馈）

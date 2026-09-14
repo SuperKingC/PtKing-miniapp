@@ -13,7 +13,7 @@
   min-height: 160rpx;
   /* 参考稿：胶囊距屏边约 52rpx，槽内上下只留胶囊呼吸位；左右 28rpx 让胶囊拉长铺满 */
   padding: 8rpx 28rpx 14rpx;
-  /* 槽底与页面同色（参考稿 #fefaf5），胶囊靠自身光影浮出 */
+  /* 槽底跟页面底同色，盖住官方宿主默认白底 */
   background: #fefaf5;
   border-top: none;
 }
@@ -87,9 +87,9 @@
   font-weight: 500;
 }
 
-/* 暗色：槽底跟页面暖深棕，浮岛略亮一档；剖面同构（厚度线/接触影/弥散影换深棕版） */
+/* 暗色：槽底跟页面暖深棕同色，浮岛略亮一档 */
 .tabbar--dark {
-  background: #211b16;
+  background: #191411;
 }
 
 .tabbar--dark .tabbar__dock {

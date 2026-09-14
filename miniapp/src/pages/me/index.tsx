@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
+import { Button, Image, Text, View } from '@tarojs/components'
 import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
@@ -14,7 +14,7 @@ import {
 } from '../../services/theme'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
-import meBannerImg from '../../assets/illus/me-banner-panel-v9.png'
+import meBannerImg from '../../assets/illus/me-banner-panel-v12.png'
 import iconClear from '../../assets/illus/icon-me-clear-v8.png'
 import iconPrivacy from '../../assets/illus/icon-me-privacy-v8.png'
 import iconShare from '../../assets/illus/icon-me-share-v8.png'
@@ -24,7 +24,7 @@ import iconHaptics from '../../assets/illus/icon-me-haptics-v8.png'
 import './index.scss'
 
 /** 与 miniapp/package.json 的 version 保持一致（无后端，版本号本地维护） */
-export const APP_VERSION = '0.1.0'
+export const APP_VERSION = '1.0.0'
 
 interface MeEntry {
   id: string
@@ -110,12 +110,8 @@ export default function MePage() {
   ]
 
   return (
-    <View className={`tab-page theme-${theme}`} style={topInsetStyle()}>
-    <ScrollView
-      className="tab-page__scroll"
-      scrollY
-      showScrollbar={false}
-    >
+    <View className={`tab-page theme-${theme}`} style={topInsetStyle()} catchMove>
+    <View className="tab-page__scroll">
       <View className="me-page">
       <View className="me-page__banner">
         <View className="me-page__banner-clip">
@@ -129,7 +125,7 @@ export default function MePage() {
             <Button
               key={entry.id}
               className="me-page__entry"
-              hoverClass="pressable--pressed"
+              hoverClass="none"
               openType="share"
             >
               <Image className="me-page__icon" src={entry.icon} mode="aspectFit" />
@@ -140,7 +136,7 @@ export default function MePage() {
             <Button
               key={entry.id}
               className="me-page__entry"
-              hoverClass="pressable--pressed"
+              hoverClass="none"
               openType={entry.contact ? 'contact' : undefined}
               onClick={entry.onTap}
             >
@@ -177,7 +173,7 @@ export default function MePage() {
         <Text className="me-page__foot-version">版本 {APP_VERSION}</Text>
       </View>
       </View>
-    </ScrollView>
+    </View>
     </View>
   )
 }

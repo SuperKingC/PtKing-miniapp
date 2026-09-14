@@ -10,10 +10,10 @@ DEST = ROOT / 'miniapp' / 'src' / 'assets' / 'illus'
 OUT_W, OUT_H = 490, 330
 RATIO = OUT_W / OUT_H
 
-# 源图 → 展示带（y0 起点，高度按比例算），对准各皮肤主体：classic=月门，clay=猫与桌面
+# 源图 → 展示带（y0 起点，高度按比例算），对准各皮肤主体：classic=月门，clay=猫与长桌/玻璃球
 JOBS = [
     ('sanctuary-background.jpg', 'tarot-skin-classic-v1.jpg', 557),
-    ('sanctuary-background-clay.jpg', 'tarot-skin-clay-v1.jpg', 150),
+    ('sanctuary-background-clay-v2.jpg', 'tarot-skin-clay-v2.jpg', 220),
 ]
 
 for src_name, dest_name, y0 in JOBS:

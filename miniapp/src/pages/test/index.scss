@@ -69,14 +69,15 @@
   /* 参考图：猫伸出卡外叠进品牌行，蓝卡顶与副标题只留一线间距 */
   margin-top: -56rpx;
   margin-bottom: 28rpx;
+  width: 100%;
+  height: 317rpx;
 }
 
 .test-page__hero-img {
   display: block;
   width: 100%;
-  height: auto;
-  /* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条 */
-  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
+  height: 317rpx;
+  /* 不挂滤镜、不挂盒阴影：两者都会在圆角外画出方框缝。 */
 }
 
 .test-page__section {
@@ -159,12 +160,6 @@
     0 13rpx 17rpx rgba(150, 94, 56, 0.06);
   color: #ffffff;
   font-weight: var(--font-weight-semibold);
-}
-
-/* chip 按压只叠一层暖底：不用全局 opacity 突变（阴影条整块重绘会视觉闪屏） */
-.test-page__chip--press {
-  background: rgba(150, 94, 56, 0.08);
-  opacity: 1;
 }
 
 .test-page__grid {
@@ -269,17 +264,6 @@
   transform: rotate(-60deg);
   border-radius: 2rpx;
   background: var(--color-ink-secondary);
-}
-
-/* 卡片按压：只叠一层暖底，避免全局 opacity 突变引发整卡重绘闪烁 */
-.test-page__card--press {
-  background: #f7f0e4;
-  opacity: 1;
-}
-
-/* 今日推荐蓝卡按压：轻降不透明度仅此一层（图片直边无重影卡底，闪烁不明显） */
-.test-page__hero--press {
-  opacity: 0.88;
 }
 
 .test-page__card-go {

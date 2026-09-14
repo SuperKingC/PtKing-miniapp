@@ -13,8 +13,8 @@ import emptyRecordsImg from '../../assets/illus/empty-records-v3.png'
 import bookImage from '../../assets/illus/records-book-v4.png'
 import personalityIcon from '../../assets/illus/tile-star-v10.png'
 import loveIcon from '../../assets/illus/tile-love-v10.png'
-import careerIcon from '../../assets/illus/tile-career-v23.png'
-import funIcon from '../../assets/illus/tile-fun-v23.png'
+import careerIcon from '../../assets/illus/tile-career-v35.png'
+import funIcon from '../../assets/illus/tile-fun-v39.png'
 import './index.scss'
 
 const CATEGORIES: RecordCategory[] = ['全部', '人格', '情感', '职场', '趣味']
@@ -109,7 +109,6 @@ export default function RecordsPage() {
   const resumeBanner = resume ? (
     <View
       className="records-page__resume"
-      hoverClass="pressable--pressed"
       onClick={() => {
         Taro.navigateTo({ url: `/pages/test-play/index?testId=${resume.definition.id}` })
       }}
@@ -141,7 +140,6 @@ export default function RecordsPage() {
           <Text className="records-page__empty-text">还没有测试记录，先从推荐测试开始。</Text>
           <View
             className="records-page__empty-btn"
-            hoverClass="pressable--pressed"
             onClick={() => {
               if (firstTest) {
                 Taro.navigateTo({ url: `/pages/test-detail/index?testId=${firstTest.id}` })
@@ -189,7 +187,6 @@ export default function RecordsPage() {
               <View
                 key={item}
                 className={category === item ? 'records-page__chip records-page__chip--on' : 'records-page__chip'}
-                hoverClass="records-page__chip--press"
                 onClick={() => setCategory(item)}
               >
                 <Text>{item}</Text>
@@ -214,7 +211,6 @@ export default function RecordsPage() {
                   <Image className="records-page__item-icon" src={icon} mode="aspectFit" />
                   <View
                     className="records-page__item-main"
-                    hoverClass="pressable--pressed"
                     onClick={() => {
                       Taro.navigateTo({
                         url: `/pages/test-report/index?testId=${record.testId}&finishedAt=${encodeURIComponent(record.finishedAt)}`,

@@ -21,7 +21,7 @@ import { getWxGlobal } from '../services/wxGlobal'
 import { TABBAR_SELECTED_KEY, TAROT_TAB_INDEX, TAROT_FLOW_VISIBILITY_EVENT, shouldHideCustomTabBar, tabIndexFromRoute, tabPathToRoute } from './tabBarVisibility'
 import './index.scss'
 
-// 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；米白槽底+米色颗粒胶囊，高调奶油软陶插画图标。
+// 自定义 tabBar：图标+文字整体垂直居中（原生 tabBar 布局不可调）；槽底跟页面同色+米色颗粒胶囊，高调奶油软陶插画图标。
 // 选中态双保险：①点击时乐观置位（即时反馈）②各 tab 页 onShow 经 eventCenter 广播索引
 // （经 getTabBar().setState 的官方路子在 Taro 4 实测静默失效，见 hooks/useTabBarSelected）
 
@@ -165,14 +165,13 @@ export default class CustomTabBar extends Component {
     return (
       <View
         className={hidden ? `${themeClass} tabbar--hidden` : themeClass}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', background: theme === 'dark' ? '#191411' : '#fefaf5' }}
       >
         <View className="tabbar__dock">
           {TABS.map((tab, index) => (
             <View
               key={tab.path}
               className="tabbar__item"
-              hoverClass="pressable--pressed"
               onClick={() => this.switchTo(index)}
             >
               <Image

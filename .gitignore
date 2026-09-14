@@ -25,3 +25,9 @@ project.private.config.json
 miniapp/art/verify-shots/
 art/verify-shots/
 .worktrees/
+
+# 本地边缘预览与一次性草稿，不入库
+_edge-preview/
+miniapp/art/**/_edge-preview/
+miniapp/art/**/_scratch_*
+__pycache__/

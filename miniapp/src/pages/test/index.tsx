@@ -13,19 +13,19 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroCardImg from '../../assets/illus/hero-card-v11.png'
+import heroCardImg from '../../assets/illus/hero-card-v13.png'
 import tileMbtiImg from '../../assets/illus/tile-mbti-v10.png'
 import tileStarImg from '../../assets/illus/tile-star-v10.png'
 import tileLoveImg from '../../assets/illus/tile-love-v10.png'
-import tileCareerImg from '../../assets/illus/tile-career-v23.png'
-import tileFunImg from '../../assets/illus/tile-fun-v23.png'
+import tileCareerImg from '../../assets/illus/tile-career-v35.png'
+import tileFunImg from '../../assets/illus/tile-fun-v39.png'
 import './index.scss'
 
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tileStarImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
 
-/** 定义列表的内容指纹：id 序列一致即视为同一批，用于 onShow 幂等短路 */
+/** 定义列表的内容指纹：id+标题一致即视为同一批，用于 onShow 幂等短路 */
 function idsOf(definitions: TestDefinition[]): string {
-  return definitions.map((definition) => definition.id).join(',')
+  return definitions.map((definition) => `${definition.id}:${definition.title}`).join(',')
 }
 
 function todayCategory() {
@@ -106,7 +106,7 @@ export default function TestPage() {
     wx.navigateTo({ url: `/pages/test-detail/index?testId=${encodeURIComponent(testId)}` })
   }
   const renderCard = (definition: typeof definitions[number], badge: string) => (
-    <View key={definition.id} className="test-page__card" hoverClass="test-page__card--press" onClick={() => openDetail(definition.id)}>
+    <View key={definition.id} className="test-page__card" onClick={() => openDetail(definition.id)}>
       {/* 不挂 lazyLoad:分类切换大增删卡片时 lazy 图重触发解码,卡面先出文字后出图标,
           整列闪一下(实机录帧 f030→f031);22 张 tile 共 ~200KB,常驻解码缓存更稳 */}
       <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" />
@@ -143,20 +143,20 @@ export default function TestPage() {
               <Text className="test-page__brand-sub">来测测你的另一面</Text>
             </View>
           </View>
-          {daily && <View className="test-page__hero" hoverClass="test-page__hero--press" onClick={() => {
+          {daily && <View className="test-page__hero" onClick={() => {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
-            {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满 */}
-            <Image className="test-page__hero-img" src={heroCardImg} mode="widthFix" lazyLoad />
+            {/* 参考图整卡铺满 686×317rpx（资产 675×312）。不挂滤镜/底托，避免圆角外方框缝 */}
+            <Image className="test-page__hero-img" src={heroCardImg} mode="scaleToFill" fadeIn={false} />
           </View>}
-          {resume && <View className="test-page__resume" hoverClass="pressable--pressed" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
+          {resume && <View className="test-page__resume" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
             <Text className="test-page__section-kicker">继续答题</Text>
             <Text className="test-page__resume-title">{resume.definition.title}</Text>
             <Text className="test-page__resume-meta">已完成 {resume.draft.answers.length}/{resume.definition.questions.length} 题</Text>
           </View>}
           <View id="test-category-results" className="test-page__chips">
-            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} hoverClass="test-page__chip--press" onClick={() => pickCategory(category.key)}><Text>{category.label}</Text></View>)}
+            {TEST_CATEGORIES.map((category) => <View key={category.key} className={activeCategory === category.key ? 'test-page__chip test-page__chip--active' : 'test-page__chip'} onClick={() => pickCategory(category.key)}><Text>{category.label}</Text></View>)}
           </View>
           {/* 推荐+主列表合进同一个 grid:卡片跨分组移动走 React move 复用,不重挂不重解码 */}
           <View className="test-page__grid">{gridChildren}</View>

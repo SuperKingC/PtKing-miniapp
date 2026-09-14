@@ -53,7 +53,7 @@ export default function TestDetailPage() {
 
   return (
     <View className={`test-detail theme-${theme}`} style={{ ...topInsetStyle(), ...backButtonStyle() }}>
-      <View className="test-detail__back" hoverClass="pressable--pressed" onClick={goBack}>
+      <View className="test-detail__back" onClick={goBack}>
         <Text>←</Text>
       </View>
       {/* 介绍卡与下方按钮作为一组，在 [返回钮底边, 屏幕底部] 区域内整体垂直居中 */}
@@ -81,7 +81,6 @@ export default function TestDetailPage() {
         <Text className="test-detail__disclaimer">{APP_ENTERTAINMENT_DISCLAIMER}</Text>
         <View
           className="test-detail__start"
-          hoverClass="pressable--pressed"
           onClick={startPlay}
         >
           <Text>{hasDraft ? '继续测试' : '开始测试'}</Text>

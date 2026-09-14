@@ -4,3 +4,6 @@ prepared/
 compression-state.local.json
 reference-ui.png
 base/
+_scratch_*
+_edge-preview/
+__pycache__/

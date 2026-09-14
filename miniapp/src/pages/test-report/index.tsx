@@ -125,7 +125,7 @@ function FoldPanel({
 }) {
   return (
     <View className="test-report__panel">
-      <View className="test-report__fold" hoverClass="pressable--pressed" onClick={onToggle}>
+      <View className="test-report__fold" onClick={onToggle}>
         <Text className="test-report__panel-title">{title}</Text>
         <Text className="test-report__fold-mark">{open ? '收起' : '展开'}</Text>
       </View>
@@ -308,7 +308,6 @@ export default function TestReportPage() {
         <Text className="test-report__missing">还没有该测试的报告，先去完成一次测试吧。</Text>
         <View
           className="test-report__action"
-          hoverClass="pressable--pressed"
           onClick={() => {
             Taro.switchTab({ url: '/pages/test/index' })
           }}
@@ -323,7 +322,7 @@ export default function TestReportPage() {
   if (locked) {
   return (
     <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
+      <View className="test-report__navback" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       <View className="test-report__hero">
@@ -338,7 +337,6 @@ export default function TestReportPage() {
           </Text>
           <View
             className="test-report__gate-btn"
-            hoverClass="pressable--pressed"
             onClick={() => {
               void handleUnlock()
             }}
@@ -349,7 +347,6 @@ export default function TestReportPage() {
           {abortNote && <Text className="test-report__gate-abort">{abortNote}</Text>}
           <View
             className="test-report__gate-back"
-            hoverClass="pressable--pressed"
             onClick={() => {
               Taro.switchTab({ url: '/pages/test/index' })
             }}
@@ -400,7 +397,7 @@ export default function TestReportPage() {
   }
   return (
     <View className={`test-report theme-${theme}`} style={topInsetStyle()}>
-      <View className="test-report__navback" hoverClass="pressable--pressed" onClick={goBack} style={backButtonStyle()}>
+      <View className="test-report__navback" onClick={goBack} style={backButtonStyle()}>
         <Text>←</Text>
       </View>
       <View className="test-report__hero">
@@ -555,7 +552,6 @@ export default function TestReportPage() {
             <View
               key={row.record.finishedAt}
               className="test-report__history-row"
-              hoverClass="pressable--pressed"
               onClick={() => {
                 Taro.redirectTo({
                   url: `/pages/test-report/index?testId=${definition.id}&finishedAt=${encodeURIComponent(row.record.finishedAt)}`,
@@ -680,7 +676,6 @@ export default function TestReportPage() {
       <View className="test-report__footer">
         <View
           className="test-report__action"
-          hoverClass="pressable--pressed"
           onClick={() => {
             trackEvent('report_retest', { testId: definition.id })
             Taro.redirectTo({ url: `/pages/test-play/index?testId=${definition.id}` })
@@ -688,13 +683,12 @@ export default function TestReportPage() {
         >
           <Text>再测一次</Text>
         </View>
-        <Button className="test-report__share test-report__share--solo" openType="share" hoverClass="pressable--pressed">
+        <Button className="test-report__share test-report__share--solo" openType="share" hoverClass="none">
           分享给好友
         </Button>
         {related && (
           <View
             className="test-report__related"
-            hoverClass="pressable--pressed"
             onClick={() => {
               trackEvent('report_related', { testId: definition.id, relatedId: related.id })
               Taro.redirectTo({ url: `/pages/test-detail/index?testId=${related.id}` })
@@ -705,14 +699,13 @@ export default function TestReportPage() {
         )}
         <View
           className="test-report__home"
-          hoverClass="pressable--pressed"
           onClick={() => {
             Taro.switchTab({ url: '/pages/test/index' })
           }}
         >
           <Text>回测试中心</Text>
         </View>
-        <Button className="test-report__feedback" openType="contact" hoverClass="pressable--pressed">
+        <Button className="test-report__feedback" openType="contact" hoverClass="none">
           结果不太像？告诉我们
         </Button>
       </View>

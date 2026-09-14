@@ -5,10 +5,11 @@ import { describe, expect, it } from 'vitest'
 const stagePath = path.resolve(__dirname, 'MiniappTarotShuffleStage.tsx')
 
 describe('miniapp tarot shuffle stage contract', () => {
-  it('keeps the long-press duration at a brisk 3000ms', () => {
+  it('keeps the long-press duration at a brisk 2000ms', () => {
     const stage = fs.readFileSync(stagePath, 'utf8')
 
-    expect(stage).toContain('const shuffleDurationMs = 3000')
+    expect(stage).toContain('const shuffleDurationMs = 2000')
+    expect(stage).not.toContain('const shuffleDurationMs = 3000')
     expect(stage).not.toContain('const shuffleDurationMs = 4000')
     expect(stage).toContain('requestAnimationFrame(tick)')
     expect(stage).not.toContain('setInterval')

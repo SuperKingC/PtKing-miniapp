@@ -12,7 +12,7 @@ describe('体验入口契约', () => {
     expect(home).toContain('<View className="test-page">')
     expect(home).toContain('pickDailyTest')
     expect(home).toContain('openDetail(daily.id)')
-    expect(home).toContain('hero-card-v11.png')
+    expect(home).toContain('hero-card-v13.png')
     expect(home).not.toContain('去测 ›')
     expect(home).not.toContain('scrollIntoView')
     expect(home).not.toContain('card-benefit')
@@ -32,9 +32,14 @@ describe('体验入口契约', () => {
     expect(styles).toContain('font-size: 22rpx')
     expect(styles).toContain('justify-content: center')
     expect(styles).toContain('background: #fefaf5')
+    expect(styles).toContain('background: #191411')
     expect(styles).toContain('background-color: #f3e5d1')
+    expect(styles).not.toContain('clip-path:')
     expect(styles).not.toContain('rgba(255, 255, 255')
     expect(appStyles).toContain('custom-tab-bar')
+    expect(appStyles).toMatch(/custom-tab-bar \{[\s\S]*?background: #fefaf5/)
+    expect(appStyles).toMatch(/custom-tab-bar \{[\s\S]*?background: #191411/)
+    expect(appStyles).not.toContain('--page-frame-max')
     expect(tabBar).toContain('onClick={() => this.switchTo(index)}')
     expect(tabBar).toMatch(/switchTo = \(index: number\) => \{[\s\S]*?switchTab\(\{ url \}\)/)
     expect(tabBar).not.toMatch(/switchTo = [\s\S]*?applyVisibility/)
@@ -72,7 +77,7 @@ describe('体验入口契约', () => {
     expect(report).not.toContain('saveReportFeedback')
   })
 
-  it('interactive surfaces use a shared press class instead of hover none', () => {
+  it('interactive surfaces do not use hover press styles', () => {
     const files = [
       'pages/test/index.tsx',
       'pages/test-detail/index.tsx',
@@ -83,9 +88,11 @@ describe('体验入口契约', () => {
     ]
     for (const file of files) {
       const text = source(file)
-      expect(text).toContain('pressable--pressed')
+      expect(text).not.toContain('pressable--pressed')
+      expect(text).not.toContain('hoverStayTime')
     }
-    expect(source('app.scss')).toContain('.pressable--pressed')
+    expect(source('app.scss')).not.toContain('.pressable--pressed')
+    expect(source('app.scss')).toContain('.button-hover')
   })
 
   it('keeps the privacy page left-aligned with a separate header', () => {

@@ -1,7 +1,7 @@
 {
   "name": "ptking-miniapp",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "build:weapp": "node scripts/with-asset-env.mjs npm --prefix miniapp run build:weapp",
     "dev:weapp": "node scripts/with-asset-env.mjs npm --prefix miniapp run dev:weapp",
