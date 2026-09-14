@@ -70,7 +70,7 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
 }
 
 /** 首页卡片展示顺序：静态顺序为基，动态新增的测试排在其后 */
-let listOrder: string[] = [
+const STATIC_ORDER: readonly string[] = [
   MBTI_TEST.id,
   XP_TEST.id,
   UNHINGED_TEST.id,
@@ -104,6 +104,7 @@ let listOrder: string[] = [
   CHIIKAWA_BOND_TEST.id,
 ]
 
+let listOrder: string[] = [...STATIC_ORDER]
 let definitions: Record<string, TestDefinition> = { ...STATIC_DEFINITIONS }
 
 const listeners = new Set<() => void>()
@@ -113,15 +114,15 @@ export function subscribeTestRegistry(listener: () => void): () => void {
   return () => { listeners.delete(listener) }
 }
 
-/** COS 动态测试合并入口：更新注册表后通知已挂载页面 */
+/** COS 动态测试合并入口：每次以静态目录为基重放，远端删除的项会消失 */
 export function applyDynamicTestDefinitions(dynamic: TestDefinition[]): void {
-  const merged = mergeTestDefinitions(definitions, listOrder, dynamic)
+  const merged = mergeTestDefinitions(STATIC_DEFINITIONS, STATIC_ORDER, dynamic)
   definitions = merged.definitions
   listOrder = merged.order
   listeners.forEach((listener) => listener())
 }
 
-export const TEST_LIST_ORDER: readonly string[] = listOrder
+export const TEST_LIST_ORDER: readonly string[] = STATIC_ORDER
 
 export function getTestDefinition(testId: string): TestDefinition | null {
   return definitions[testId] ?? null

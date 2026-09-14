@@ -59,6 +59,22 @@ describe('dynamicTests loader', () => {
     expect(getTestDefinition('dyn')?.title).toBe('动态测试')
   })
 
+  it('remembers assetRev from the registry so tarot URLs can bust same-name cache', async () => {
+    const storage = new Map<string, unknown>()
+    vi.stubGlobal('wx', {
+      request: requestMock,
+      getStorageSync: (key: string) => storage.get(key),
+      setStorageSync: (key: string, value: unknown) => { storage.set(key, value) },
+    })
+    requestMock.mockImplementation(({ success }) => {
+      success({ statusCode: 200, data: { assetRev: 'rev-9', tests: [definition] } })
+    })
+    const { loadDynamicTests } = await import('./dynamicTests')
+    const { readAssetRev } = await import('./assetRev')
+    await loadDynamicTests('https://cos.example.com')
+    expect(readAssetRev()).toBe('rev-9')
+  })
+
   it.each([404, 500, undefined])('ignores unsuccessful or missing HTTP status %s', async (statusCode) => {
     requestMock.mockImplementation(({ success }) => success({ statusCode, data: { tests: [definition] } }))
     const { loadDynamicTests } = await import('./dynamicTests')
@@ -118,13 +134,24 @@ describe('dynamic registry subscriptions', () => {
     registry.applyDynamicTestDefinitions([definition])
     expect(changed).toHaveBeenCalledTimes(2)
   })
+
+  it('replays each COS payload against the static catalog so removed tests disappear', async () => {
+    const registry = await import('./testRegistry')
+    registry.applyDynamicTestDefinitions([definition])
+    expect(registry.getTestDefinition('dyn')).not.toBeNull()
+    registry.applyDynamicTestDefinitions([])
+    expect(registry.getTestDefinition('dyn')).toBeNull()
+    expect(registry.getTestDefinition('mbti')).not.toBeNull()
+    expect(registry.listTestDefinitions().some((item) => item.id === 'dyn')).toBe(false)
+  })
 })
 
 describe('dynamic content wiring', () => {
   it('starts loading once from the shared platform-aware asset root', () => {
     const app = readFileSync(resolve(miniappRoot(), 'src/app.tsx'), 'utf8')
     expect(app).toContain("from './services/assetBaseUrl'")
-    expect(app).toMatch(/useEffect\([\s\S]*void loadDynamicTests\(resolveAssetBaseUrl\(\)\)[\s\S]*\}, \[\]\)/)
+    expect(app).toContain('useDidShow')
+    expect(app).toMatch(/useDidShow\(\(\) => \{[\s\S]*void loadDynamicTests\(resolveAssetBaseUrl\(\)\)[\s\S]*\}\)/)
   })
 
   it('subscribes the home page, refreshes after subscribing and returns cleanup', () => {

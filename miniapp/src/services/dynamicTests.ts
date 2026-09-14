@@ -1,4 +1,5 @@
 import { isUsableAssetBaseUrl } from './assetBaseUrl'
+import { rememberAssetRev } from './assetRev'
 import { applyDynamicTestDefinitions } from './testRegistry'
 import { isValidTestDefinition } from './testRegistryMerge'
 import { getWxGlobal } from './wxGlobal'
@@ -6,10 +7,11 @@ import { getWxGlobal } from './wxGlobal'
 /**
  * COS 动态测试下发（M2）：从资产根 {根}/tests/registry-vN.json 拉取定义数组，
  * 合并进注册表（动态覆盖静态、追加新项）。任何失败都静默——静态兜底保证产品可用。
- * 上传新 registry 时升文件名版本号（资产缓存铁律），版本号在此同步。
+ * 题库热更覆盖同名 registry-v1.json（短缓存）。换塔罗图走 JSON 里的 assetRev，不必升图片文件名。
  */
 const REGISTRY_JSON_PATH = '/tests/registry-v1.json'
 const REQUEST_TIMEOUT_MS = 8000
+let loadGeneration = 0
 
 type RequestResponse = { statusCode?: number; data?: unknown }
 type RequestOptions = {
@@ -25,6 +27,7 @@ export async function loadDynamicTests(baseUrl: string): Promise<void> {
   const request = getWxGlobal()?.request as ((options: RequestOptions) => void) | undefined
   if (!request) return
 
+  const generation = ++loadGeneration
   try {
     const data = await new Promise<unknown>((resolve, reject) => {
       let settled = false
@@ -51,6 +54,8 @@ export async function loadDynamicTests(baseUrl: string): Promise<void> {
     const list = Array.isArray((data as { tests?: unknown[] } | null)?.tests)
       ? (data as { tests: unknown[] }).tests
       : []
+    if (generation !== loadGeneration) return
+    rememberAssetRev((data as { assetRev?: unknown } | null)?.assetRev)
     const valid = list.filter(isValidTestDefinition)
     if (valid.length > 0) applyDynamicTestDefinitions(valid)
   } catch {

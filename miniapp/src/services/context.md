@@ -1,5 +1,10 @@
 # 工作记录
 
+- 时间：2026-09-14 15:29
+- 原因：COS 题库 404；热更后删除的题仍留在内存；同名塔罗图不刷新。
+- 修改：`loadDynamicTests` 每次 `onShow` 拉 registry；合并以静态目录为基重放。新增 `assetRev.ts`，塔罗 URL 带 `?r=`。
+- 验证：`dynamicTests.test.ts` + `assetRev.test.ts` + `tarotAssets.test.ts` 相关项通过。
+
 - 时间：2026-09-09 16:30
 - 原因：深色模式标题栏要和页面同色，切 tab 也要跟上。
 - 修改：`theme.ts` 深色导航/窗口底改为 `#191411`；`applyThemeChrome` 支持 force 重刷。`theme.test.ts` 同步。

@@ -61,13 +61,13 @@ art/generated-art/tarot/ui/sanctuary-background.jpg
 art/generated-art/tarot/ui/card-back.jpg
 art/generated-art/tarot/cards/{22 张 majors}.jpg
 art/generated-art/tarot/ui/sanctuary-background-clay-v2.jpg
-art/generated-art/tarot/ui/card-back-clay-v2.jpg
+art/generated-art/tarot/ui/card-back-clay-v3.jpg
 art/generated-art/tarot/cards/{22 张 majors}-clay.jpg
 ```
 
 （majors 清单见 `scripts/publish-assets.mjs` 的 `TAROT_FILES`。）
 
-本次 clay UI 资源版本说明：`sanctuary-background-clay-v2.jpg` 来源为 `tarot-bg-long2.png`（背景 2），`card-back-clay-v2.jpg` 来源为 `tarot-clay-cardback-v2r1.png`（牌背 1）。文件名显式升级为 `-v2`，避免客户端与 COS/CDN 沿用旧文件名缓存；上传目录仍使用 git SHA 版本目录，48 张清单与 COS 根路径规则不变。
+本次 clay UI 资源版本说明：`sanctuary-background-clay-v2.jpg` 来源为 `tarot-bg-long2.png`（背景 2），`card-back-clay-v3.jpg` 来源为 `tarot-clay-cardback-v3a.jpg`（扁平印刷菱格 + 平面八角星，去掉图内投影与立体浮雕星）。牌背文件名升为 `-v3` 防缓存；背景仍用 `-v2`。上传目录仍使用 git SHA 版本目录，48 张清单与 COS 根路径规则不变。
 
 牌面原图像素约 768×1152（clay 批次为 2:3 竖幅），背景约 768×1365。界面上牌面大约 190×300 rpx，真机按 2～3 倍屏也就需要约 400×600 像素。因此：
 
@@ -75,16 +75,56 @@ art/generated-art/tarot/cards/{22 张 majors}-clay.jpg
 - **适度缩小（例如收到 560×840）**：手机上看不出差别，体积会再小一截。
 - **收到显示尺寸（190×300）**：会发糊，不要这样做。
 
-换内容应按版本升名（例如 `-v3`）并同步代码清单；上传带 git SHA 新目录，文件名与目录双重版本化，确保缓存自然失效。文件名已与代码锁定，不要擅自改名。
+COS 热更图保持与代码锁定的文件名，同名覆盖后靠 `assetRev` + `?r=` 刷新，不必为换图升 `-v4`。只有改代码引用（新增一张、换路径结构）才改文件名。打进主包的插画也可覆盖同名，开发者工具清全部缓存后重编译即可。
+
+## 玩家指针和热更（1.0.0 必读）
+
+小程序里的 `TARO_ASSET_BASE_URL` 在**构建时写死**，例如 `.../assets/ptking/c958df7`。玩家装的 1.0.0 只会去这个目录。
+
+| 你想做的事 | 命令 | COS 目录 | 玩家 1.0.0 |
+|---|---|---|---|
+| 热更题库 / 覆盖现有图 | `npm run assets:registry` 或 `npm run assets:hot` | **还是** `.asset-base-url` 那个目录 | 对得上 |
+| 发下一个小程序版本 | `npm run assets` / 一键上传 | 按 **新 git SHA** 开新目录，并改本地指针、重建 | **对不上**，要等他们更新小程序 |
+
+发版前先打 tag，频道名默认读这个 tag（优先当前提交上的，否则本分支最近的）：
+
+```powershell
+git tag v1.0.0
+npm run assets:channel
+```
+
+会传到 `assets/ptking/v1.0.0/`。要手写名字仍可用 `npm run assets -- --channel v1`。之后热更用 `assets:hot` 覆盖玩家指针那个目录。`npm run assets` 不带 `--channel` 仍按 git SHA 开新目录，若和当前指针不同会警告。
+
+`npm run assets` / `assets:hot` 会在题库 JSON 里写入 `assetRev`。小程序拉到新修订号后，塔罗图 URL 带 `?r=`，同名覆盖也会重下，**不必为热更换图升文件名、也不必发新版小程序**。只改题目用 `assets:registry`（不写 `assetRev`），避免玩家无谓重下 24 张图。
 
 ## 日常更新（一键）
 
-资源放进 `art/generated-art` 后，任选一种：
+资源放进 `art/generated-art` 后：
 
-- 资源管理器双击仓库根目录的 `一键上传.cmd`（脚本正文是英文，避免 Windows 命令行把中文拆成乱码命令）
-- 或在仓库根 PowerShell 执行：`npm run assets`
+- **已上架包热更**（不改指针）：`npm run assets:hot`（图+题库）或 `npm run assets:registry`（只题库）
+- **下一个小程序版本**：双击 `一键上传.cmd` 或 `npm run assets`（新 SHA 目录 → 写指针 → 重建）
 
-这一条会：检查 48 张塔罗图（两套皮肤）→ 真传到 COS → 写入 `.asset-base-url` → 重建 `miniapp/dist`。
+只热更题库、不改资产根、不重建小程序：
+
+```powershell
+npm run assets:registry
+```
+
+它会先 `content:export`，再把 JSON 传到 `.asset-base-url` 指向的当前版本目录（短缓存 60s）。小程序每次 `onShow` 拉取 `{资产根}/tests/registry-v1.json`：以包内静态题库为基重放（同 id 覆盖、新 id 追加、COS 上删掉的项消失）；失败仍走静态兜底。换 `registry-v2.json` 必须改代码并重建。
+
+验收热更（不改代码、不重建）：
+
+```powershell
+npm run assets:registry:probe
+```
+
+微信开发者工具点「编译」或把模拟器切到后台再回来，测试中心应出现「COS 热更探针」。确认后撤回：
+
+```powershell
+npm run assets:registry
+```
+
+再编译一次，探针应消失。
 
 只想预演或拆开跑：
 
@@ -97,9 +137,12 @@ npm run assets:publish
 | 命令 | 作用 |
 |---|---|
 | `assets:compress` | 对 `art/generated-art/tarot` 做一次 TinyPNG，不改像素 |
-| `assets:check` | 只检查 48 张塔罗（两套皮肤）是否都在 `art/generated-art` |
+| `assets:check` | 导出题库并检查 48 张塔罗 + `tests/registry-v1.json` |
 | `assets:upload` | dry-run，只打印将上传的 key |
 | `assets:publish` | 只真传并写地址，不重建 |
+| `assets:hot` | 覆盖当前玩家指针目录（图+题库），不改指针、不重建 |
+| `assets:registry` | 导出题库并传到当前 COS 版本目录，不重建 |
+| `assets:registry:probe` | 在题库末尾追加「COS 热更探针」，用于验收热更 |
 | `build:weapp` / `dev:weapp` | 自动读取 `.asset-base-url` 注入 `TARO_ASSET_BASE_URL` |
 
 `.asset-base-url` 已 gitignore，只服务本机构建。已手动设置环境变量时，脚本不会覆盖。

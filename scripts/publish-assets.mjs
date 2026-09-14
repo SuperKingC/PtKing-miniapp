@@ -3,8 +3,11 @@
  * COS 资产发布：校验塔罗清单 → 调用 kit 版本化上传 → 写出本机构建地址。
  *
  * 用法:
- *   npm run assets           一键：校验 → 真传 → 写地址 → 重建小程序
- *   npm run assets:check     只检查 art/generated-art 是否齐 24 张塔罗图
+ *   npm run assets           开新频道（git SHA 新目录）→ 写指针 → 重建；给下一个小程序版本用
+ *   npm run assets:hot       覆盖 .asset-base-url 指向的现有目录，不改指针、不重建；给已上架包热更
+ *   npm run assets -- --channel      频道名读当前提交/分支的 git tag（如 v1.0.0）
+ *   npm run assets -- --channel v1   显式覆盖频道名
+ *   npm run assets:check     导出题库并检查 48 张塔罗 + registry-v1.json
  *   npm run assets:upload    dry-run 打印上传计划
  *   npm run assets:publish   真传并写入 .asset-base-url
  *
@@ -18,6 +21,7 @@ import { execSync, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { CHANNEL_NAME_RE, readAssetPointer, readGitChannelHints, resolveChannelName } from './asset-pointer.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const kitRoot = process.env.MINIAPP_KIT_DIR
@@ -29,8 +33,10 @@ const envOut = path.join(root, '.asset-base-url')
 const localEnvPath = path.join(root, '.env')
 const kitEnvPath = path.join(kitRoot, '.env')
 const uploadScript = path.join(kitRoot, 'cos', 'upload-cos.mjs')
-// 真正上 COS 的只有 tarot/ 子树 + 生图 manifest；generated-art 里的 avatar 等实验产物不上传
+// 真正上 COS 的只有 tarot/、题库 registry 与生图 manifest；generated-art 里的实验产物不上传
 const stagedDir = path.join(root, 'tmp-publish-stage')
+const REGISTRY_FILE = 'tests/registry-v1.json'
+const exportRegistryScript = path.join(root, 'miniapp', 'content', 'export-registry.mjs')
 
 const TAROT_MAJORS = [
   'the-fool',
@@ -63,13 +69,22 @@ export const TAROT_FILES = [
   'tarot/ui/card-back.jpg',
   ...TAROT_MAJORS.flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
   'tarot/ui/sanctuary-background-clay-v2.jpg',
-  'tarot/ui/card-back-clay-v2.jpg',
+  'tarot/ui/card-back-clay-v3.jpg',
 ]
 
-const args = new Set(process.argv.slice(2))
+const rawArgs = process.argv.slice(2)
+const args = new Set(rawArgs)
 const checkOnly = args.has('--check')
 const yes = args.has('--yes')
 const alsoBuild = args.has('--build')
+const live = args.has('--live')
+
+let channel = ''
+try {
+  channel = resolveChannelName(rawArgs, readGitChannelHints(root))
+} catch (error) {
+  die(error instanceof Error ? error.message : String(error))
+}
 
 function die(msg) {
   console.error(`[assets] ${msg}`)
@@ -106,8 +121,26 @@ function missingTarot() {
   return TAROT_FILES.filter((rel) => !fs.existsSync(path.join(assetDir, rel)))
 }
 
+function registryPath() {
+  return path.join(assetDir, ...REGISTRY_FILE.split('/'))
+}
+
+function exportRegistry() {
+  if (!fs.existsSync(exportRegistryScript)) die(`找不到题库导出脚本: ${exportRegistryScript}`)
+  const exported = spawnSync(process.execPath, [exportRegistryScript], { stdio: 'inherit', cwd: root })
+  if (exported.status !== 0) die(`导出 ${REGISTRY_FILE} 退出码 ${exported.status ?? 'null'}`)
+}
+
+/** 图+题一起上传时打修订号；只改题库的 assets:registry 不要打，避免玩家无谓重下塔罗图。 */
+function stampAssetRev(file) {
+  const payload = JSON.parse(fs.readFileSync(file, 'utf8'))
+  payload.assetRev = new Date().toISOString()
+  fs.writeFileSync(file, `${JSON.stringify(payload)}\n`)
+  console.log(`[assets] assetRev ${payload.assetRev}（同名图靠 ?r= 刷新，不必升文件名）`)
+}
+
 /**
- * 只把 tarot/ 子树（48 张）与生图 manifest.json 暂存到一个干净目录再上传，
+ * 只把 tarot/ 子树（48 张）、题库 registry 与生图 manifest.json 暂存再上传，
  * 避免把 generated-art 里的 avatar 等实验产物（100MB+）一起推上 COS。
  * 暂存目录名匹配 .gitignore 的 tmp* 规则，不产生未跟踪文件。
  */
@@ -115,6 +148,10 @@ function stagePublishDir() {
   fs.rmSync(stagedDir, { recursive: true, force: true })
   fs.mkdirSync(stagedDir, { recursive: true })
   fs.cpSync(path.join(assetDir, 'tarot'), path.join(stagedDir, 'tarot'), { recursive: true })
+  const registry = registryPath()
+  if (!fs.existsSync(registry)) die(`缺少 ${REGISTRY_FILE}。先跑 npm run content:export`)
+  fs.mkdirSync(path.join(stagedDir, 'tests'), { recursive: true })
+  fs.copyFileSync(registry, path.join(stagedDir, REGISTRY_FILE))
   const manifest = path.join(assetDir, 'manifest.json')
   if (fs.existsSync(manifest)) fs.copyFileSync(manifest, path.join(stagedDir, 'manifest.json'))
 }
@@ -129,6 +166,9 @@ loadDotEnv(kitEnvPath)
 
 if (!fs.existsSync(assetDir)) die(`资产目录不存在: ${assetDir}。先把塔罗图放到 art/generated-art/tarot/`)
 
+exportRegistry()
+if (!fs.existsSync(registryPath())) die(`导出后仍缺少 ${REGISTRY_FILE}`)
+
 const missing = missingTarot()
 if (missing.length) {
   console.error(`[assets] 塔罗资源缺 ${missing.length}/${TAROT_FILES.length} 张，小程序会停在「资源加载失败」：`)
@@ -137,9 +177,11 @@ if (missing.length) {
 }
 
 if (checkOnly) {
-  console.log(`[assets] 塔罗 ${TAROT_FILES.length} 张齐全`)
+  console.log(`[assets] 塔罗 ${TAROT_FILES.length} 张齐全，已含 ${REGISTRY_FILE}`)
   process.exit(0)
 }
+
+stampAssetRev(registryPath())
 
 if (!fs.existsSync(uploadScript)) die(`找不到 kit 上传脚本: ${uploadScript}`)
 
@@ -151,14 +193,26 @@ if (yes) {
   }
 }
 
-const prefix = readPrefix()
-const version = gitShortSha()
-const base = publicBase()
-const assetBaseUrl = base ? `${base}/${prefix}/${version}` : ''
+if (live && channel) die('不要同时用 --live 和 --channel')
+if (channel && !CHANNEL_NAME_RE.test(channel)) die(`非法频道名: ${channel}。tag 只能含字母数字、点、下划线和连字符`)
 
-console.log(`[assets] 目录 ${assetDir}（仅上传 tarot/ + manifest.json）`)
-console.log(`[assets] COS 路径 ${prefix}/${version}/`)
-if (assetBaseUrl) console.log(`[assets] 构建地址 ${assetBaseUrl}`)
+const pointer = readAssetPointer(envOut)
+if (live && !pointer) die('缺少 .asset-base-url，无法热更到玩家已在用的指针。先发版写入指针，或用 --channel v1 建稳定频道')
+
+const prefix = pointer && live ? pointer.prefix : readPrefix()
+const version = live ? pointer.version : channel || gitShortSha()
+const base = publicBase() || pointer?.origin || ''
+const assetBaseUrl = base ? `${base}/${prefix}/${version}` : ''
+const rewritePointer = yes && !live
+const shouldBuild = yes && alsoBuild && !live
+
+if (!live && pointer && pointer.version !== version) {
+  console.warn(`[assets] 警告：将写入新目录 ${prefix}/${version}/，当前指针是 ${pointer.version}。已上架包看不到这次上传。热更请用 npm run assets:hot`)
+}
+
+console.log(`[assets] 目录 ${assetDir}（仅上传 tarot/ + ${REGISTRY_FILE} + manifest.json）`)
+console.log(`[assets] COS 路径 ${prefix}/${version}/${live ? '（覆盖玩家指针，不改频道）' : ''}`)
+if (assetBaseUrl) console.log(`[assets] ${live ? '热更目标' : '构建地址'} ${assetBaseUrl}`)
 else console.log('[assets] 未设置 COS_PUBLIC_BASE，上传后请手动拼 TARO_ASSET_BASE_URL')
 
 stagePublishDir()
@@ -175,14 +229,16 @@ cleanupStage()
 
 if (result.status !== 0) die(`上传脚本退出码 ${result.status ?? 'null'}`)
 
-if (yes && assetBaseUrl) {
+if (rewritePointer && assetBaseUrl) {
   fs.writeFileSync(envOut, `${assetBaseUrl}\n`, 'utf8')
   console.log(`[assets] 已写入 ${envOut}`)
+} else if (yes && live) {
+  console.log('[assets] 热更完成：未改 .asset-base-url，未重建。玩家包指针不变')
 } else if (yes) {
   console.log(`[assets] 上传完成。把 TARO_ASSET_BASE_URL 设为 https://<你的域名>/${prefix}/${version} 后重建`)
 }
 
-if (yes && alsoBuild) {
+if (shouldBuild) {
   console.log('[assets] 开始重建小程序…')
   const build = spawnSync(process.execPath, [
     path.join(root, 'scripts', 'with-asset-env.mjs'),
@@ -190,9 +246,9 @@ if (yes && alsoBuild) {
   ], { stdio: 'inherit', cwd: root, env: process.env })
   if (build.status !== 0) die(`小程序构建退出码 ${build.status ?? 'null'}`)
   console.log('[assets] 完成。微信开发者工具导入 miniapp 目录，清缓存后编译')
-} else if (yes) {
+} else if (yes && !live) {
   console.log('[assets] 下一步：npm run build:weapp   （会自动读取该地址）')
   console.log('[assets] 微信公众平台 → 开发管理 → 开发设置 → downloadFile 合法域名，加入 COS/CDN 的 HTTPS 域名')
-} else {
-  console.log('[assets] dry-run 完成。确认清单后执行 npm run assets')
+} else if (!yes) {
+  console.log(`[assets] dry-run 完成。确认清单后执行 npm run ${live ? 'assets:hot' : 'assets'}`)
 }

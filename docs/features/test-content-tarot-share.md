@@ -38,6 +38,9 @@ Chiikawa 缘分测试（`chiikawa-bond`）：32 题 × 每题 4 个短选项；�
 - **COS 动态下发**：`dynamicTests.ts` 拉取 `{资产根}/tests/registry-v1.json`（升版本号防缓存），
   `testRegistryMerge.ts` 纯函数合并（动态覆盖静态同名项、新 id 追加列表尾、半残结构丢弃）；
   加载失败静默走静态兜底，产品永不受 COS 故障影响。
+  发布：`npm run assets` 会导出并上传这份 JSON；只改题库用 `npm run assets:registry`。
+  验收热更：`npm run assets:registry:probe` 追加「COS 热更探针」，编译后应出现新卡片；再 `npm run assets:registry` 撤回。
+  热更换图：`npm run assets:hot` 会写 `assetRev`，客户端给塔罗 URL 加 `?r=`，同名覆盖即可，不必升文件名发版。
 - **sanity 契约**（`config/testRegistrySanity.test.ts`）：对所有上架测试自动检查——
   结构完整（题数≥6/报告≥3/文案长度）、三类计分模式报告可达性（极化/均匀答案能命中每个报告）、
   品牌词与临床措辞禁令（小多利/Pet10/诊断/抑郁症等）。新加测试自动纳入，无需补写。

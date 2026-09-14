@@ -1,0 +1,31 @@
+{
+  "id": "cos-hot-probe",
+  "title": "COS 热更探针",
+  "category": "趣味",
+  "meta": { "minutes": 1, "resultLabel": "热更验收" },
+  "intro": ["这张卡片只存在于 COS 题库，用来确认热更是否生效。"],
+  "notice": "本内容仅供开发验收，不构成任何专业评价。",
+  "questions": [
+    {
+      "text": "你在测试中心看到了这张「COS 热更探针」卡片吗？",
+      "options": [
+        { "text": "看到了", "weight": 1 },
+        { "text": "也看到了", "weight": 1 }
+      ]
+    }
+  ],
+  "scoring": {
+    "type": "band",
+    "max": 1,
+    "bands": [{ "min": 0, "max": 1, "reportId": "ok" }]
+  },
+  "reports": {
+    "ok": {
+      "id": "ok",
+      "title": "热更成功",
+      "tagline": "COS 下发有效",
+      "summary": "这道题来自远端题库，说明热更链路已通。",
+      "detail": []
+    }
+  }
+}

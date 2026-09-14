@@ -11,11 +11,16 @@
     "assets:check": "node scripts/publish-assets.mjs --check",
     "assets:upload": "node scripts/publish-assets.mjs",
     "assets:publish": "node scripts/publish-assets.mjs --yes",
+    "assets:hot": "node scripts/publish-assets.mjs --yes --live",
+    "assets:channel": "node scripts/publish-assets.mjs --yes --build --channel",
+    "assets:registry": "node scripts/publish-registry.mjs --yes",
+    "assets:registry:probe": "node scripts/publish-registry.mjs --yes --probe",
     "art": "node ../miniapp-kit/art/gen.mjs -c art.config.json -p art/prompts.txt",
     "art:ui": "node ../miniapp-kit/art/gen.mjs -c art.config.json -p art/prompts.txt --ui",
     "art:probe": "node ../miniapp-kit/art/probe-transparent.mjs -c art.config.json",
     "art:matting": "node scripts/matting.mjs",
-    "art:preview": "node ../miniapp-kit/preview/serve.mjs --dir art/generated-art --port 8787 --path /ptking-web/local-dev",
+    "content:export": "node miniapp/content/export-registry.mjs",
+    "art:preview": "node miniapp/content/export-registry.mjs && node ../miniapp-kit/preview/serve.mjs --dir art/generated-art --port 8787 --path /ptking-web/local-dev",
     "art:upload": "node ../miniapp-kit/cos/upload-cos.mjs --dir art/generated-art",
     "doctor:kit": "node ../miniapp-kit/doctor.mjs"
   }

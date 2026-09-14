@@ -20,7 +20,7 @@ function expectedTarotFiles(): string[] {
     'tarot/ui/card-back.jpg',
     ...majors.flatMap((name) => [`tarot/cards/${name}.jpg`, `tarot/cards/${name}-clay.jpg`]),
     'tarot/ui/sanctuary-background-clay-v2.jpg',
-    'tarot/ui/card-back-clay-v2.jpg',
+    'tarot/ui/card-back-clay-v3.jpg',
   ]
 }
 
@@ -36,6 +36,13 @@ describe('COS asset publish workflow', () => {
     expect(pkg.scripts['assets:check']).toContain('publish-assets.mjs --check')
     expect(pkg.scripts['assets:upload']).toContain('publish-assets.mjs')
     expect(pkg.scripts['assets:publish']).toContain('publish-assets.mjs --yes')
+    expect(pkg.scripts['assets:hot']).toContain('--live')
+    expect(pkg.scripts['assets:channel']).toMatch(/--channel/)
+    expect(existsSync(resolve(root, 'scripts/asset-pointer.mjs'))).toBe(true)
+    expect(pkg.scripts['assets:registry']).toContain('publish-registry.mjs --yes')
+    expect(pkg.scripts['assets:registry:probe']).toContain('--probe')
+    expect(existsSync(resolve(root, 'scripts/publish-registry.mjs'))).toBe(true)
+    expect(existsSync(resolve(miniappRoot(), 'content/hot-update-probe.json'))).toBe(true)
     expect(pkg.scripts['build:weapp']).toContain('with-asset-env.mjs')
     expect(existsSync(resolve(root, 'scripts/with-asset-env.mjs'))).toBe(true)
     const uploadCmd = readFileSync(resolve(root, '一键上传.cmd'), 'utf8')
@@ -44,6 +51,22 @@ describe('COS asset publish workflow', () => {
     expect(uploadCmd).toMatch(/^[\x00-\x7F]*$/)
     expect(existsSync(resolve(root, 'docs/features/cos-assets.md'))).toBe(true)
     expect(publishSource).toContain('--build')
+    expect(publishSource).toContain('--live')
+    expect(publishSource).toContain('--channel')
+    expect(publishSource).toContain('resolveChannelName')
+    expect(publishSource).toContain('readGitChannelHints')
+    expect(publishSource).toContain('assets:hot')
+    expect(publishSource).toContain('readAssetPointer')
+    expect(publishSource).toContain('stampAssetRev')
+    expect(publishSource).toContain('assetRev')
+    expect(publishSource).toContain('tests/registry-v1.json')
+    expect(publishSource).toContain('export-registry.mjs')
+    const registryPublish = readFileSync(resolve(root, 'scripts/publish-registry.mjs'), 'utf8')
+    expect(registryPublish).toContain('.asset-base-url')
+    expect(registryPublish).toContain('tests/registry-v1.json')
+    expect(registryPublish).toContain('max-age=60')
+    expect(registryPublish).toContain('--probe')
+    expect(registryPublish).toContain('hot-update-probe.json')
 
     // two skins: 24 classic files + 24 clay-suffixed files; cards are built
     // from a majors list, so lock the template + ui literals instead
@@ -51,7 +74,7 @@ describe('COS asset publish workflow', () => {
     expect(publishSource).toContain("'tarot/ui/sanctuary-background.jpg'")
     expect(publishSource).toContain("'tarot/ui/card-back.jpg'")
     expect(publishSource).toContain("'tarot/ui/sanctuary-background-clay-v2.jpg'")
-    expect(publishSource).toContain("'tarot/ui/card-back-clay-v2.jpg'")
+    expect(publishSource).toContain("'tarot/ui/card-back-clay-v3.jpg'")
     expect(publishSource).toContain("'the-fool'")
     expect(publishSource).toContain("'the-world'")
     expect(publishSource).toContain('`tarot/cards/${name}.jpg`')

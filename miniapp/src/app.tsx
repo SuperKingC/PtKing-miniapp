@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { useDidShow } from '@tarojs/taro'
 import { showShareMenu } from './services/shareMenu'
 import { installGlobalErrorHandlers } from './services/monitor'
 import { loadDynamicTests } from './services/dynamicTests'
@@ -11,8 +12,10 @@ function App({ children }: { children?: React.ReactNode }) {
   useEffect(() => {
     showShareMenu()
     installGlobalErrorHandlers()
-    void loadDynamicTests(resolveAssetBaseUrl())
   }, [])
+  useDidShow(() => {
+    void loadDynamicTests(resolveAssetBaseUrl())
+  })
   return children
 }
 

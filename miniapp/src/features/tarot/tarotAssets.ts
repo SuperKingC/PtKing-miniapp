@@ -1,4 +1,5 @@
 import { resolveAssetBaseUrl } from '../../services/assetBaseUrl'
+import { readAssetRev, withAssetRev } from '../../services/assetRev'
 import { getWxGlobal } from '../../services/wxGlobal'
 import { isTarotAssetCached, revalidateTarotAssetCache, resetTarotAssetCacheIfBaseChanged, saveTarotAssetFromTemp } from './tarotAssetCache'
 import type { TarotSkin } from './tarotSkin'
@@ -33,20 +34,22 @@ const artworkFiles = [
 // clay 皮肤资产用 -clay 后缀同名文件，与 classic 原文件并存于同一目录
 const skinSuffix = (skin: TarotSkin): string => (skin === 'clay' ? '-clay' : '')
 // clay UI 资源独立升版，避免旧背景/牌背被缓存继续复用；牌面 artwork 仍沿用 -clay。
+// 背景与牌背可不同版本：牌背 v3 去掉图内投影与立体星，背景仍用 v2。
 const skinUiSuffix = (skin: TarotSkin): string => (skin === 'clay' ? '-clay-v2' : '')
+const skinCardBackSuffix = (skin: TarotSkin): string => (skin === 'clay' ? '-clay-v3' : '')
 
 // 塔罗资源统一挂在资产版本根的 /tarot 子路径下；路径由塔罗功能自持，与其它功能解耦
 export function getTarotSanctuaryBackground(skin: TarotSkin = 'clay'): string {
-  return `${resolveAssetBaseUrl()}/tarot/ui/sanctuary-background${skinUiSuffix(skin)}.jpg`
+  return withAssetRev(`${resolveAssetBaseUrl()}/tarot/ui/sanctuary-background${skinUiSuffix(skin)}.jpg`)
 }
 
 export function getTarotCardBack(skin: TarotSkin = 'clay'): string {
-  return `${resolveAssetBaseUrl()}/tarot/ui/card-back${skinUiSuffix(skin)}.jpg`
+  return withAssetRev(`${resolveAssetBaseUrl()}/tarot/ui/card-back${skinCardBackSuffix(skin)}.jpg`)
 }
 
 export function getTarotArtworkUrl(cardId: number, skin: TarotSkin = 'clay'): string {
   const fallback = artworkFiles.includes(artworkFiles[cardId]) ? artworkFiles[cardId] : artworkFiles[0]
-  return `${resolveAssetBaseUrl()}/tarot/cards/${fallback.replace('.jpg', `${skinSuffix(skin)}.jpg`)}`
+  return withAssetRev(`${resolveAssetBaseUrl()}/tarot/cards/${fallback.replace('.jpg', `${skinSuffix(skin)}.jpg`)}`)
 }
 
 export function getTarotResourceUrls(skin: TarotSkin = 'clay'): string[] {
@@ -124,7 +127,8 @@ export async function preloadTarotAssetUrls(
   }
 
   // 资产版本根变化时先作废旧档，后续按新 URL 重新建档
-  resetTarotAssetCacheIfBaseChanged(resolveAssetBaseUrl())
+  const rev = readAssetRev()
+  resetTarotAssetCacheIfBaseChanged(rev ? `${resolveAssetBaseUrl()}#${rev}` : resolveAssetBaseUrl())
   // 本次进入重校验一次：剔除被系统回收的本地副本（会话内渲染不再重复查磁盘）
   revalidateTarotAssetCache()
 

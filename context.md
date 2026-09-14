@@ -1,5 +1,15 @@
 # 本轮工作记录
 
+## 2026-09-14 15:29 (UTC+8)
+- 原因：模拟器拉 `registry-v1.json` 404；正式 COS 同样缺文件；全量上传按 git SHA 开新目录会和已发版玩家指针错位；同名换图被 immutable + 本地 URL 缓存钉死；频道名希望跟 git tag 走。
+- 修改：
+  - 修好 `content/export-registry.mjs`，`art:preview` 启动先导出题库。
+  - 发布流水线带上 `tests/registry-v1.json`；`assets:registry` / `assets:registry:probe` 热更题库（短缓存）；探针可验收 COS 下发。
+  - `assets:hot --live` 覆盖 `.asset-base-url` 指针目录，不改指针、不重建。
+  - registry 写 `assetRev`，塔罗 URL 加 `?r=`，COS 同名换图可热更；包内图清全缓存即可，升文件名不再强制。
+  - `--channel` 无值时读 git tag（逻辑上收进 kit `cos/git-channel.mjs`）；`npm run assets:channel`。
+- 验证：聚焦 vitest（registry/publish/assetRev/dynamicTests/tarotAssets/assetPointer）全过；COS `c958df7/tests/registry-v1.json` 曾 200（含探针，可用 `assets:registry` 撤回）。kit：`node cos/git-channel.test.mjs` 过。未 commit、未打 tag。
+
 ## 2026-09-09 17:40 (UTC+8)
 - 原因：参考图立体感是画进去的毡面柔光；月亮应靠下被品牌栏裁掉一截。
 - 修改：新增 `shadow-slab-v1.png` 垫在卡片/底栏后；卡面毡色+内凹光；banner 图下移裁月亮。

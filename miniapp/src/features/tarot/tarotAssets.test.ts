@@ -63,7 +63,7 @@ describe('miniapp tarot assets', () => {
   })
 
   it('suffices clay skin asset files with -clay', () => {
-    expect(getTarotCardBack('clay')).toContain('/tarot/ui/card-back-clay-v2.jpg')
+    expect(getTarotCardBack('clay')).toContain('/tarot/ui/card-back-clay-v3.jpg')
     expect(getTarotSanctuaryBackground('clay')).toContain('/tarot/ui/sanctuary-background-clay-v2.jpg')
     expect(getTarotArtworkUrl(0, 'clay')).toContain('/tarot/cards/the-fool-clay.jpg')
     expect(getTarotArtworkUrl(21, 'clay')).toContain('/tarot/cards/the-world-clay.jpg')
@@ -74,12 +74,25 @@ describe('miniapp tarot assets', () => {
     expect(getTarotArtworkUrl(99, 'clay')).toContain('/tarot/cards/the-fool-clay.jpg')
   })
 
+  it('appends the remembered assetRev so same-name COS overwrites re-download', async () => {
+    const storage = new Map<string, string>()
+    ;(globalThis as { wx?: unknown }).wx = {
+      ...((globalThis as { wx?: Record<string, unknown> }).wx ?? {}),
+      getStorageSync: (key: string) => storage.get(key),
+      setStorageSync: (key: string, value: string) => { storage.set(key, value) },
+    }
+    const { rememberAssetRev } = await import('../../services/assetRev')
+    rememberAssetRev('rev-hot')
+    expect(getTarotCardBack('classic')).toContain('card-back.jpg?r=rev-hot')
+    expect(getTarotArtworkUrl(0, 'clay')).toContain('the-fool-clay.jpg?r=rev-hot')
+  })
+
   it('lists all 24 tarot resource URLs for preloading per skin', () => {
     for (const skin of ['classic', 'clay'] as const) {
       const urls = getTarotResourceUrls(skin)
       expect(urls).toHaveLength(24)
       expect(urls[0]).toContain(`sanctuary-background${skin === 'clay' ? '-clay-v2' : ''}.jpg`)
-      expect(urls[1]).toContain(`card-back${skin === 'clay' ? '-clay-v2' : ''}.jpg`)
+      expect(urls[1]).toContain(`card-back${skin === 'clay' ? '-clay-v3' : ''}.jpg`)
       expect(urls[2]).toContain(`the-fool${skin === 'clay' ? '-clay' : ''}.jpg`)
       expect(urls[23]).toContain(`the-world${skin === 'clay' ? '-clay' : ''}.jpg`)
     }
