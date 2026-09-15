@@ -57,6 +57,27 @@ describe('test registry sanity (all published tests)', () => {
     }
   })
 
+  it('keeps editorial fields well-formed (hotRank/addedAt/testedCount)', () => {
+    const hot = definitions.filter((def) => def.hotRank !== undefined)
+    // 热门榜不膨胀：入榜数有上限，rank 必须是正整数
+    expect(hot.length).toBeGreaterThan(0)
+    expect(hot.length).toBeLessThanOrEqual(8)
+    for (const def of hot) {
+      expect(Number.isInteger(def.hotRank)).toBe(true)
+      expect(def.hotRank as number).toBeGreaterThan(0)
+    }
+    for (const def of definitions) {
+      if (def.addedAt !== undefined) expect(def.addedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      if (def.testedCount !== undefined) {
+        expect(Number.isInteger(def.testedCount)).toBe(true)
+        expect(def.testedCount).toBeGreaterThan(0)
+        expect(def.testedCount).toBeLessThanOrEqual(500000000)
+      }
+    }
+    // 每个上架测试都要有人气基线，首页卡片不落「可测试」兜底
+    expect(definitions.every((def) => typeof def.testedCount === 'number' && def.testedCount > 0)).toBe(true)
+  })
+
   it('keeps ids unique and kebab-cased', () => {
     const ids = definitions.map((def) => def.id)
     expect(new Set(ids).size).toBe(ids.length)

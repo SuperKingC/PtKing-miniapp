@@ -37,7 +37,7 @@ import { CHIIKAWA_BOND_TEST } from '../domain/tests/chiikawaBondTest'
  */
 import { mergeTestDefinitions } from './testRegistryMerge'
 
-const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
+const BASE_DEFINITIONS: Record<string, TestDefinition> = {
   [MBTI_TEST.id]: MBTI_TEST,
   [LOVE_PERSONA_TEST.id]: LOVE_PERSONA_TEST,
   [GIFT_TEST.id]: GIFT_TEST,
@@ -68,6 +68,50 @@ const STATIC_DEFINITIONS: Record<string, TestDefinition> = {
   [BOSS_STYLE_TEST.id]: BOSS_STYLE_TEST,
   [CHIIKAWA_BOND_TEST.id]: CHIIKAWA_BOND_TEST,
 }
+
+/**
+ * 运营位编辑数据（2026-09-15 配置）：热门榜权重 / 上新日期 / 人气基线，调榜单只改这里。
+ * 人气为编辑配置的固定数字（暂无统计后台），随 registry 导出同步 COS。
+ */
+const EDITORIAL_META: Record<string, Pick<TestDefinition, 'hotRank' | 'addedAt' | 'testedCount'>> = {
+  mbti: { hotRank: 2, testedCount: 286000 },
+  'love-persona': { testedCount: 168000 },
+  'chiikawa-bond': { hotRank: 1, addedAt: '2026-09-12', testedCount: 152000 },
+  'love-brain': { hotRank: 3, testedCount: 126000 },
+  overthink: { testedCount: 96000 },
+  'xp-test': { testedCount: 92000 },
+  'unhinged-test': { hotRank: 4, testedCount: 88000 },
+  'mind-age': { testedCount: 84000 },
+  'dark-triad': { testedCount: 76000 },
+  'pet-persona': { testedCount: 72000 },
+  eq: { testedCount: 68000 },
+  'sarcastic-test': { testedCount: 66000 },
+  'attachment-style': { testedCount: 64000 },
+  'breakup-style': { testedCount: 58000 },
+  bigfive: { testedCount: 56000 },
+  'crush-signal': { testedCount: 52000 },
+  goofy: { testedCount: 48000 },
+  'phone-addiction': { testedCount: 46000 },
+  'loser-talent': { testedCount: 44000 },
+  burnout: { testedCount: 42000 },
+  'single-power': { testedCount: 38000 },
+  'love-talk': { testedCount: 36000 },
+  'repression-test': { testedCount: 34000 },
+  'social-style': { testedCount: 30000 },
+  sleep: { testedCount: 26000 },
+  'work-role': { testedCount: 22000 },
+  'office-role': { testedCount: 19000 },
+  gift: { testedCount: 16000 },
+  'boss-style': { testedCount: 13000 },
+}
+
+/** 静态目录 = 基础定义叠加运营位编辑数据（同 id 缺编辑项时原样保留） */
+const STATIC_DEFINITIONS: Record<string, TestDefinition> = Object.fromEntries(
+  Object.entries(BASE_DEFINITIONS).map(([id, definition]) => [
+    id,
+    { ...definition, ...EDITORIAL_META[id] },
+  ]),
+)
 
 /** 首页卡片展示顺序：静态顺序为基，动态新增的测试排在其后 */
 const STATIC_ORDER: readonly string[] = [

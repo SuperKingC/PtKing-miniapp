@@ -81,6 +81,13 @@ export interface TestDefinition {
   questions: TestQuestion[]
   scoring: TestScoring
   reports: Record<string, TestReport>
+  /** —— 运营位可选字段（编辑配置，静态/ COS registry 同步下发；旧数据无字段零破坏）—— */
+  /** 热门榜编辑权重：越小越靠前，有值即入首页「热门榜」区块 */
+  hotRank?: number
+  /** 上新日期（YYYY-MM-DD）：14 天内首页卡片显示 NEW 角标 */
+  addedAt?: string
+  /** 编辑人气基线（固定数字）：首页卡片与详情页展示为「X万+人测过」 */
+  testedCount?: number
 }
 
 export interface DimensionScore {

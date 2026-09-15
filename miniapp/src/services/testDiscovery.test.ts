@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import type { TestDefinition } from '../domain/testEngine'
 import { getTestDefinition } from './testRegistry'
-import { matchTests, NEW_USER_RECOMMEND_IDS, pickRecommendedTests } from './testDiscovery'
+import {
+  formatTestedCount,
+  isNewTest,
+  matchTests,
+  NEW_BADGE_WINDOW_DAYS,
+  NEW_USER_RECOMMEND_IDS,
+  pickHotTests,
+  pickRecommendedTests,
+} from './testDiscovery'
 
 function stub(id: string, category: TestDefinition['category'], intro = ''): TestDefinition {
   return {
@@ -98,5 +106,61 @@ describe('matchTests', () => {
     expect(matchTests(definitions, '十六型').map((item) => item.id)).toEqual(['mbti'])
     expect(matchTests(definitions, 'love').map((item) => item.id)).toEqual(['love'])
     expect(matchTests(definitions, '没有这个').map((item) => item.id)).toEqual([])
+  })
+})
+
+describe('pickHotTests', () => {
+  const withRank = (id: string, category: TestDefinition['category'], hotRank?: number): TestDefinition => ({
+    ...stub(id, category),
+    hotRank,
+  })
+
+  it('returns empty when no editorial rank exists (page falls back to recommendations)', () => {
+    expect(pickHotTests([stub('a', '人格'), withRank('b', '情感', undefined)])).toEqual([])
+  })
+
+  it('sorts by rank ascending and keeps registry order on ties', () => {
+    const catalog = [withRank('a', '人格', 3), stub('b', '情感'), withRank('c', '职场', 1), withRank('d', '趣味', 2), withRank('e', '人格', 1)]
+    expect(pickHotTests(catalog, 4).map((item) => item.id)).toEqual(['c', 'e', 'd', 'a'])
+  })
+
+  it('caps at count and keeps ranked tests when fewer than count', () => {
+    const catalog = [withRank('a', '人格', 2), withRank('b', '情感', 1), withRank('c', '职场', 3)]
+    expect(pickHotTests(catalog, 4).map((item) => item.id)).toEqual(['b', 'a', 'c'])
+    expect(pickHotTests(catalog, 2).map((item) => item.id)).toEqual(['b', 'a'])
+  })
+})
+
+describe('isNewTest', () => {
+  const now = new Date('2026-09-15T12:00:00')
+  const withAdded = (addedAt?: string): TestDefinition => ({ ...stub('a', '人格'), addedAt })
+
+  it('marks tests within the window as new (same day counts as day 0)', () => {
+    expect(NEW_BADGE_WINDOW_DAYS).toBe(14)
+    expect(isNewTest(withAdded('2026-09-15'), now)).toBe(true)
+    expect(isNewTest(withAdded('2026-09-12'), now)).toBe(true)
+    expect(isNewTest(withAdded('2026-09-02'), now)).toBe(true)
+  })
+
+  it('expires after the window and ignores missing, malformed or future dates', () => {
+    expect(isNewTest(withAdded('2026-09-01'), now)).toBe(false)
+    expect(isNewTest(withAdded(undefined), now)).toBe(false)
+    expect(isNewTest(withAdded('not-a-date'), now)).toBe(false)
+    expect(isNewTest(withAdded('2026-09-16'), now)).toBe(false)
+  })
+})
+
+describe('formatTestedCount', () => {
+  it('keeps small numbers as-is and floors to wan-plus at 10k', () => {
+    expect(formatTestedCount(3200)).toBe('3200')
+    expect(formatTestedCount(9999)).toBe('9999')
+    expect(formatTestedCount(10000)).toBe('1万+')
+    expect(formatTestedCount(152000)).toBe('15万+')
+    expect(formatTestedCount(286000)).toBe('28万+')
+  })
+
+  it('formats yi-plus beyond 100M without trailing zero', () => {
+    expect(formatTestedCount(100000000)).toBe('1亿+')
+    expect(formatTestedCount(150000000)).toBe('1.5亿+')
   })
 })

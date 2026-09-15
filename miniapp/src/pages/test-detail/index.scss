@@ -87,6 +87,19 @@
   color: var(--color-ink);
 }
 
+/* 人气条：胶囊区下全宽细条（四枚并排会挤压 resultLabel，故不并入胶囊） */
+.test-detail__popularity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16rpx;
+  padding: 14rpx 24rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary-soft);
+  font-size: var(--font-size-aux);
+  color: var(--color-ink-secondary);
+}
+
 .test-detail__intro {
   margin-top: 44rpx;
   display: flex;

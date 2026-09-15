@@ -95,6 +95,42 @@ function pickByCategoryRotation(
   return picked
 }
 
+/** NEW 角标窗口：addedAt 起该天数内首页卡片显示 NEW（同日计第 0 天） */
+export const NEW_BADGE_WINDOW_DAYS = 14
+
+/**
+ * 热门榜：有人工编辑 hotRank 的测试按权重升序取前 count 个（并列保持注册表原序）。
+ * 榜单数据走编辑配置（无统计后台），没有任何 hotRank 时返回空数组，页面回退「为你推荐」。
+ */
+export function pickHotTests(definitions: TestDefinition[], count = 4): TestDefinition[] {
+  return definitions
+    .map((definition, index) => ({ definition, index }))
+    .filter((entry) => typeof entry.definition.hotRank === 'number')
+    .sort(
+      (left, right) =>
+        (left.definition.hotRank as number) - (right.definition.hotRank as number) || left.index - right.index,
+    )
+    .slice(0, count)
+    .map((entry) => entry.definition)
+}
+
+/** addedAt 起 NEW_BADGE_WINDOW_DAYS 天内算「新上架」；缺日期/格式非法/未来日期一律不算 */
+export function isNewTest(definition: TestDefinition, now: Date): boolean {
+  if (!definition.addedAt) return false
+  const added = new Date(`${definition.addedAt}T00:00:00`)
+  if (Number.isNaN(added.getTime())) return false
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const diffDays = Math.floor((today.getTime() - added.getTime()) / (24 * 60 * 60 * 1000))
+  return diffDays >= 0 && diffDays < NEW_BADGE_WINDOW_DAYS
+}
+
+/** 人气数字展示：≥1亿 进位「X.Y亿+」，≥1万 进位「X万+」（向下取整），其余原样 */
+export function formatTestedCount(count: number): string {
+  if (count >= 100000000) return `${(Math.floor(count / 10000000) / 10).toString().replace(/\.0$/, '')}亿+`
+  if (count >= 10000) return `${Math.floor(count / 10000)}万+`
+  return `${count}`
+}
+
 /** 首页搜索：匹配标题、分类和简介。 */
 export function matchTests(definitions: TestDefinition[], keyword: string): TestDefinition[] {
   const needle = keyword.trim().toLowerCase()
