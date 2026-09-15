@@ -163,12 +163,26 @@ export function subscribeTestRegistry(listener: () => void): () => void {
   return () => { listeners.delete(listener) }
 }
 
-/** COS 动态测试合并入口：每次以静态目录为基重放，远端删除的项会消失 */
+/** COS 动态测试合并入口：每次以静态目录为基重放，远端删除的项会消失。
+ *  合并后再叠加一次包内编辑运营位：客户端若拉到未同步的旧 registry（同 id 覆盖
+ *  把静态项换成无运营字段的旧数据），热门榜/NEW/人气不至于整体消失。 */
 export function applyDynamicTestDefinitions(dynamic: TestDefinition[]): void {
   const merged = mergeTestDefinitions(STATIC_DEFINITIONS, STATIC_ORDER, dynamic)
-  definitions = merged.definitions
+  definitions = definitionsRecordReplaced(merged, EDITORIAL_META)
   listOrder = merged.order
   listeners.forEach((listener) => listener())
+}
+
+/** 合并结果再叠加包内编辑运营位（hotRank/addedAt/testedCount 以 EDITORIAL_META 为准） */
+function definitionsRecordReplaced(
+  merged: { definitions: Record<string, TestDefinition>; order: string[] },
+  editorial: Record<string, Pick<TestDefinition, 'hotRank' | 'addedAt' | 'testedCount'>>,
+): Record<string, TestDefinition> {
+  const out: Record<string, TestDefinition> = {}
+  for (const [id, definition] of Object.entries(merged.definitions)) {
+    out[id] = editorial[id] ? { ...definition, ...editorial[id] } : definition
+  }
+  return out
 }
 
 export const TEST_LIST_ORDER: readonly string[] = STATIC_ORDER

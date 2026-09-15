@@ -127,8 +127,8 @@ export default function TestPage() {
         <View className="test-page__card-meta">
           <Text className="test-page__card-clock" aria-hidden />
           {hotRank ? (
-            /* 热门榜卡：省略时长题数，聚焦排名+人气两个钩子 */
-            <Text>TOP{hotRank}{testedText(definition) ? ` · ${testedText(definition)}` : ''}</Text>
+            /* 热门榜卡：省略时长题数，聚焦排名+人气；上新期在榜内也保留 NEW（否则两个新测试都进榜时 NEW 永远不可见） */
+            <Text>{isNewTest(definition, new Date()) ? 'NEW · ' : ''}TOP{hotRank}{testedText(definition) ? ` · ${testedText(definition)}` : ''}</Text>
           ) : (
             <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {badge}</Text>
           )}
