@@ -183,29 +183,49 @@
   position: relative;
 }
 
-/* 左上角贴纸角标（生图软陶件，绝对定位显式四边+显式宽高；top 留 10rpx 避开 30rpx 圆角裁切） */
+/* 左上角贴纸角标：统一钉在封面图标左上角（实体角约卡内 (22,26)）。
+   奖牌盖住角点（每卡同一坐标，不再区分 solo/堆叠）；NEW 缎带垫在奖牌后方，
+   文字沿图标顶边露出、不被奖牌圆弧遮挡（圆弧与文字 bbox 错开 ≥4rpx）。
+   显式四边+显式宽高；两枚同步跳动，贴纸堆不散 */
 .test-page__card-badge-new {
   position: absolute;
-  top: 10rpx;
+  top: 4rpx;
   right: auto;
   bottom: auto;
-  left: 10rpx;
+  left: 56rpx;
   width: 104rpx;
   height: 42rpx;
+  z-index: 1;
+  animation: test-page-badge-bounce 1.6s ease-in-out infinite;
 }
 
 .test-page__card-badge-top {
   position: absolute;
-  top: 56rpx;
+  top: 20rpx;
   right: auto;
   bottom: auto;
-  left: 10rpx;
+  left: 16rpx;
   width: 60rpx;
   height: 62rpx;
+  z-index: 2;
+  animation: test-page-badge-bounce 1.6s ease-in-out infinite;
 }
 
-.test-page__card-badge-top--solo {
-  top: 10rpx;
+/* 轻跳+小回弹 */
+@keyframes test-page-badge-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-8rpx);
+  }
+  70% {
+    transform: translateY(0);
+  }
+  84% {
+    transform: translateY(-3rpx);
+  }
 }
 
 .test-page__card-spot {

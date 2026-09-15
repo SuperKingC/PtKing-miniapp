@@ -42,6 +42,29 @@ describe('测试首页软陶单列布局', () => {
     /* NEW/TOP 角标按条件渲染（表达式子节点），只断言类名存在于卡内 */
     expect(card.getText(page)).toContain('test-page__card-badge-new')
     expect(card.getText(page)).toContain('test-page__card-badge-top')
+    /* 角标位置统一钉在封面图标左上角，不再有 solo/堆叠两种落位 */
+    expect(source).not.toContain('badge-top--solo')
+    const medal = styleBlock('.test-page__card-badge-top')
+    const ribbon = styleBlock('.test-page__card-badge-new')
+    /* 奖牌盖住图标角点（卡内实体角约 (22,26)），NEW 缎带垫在奖牌后方沿图标顶边露出 */
+    expect(medal).toContain('position: absolute')
+    expect(medal).toContain('top: 20rpx')
+    expect(medal).toContain('left: 16rpx')
+    expect(medal).toContain('width: 60rpx')
+    expect(medal).toContain('height: 62rpx')
+    expect(medal).toContain('z-index: 2')
+    expect(ribbon).toContain('position: absolute')
+    expect(ribbon).toContain('top: 4rpx')
+    expect(ribbon).toContain('left: 56rpx')
+    expect(ribbon).toContain('width: 104rpx')
+    expect(ribbon).toContain('height: 42rpx')
+    expect(ribbon).toContain('z-index: 1')
+    for (const block of [medal, ribbon]) {
+      expect(block).toContain('right: auto')
+      expect(block).toContain('bottom: auto')
+      expect(block).toContain('animation: test-page-badge-bounce')
+    }
+    expect(styles).toContain('@keyframes test-page-badge-bounce')
     expect(childrenOf(card).map(className).filter(Boolean)).toEqual(['test-page__card-spot', 'test-page__card-content', 'test-page__card-go'])
     expect(card.getText(page).match(/onClick=/g)).toHaveLength(1)
     expect(card.getText(page)).toContain('openDetail(definition.id)')

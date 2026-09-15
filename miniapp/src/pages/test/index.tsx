@@ -126,7 +126,7 @@ export default function TestPage() {
     return (
     <View key={definition.id} className="test-page__card" onClick={() => openDetail(definition.id)}>
       {showNew && <Image className="test-page__card-badge-new" src={badgeNewImg} />}
-      {hotRank ? <Image className={showNew ? 'test-page__card-badge-top' : 'test-page__card-badge-top test-page__card-badge-top--solo'} src={BADGE_TOP_BY_RANK[hotRank - 1]} /> : null}
+      {hotRank ? <Image className="test-page__card-badge-top" src={BADGE_TOP_BY_RANK[hotRank - 1]} /> : null}
       {/* 不挂 lazyLoad:分类切换大增删卡片时 lazy 图重触发解码,卡面先出文字后出图标,
           整列闪一下(实机录帧 f030→f031);22 张 tile 共 ~200KB,常驻解码缓存更稳 */}
       <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" />
