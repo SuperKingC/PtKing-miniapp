@@ -4,6 +4,7 @@
  * 任一步失败返回空串，转发回退微信默认截图，绝不阻断分享。
  */
 import { shareCardDisclaimer } from '../domain/shareCopy'
+import { formatTestedCount } from './testDiscovery'
 import { APP_SHARE_TITLE } from './brand'
 import { getWxGlobal } from './wxGlobal'
 
@@ -14,6 +15,10 @@ export interface ShareCardData {
   hook?: string
   disclaimer?: string
   category?: string
+  /** 身份标签（报告 labels）：tagline 下一行「#a #b」传播钩子 */
+  labels?: string[]
+  /** 编辑人气基线：底部右下角「X万+人测过」角标 */
+  testedCount?: number
 }
 
 const CATEGORY_MARK: Record<string, { fill: string; chip: string }> = {
@@ -40,6 +45,12 @@ export function fitTitleFontSize(text: string, maxWidth: number, max = 60, min =
   let size = max
   while (size > min && text.length * size > maxWidth) size -= 2
   return size
+}
+
+/** 纯函数核心（可单测）：身份标签一行文案「#a #b」，无标签返回空串、超长截断 */
+export function formatShareLabels(labels?: string[]): string {
+  if (!labels || labels.length === 0) return ''
+  return clampText(labels.map((label) => `#${label.replace(/^#/, '')}`).join(' '), 24)
 }
 
 export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData): void {
@@ -100,10 +111,26 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   ctx.font = '400 26px sans-serif'
   ctx.fillText(clampText(data.tagline, 18), 48, 318)
 
+  // 身份标签行：tagline 与引导句之间；有人气角标时右下角补「X万+人测过」
+  const labelsLine = formatShareLabels(data.labels)
+  if (labelsLine) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+    ctx.font = '500 24px sans-serif'
+    ctx.fillText(labelsLine, 48, 358)
+  }
+
   if (data.hook) {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.86)'
     ctx.font = '400 24px sans-serif'
-    ctx.fillText(clampText(data.hook, 20), 48, 368)
+    ctx.fillText(clampText(data.hook, 20), 48, labelsLine ? 398 : 368)
+  }
+
+  if (data.testedCount && data.testedCount > 0) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.72)'
+    ctx.font = '400 20px sans-serif'
+    ctx.textAlign = 'right'
+    ctx.fillText(`${formatTestedCount(data.testedCount)}人测过`, width - 48, height - 40)
+    ctx.textAlign = 'left'
   }
 
   ctx.fillStyle = 'rgba(255, 255, 255, 0.72)'

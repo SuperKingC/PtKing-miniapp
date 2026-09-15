@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Button, Canvas, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarAxisLabel, radarChartGeometry } from '../../domain/testEngine'
-import { buildReportPresentation } from '../../domain/reportPresentation'
+import { buildReportPresentation, resolveReportQuote } from '../../domain/reportPresentation'
 import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from '../../domain/shareCopy'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_SHARE_TITLE } from '../../services/brand'
@@ -270,6 +270,8 @@ export default function TestReportPage() {
       hook: shareHookByCategory(definition.category),
       disclaimer: shareCardDisclaimer(),
       category: definition.category,
+      labels: sharedReport.labels,
+      testedCount: definition.testedCount,
     }).then((path) => {
       if (!cancelled) setShareImagePath(path)
     })
@@ -367,6 +369,8 @@ export default function TestReportPage() {
   }
 
   const bandScore = record.result.bandScore
+  // 首屏金句：优先编辑配置 quote，缺省从 deep 首句推导；皆缺则不渲染金句卡
+  const quote = resolveReportQuote(report)
   const bandIndex = bandScore !== null ? findBandIndex(definition, bandScore) : null
   const bands = definition.scoring.type === 'band' ? definition.scoring.bands : []
   const bandLabels = bands.map((band) => definition.reports[band.reportId]?.title ?? band.reportId)
@@ -404,6 +408,15 @@ export default function TestReportPage() {
         <Text className="test-report__eyebrow">{definition.title} · 你的报告</Text>
         <Text className="test-report__type">{report.title}</Text>
         <Text className="test-report__tagline">{report.tagline}</Text>
+        {(report.labels?.length ?? 0) > 0 && (
+          <View className="test-report__labels">
+            {report.labels!.map((label) => (
+              <View key={label} className="test-report__label">
+                <Text>#{label}</Text>
+              </View>
+            ))}
+          </View>
+        )}
         <View className="test-report__hero-badges">
           <View className="test-report__badge">
             <Text>{definition.meta.minutes} 分钟</Text>
@@ -416,6 +429,13 @@ export default function TestReportPage() {
           </View>
         </View>
       </View>
+
+      {quote && (
+        <View className="test-report__quote">
+          <Text className="test-report__quote-mark">「</Text>
+          <Text className="test-report__quote-text">{quote}</Text>
+        </View>
+      )}
 
       <View className="test-report__panel">
         <Text className="test-report__panel-title">这次可能更接近</Text>

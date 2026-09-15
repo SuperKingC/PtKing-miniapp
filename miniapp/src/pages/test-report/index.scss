@@ -123,6 +123,53 @@
   color: #ffffff;
 }
 
+/* ===== 身份标签 chips：hero 卡 tagline 下（传播钩子，无 labels 不渲染） ===== */
+.test-report__labels {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.test-report__label {
+  padding: 6rpx 22rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: var(--font-size-aux);
+  color: #ffffff;
+}
+
+/* ===== 金句卡：hero 下高亮引言（编辑 quote 优先，缺省 deep 首句推导） ===== */
+.test-report__quote {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  margin-top: 32rpx;
+  padding: 30rpx 32rpx;
+  border-radius: 28rpx;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.test-report__quote-mark {
+  flex: none;
+  font-size: 44rpx;
+  line-height: 1.15;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.test-report__quote-text {
+  flex: 1;
+  font-size: var(--font-size-body);
+  line-height: 1.7;
+  color: var(--color-ink);
+  text-align: justify;
+}
+
 /* ===== 通用信息面板 ===== */
 .test-report__panel {
   margin-top: 32rpx;

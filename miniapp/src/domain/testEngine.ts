@@ -27,6 +27,10 @@ export interface TestReport {
   scenes?: Array<{ scene: string; text: string }>
   /** 行动清单（可执行建议） */
   actions?: string[]
+  /** 一句话金句（≤60 字）：报告首屏高亮引言；缺省由报告页从 deep 首句推导 */
+  quote?: string
+  /** 身份标签（1-3 个、每个 ≤14 字纯文本）：报告页 chips + 分享卡片传播钩子 */
+  labels?: string[]
 }
 
 export interface TestOption {

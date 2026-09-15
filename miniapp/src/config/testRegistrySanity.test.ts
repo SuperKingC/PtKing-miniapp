@@ -120,6 +120,19 @@ describe('test registry sanity (all published tests)', () => {
           expect(report.scenes?.length).toBe(3)
           expect(report.actions?.length).toBeGreaterThanOrEqual(3)
         }
+        // 金句与身份标签（可选，吸引力批次新增）：有则校验长度契约
+        if (report.quote !== undefined) {
+          expect(report.quote.trim().length).toBeGreaterThan(0)
+          expect(report.quote.length).toBeLessThanOrEqual(60)
+        }
+        if (report.labels !== undefined) {
+          expect(report.labels.length).toBeGreaterThanOrEqual(1)
+          expect(report.labels.length).toBeLessThanOrEqual(3)
+          for (const label of report.labels) {
+            expect(label.length).toBeGreaterThan(0)
+            expect(label.length).toBeLessThanOrEqual(14)
+          }
+        }
       }
     },
   )
