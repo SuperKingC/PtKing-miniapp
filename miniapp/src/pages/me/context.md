@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-15 19:45
+- 原因：用户反馈列表图标边缘发脏。取证（_scratch_edge_diag.py）：BEN2 透明区 RGB=(0,0,0)，prepare/clean 两段 LANCZOS resize 走 straight-alpha，黑 RGB 渗进半透明边像素（fringe 实测 meanRGB ≈60-94、宽 1-3px），贴白卡合成显灰黑脏边，`.me-page__icon` 的 drop-shadow 再投影更脏；d18fa54 的 128px 降尺直缩再放大一次。
+- 修改：新增 `clean-icon-fringe.py`（fringe RGB 用 solid 区颜色 8 邻域迭代膨胀替换 + 预乘 alpha resize 到 128px，alpha 形状不动）；`compress-v9.mjs` 走 TinyPNG 同名覆盖包内 `icon-me-*-v8.png`（11-12.6KB/张）；`prepare-ben2-me.py`/`clean-icon-stray.py` 的 resize 改预乘、prepare 加 defringe 步杜根。修后 fringe meanRGB 回物件本色（蓝牌 ≈195/203/204、米牌 ≈232/201/166）。全量 568 测试过；build:weapp fresh dist 待开发者工具验收。
+
 - 时间：2026-09-10 19:00
 - 原因：用户反馈横幅仍偏暗；列表卡阴影带明显宽于横幅（slab 最宽 44rpx 模糊 vs image 仅 8rpx，差 4 倍）。
 - 修改：`--shadow-image` 四处（page/媒体查询/theme-light/theme-dark）改三层 drop-shadow（-2/5/4 → -4/12/14 → -7/24/30，宽度节奏对齐 --shadow-slab）；浅色横幅滤镜 1.09/0.55 → 1.14/0.75（保饱和提亮，防「发闷」）。另：工作区有三条未完成美术线的半成品改动（tarot/test/records 页引用未生成素材）阻塞构建，已 stash 暂存（stash@{0..2}），待素材生成后恢复。开发者工具 18:59 fresh dist 预览：横幅亮度舒适、上下阴影宽度一致。

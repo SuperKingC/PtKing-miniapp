@@ -40,6 +40,50 @@ def ben2_cut(crop: Image.Image) -> Image.Image:
     rgba.putalpha(Image.fromarray(a))
     return rgba
 
+
+def pm_resize(im: Image.Image, size: tuple) -> Image.Image:
+    """预乘 alpha 的 LANCZOS 缩放。
+
+    BEN2 透明区 RGB=(0,0,0),straight-alpha 直缩会让黑 RGB 渗进半透明边,
+    贴白卡显灰黑脏边(me 页 v8 图标即此病,见 clean-icon-fringe.py 取证)。
+    """
+    arr = np.asarray(im).astype(np.float64) / 255.0
+    alpha = arr[:, :, 3]
+    prem = arr[:, :, :3] * alpha[:, :, None]
+    prem_r = np.asarray(Image.fromarray((prem * 255).round().astype(np.uint8), 'RGB').resize(size, Image.Resampling.LANCZOS)).astype(np.float64) / 255.0
+    alpha_r = np.asarray(Image.fromarray((alpha * 255).round().astype(np.uint8), 'L').resize(size, Image.Resampling.LANCZOS)).astype(np.float64) / 255.0
+    rgb = np.where(alpha_r[:, :, None] > 1e-3, prem_r / np.maximum(alpha_r, 1e-4)[:, :, None], 0.0).clip(0, 1)
+    out = np.dstack([rgb, alpha_r[:, :, None]])
+    return Image.fromarray((out * 255).round().astype(np.uint8), 'RGBA')
+
+
+def defringe_rgb(im: Image.Image, solid: int = 200, rounds: int = 6) -> Image.Image:
+    """半透明 fringe 的 RGB 用 solid 区颜色 8 邻域迭代膨胀替换,alpha 不动。"""
+    arr = np.array(im.convert('RGBA'))
+    rgb = arr[:, :, :3].astype(np.float64)
+    a = arr[:, :, 3]
+    fringe = (a > 0) & (a < solid)
+    filled = a >= solid
+    work = rgb.copy()
+    for _ in range(rounds):
+        todo = fringe & ~filled
+        if not todo.any():
+            break
+        acc = np.zeros_like(work)
+        cnt = np.zeros(work.shape[:2])
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dy == 0 and dx == 0:
+                    continue
+                src = np.roll(np.roll(filled, dy, axis=0), dx, axis=1)
+                acc += np.roll(np.roll(work, dy, axis=0), dx, axis=1) * src[:, :, None]
+                cnt += src
+        grow = todo & (cnt > 0)
+        work[grow] = acc[grow] / cnt[grow][:, None]
+        filled |= grow
+    arr[:, :, :3] = work.round().clip(0, 255).astype(np.uint8)
+    return Image.fromarray(arr, 'RGBA')
+
 # ---- 横幅:面板 bbox 外扩 16px(保烘焙投影渐变)→ BEN2 整块抠 ----
 # (实测 BEN2 把浅蓝大面板内部当背景误杀成半透明,横幅已改走几何蒙版 prepare-banner-geom.py;
 #  保留此段仅为留档,设 SKIP_BANNER=1 跳过)
@@ -68,8 +112,10 @@ for idx, (name, (x0, y0, x1, y1)) in enumerate(BOXES.items()):
     icon = icon.crop(bb)
     # 无 1.0 上限:主体统一放大到 94% 画幅(软陶图 LANCZOS 1.3x 内无损观感),
     # 否则 BEN2 抠到的软影宽度差会让各图标显示大小不一
+    # 先去污再预乘缩放:straight-alpha 直缩的黑渗边不再产生
+    icon = defringe_rgb(icon)
     scale = min(SUBJECT / icon.width, SUBJECT / icon.height)
-    icon = icon.resize((max(1, round(icon.width * scale)), max(1, round(icon.height * scale))), Image.Resampling.LANCZOS)
+    icon = pm_resize(icon, (max(1, round(icon.width * scale)), max(1, round(icon.height * scale))))
     canvas = Image.new('RGBA', (SQUARE, SQUARE), (0, 0, 0, 0))
     canvas.paste(icon, ((SQUARE - icon.width) // 2, (SQUARE - icon.height) // 2), icon)
     canvas.save(FINAL / f'ref-{name}-ben2.png')

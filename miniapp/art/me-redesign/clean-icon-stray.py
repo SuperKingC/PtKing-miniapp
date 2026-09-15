@@ -41,6 +41,18 @@ def largest_component(mask: np.ndarray) -> np.ndarray:
     return labels == biggest
 
 
+def pm_resize(im: Image.Image, size: tuple) -> Image.Image:
+    """预乘 alpha 的 LANCZOS 缩放,避免透明区黑 RGB 渗进软边显脏边。"""
+    arr = np.asarray(im).astype(np.float64) / 255.0
+    alpha = arr[:, :, 3]
+    prem = arr[:, :, :3] * alpha[:, :, None]
+    prem_r = np.asarray(Image.fromarray((prem * 255).round().astype(np.uint8), 'RGB').resize(size, Image.Resampling.LANCZOS)).astype(np.float64) / 255.0
+    alpha_r = np.asarray(Image.fromarray((alpha * 255).round().astype(np.uint8), 'L').resize(size, Image.Resampling.LANCZOS)).astype(np.float64) / 255.0
+    rgb = np.where(alpha_r[:, :, None] > 1e-3, prem_r / np.maximum(alpha_r, 1e-4)[:, :, None], 0.0).clip(0, 1)
+    out = np.dstack([rgb, alpha_r[:, :, None]])
+    return Image.fromarray((out * 255).round().astype(np.uint8), 'RGBA')
+
+
 for path in sorted(FINAL.glob('ref-*-ben2.png')):
     im = Image.open(path).convert('RGBA')
     arr = np.array(im)
@@ -71,10 +83,7 @@ for path in sorted(FINAL.glob('ref-*-ben2.png')):
     assert bb, f'{path.name}: empty after clean'
     icon = Image.fromarray(cleaned).crop(bb)
     scale = min(SUBJECT / icon.width, SUBJECT / icon.height)
-    icon = icon.resize(
-        (max(1, round(icon.width * scale)), max(1, round(icon.height * scale))),
-        Image.Resampling.LANCZOS,
-    )
+    icon = pm_resize(icon, (max(1, round(icon.width * scale)), max(1, round(icon.height * scale))))
     canvas = Image.new('RGBA', (SQUARE, SQUARE), (0, 0, 0, 0))
     canvas.paste(icon, ((SQUARE - icon.width) // 2, (SQUARE - icon.height) // 2), icon)
     canvas.save(path)
