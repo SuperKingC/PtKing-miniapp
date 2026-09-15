@@ -50,8 +50,10 @@ export default function TestPage() {
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
   /* hero 图解码完成前不参与渲染：真机上 filter 阴影层的合成纹理不随图片解码失效，
-     首帧会按未解码的矩形光栅出一条浅色方框（滚动重绘才恢复）。onLoad 后再置
-     opacity:1 强制该层带已解码内容重光栅；定时器兜底 load 事件异常导致的永隐 */
+     首帧会按未解码的矩形光栅出一条浅色方框（滚动重绘才恢复）。门控期间连 height 一起
+     压 0：容器预留了盒高后 widthFix 可能在解码前就拿到非零盒，filter 层会在「有尺寸
+     但未解码」的首帧光栅出矩形陈旧纹理；onLoad 后 height 0→全高的几何变化＋opacity
+     跳变一起强制该层带已解码内容重光栅，容器盒高预留兜住布局不跳；定时器兜底永隐 */
   const [heroReady, setHeroReady] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setHeroReady(true), 1500)
@@ -180,7 +182,7 @@ export default function TestPage() {
               className="test-page__hero-img"
               src={heroCardImg}
               mode="widthFix"
-              style={heroReady ? undefined : 'opacity: 0'}
+              style={heroReady ? undefined : 'opacity: 0; height: 0'}
               onLoad={() => setHeroReady(true)}
             />
           </View>}

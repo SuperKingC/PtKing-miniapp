@@ -235,5 +235,8 @@ describe('测试首页软陶单列布局', () => {
     /* 门控本体保留（onLoad/定时器兜底置 heroReady），首帧浅色方框修复不回归 */
     expect(source).toContain('const [heroReady, setHeroReady] = useState(false)')
     expect(source).toContain('onLoad={() => setHeroReady(true)}')
+    /* 门控期间 height 一起压 0：否则容器预留盒高会让 widthFix 在解码前拿到非零盒，
+       filter 层首帧光栅出矩形陈旧纹理；释放时 0→全高的几何变化强制带解码内容重光栅 */
+    expect(source).toContain("heroReady ? undefined : 'opacity: 0; height: 0'")
   })
 })
