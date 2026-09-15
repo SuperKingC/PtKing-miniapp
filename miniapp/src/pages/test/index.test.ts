@@ -37,36 +37,36 @@ function childrenOf(node: ts.JsxElement) {
 }
 
 describe('测试首页软陶单列布局', () => {
-  it('卡片使用左图、中间真实文案、右侧按钮三个并列区域，左上角贴 NEW/TOP 贴纸角标，只有整卡处理点击', () => {
+  it('卡片使用左图、中间真实文案、右侧按钮三个并列区域，左上角贴 TOP 奖牌、右上角贴 NEW 缎带，只有整卡处理点击', () => {
     const card = findElement('test-page__card')
     /* NEW/TOP 角标按条件渲染（表达式子节点），只断言类名存在于卡内 */
     expect(card.getText(page)).toContain('test-page__card-badge-new')
     expect(card.getText(page)).toContain('test-page__card-badge-top')
-    /* 角标统一钉在封面图标左上角点，不再有 solo/堆叠两种落位 */
+    /* 不再有 solo/堆叠两种落位 */
     expect(source).not.toContain('badge-top--solo')
     const medal = styleBlock('.test-page__card-badge-top')
     const ribbon = styleBlock('.test-page__card-badge-new')
-    /* 奖牌 60x62 中心正对图标角点（卡内 (22,26)）且静态；NEW 缎带在奖牌正上方（中心 x 对齐、
-       底边压奖牌顶缘——上方净空 24rpx 不许再高，否则压住 section 标题），只有 NEW 跳 */
+    /* 奖牌 60x62 中心落图标角点右下让位处（卡内 (26,30)）；NEW 缎带 112x45 钉卡片右上角，
+       微悬出上/右缘贴角——上方净空 24rpx，悬出 ≤18rpx 不压 section 标题；两枚都静态不跳 */
     expect(medal).toContain('position: absolute')
-    expect(medal).toContain('top: -5rpx')
-    expect(medal).toContain('left: -8rpx')
+    expect(medal).toContain('top: -1rpx')
+    expect(medal).toContain('left: -4rpx')
     expect(medal).toContain('width: 60rpx')
     expect(medal).toContain('height: 62rpx')
-    expect(medal).not.toContain('animation')
     expect(ribbon).toContain('position: absolute')
-    expect(ribbon).toContain('top: -26rpx')
-    expect(ribbon).toContain('left: -30rpx')
-    expect(ribbon).toContain('width: 104rpx')
-    expect(ribbon).toContain('height: 42rpx')
-    expect(ribbon).toContain('animation: test-page-badge-bounce')
+    expect(ribbon).toContain('top: -18rpx')
+    expect(ribbon).toContain('right: -12rpx')
+    expect(ribbon).toContain('width: 112rpx')
+    expect(ribbon).toContain('height: 45rpx')
     for (const block of [medal, ribbon]) {
-      expect(block).toContain('right: auto')
+      expect(block).not.toContain('animation')
       expect(block).toContain('bottom: auto')
     }
-    /* 贴纸悬出卡外，卡片不得裁切 */
+    expect(medal).toContain('right: auto')
+    expect(ribbon).toContain('left: auto')
+    /* 贴纸悬出卡外，卡片不得裁切；跳动 keyframes 已随静态化删除 */
     expect(styleBlock('.test-page__card')).not.toContain('overflow: hidden')
-    expect(styles).toContain('@keyframes test-page-badge-bounce')
+    expect(styles).not.toContain('test-page-badge-bounce')
     expect(childrenOf(card).map(className).filter(Boolean)).toEqual(['test-page__card-spot', 'test-page__card-content', 'test-page__card-go'])
     expect(card.getText(page).match(/onClick=/g)).toHaveLength(1)
     expect(card.getText(page)).toContain('openDetail(definition.id)')
@@ -209,8 +209,9 @@ describe('测试首页软陶单列布局', () => {
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
     expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
-    /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会让 filter 阴影层按未解码态出方形边） */
-    expect(source).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix" />')
+    /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会让 filter 阴影层按未解码态出方形边）。
+       断言做空白容忍（JSX 属性已折多行书写） */
+    expect(source.replace(/\s+/g, ' ')).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix"')
     expect(source).not.toContain('hero-shade')
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill"/)
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill" lazyLoad/)

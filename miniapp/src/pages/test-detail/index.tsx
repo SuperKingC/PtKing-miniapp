@@ -6,7 +6,6 @@ import { APP_ENTERTAINMENT_DISCLAIMER } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
 import { getTestDraft } from '../../services/testDrafts'
 import { getTestDefinition } from '../../services/testRegistry'
-import { formatTestedCount } from '../../services/testDiscovery'
 import { backButtonStyle, topInsetStyle } from '../../services/navMetrics'
 import './index.scss'
 
@@ -69,12 +68,7 @@ export default function TestDetailPage() {
               </View>
             ))}
           </View>
-          {/* 人气条：resultLabel 最长 12 字符，四枚胶囊并排必挤压，改为胶囊下全宽细条（编辑配置数字，无则不渲染） */}
-          {definition.testedCount ? (
-            <View className="test-detail__popularity">
-              <Text>🔥 已有 {formatTestedCount(definition.testedCount)} 人测过</Text>
-            </View>
-          ) : null}
+          {/* 人气条已全量撤除（2026-09-15）：编辑人气基线不再对外展示 */}
           <View className="test-detail__intro">
             {definition.intro.slice(0, 2).map((paragraph) => (
               <Text key={paragraph.slice(0, 12)} className="test-detail__paragraph">{paragraph}</Text>

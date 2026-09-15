@@ -4,7 +4,7 @@ import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { listTestDefinitions, subscribeTestRegistry } from '../../services/testRegistry'
 import type { TestDefinition } from '../../domain/testEngine'
 import { filterByCategory, TEST_CATEGORIES, type TestCategoryKey } from '../../services/testCategories'
-import { formatTestedCount, isNewTest, pickHotTests, pickRecommendedTests } from '../../services/testDiscovery'
+import { isNewTest, pickHotTests, pickRecommendedTests } from '../../services/testDiscovery'
 import { listActiveTestDrafts } from '../../services/testDrafts'
 import { loadTestRecords } from '../../services/testRecords'
 import { APP_SHARE_TITLE } from '../../services/brand'
@@ -122,12 +122,8 @@ export default function TestPage() {
     trackEvent('test_card_open', { testId })
     wx.navigateTo({ url: `/pages/test-detail/index?testId=${encodeURIComponent(testId)}` })
   }
-  /** 卡片人气文案：「X万+人测过」，无编辑数据时为空串 */
-  const testedText = (definition: typeof definitions[number]) =>
-    definition.testedCount ? `${formatTestedCount(definition.testedCount)}人测过` : ''
-  /** 主列表 meta 尾段：人气优先，无编辑数据回退 badge（推荐）或「可测试」 */
-  const regularBadge = (definition: typeof definitions[number], badge?: string) =>
-    testedText(definition) || badge || '可测试'
+  /** 主列表 meta 尾段：人气展示已撤，有编辑 badge（推荐）用 badge，否则「可测试」 */
+  const regularBadge = (badge?: string) => badge || '可测试'
   const renderCard = (definition: typeof definitions[number], options?: { badge?: string; hotRank?: number }) => {
     const { hotRank, badge } = options ?? {}
     const showNew = isNewTest(definition, new Date())
@@ -143,7 +139,7 @@ export default function TestPage() {
         <Text className="test-page__card-sub">{definition.intro[0]}</Text>
         <View className="test-page__card-meta">
           <Text className="test-page__card-clock" aria-hidden />
-          <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {regularBadge(definition, badge)}</Text>
+          <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {regularBadge(badge)}</Text>
         </View>
       </View>
       <Text className="test-page__card-go">开始测试</Text>

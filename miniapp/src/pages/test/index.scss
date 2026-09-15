@@ -182,49 +182,30 @@
   position: relative;
 }
 
-/* 角标统一钉在封面图标左上角点（实体角卡内 (22,26)）：
-   奖牌 60x62 中心正对角点（left -8 + 30 = 22，top -5 + 31 = 26），静态不跳；
-   NEW 缎带在奖牌正上方（中心 x 对齐 22），底边压住奖牌顶缘 21rpx——
-   上方净空只有 grid gap 24rpx，再高会压住 section 标题（第一卡实测）。
+/* 角标钉卡片两上角：TOP 奖牌钉封面图标左上角点（实体角卡内 (22,26)，整体再往右下让 4rpx），
+   60x62 中心落 (26,30)（left -4 + 30，top -1 + 31）；NEW 缎带钉卡片右上角，微悬出上/右缘贴角。
+   上方净空只有 grid gap 24rpx，悬出 ≤18rpx 不压 section 标题（第一卡实测）；两枚都静态不跳。
    卡片不裁切（overflow 可见），贴纸一小半悬出卡外圆角 */
 .test-page__card-badge-new {
   position: absolute;
-  top: -26rpx;
-  right: auto;
+  top: -18rpx;
+  right: -12rpx;
   bottom: auto;
-  left: -30rpx;
-  width: 104rpx;
-  height: 42rpx;
+  left: auto;
+  width: 112rpx;
+  height: 45rpx;
   z-index: 1;
-  animation: test-page-badge-bounce 1.6s ease-in-out infinite;
 }
 
 .test-page__card-badge-top {
   position: absolute;
-  top: -5rpx;
+  top: -1rpx;
   right: auto;
   bottom: auto;
-  left: -8rpx;
+  left: -4rpx;
   width: 60rpx;
   height: 62rpx;
   z-index: 2;
-}
-
-/* 轻跳+小回弹 */
-@keyframes test-page-badge-bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  35% {
-    transform: translateY(-8rpx);
-  }
-  70% {
-    transform: translateY(0);
-  }
-  84% {
-    transform: translateY(-3rpx);
-  }
 }
 
 .test-page__card-spot {

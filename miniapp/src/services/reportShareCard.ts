@@ -6,7 +6,6 @@
  * 装饰（噪点纸纹、甜甜圈环、内凹四角星、扇贝条）；chips 用 --shadow-card 三层法的 canvas 等价
  * 实现（实色接触带 + 紧贴软影 + 本体）；tagline 按宽换行不再 18 字中截，结果标题最多两行。
  */
-import { formatTestedCount } from './testDiscovery'
 import { APP_DISPLAY_NAME, APP_TAGLINE } from './brand'
 import { getWxGlobal } from './wxGlobal'
 
@@ -18,8 +17,6 @@ export interface ShareCardData {
   category?: string
   /** 身份标签（报告 labels）：主结果区软陶胶囊 chips 传播钩子 */
   labels?: string[]
-  /** 编辑人气基线：底部右下角「X万+人测过」角标 */
-  testedCount?: number
 }
 
 /** 分类胶囊底色（与报告页 hero 分类色一致） */
@@ -339,9 +336,7 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
   }
   y += 16
 
-  const hasTested = Boolean(data.testedCount && data.testedCount > 0)
-
-  // 标签胶囊行：chipsFit 保证底边 ≤ 人气胶囊顶（height-62），无需再水平避让
+  // 标签胶囊行：chipsFit 保证底边距卡底留白，不与底部信息行相碰
   const chips = layoutLabelChips(data.labels, 460)
   const chipsFit = chips.length > 0 && y + 38 <= height - 66
   if (chipsFit) {
@@ -354,20 +349,11 @@ export function drawShareCard(ctx: CanvasRenderingContext2D, data: ShareCardData
     y += 38
   }
 
-  // —— 底部信息行：左引导句（标签行挤满时让位）+ 右人气胶囊 ——
+  // —— 底部信息行：左引导句（标签行挤满时让位） ——
   if (data.hook && y + 24 <= height - 24) {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
     ctx.font = '400 20px sans-serif'
     ctx.fillText(clampText(data.hook, 20), left, height - 26)
-  }
-
-  if (hasTested) {
-    ctx.font = '600 20px sans-serif'
-    const pillText = `${formatTestedCount(data.testedCount)}人测过`
-    const pillW = ctx.measureText(pillText).width + 32
-    drawClayChip(ctx, width - 48 - pillW, height - 62, pillW, 36, 'rgba(255, 255, 255, 0.95)')
-    ctx.fillStyle = palette.deep
-    ctx.fillText(pillText, width - 48 - pillW + 16, height - 39)
   }
 }
 

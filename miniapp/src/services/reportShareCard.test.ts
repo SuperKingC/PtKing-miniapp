@@ -65,7 +65,7 @@ describe('分享卡片绘制', () => {
     expect(texts.some((text) => /\d+分/.test(text))).toBe(false)
   })
 
-  it('身份标签画成胶囊文案，人气角标保留万+格式', () => {
+  it('身份标签画成胶囊文案', () => {
     const data: ShareCardData = {
       testTitle: '嘴硬心软指数',
       resultTitle: '冰壳暖核型',
@@ -73,17 +73,15 @@ describe('分享卡片绘制', () => {
       hook: '要不要看看你是哪一型',
       category: '情感',
       labels: ['嘴硬心软', '刀子嘴豆腐心认证'],
-      testedCount: 152000,
     }
     const { ctx, texts } = createMockContext()
     drawShareCard(ctx, data)
     const joined = texts.join(' ')
     expect(joined).toContain('嘴硬心软')
     expect(joined).toContain('刀子嘴豆腐心认证')
-    expect(joined).toContain('15万+人测过')
   })
 
-  it('无标签无人气时零破坏（不画 # 前缀与人数角标）', () => {
+  it('无标签时零破坏（不画 # 前缀，也不再画人气角标）', () => {
     const data: ShareCardData = {
       testTitle: 'MBTI 人格测试',
       resultTitle: '建筑师',

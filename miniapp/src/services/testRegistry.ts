@@ -72,40 +72,41 @@ const BASE_DEFINITIONS: Record<string, TestDefinition> = {
 }
 
 /**
- * 运营位编辑数据（2026-09-15 配置）：热门榜权重 / 上新日期 / 人气基线，调榜单只改这里。
+ * 运营位编辑数据（2026-09-15 三调：人气降档到几千~3万）：热门榜权重 / 上新日期 / 人气基线，调榜单只改这里。
+ * 热门榜当前名次：1 MBTI → 2 感情依恋 → 3 XP → 4 Chiikawa，人气随名次从高到低。
  * 人气为编辑配置的固定数字（暂无统计后台），随 registry 导出同步 COS。
  */
 const EDITORIAL_META: Record<string, Pick<TestDefinition, 'hotRank' | 'addedAt' | 'testedCount'>> = {
-  mbti: { hotRank: 3, testedCount: 286000 },
-  'love-persona': { testedCount: 168000 },
-  'chiikawa-bond': { hotRank: 1, addedAt: '2026-09-12', testedCount: 152000 },
-  'soft-heart': { hotRank: 2, addedAt: '2026-09-15', testedCount: 88000 },
-  'love-brain': { hotRank: 4, testedCount: 126000 },
-  overthink: { testedCount: 96000 },
-  'xp-test': { testedCount: 92000 },
-  'unhinged-test': { hotRank: 5, testedCount: 88000 },
-  'mind-age': { testedCount: 84000 },
-  'dark-triad': { testedCount: 76000 },
-  'pet-persona': { testedCount: 72000 },
-  eq: { testedCount: 68000 },
-  'sarcastic-test': { testedCount: 66000 },
-  'attachment-style': { testedCount: 64000 },
-  'breakup-style': { testedCount: 58000 },
-  bigfive: { testedCount: 56000 },
-  'crush-signal': { testedCount: 52000 },
-  goofy: { testedCount: 48000 },
-  'phone-addiction': { testedCount: 46000 },
-  'loser-talent': { testedCount: 44000 },
-  burnout: { testedCount: 42000 },
-  'single-power': { testedCount: 38000 },
-  'love-talk': { testedCount: 36000 },
-  'repression-test': { testedCount: 34000 },
-  'social-style': { testedCount: 30000 },
-  sleep: { testedCount: 26000 },
-  'work-role': { testedCount: 22000 },
-  'office-role': { testedCount: 19000 },
-  gift: { testedCount: 16000 },
-  'boss-style': { testedCount: 13000 },
+  mbti: { hotRank: 1, testedCount: 30000 },
+  'love-persona': { testedCount: 25600 },
+  'chiikawa-bond': { hotRank: 4, addedAt: '2026-09-12', testedCount: 20600 },
+  'soft-heart': { addedAt: '2026-09-15', testedCount: 16600 },
+  'love-brain': { testedCount: 21400 },
+  overthink: { testedCount: 17800 },
+  'xp-test': { hotRank: 3, testedCount: 23800 },
+  'unhinged-test': { testedCount: 16600 },
+  'mind-age': { testedCount: 15200 },
+  'dark-triad': { testedCount: 13900 },
+  'pet-persona': { testedCount: 13200 },
+  eq: { testedCount: 12500 },
+  'sarcastic-test': { testedCount: 12100 },
+  'attachment-style': { hotRank: 2, testedCount: 25600 },
+  'breakup-style': { testedCount: 10800 },
+  bigfive: { testedCount: 10500 },
+  'crush-signal': { testedCount: 9600 },
+  goofy: { testedCount: 9200 },
+  'phone-addiction': { testedCount: 8700 },
+  'loser-talent': { testedCount: 8400 },
+  burnout: { testedCount: 7900 },
+  'single-power': { testedCount: 7200 },
+  'love-talk': { testedCount: 6800 },
+  'repression-test': { testedCount: 6400 },
+  'social-style': { testedCount: 5700 },
+  sleep: { testedCount: 5000 },
+  'work-role': { testedCount: 4600 },
+  'office-role': { testedCount: 4100 },
+  gift: { testedCount: 3600 },
+  'boss-style': { testedCount: 3200 },
 }
 
 /** 静态目录 = 基础定义叠加运营位编辑数据（同 id 缺编辑项时原样保留） */
@@ -173,14 +174,24 @@ export function applyDynamicTestDefinitions(dynamic: TestDefinition[]): void {
   listeners.forEach((listener) => listener())
 }
 
-/** 合并结果再叠加包内编辑运营位（hotRank/addedAt/testedCount 以 EDITORIAL_META 为准） */
+/** 合并结果再叠加包内编辑运营位（hotRank/addedAt/testedCount 以 EDITORIAL_META 为准）。
+ *  三个键显式赋值而不是 spread：包内未配置的运营键必须压掉远端旧值——
+ *  spread 清不掉动态 registry 已带的旧 hotRank（嘴硬心软会顶进热门榜第 2 位）。 */
 function definitionsRecordReplaced(
   merged: { definitions: Record<string, TestDefinition>; order: string[] },
   editorial: Record<string, Pick<TestDefinition, 'hotRank' | 'addedAt' | 'testedCount'>>,
 ): Record<string, TestDefinition> {
   const out: Record<string, TestDefinition> = {}
   for (const [id, definition] of Object.entries(merged.definitions)) {
-    out[id] = editorial[id] ? { ...definition, ...editorial[id] } : definition
+    const meta = editorial[id]
+    out[id] = !meta
+      ? definition
+      : {
+          ...definition,
+          hotRank: meta.hotRank,
+          addedAt: meta.addedAt,
+          testedCount: meta.testedCount,
+        }
   }
   return out
 }

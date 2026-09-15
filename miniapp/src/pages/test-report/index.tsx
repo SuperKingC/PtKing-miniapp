@@ -270,7 +270,6 @@ export default function TestReportPage() {
       hook: shareHookByCategory(definition.category),
       category: definition.category,
       labels: sharedReport.labels,
-      testedCount: definition.testedCount,
     }).then((path) => {
       if (!cancelled) setShareImagePath(path)
     })

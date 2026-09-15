@@ -43,8 +43,9 @@
   报告页 chips + 分享卡片标签行）；`TestDefinition` 新增运营位可选字段
   `hotRank`（编辑热门权重，`services/testDiscovery.ts` 的 `pickHotTests` 按权重升序取前 4
   渲染首页「热门榜」区块，无编辑数据回退「为你推荐」）、`addedAt`（YYYY-MM-DD，
-  14 天内卡片 NEW 角标）、`testedCount`（编辑人气基线固定数字，`formatTestedCount` 展示
-  「X万+人测过」：首页卡片 badge 槽位、详情页人气条、分享卡片右下角标）。
+  14 天内卡片 NEW 角标）、`testedCount`（编辑人气基线固定数字；2026-09-15 起
+  「X人测过」展示全量撤除——首页卡片 badge 槽位、详情页人气条、分享卡片右下角标
+  均已移除，字段与 `formatTestedCount` 保留备用）。
   编辑数据集中收口在 `testRegistry.ts` 的 `EDITORIAL_META`（调榜单只改这里），
   随 `content:export` 同步 COS registry。钩子化文案已铺样稿 3 测试
   （睡商鉴定所/情商段位鉴定/你和手机谁离不开谁）+ 弱报告重写 11 型

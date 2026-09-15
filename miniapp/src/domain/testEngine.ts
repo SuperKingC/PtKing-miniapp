@@ -90,7 +90,7 @@ export interface TestDefinition {
   hotRank?: number
   /** 上新日期（YYYY-MM-DD）：14 天内首页卡片显示 NEW 角标 */
   addedAt?: string
-  /** 编辑人气基线（固定数字）：首页卡片与详情页展示为「X万+人测过」 */
+  /** 编辑人气基线（固定数字）：展示位已全量撤除（2026-09-15），字段保留供运营配置与热榜参考 */
   testedCount?: number
 }
 
