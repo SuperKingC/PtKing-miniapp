@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build:weapp": "taro build --type weapp",
+    "build:weapp": "taro build --type weapp && node ../scripts/post-build-cjk.cjs",
     "dev:weapp": "taro build --type weapp --watch",
     "test": "vitest --run"
   },
