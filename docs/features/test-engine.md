@@ -20,9 +20,11 @@
   16personalities 约 130 题/大五 BFI-2 60 题/EPQ 88 题，国内趣味爆款主流 15-30 题，20 为「显得准」
   与完成率的平衡下限；静态 sanity 与 COS 新内容共同遵守）、`findBandIndex`（band 报告页刻度高亮）、
   `radarChartGeometry`（雷达图顶点几何纯函数，canvas 绘制层用）。
-- `domain/tests/*.ts`：29 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
+- `domain/tests/*.ts`：30 个测试全部 ≥20 题（2026-09 两轮补齐：8/10 题的 13 个先补到 12，再全部
   +8 到 20；band 测试满分随之 24→36→60、三档 0-20/21-40/41-60；MBTI 44 / 大五 30 / 暗黑 27 不动）。
   Chiikawa 缘分测试为 32 题、每题 4 个短选项，八角色曝光与选项位置平衡；总票平局时先用末 8 题二次判定，仍平局才按定义顺序兜底。
+  `softHeartTest.ts`（嘴硬心软指数，2026-09-15 吸引力批次新增，archetype 4 型：冰壳暖核/
+  人形棉花糖/嘴甜心明/全副武装，「嘴硬×心软」2×2 投票，进首页热门榜 TOP2）。
   吸睛位与猎奇位：`xpTest.ts`（XP 测试，archetype 4 型「心动触发器」：反差感/氛围感/灵魂共振/独占欲，
   文案全程心动场景、无低俗表述）、`repressionTest.ts`（性压抑指数测试，band 0-60 三档，
   「情绪与需求的表达压抑度」自查向，非临床措辞；标题若平台审核受限可降级为「压抑指数测试」）、
@@ -31,11 +33,23 @@
   `loserTalentTest.ts`（废柴天赋鉴定，archetype 4 型：锦鲤废柴/人间清醒废柴/究极睡神/气人天才，
   自嘲向反差萌）。
   **深度报告 v2 全量覆盖（2026-09）**：`TestReport` 可选 v2 字段（deep 纵深长文/strengths 三优势/
-  blindSpots 三盲区/scenes 职场恋爱社交/actions 行动清单）已铺满全部 29 个测试约 124 型，
+  blindSpots 三盲区/scenes 职场恋爱社交/actions 行动清单）已铺满全部 30 个测试约 128 型，
   每型约 500 字聚焦心理动因（样稿口径：恋爱人格 4 型）；报告页渲染四张深度卡
   （深度解读/优势与盲区/场景适配/行动清单）；sanity 契约校验 v2 字段质量
   （deep>150 字、三优势三盲区三场景、行动≥3）。付费拆分（M4）待定，
   当前全量开放展示。
+  **吸引力批次（2026-09-15）**：`TestReport` 新增可选 `quote`（一句话金句 ≤60 字，
+  报告首屏金句卡；缺省由报告页从 deep 首句推导）与 `labels`（1-3 个身份标签、每个 ≤14 字，
+  报告页 chips + 分享卡片标签行）；`TestDefinition` 新增运营位可选字段
+  `hotRank`（编辑热门权重，`services/testDiscovery.ts` 的 `pickHotTests` 按权重升序取前 4
+  渲染首页「热门榜」区块，无编辑数据回退「为你推荐」）、`addedAt`（YYYY-MM-DD，
+  14 天内卡片 NEW 角标）、`testedCount`（编辑人气基线固定数字，`formatTestedCount` 展示
+  「X万+人测过」：首页卡片 badge 槽位、详情页人气条、分享卡片右下角标）。
+  编辑数据集中收口在 `testRegistry.ts` 的 `EDITORIAL_META`（调榜单只改这里），
+  随 `content:export` 同步 COS registry。钩子化文案已铺样稿 3 测试
+  （睡商鉴定所/情商段位鉴定/你和手机谁离不开谁）+ 弱报告重写 11 型
+  （天赋能力/社交人格/压抑指数：去教科书名与「你的测试结果显示你是」模板句）；
+  剩余测试的标题/intro/quote/labels 铺量待用户预览拍板风格后继续。
 - `services/testRegistry.ts`：静态注册表 + `TEST_LIST_ORDER` 展示顺序，页面数据驱动；
   M2 COS 下发新测试时此文件只加兜底条目。
 - `services/testRecords.ts`：本地 storage 记录（`ptking_test_records`，上限 200，最新在前）；
