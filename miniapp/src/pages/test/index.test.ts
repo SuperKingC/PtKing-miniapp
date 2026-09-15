@@ -51,7 +51,8 @@ describe('测试首页软陶单列布局', () => {
   it('品牌行与今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    expect(source).toContain('hero-card-v13.png')
+    /* 横幅走 v11（猫伸出卡外叠进品牌行的已验收版式：负 margin + 影随烘焙形状）。 */
+    expect(source).toContain('hero-card-v11.png')
     /* 气球走 v39（v28 清晰圆球+J 线 + love 外圈）；公文包仍 v35。 */
     expect(source).toContain('tile-fun-v39.png')
     expect(source).toContain('tile-career-v35.png')
@@ -164,10 +165,12 @@ describe('测试首页软陶单列布局', () => {
     expect(card).toContain('box-shadow: var(--shadow-card)')
     const hero = styleBlock('.test-page__hero')
     const heroImg = styleBlock('.test-page__hero-img')
-    expect(hero).toContain('height: 317rpx')
+    /* v11 版式：横幅负 margin 叠进品牌行，图高随宽自适应 */
+    expect(hero).toContain('margin-top: -56rpx')
     expect(heroImg).toContain('width: 100%')
-    expect(heroImg).toContain('height: 317rpx')
-    expect(heroImg).not.toContain('drop-shadow')
+    expect(heroImg).toContain('height: auto')
+    /* 影随烘焙形状（猫+云+圆角卡）：drop-shadow 随形，不用容器盒阴影避免图片直边下露出实条 */
+    expect(heroImg).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
     expect(styles).not.toContain('test-page__hero-shade')
     /* 按钮剖面提为全局令牌，与二级页主 CTA 同层（值逐像素采样，见 app.scss） */
@@ -178,10 +181,10 @@ describe('测试首页软陶单列布局', () => {
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
     expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
-    /* 今日推荐不挂滤镜/底托：两者都会在圆角外画出方框缝 */
-    expect(source).toContain('className="test-page__hero-img" src={heroCardImg} mode="scaleToFill" fadeIn={false} />')
+    /* 今日推荐整卡等宽自适应：widthFix + 懒加载，不挂滤镜/底托（都会在圆角外画出方框缝） */
+    expect(source).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix" lazyLoad />')
     expect(source).not.toContain('hero-shade')
-    expect(source).not.toMatch(/hero-card-v\d+\.png" mode="widthFix"/)
+    expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill"/)
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill" lazyLoad/)
     expect(source).not.toContain('hoverClass')
     expect(styles).not.toContain('--press')
