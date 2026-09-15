@@ -51,8 +51,8 @@ describe('测试首页软陶单列布局', () => {
   it('品牌行与今日推荐蓝卡沿用真实每日推荐数据', () => {
     expect(source).toContain('测测子')
     expect(source).toContain('来测测你的另一面')
-    /* 横幅走 v11（猫伸出卡外叠进品牌行的已验收版式：负 margin + 影随烘焙形状）。 */
-    expect(source).toContain('hero-card-v11.png')
+    /* 横幅走 v14（v11 画面+v13 同款修边：负 margin + 影随烘焙形状的已验收版式）。 */
+    expect(source).toContain('hero-card-v14.png')
     /* 气球走 v39（v28 清晰圆球+J 线 + love 外圈）；公文包仍 v35。 */
     expect(source).toContain('tile-fun-v39.png')
     expect(source).toContain('tile-career-v35.png')
