@@ -181,8 +181,8 @@ describe('测试首页软陶单列布局', () => {
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
     expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
-    /* 今日推荐整卡等宽自适应：widthFix + 懒加载，不挂滤镜/底托（都会在圆角外画出方框缝） */
-    expect(source).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix" lazyLoad />')
+    /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会让 filter 阴影层按未解码态出方形边） */
+    expect(source).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix" />')
     expect(source).not.toContain('hero-shade')
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill"/)
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill" lazyLoad/)
