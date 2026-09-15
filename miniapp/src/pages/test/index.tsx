@@ -167,8 +167,9 @@ export default function TestPage() {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
-            {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满 */}
-            <Image className="test-page__hero-img" src={heroCardImg} mode="widthFix" lazyLoad />
+            {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满。
+                不挂 lazyLoad：首屏图延迟解码会让 filter 阴影层先按未解码态光栅一版方形边 */}
+            <Image className="test-page__hero-img" src={heroCardImg} mode="widthFix" />
           </View>}
           {resume && <View className="test-page__resume" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
             <Text className="test-page__section-kicker">继续答题</Text>
