@@ -222,13 +222,16 @@ describe('测试首页软陶单列布局', () => {
     expect(styles).not.toContain('--press')
   })
 
-  it('重载不闪：hero 容器按宽高比预留盒高（不随 onLoad 塌陷），门控显现走短淡入（不瞬时跳变）', () => {
+  it('重载不闪且不回浅色方框：hero 容器预留盒高（不随 onLoad 塌陷），门控 opacity 禁过渡（保瞬时重光栅）', () => {
     /* 微信原生下拉刷新整页重载会重挂组件：widthFix+height:auto 在 onLoad 前高度未知
-       会塌陷，叠加 heroReady 门控透明态 = 「撑开+弹出」的闪；预留盒高+短淡入消掉两者 */
+       会塌陷，叠加门控透明态 = 「撑开+弹出」的闪；预留盒高消掉高度跳变 */
     const hero = styleBlock('.test-page__hero')
     expect(hero).toContain('height: 317rpx')
+    /* opacity 过渡是合成器动画、不触发 filter 重光栅，会把首帧浅色方框陈旧纹理淡入保留；
+       门控必须靠瞬时 opacity 跳变强制重光栅，故 hero-img 禁任何 transition/animation */
     const heroImg = styleBlock('.test-page__hero-img')
-    expect(heroImg).toContain('transition: opacity')
+    expect(heroImg).not.toContain('transition')
+    expect(heroImg).not.toContain('animation')
     /* 门控本体保留（onLoad/定时器兜底置 heroReady），首帧浅色方框修复不回归 */
     expect(source).toContain('const [heroReady, setHeroReady] = useState(false)')
     expect(source).toContain('onLoad={() => setHeroReady(true)}')
