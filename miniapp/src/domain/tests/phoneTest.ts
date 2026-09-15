@@ -18,12 +18,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const PHONE_TEST: TestDefinition = {
   id: 'phone-addiction',
-  title: '手机依赖测试',
+  title: '你和手机谁离不开谁',
   category: '趣味',
   meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
     '「再刷五分钟」变成两小时、手机不在身边就心慌、上厕所必带手机……你用的是手机，还是手机在用你？',
-    '20 道日常习惯题，3 分钟测测你的「人机关系」成色，附对应的小建议。',
+    '20 道「人机关系」日常题，3 分钟出鉴定：是人玩手机，还是手机遛你。',
   ],
   notice: '该测试为趣味生活习惯自查，非医疗评估。',
   questions: [
@@ -62,6 +62,8 @@ export const PHONE_TEST: TestDefinition = {
       id: 'phone-balanced',
       title: '人机大师',
       tagline: '手机是你的工具，不是你的主人',
+      quote: '手机在你手里是工具，说明你心里有比屏幕更重要的事。',
+      labels: ['人机边界感大师', '清醒冲浪选手'],
       summary:
         '你与手机的关系很健康：需要时用它，不需要时放得下。你的注意力还牢牢长在自己脑子里——这在 2026 年是相当稀缺的能力。',
       detail: [
@@ -84,6 +86,8 @@ export const PHONE_TEST: TestDefinition = {
       id: 'phone-tied',
       title: '藕断丝连',
       tagline: '说好只刷五分钟，抬头已是两小时',
+      quote: '说好只刷五分钟，时间它自己会飞。',
+      labels: ['五分钟诈骗受害者', '刷到停不下来星人'],
       summary:
         '你和手机处于「互相牵制」状态：心里想放下，手却很诚实。碎片时间基本被它承包，但大体上你还能正常生活——这是改善的黄金窗口期。',
       detail: [
@@ -106,6 +110,8 @@ export const PHONE_TEST: TestDefinition = {
       id: 'phone-hooked',
       title: '深度绑定',
       tagline: '你的注意力正在被它「分期付款」',
+      quote: '你的注意力被切成两分钟一段，卖给了信息流。',
+      labels: ['重度冲浪选手', '机不离手星人'],
       summary:
         '你的生活已经和手机深度绑定：吃饭、如厕、睡前、醒来，它的存在感覆盖了你的全天候。别自责——这些App背后是上千名工程师的「注意力设计」。知道问题在哪，就是夺回主动权的第一步。',
       detail: [

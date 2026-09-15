@@ -18,12 +18,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const EQ_TEST: TestDefinition = {
   id: 'eq',
-  title: '情商测评',
+  title: '情商段位鉴定',
   category: '职场',
   meta: { minutes: 4, resultLabel: '3 档 · 解读' },
   intro: [
-    '情商不是「会说话」，而是：听得懂别人的弦外之音、接得住自己的情绪、留得住彼此的体面。它在职场里的重要性，早已超过一纸文凭。',
-    '20 道日常沟通场景题（反向计分：越少踩坑越高分），看看你的情商账户余额。',
+    '嘴快一时爽，事后想穿越回去捂嘴——情商高的反义词不是嘴笨，是话出口前没过脑。你的段位在哪儿，一测便知。',
+    '20 个日常沟通场景题（反向计分：越少踩坑越高分），3 分钟定位你的情商段位。',
   ],
   notice: '该测试为趣味自我觉察工具，非临床评估。',
   questions: [
@@ -62,6 +62,8 @@ export const EQ_TEST: TestDefinition = {
       id: 'eq-high',
       title: '高情商段位',
       tagline: '让人舒服，是你的顶级实力',
+      quote: '让人舒服不是讨好，是你把分寸感长在了身上。',
+      labels: ['分寸感大师', '人间清醒嘴替'],
       summary:
         '你的情商段位很高：会倾听、懂共情、有分寸，情绪上了头也能守住嘴。和你相处的人会觉得「被接住了」——这种能力在哪儿都是硬通货。',
       detail: [
@@ -84,6 +86,8 @@ export const EQ_TEST: TestDefinition = {
       id: 'eq-mid',
       title: '情商潜力股',
       tagline: '道理都懂，偶尔上头',
+      quote: '道理你都懂，就差情绪上头前的那三秒。',
+      labels: ['情商潜力股', '偶尔上头星人'],
       summary:
         '你的情商处于中上区间：平时得体，但情绪上头或面对亲近的人时，偶尔会「不过脑子上膛就发」。好消息是，情商主要靠后天习惯——你缺的不是天赋，是几个小动作。',
       detail: [
@@ -106,6 +110,8 @@ export const EQ_TEST: TestDefinition = {
       id: 'eq-grow',
       title: '待升级系统',
       tagline: '不是不会说话，是还没意识到话的重量',
+      quote: '不是不会说话，是话出口之前没人帮你踩刹车。',
+      labels: ['心直口快选手', '待升级系统'],
       summary:
         '你的情商系统有待升级：不少「言出无心」的场景正在悄悄消耗你的关系账户。别灰心——能意识到问题本身就是升级的开始，而情商恰恰是所有能力里提升最快的之一。',
       detail: [

@@ -18,12 +18,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const SLEEP_TEST: TestDefinition = {
   id: 'sleep',
-  title: '睡眠质量测试',
+  title: '睡商鉴定所',
   category: '趣味',
   meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
-    '睡够 8 小时却还是累？躺下半小时睡不着？凌晨三点脑子突然开机？睡眠质量不只在时长，更在「落地质量」。',
-    '20 道近况自查题，3 分钟看看你最近的睡眠成色，并附上对应的小建议。',
+    '睡够 8 小时还是困、凌晨三点自动开机、闹钟按掉五个才能起——不是你意志力差，是你的「睡商」该年检了。',
+    '20 道近况自查题，3 分钟出鉴定：你的睡眠是黄金档、还能抢救，还是已经赤字预警？',
   ],
   notice: '该测试为趣味向生活方式自查，非医疗评估。',
   questions: [
@@ -62,6 +62,8 @@ export const SLEEP_TEST: TestDefinition = {
       id: 'sleep-good',
       title: '黄金睡眠',
       tagline: '躺下就着，醒来满电',
+      quote: '睡得好不是运气，是你守住了自己的节律。',
+      labels: ['睡觉大师', '人间满电体质'],
       summary: `你的睡眠成色很好：入睡快、夜里稳、白天精神在线。你的身体节律正在良性循环，保持现在的作息节奏就好。`,
       detail: [
         '你的优势：生物钟稳定，深睡占比大概率不错。',
@@ -83,6 +85,8 @@ export const SLEEP_TEST: TestDefinition = {
       id: 'sleep-mid',
       title: '亚健康睡眠',
       tagline: '睡眠还行，但有几个漏电口',
+      quote: '你不是睡不好，是睡前欠了自己 30 分钟。',
+      labels: ['睡前拖延预备役', '潜在满电体质'],
       summary: `你的睡眠处于「能用但不饱和」状态：可能有入睡慢、夜醒或白天犯困其中一个。这类问题多数和睡前习惯有关，调整空间很大。`,
       detail: [
         '典型信号：刷手机到最后一刻、周末狂补觉、咖啡因越喝越晚。',
@@ -104,6 +108,8 @@ export const SLEEP_TEST: TestDefinition = {
       id: 'sleep-low',
       title: '透支预警',
       tagline: '你的睡眠账户已经出现赤字',
+      quote: '睡眠债不催收，但它连本带利记在白天的你身上。',
+      labels: ['缺觉星人', '花呗式睡眠'],
       summary: `你的睡眠状况值得关注：多个信号同时出现，说明睡眠债已经积累了一段时间。别慌，但请认真对待——睡眠是精力和情绪的地基，地基松了上面全都晃。`,
       detail: [
         '第一优先：固定起床时间。先锚定早上，晚上自然会前移。',
