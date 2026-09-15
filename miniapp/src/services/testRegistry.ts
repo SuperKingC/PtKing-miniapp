@@ -28,6 +28,7 @@ import { CRUSH_TEST } from '../domain/tests/crushTest'
 import { OFFICE_ROLE_TEST } from '../domain/tests/officeRoleTest'
 import { BOSS_STYLE_TEST } from '../domain/tests/bossStyleTest'
 import { CHIIKAWA_BOND_TEST } from '../domain/tests/chiikawaBondTest'
+import { SOFT_HEART_TEST } from '../domain/tests/softHeartTest'
 
 /**
  * 测试注册表：静态内置定义兜底 + COS JSON 动态下发合并（M2）。
@@ -67,6 +68,7 @@ const BASE_DEFINITIONS: Record<string, TestDefinition> = {
   [OFFICE_ROLE_TEST.id]: OFFICE_ROLE_TEST,
   [BOSS_STYLE_TEST.id]: BOSS_STYLE_TEST,
   [CHIIKAWA_BOND_TEST.id]: CHIIKAWA_BOND_TEST,
+  [SOFT_HEART_TEST.id]: SOFT_HEART_TEST,
 }
 
 /**
@@ -74,13 +76,14 @@ const BASE_DEFINITIONS: Record<string, TestDefinition> = {
  * 人气为编辑配置的固定数字（暂无统计后台），随 registry 导出同步 COS。
  */
 const EDITORIAL_META: Record<string, Pick<TestDefinition, 'hotRank' | 'addedAt' | 'testedCount'>> = {
-  mbti: { hotRank: 2, testedCount: 286000 },
+  mbti: { hotRank: 3, testedCount: 286000 },
   'love-persona': { testedCount: 168000 },
   'chiikawa-bond': { hotRank: 1, addedAt: '2026-09-12', testedCount: 152000 },
-  'love-brain': { hotRank: 3, testedCount: 126000 },
+  'soft-heart': { hotRank: 2, addedAt: '2026-09-15', testedCount: 88000 },
+  'love-brain': { hotRank: 4, testedCount: 126000 },
   overthink: { testedCount: 96000 },
   'xp-test': { testedCount: 92000 },
-  'unhinged-test': { hotRank: 4, testedCount: 88000 },
+  'unhinged-test': { hotRank: 5, testedCount: 88000 },
   'mind-age': { testedCount: 84000 },
   'dark-triad': { testedCount: 76000 },
   'pet-persona': { testedCount: 72000 },
@@ -142,6 +145,8 @@ const STATIC_ORDER: readonly string[] = [
   LOVE_TALK_TEST.id,
   BREAKUP_TEST.id,
   CRUSH_TEST.id,
+  // 2026-09-15 吸引力批次：嘴硬心软指数
+  SOFT_HEART_TEST.id,
   OFFICE_ROLE_TEST.id,
   BOSS_STYLE_TEST.id,
   // 2026-09-12 趣味扩批次
