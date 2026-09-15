@@ -19,9 +19,15 @@ import tileStarImg from '../../assets/illus/tile-star-v10.png'
 import tileLoveImg from '../../assets/illus/tile-love-v10.png'
 import tileCareerImg from '../../assets/illus/tile-career-v35.png'
 import tileFunImg from '../../assets/illus/tile-fun-v39.png'
+import badgeNewImg from '../../assets/illus/badge-new-v1.png'
+import badgeTop1Img from '../../assets/illus/badge-top1-v1.png'
+import badgeTop2Img from '../../assets/illus/badge-top2-v1.png'
+import badgeTop3Img from '../../assets/illus/badge-top3-v1.png'
+import badgeTop4Img from '../../assets/illus/badge-top4-v1.png'
 import './index.scss'
 
 const CARD_SPOT_BY_CATEGORY: Record<string, string> = { 人格: tileStarImg, 情感: tileLoveImg, 职场: tileCareerImg, 趣味: tileFunImg }
+const BADGE_TOP_BY_RANK = [badgeTop1Img, badgeTop2Img, badgeTop3Img, badgeTop4Img]
 
 /** 定义列表的内容指纹：id+标题一致即视为同一批，用于 onShow 幂等短路 */
 function idsOf(definitions: TestDefinition[]): string {
@@ -111,13 +117,16 @@ export default function TestPage() {
   /** 卡片人气文案：「X万+人测过」，无编辑数据时为空串 */
   const testedText = (definition: typeof definitions[number]) =>
     definition.testedCount ? `${formatTestedCount(definition.testedCount)}人测过` : ''
-  /** 主列表 badge 槽位优先级：NEW（14 天内上新）> 人气 > 「可测试」 */
-  const regularBadge = (definition: typeof definitions[number]) =>
-    isNewTest(definition, new Date()) ? 'NEW' : testedText(definition) || '可测试'
+  /** 主列表 meta 尾段：人气优先，无编辑数据回退 badge（推荐）或「可测试」 */
+  const regularBadge = (definition: typeof definitions[number], badge?: string) =>
+    testedText(definition) || badge || '可测试'
   const renderCard = (definition: typeof definitions[number], options?: { badge?: string; hotRank?: number }) => {
-    const { hotRank, badge = regularBadge(definition) } = options ?? {}
+    const { hotRank, badge } = options ?? {}
+    const showNew = isNewTest(definition, new Date())
     return (
     <View key={definition.id} className="test-page__card" onClick={() => openDetail(definition.id)}>
+      {showNew && <Image className="test-page__card-badge-new" src={badgeNewImg} />}
+      {hotRank ? <Image className={showNew ? 'test-page__card-badge-top' : 'test-page__card-badge-top test-page__card-badge-top--solo'} src={BADGE_TOP_BY_RANK[hotRank - 1]} /> : null}
       {/* 不挂 lazyLoad:分类切换大增删卡片时 lazy 图重触发解码,卡面先出文字后出图标,
           整列闪一下(实机录帧 f030→f031);22 张 tile 共 ~200KB,常驻解码缓存更稳 */}
       <Image className="test-page__card-spot" src={cardSpot(definition)} mode="aspectFit" />
@@ -126,12 +135,7 @@ export default function TestPage() {
         <Text className="test-page__card-sub">{definition.intro[0]}</Text>
         <View className="test-page__card-meta">
           <Text className="test-page__card-clock" aria-hidden />
-          {hotRank ? (
-            /* 热门榜卡：省略时长题数，聚焦排名+人气；上新期在榜内也保留 NEW（否则两个新测试都进榜时 NEW 永远不可见） */
-            <Text>{isNewTest(definition, new Date()) ? 'NEW · ' : ''}TOP{hotRank}{testedText(definition) ? ` · ${testedText(definition)}` : ''}</Text>
-          ) : (
-            <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {badge}</Text>
-          )}
+          <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {regularBadge(definition, badge)}</Text>
         </View>
       </View>
       <Text className="test-page__card-go">开始测试</Text>

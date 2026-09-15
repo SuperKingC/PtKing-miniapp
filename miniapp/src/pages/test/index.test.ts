@@ -37,9 +37,12 @@ function childrenOf(node: ts.JsxElement) {
 }
 
 describe('测试首页软陶单列布局', () => {
-  it('卡片使用左图、中间真实文案、右侧按钮三个并列区域，只有整卡处理点击', () => {
+  it('卡片使用左图、中间真实文案、右侧按钮三个并列区域，左上角贴 NEW/TOP 贴纸角标，只有整卡处理点击', () => {
     const card = findElement('test-page__card')
-    expect(childrenOf(card).map(className)).toEqual(['test-page__card-spot', 'test-page__card-content', 'test-page__card-go'])
+    /* NEW/TOP 角标按条件渲染（表达式子节点），只断言类名存在于卡内 */
+    expect(card.getText(page)).toContain('test-page__card-badge-new')
+    expect(card.getText(page)).toContain('test-page__card-badge-top')
+    expect(childrenOf(card).map(className).filter(Boolean)).toEqual(['test-page__card-spot', 'test-page__card-content', 'test-page__card-go'])
     expect(card.getText(page).match(/onClick=/g)).toHaveLength(1)
     expect(card.getText(page)).toContain('openDetail(definition.id)')
     expect(findElement('test-page__card-content').getText(page)).toContain('{definition.title}')

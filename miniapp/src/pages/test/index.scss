@@ -179,6 +179,33 @@
   background: #fefaf4;
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  /* NEW/TOP 角标贴纸的定位基准 */
+  position: relative;
+}
+
+/* 左上角贴纸角标（生图软陶件，绝对定位显式四边+显式宽高；top 留 10rpx 避开 30rpx 圆角裁切） */
+.test-page__card-badge-new {
+  position: absolute;
+  top: 10rpx;
+  right: auto;
+  bottom: auto;
+  left: 10rpx;
+  width: 104rpx;
+  height: 42rpx;
+}
+
+.test-page__card-badge-top {
+  position: absolute;
+  top: 56rpx;
+  right: auto;
+  bottom: auto;
+  left: 10rpx;
+  width: 60rpx;
+  height: 62rpx;
+}
+
+.test-page__card-badge-top--solo {
+  top: 10rpx;
 }
 
 .test-page__card-spot {
