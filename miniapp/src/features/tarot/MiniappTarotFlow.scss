@@ -612,6 +612,15 @@
   box-shadow: none;
 }
 
+// 仪式阶段内容超一屏时（如星夜五牌阵牌组 888rpx），默认 flex-shrink 会把流末的
+// 按钮压成 height:0——clay 2026-09-13 踩过一次当时只补了 clay 域，2026-09-15
+// 星夜五牌抽牌同样踩到。守卫钉在基础域：残余溢出只裁按钮底边，不会整枚消失。
+.miniapp-tarot__next,
+.miniapp-tarot__secondary,
+.miniapp-tarot__text-action {
+  flex: none;
+}
+
 .miniapp-tarot__stage--boundary {
   align-items: center;
   gap: 28rpx;
@@ -2581,14 +2590,8 @@
     flex: none;
   }
 
-  // 底部两个按钮也不许被压：仪式阶段内容比阶段高时，默认 flex-shrink:1 会把
-  // 「下一步」「跳过」挤到 height:0（用户 2026-09-13「按钮也看不到」的根因，
-  // 实测 .miniapp-tarot__next 的 height 变成 0）。钉成 flex:none，改由牌组上移让位。
-  .miniapp-tarot__next,
-  .miniapp-tarot__secondary,
-  .miniapp-tarot__text-action {
-    flex: none;
-  }
+  // 底部按钮防压守卫已上移到基础域（见 .miniapp-tarot__next[disabled] 后的 flex:none），
+  // 两套皮肤共用，这里不再重复钉。
 
   // 抽牌飞牌：clay 的牌扇与已选槽比 classic 更近，沿用 classic 的 390rpx 抬升会让牌
   // 冲过槽位、贴着水晶球飞（用户反馈「飞上去的牌被裁剪」）。牌组整体下移后，实测

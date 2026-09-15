@@ -61,6 +61,36 @@ describe('getTarotStageFit', () => {
     expect(fan.scale).toBeLessThanOrEqual(shuffle.scale)
   })
 
+  it('shrinks classic five-card fan on a phone so the next button stays on screen', () => {
+    // 星夜五牌阵牌组 888rpx（两行已选槽 504 + 牌扇 360 + gap），手机屏装不下：
+    // scale 必须 <1 把牌组收进一屏，否则底部「翻开所选牌」被 flex 压没（2026-09-15 用户报）。
+    const fit = getTarotStageFit({
+      stage: 'fan',
+      skin: 'classic',
+      cardCount: 5,
+      windowWidth: 390,
+      windowHeight: 844,
+      safeAreaBottom: 34,
+      topInsetPx: 47,
+    })
+    expect(fit.scale).toBeLessThan(1)
+    expect(fit.scale).toBeGreaterThanOrEqual(0.42)
+  })
+
+  it('keeps classic single-card fan at scale 1 on the same phone', () => {
+    // 单张牌组矮一截（660rpx），修正 chrome 后仍应满尺寸，不能矫枉过正一起缩。
+    const fit = getTarotStageFit({
+      stage: 'fan',
+      skin: 'classic',
+      cardCount: 1,
+      windowWidth: 390,
+      windowHeight: 844,
+      safeAreaBottom: 34,
+      topInsetPx: 47,
+    })
+    expect(fit.scale).toBe(1)
+  })
+
   it('does not scale question or reading stages', () => {
     expect(getTarotStageFit({
       stage: 'question',

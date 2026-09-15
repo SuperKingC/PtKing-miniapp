@@ -1,5 +1,10 @@
 # 塔罗动效偏好工作记录
 
+- 2026-09-15：classic（星夜）五牌阵抽牌阶段「翻开所选牌」按钮整枚消失（用户报：星夜模式下五张牌在抽牌阶段没有下一步的按钮）。
+  ①**根因**：`ritualChromePx` 的 chrome 模型按 clay 校准（气泡 fixed 不占高、下 spacer 隐藏、minSpacer 8rpx、只算 1 个 gap、无 title 项），classic 少算 title 48rpx + 双 spacer min 120rpx + 5×24rpx gap ≈ 264rpx → available 偏大 → fan-5 牌组 888rpx 超一屏时 `scale` 恒 1 → 溢出后流内最后的 `.miniapp-tarot__next` 被 flex 压没（2026-09-13 同款病，当时守卫只钉在 `.skin-clay` 域）。
+  ②**修法**：`tarotStageFit.ts` 的 `ritualChromePx` 拆 clay/classic 两分支——classic 补 title rpx(48)、minSpacer rpx(120)、逐子节点 gap rpx(24)（shuffle 7/cut 6/reveal 4/fan 5）与 shuffle 进度条 rpx(32)；`getTarotStageFit` 的 scale 改 `Math.floor(scale*100)/100` 向下取整（四舍五入可能向上留残余溢出又去裁按钮）。SCSS 按钮 `flex:none` 守卫从 clay 域上移基础域（`.miniapp-tarot__next / __secondary / __text-action`），clay 域留注释指向。
+  ③**验证**：先红后绿——`tarotStageFit.test.ts` 加 classic fan-5 手机屏（390×844）`scale<1` 与单牌 `scale=1` 两用例、`styles.test.ts` 加基础域守卫位置契约；聚焦 101、全量 **567** 过；根 `npm run build:weapp` 后 `wechatide` 实机走星夜 fan 阶段截图：底部「翻开所选牌」按钮完整可见（修复前同场景整枚消失）。headless Chrome 量测台旁证：scale 0.86、按钮 top737/bottom781 屏内。
+
 - 2026-09-13 18:50：clay 两处布局修正（用户：①气泡太高，比帽子高一点就好；②牌的部分上移，按钮也看不到了）。
   ①**气泡太高**：`.miniapp-tarot__stage--* > .miniapp-tarot__title` 是 fixed 气泡，`top: 3.4vh` 贴在状态栏下方。实测 390×844 帽子顶 y≈185px、气泡高 55px，故改成 **`top: 13.8vh`**，气泡底边落在帽子顶上方约 13px。指纹测试两处（styles.test.ts:111/489）同步。
   ②**按钮消失（真根因）**：`.miniapp-tarot__next` 在仪式阶段被 flex 压成 **height:0**——阶段内容总高超出阶段（`overflow-y:auto` 但内容按 flex 收缩），`flex-shrink` 默认 1，牌组容器已 `flex:none` 而按钮没设，于是按钮被挤没。修法：clay 里给 `.miniapp-tarot__next / __secondary / __text-action` 也加 **`flex: none`**（与牌组容器同策略）。

@@ -109,6 +109,17 @@ describe('miniapp tarot WXSS compatibility', () => {
     expect(styles).not.toContain('translateY(-72rpx)')
   })
 
+  it('pins the ritual action buttons against flex crushing in the base scope, not only clay', () => {
+    const styles = fs.readFileSync(stylesPath, 'utf8')
+
+    // 仪式阶段内容超一屏时默认 flex-shrink 会把底部按钮压成 height:0
+    // （clay 2026-09-13 踩过一次，当时只补了 clay；2026-09-15 星夜五牌抽牌同样踩到）。
+    // 守卫必须在基础域：任何皮肤残余溢出只裁按钮底边，不会整枚消失。
+    const guard = styles.search(/\.miniapp-tarot__next,\s*\.miniapp-tarot__secondary,\s*\.miniapp-tarot__text-action \{\s*flex: none;/)
+    expect(guard).toBeGreaterThan(-1)
+    expect(guard).toBeLessThan(styles.indexOf('.miniapp-tarot.skin-clay'))
+  })
+
   it('moves the clay guidance into a single speech bubble on the cat and drops the top progress rows', () => {
     const styles = fs.readFileSync(stylesPath, 'utf8')
 
@@ -150,7 +161,7 @@ describe('miniapp tarot WXSS compatibility', () => {
 
     // 切牌是洗牌的下一幕，牌面/整叠必须同一套缩小，否则一切牌牌就"变大变高"：
     // 牌面 214×326 → 167×254，整叠 230×356 → 179×278
-    expect(styles).toMatch(/\.miniapp-tarot__cut-half \{\s*\n\s*top: 87rpx;\s*\n\s*width: 179rpx;\s*\n\s*height: 278rpx;\s*\n\s*margin-left: -90rpx;/)
+    expect(styles).toMatch(/\.miniapp-tarot__cut-half \{[\s\S]*?top: 87rpx;[\s\S]*?width: 179rpx;[\s\S]*?height: 278rpx;[\s\S]*?margin-left: -90rpx;/)
     expect(styles).toMatch(/\.miniapp-tarot__cut-sheet,\s*\n\s*\.miniapp-tarot__cut-face \{\s*\n\s*width: 167rpx;\s*\n\s*height: 254rpx;/)
     // 起牌侧移量同比例缩，抬起的那叠不会飞得比牌自己还宽；
     // 必须带 :not(--swapped) 守卫，否则奇数刀两叠同时起飞（详见下方专门用例）
