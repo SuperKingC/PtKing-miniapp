@@ -69,15 +69,14 @@
   /* 参考图：猫伸出卡外叠进品牌行，蓝卡顶与副标题只留一线间距 */
   margin-top: -56rpx;
   margin-bottom: 28rpx;
-  width: 100%;
-  height: 317rpx;
 }
 
 .test-page__hero-img {
   display: block;
   width: 100%;
-  height: 317rpx;
-  /* 不挂滤镜、不挂盒阴影：两者都会在圆角外画出方框缝。 */
+  height: auto;
+  /* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条 */
+  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
 }
 
 .test-page__section {

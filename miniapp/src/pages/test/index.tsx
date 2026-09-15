@@ -13,7 +13,7 @@ import { pickDailyCategory, pickDailyTest } from '../../domain/experience'
 import { useTabBarSelected } from '../../hooks/useTabBarSelected'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { topInsetStyle } from '../../services/navMetrics'
-import heroCardImg from '../../assets/illus/hero-card-v13.png'
+import heroCardImg from '../../assets/illus/hero-card-v11.png'
 import tileMbtiImg from '../../assets/illus/tile-mbti-v10.png'
 import tileStarImg from '../../assets/illus/tile-star-v10.png'
 import tileLoveImg from '../../assets/illus/tile-love-v10.png'
@@ -147,8 +147,8 @@ export default function TestPage() {
             trackEvent('today_entry_open', { category: dailyCategory, testId: daily.id })
             openDetail(daily.id)
           }}>
-            {/* 参考图整卡铺满 686×317rpx（资产 675×312）。不挂滤镜/底托，避免圆角外方框缝 */}
-            <Image className="test-page__hero-img" src={heroCardImg} mode="scaleToFill" fadeIn={false} />
+            {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满 */}
+            <Image className="test-page__hero-img" src={heroCardImg} mode="widthFix" lazyLoad />
           </View>}
           {resume && <View className="test-page__resume" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
             <Text className="test-page__section-kicker">继续答题</Text>
