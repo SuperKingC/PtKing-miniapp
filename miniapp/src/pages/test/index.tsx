@@ -122,8 +122,7 @@ export default function TestPage() {
     trackEvent('test_card_open', { testId })
     wx.navigateTo({ url: `/pages/test-detail/index?testId=${encodeURIComponent(testId)}` })
   }
-  /** 主列表 meta 尾段：人气展示已撤，有编辑 badge（推荐）用 badge，否则「可测试」 */
-  const regularBadge = (badge?: string) => badge || '可测试'
+  /** meta 尾段只挂编辑 badge（推荐）；「可测试」兜底已撤（2026-09-15），无 badge 不显示尾段 */
   const renderCard = (definition: typeof definitions[number], options?: { badge?: string; hotRank?: number }) => {
     const { hotRank, badge } = options ?? {}
     const showNew = isNewTest(definition, new Date())
@@ -139,7 +138,7 @@ export default function TestPage() {
         <Text className="test-page__card-sub">{definition.intro[0]}</Text>
         <View className="test-page__card-meta">
           <Text className="test-page__card-clock" aria-hidden />
-          <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题 · {regularBadge(badge)}</Text>
+          <Text>约 {definition.meta.minutes} 分钟 · {definition.questions.length} 题{badge ? ` · ${badge}` : ''}</Text>
         </View>
       </View>
       <Text className="test-page__card-go">开始测试</Text>
