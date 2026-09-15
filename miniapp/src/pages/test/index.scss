@@ -182,8 +182,8 @@
   position: relative;
 }
 
-/* 角标钉卡片两上角：TOP 奖牌钉封面图标左上角点（实体角卡内 (22,26)，整体再往右下让 4rpx），
-   60x62 中心落 (26,30)（left -4 + 30，top -1 + 31）；NEW 缎带钉卡片右上角，微悬出上/右缘贴角。
+/* 角标钉卡片两上角：TOP 奖牌钉封面图标左上角点（实体角卡内 (22,26)，整体再往右下让 8rpx），
+   60x62 中心落 (30,34)（left 0 + 30，top 3 + 31）；NEW 缎带钉卡片右上角，微悬出上/右缘贴角。
    上方净空只有 grid gap 24rpx，悬出 ≤18rpx 不压 section 标题（第一卡实测）；两枚都静态不跳。
    卡片不裁切（overflow 可见），贴纸一小半悬出卡外圆角 */
 .test-page__card-badge-new {
@@ -199,10 +199,10 @@
 
 .test-page__card-badge-top {
   position: absolute;
-  top: -1rpx;
+  top: 3rpx;
   right: auto;
   bottom: auto;
-  left: -4rpx;
+  left: 0rpx;
   width: 60rpx;
   height: 62rpx;
   z-index: 2;

@@ -46,11 +46,11 @@ describe('测试首页软陶单列布局', () => {
     expect(source).not.toContain('badge-top--solo')
     const medal = styleBlock('.test-page__card-badge-top')
     const ribbon = styleBlock('.test-page__card-badge-new')
-    /* 奖牌 60x62 中心落图标角点右下让位处（卡内 (26,30)）；NEW 缎带 112x45 钉卡片右上角，
+    /* 奖牌 60x62 中心落图标角点右下让位处（卡内 (30,34)，2026-09-15 用户再让 4rpx）；NEW 缎带 112x45 钉卡片右上角，
        微悬出上/右缘贴角——上方净空 24rpx，悬出 ≤18rpx 不压 section 标题；两枚都静态不跳 */
     expect(medal).toContain('position: absolute')
-    expect(medal).toContain('top: -1rpx')
-    expect(medal).toContain('left: -4rpx')
+    expect(medal).toContain('top: 3rpx')
+    expect(medal).toContain('left: 0rpx')
     expect(medal).toContain('width: 60rpx')
     expect(medal).toContain('height: 62rpx')
     expect(ribbon).toContain('position: absolute')
