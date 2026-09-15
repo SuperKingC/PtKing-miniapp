@@ -3,6 +3,7 @@ export {
   CHANNEL_NAME_RE,
   pickGitChannelTag,
   pickPreferredGitTag,
+  pickReleaseChannel,
   readChannelArg,
   readGitChannelHints,
   resolveChannelName,

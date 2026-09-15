@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   pickGitChannelTag,
   pickPreferredGitTag,
+  pickReleaseChannel,
   parseAssetPointer,
   readChannelArg,
   resolveChannelName,
@@ -26,7 +27,7 @@ describe('asset pointer', () => {
   })
 })
 
-describe('channel from git tag', () => {
+describe('channel from release branch or git tag', () => {
   it('prefers a version-like tag on HEAD over the nearest ancestor tag', () => {
     expect(pickPreferredGitTag(['notes', 'v1.0.0', 'v1.0.1'])).toBe('v1.0.1')
     expect(pickGitChannelTag(['v1.0.0'], 'v0.9.0')).toBe('v1.0.0')
@@ -34,12 +35,21 @@ describe('channel from git tag', () => {
     expect(pickGitChannelTag([], '')).toBe('')
   })
 
-  it('treats bare --channel as read-the-tag, and an explicit name as override', () => {
+  it('reads the trailing version segment from release branches', () => {
+    expect(pickReleaseChannel('release/1.0.0')).toBe('1.0.0')
+    expect(pickReleaseChannel('release/v1.0.0')).toBe('v1.0.0')
+    expect(pickReleaseChannel('Release/1.0.0-hotfix')).toBe('1.0.0-hotfix')
+    expect(pickReleaseChannel('feat/release-notes')).toBe('')
+    expect(pickReleaseChannel('main')).toBe('')
+  })
+
+  it('treats bare --channel as auto-detect, and an explicit name as override', () => {
     expect(readChannelArg(['--yes', '--build'])).toEqual({ requested: false, explicit: '' })
     expect(readChannelArg(['--channel', '--yes'])).toEqual({ requested: true, explicit: '' })
     expect(readChannelArg(['--channel', 'v1'])).toEqual({ requested: true, explicit: 'v1' })
+    expect(resolveChannelName(['--channel'], { branchName: 'release/1.0.0', tagsOnHead: ['v0.9.0'] })).toBe('1.0.0')
     expect(resolveChannelName(['--channel'], { tagsOnHead: ['v1.0.0'] })).toBe('v1.0.0')
-    expect(resolveChannelName(['--channel', 'beta'], { tagsOnHead: ['v1.0.0'] })).toBe('beta')
-    expect(() => resolveChannelName(['--channel'], { tagsOnHead: [], nearestTag: '' })).toThrow(/git tag/)
+    expect(resolveChannelName(['--channel', 'beta'], { branchName: 'release/1.0.0' })).toBe('beta')
+    expect(() => resolveChannelName(['--channel'], { tagsOnHead: [], nearestTag: '' })).toThrow(/频道名/)
   })
 })

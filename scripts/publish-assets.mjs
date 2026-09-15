@@ -5,7 +5,7 @@
  * 用法:
  *   npm run assets           开新频道（git SHA 新目录）→ 写指针 → 重建；给下一个小程序版本用
  *   npm run assets:hot       覆盖 .asset-base-url 指向的现有目录，不改指针、不重建；给已上架包热更
- *   npm run assets -- --channel      频道名读当前提交/分支的 git tag（如 v1.0.0）
+ *   npm run assets -- --channel      release/* 分支取末尾版本号（如 release/1.0.0 → 1.0.0），否则读 git tag
  *   npm run assets -- --channel v1   显式覆盖频道名
  *   npm run assets:check     导出题库并检查 48 张塔罗 + registry-v1.json
  *   npm run assets:upload    dry-run 打印上传计划

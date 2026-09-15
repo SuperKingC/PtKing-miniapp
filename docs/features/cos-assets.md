@@ -86,14 +86,20 @@ COS 热更图保持与代码锁定的文件名，同名覆盖后靠 `assetRev` +
 | 热更题库 / 覆盖现有图 | `npm run assets:registry` 或 `npm run assets:hot` | **还是** `.asset-base-url` 那个目录 | 对得上 |
 | 发下一个小程序版本 | `npm run assets` / 一键上传 | 按 **新 git SHA** 开新目录，并改本地指针、重建 | **对不上**，要等他们更新小程序 |
 
-发版前先打 tag，频道名默认读这个 tag（优先当前提交上的，否则本分支最近的）：
+`npm run assets:channel`（即 `--channel` 不带值）的频道名解析顺序：
+
+1. 显式传入 `--channel v1` 等，直接用
+2. 当前分支名含 `release`（不区分大小写），取**最后一段**版本号，例如 `release/1.0.0` → `1.0.0`，`release/v1.0.0` → `v1.0.0`
+3. 否则读 git tag（优先打在 HEAD 上的，否则本分支最近的）
+
+推荐在 release 分支上直接上传，不必先打 tag：
 
 ```powershell
-git tag v1.0.0
+git switch release/1.0.0
 npm run assets:channel
 ```
 
-会传到 `assets/ptking/v1.0.0/`。要手写名字仍可用 `npm run assets -- --channel v1`。之后热更用 `assets:hot` 覆盖玩家指针那个目录。`npm run assets` 不带 `--channel` 仍按 git SHA 开新目录，若和当前指针不同会警告。
+会传到 `assets/ptking/1.0.0/`。非 release 分支仍可先 `git tag v1.0.0` 再上传（→ `assets/ptking/v1.0.0/`）。要手写名字仍可用 `npm run assets -- --channel v1`。之后热更用 `assets:hot` 覆盖玩家指针那个目录。`npm run assets` 不带 `--channel` 仍按 git SHA 开新目录，若和当前指针不同会警告。
 
 `npm run assets` / `assets:hot` 会在题库 JSON 里写入 `assetRev`。小程序拉到新修订号后，塔罗图 URL 带 `?r=`，同名覆盖也会重下，**不必为热更换图升文件名、也不必发新版小程序**。只改题目用 `assets:registry`（不写 `assetRev`），避免玩家无谓重下 24 张图。
 
