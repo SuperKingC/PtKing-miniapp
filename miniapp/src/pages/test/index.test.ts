@@ -42,28 +42,30 @@ describe('测试首页软陶单列布局', () => {
     /* NEW/TOP 角标按条件渲染（表达式子节点），只断言类名存在于卡内 */
     expect(card.getText(page)).toContain('test-page__card-badge-new')
     expect(card.getText(page)).toContain('test-page__card-badge-top')
-    /* 角标位置统一钉在封面图标左上角，不再有 solo/堆叠两种落位 */
+    /* 角标统一钉在封面图标左上角点，不再有 solo/堆叠两种落位 */
     expect(source).not.toContain('badge-top--solo')
     const medal = styleBlock('.test-page__card-badge-top')
     const ribbon = styleBlock('.test-page__card-badge-new')
-    /* 奖牌盖住图标角点（卡内实体角约 (22,26)），NEW 缎带垫在奖牌后方沿图标顶边露出 */
+    /* 奖牌 60x62 中心正对图标角点（卡内 (22,26)）且静态；NEW 缎带在奖牌正上方（中心 x 对齐、
+       底边压奖牌顶缘——上方净空 24rpx 不许再高，否则压住 section 标题），只有 NEW 跳 */
     expect(medal).toContain('position: absolute')
-    expect(medal).toContain('top: 20rpx')
-    expect(medal).toContain('left: 16rpx')
+    expect(medal).toContain('top: -5rpx')
+    expect(medal).toContain('left: -8rpx')
     expect(medal).toContain('width: 60rpx')
     expect(medal).toContain('height: 62rpx')
-    expect(medal).toContain('z-index: 2')
+    expect(medal).not.toContain('animation')
     expect(ribbon).toContain('position: absolute')
-    expect(ribbon).toContain('top: 4rpx')
-    expect(ribbon).toContain('left: 56rpx')
+    expect(ribbon).toContain('top: -26rpx')
+    expect(ribbon).toContain('left: -30rpx')
     expect(ribbon).toContain('width: 104rpx')
     expect(ribbon).toContain('height: 42rpx')
-    expect(ribbon).toContain('z-index: 1')
+    expect(ribbon).toContain('animation: test-page-badge-bounce')
     for (const block of [medal, ribbon]) {
       expect(block).toContain('right: auto')
       expect(block).toContain('bottom: auto')
-      expect(block).toContain('animation: test-page-badge-bounce')
     }
+    /* 贴纸悬出卡外，卡片不得裁切 */
+    expect(styleBlock('.test-page__card')).not.toContain('overflow: hidden')
     expect(styles).toContain('@keyframes test-page-badge-bounce')
     expect(childrenOf(card).map(className).filter(Boolean)).toEqual(['test-page__card-spot', 'test-page__card-content', 'test-page__card-go'])
     expect(card.getText(page).match(/onClick=/g)).toHaveLength(1)

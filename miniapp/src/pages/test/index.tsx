@@ -49,6 +49,14 @@ export default function TestPage() {
   const theme = useAppTheme()
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
+  /* hero 图解码完成前不参与渲染：真机上 filter 阴影层的合成纹理不随图片解码失效，
+     首帧会按未解码的矩形光栅出一条浅色方框（滚动重绘才恢复）。onLoad 后再置
+     opacity:1 强制该层带已解码内容重光栅；定时器兜底 load 事件异常导致的永隐 */
+  const [heroReady, setHeroReady] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setHeroReady(true), 1500)
+    return () => clearTimeout(t)
+  }, [])
   /* 分类切换闪屏（实机录屏逐帧复现+automator offset 采样量化）：页面带非零滚动位
      （含 reLaunch 恢复的残留 ~55px）切分类，推荐区卸载内容高度骤减，WebView 对
      越界滚动位逐帧钳制回弹，整页内容连帧窜动。方案：切换当拍把视口归零——
@@ -173,7 +181,13 @@ export default function TestPage() {
           }}>
             {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满。
                 不挂 lazyLoad：首屏图延迟解码会让 filter 阴影层先按未解码态光栅一版方形边 */}
-            <Image className="test-page__hero-img" src={heroCardImg} mode="widthFix" />
+            <Image
+              className="test-page__hero-img"
+              src={heroCardImg}
+              mode="widthFix"
+              style={heroReady ? undefined : 'opacity: 0'}
+              onLoad={() => setHeroReady(true)}
+            />
           </View>}
           {resume && <View className="test-page__resume" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
             <Text className="test-page__section-kicker">继续答题</Text>
