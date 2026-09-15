@@ -9,7 +9,10 @@ import { getWxGlobal } from './wxGlobal'
  * 合并进注册表（动态覆盖静态、追加新项）。任何失败都静默——静态兜底保证产品可用。
  * 题库热更覆盖同名 registry-v1.json（短缓存）。换塔罗图走 JSON 里的 assetRev，不必升图片文件名。
  */
-const REGISTRY_JSON_PATH = '/tests/registry-v1.json'
+// ?v=2 破缓存：registry 曾被按版本资产策略以 immutable(一年) 头上传过，已访问过的客户端
+// HTTP 缓存不会再请求同 URL（2026-09-15 实测：清编译缓存无效，改查询串才破）。服务端头已改回
+// 60s 短缓存（publish-assets 现单独按 short 补传 registry），此后内容推送靠短缓存传播，无需再升 v。
+const REGISTRY_JSON_PATH = '/tests/registry-v1.json?v=2'
 const REQUEST_TIMEOUT_MS = 8000
 let loadGeneration = 0
 

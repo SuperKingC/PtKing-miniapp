@@ -229,6 +229,29 @@ cleanupStage()
 
 if (result.status !== 0) die(`上传脚本退出码 ${result.status ?? 'null'}`)
 
+// 题库 registry 单独按 short(60s) 缓存补传：kit upload-cos 默认 immutable（对版本目录资产正确），
+// 但 registry 走「同地址覆盖热更」语义——immutable 头会让已访问过的客户端缓存一年不重验证，
+// 后续 60s 热更永远到不了它们（2026-09-15 实测事故）。
+if (yes) {
+  const registryStage = path.join(root, 'tmp-publish-stage-registry')
+  fs.rmSync(registryStage, { recursive: true, force: true })
+  fs.mkdirSync(path.join(registryStage, 'tests'), { recursive: true })
+  fs.copyFileSync(registryPath(), path.join(registryStage, REGISTRY_FILE))
+  const registryUpload = spawnSync(process.execPath, [
+    uploadScript,
+    '--dir', registryStage,
+    '--prefix', prefix,
+    '--version', version,
+    '--cache', 'short',
+    '--yes',
+  ], { stdio: 'inherit', cwd: root, env: process.env })
+  fs.rmSync(registryStage, { recursive: true, force: true })
+  if (registryUpload.status !== 0) die(`registry short 缓存补传退出码 ${registryUpload.status ?? 'null'}`)
+  console.log('[assets] registry 已按 short(60s) 缓存覆盖补传')
+} else {
+  console.log('[assets] dry-run：正式上传时 registry 会单独按 short(60s) 缓存补传')
+}
+
 if (rewritePointer && assetBaseUrl) {
   fs.writeFileSync(envOut, `${assetBaseUrl}\n`, 'utf8')
   console.log(`[assets] 已写入 ${envOut}`)

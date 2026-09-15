@@ -48,7 +48,7 @@ describe('dynamicTests loader', () => {
 
   it('fetches from the versioned asset root with a finite timeout and applies valid definitions', async () => {
     requestMock.mockImplementation(({ url, timeout, success }) => {
-      expect(url).toBe('https://cos.example.com/assets/v2/tests/registry-v1.json')
+      expect(url).toBe('https://cos.example.com/assets/v2/tests/registry-v1.json?v=2')
       expect(timeout).toBeGreaterThan(0)
       expect(timeout).toBeLessThanOrEqual(10000)
       success({ statusCode: 200, data: { tests: [null, {}, definition] } })
