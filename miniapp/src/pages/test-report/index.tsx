@@ -3,7 +3,7 @@ import { Button, Canvas, Text, View } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { findBandIndex, radarAxisLabel, radarChartGeometry } from '../../domain/testEngine'
 import { buildReportPresentation, resolveReportQuote } from '../../domain/reportPresentation'
-import { buildReportShareTitle, shareCardDisclaimer, shareHookByCategory } from '../../domain/shareCopy'
+import { buildReportShareTitle, shareHookByCategory } from '../../domain/shareCopy'
 import { useAppTheme } from '../../hooks/useAppTheme'
 import { APP_SHARE_TITLE } from '../../services/brand'
 import { trackEvent } from '../../services/monitor'
@@ -268,7 +268,6 @@ export default function TestReportPage() {
       resultTitle: sharedReport.title,
       tagline: sharedReport.tagline,
       hook: shareHookByCategory(definition.category),
-      disclaimer: shareCardDisclaimer(),
       category: definition.category,
       labels: sharedReport.labels,
       testedCount: definition.testedCount,

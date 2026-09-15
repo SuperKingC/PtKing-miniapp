@@ -20,7 +20,9 @@ describe('share capability wiring', () => {
     expect(report).toContain('useShareAppMessage')
     expect(report).toContain('buildReportShareTitle')
     expect(report).toContain('shareHookByCategory')
-    expect(report).toContain('shareCardDisclaimer')
+    // 2026-09-15 卡片去「娱乐向」声明：不再引用 shareCardDisclaimer，卡片走 canvas 重绘
+    expect(report).not.toContain('shareCardDisclaimer')
+    expect(report).toContain('renderShareCard')
     expect(report).toContain('category: definition.category')
   })
 

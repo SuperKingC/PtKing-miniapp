@@ -32,7 +32,3 @@ export function buildReportShareTitle(
     ? `我在${testTitle}里更接近「${resultTitle}」`
     : `我在${testTitle}里更接近「${resultTitle}」，你也来看看`
 }
-
-export function shareCardDisclaimer(): string {
-  return '娱乐向自我观察，不是诊断'
-}
