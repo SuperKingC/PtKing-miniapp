@@ -69,6 +69,11 @@
   /* 参考图：猫伸出卡外叠进品牌行，蓝卡顶与副标题只留一线间距 */
   margin-top: -56rpx;
   margin-bottom: 28rpx;
+  /* 按图真实宽高比（675:312）在 100% 宽（686rpx）下显式预留盒高：
+     微信原生下拉刷新会整页重载重挂组件，widthFix+height:auto 在 onLoad 前
+     高度未知会塌陷，与 heroReady 门控的透明态叠加成「撑开+弹出」的闪；
+     预留后加载前后布局不变，只剩门控淡入 */
+  height: 317rpx;
 }
 
 .test-page__hero-img {
@@ -77,6 +82,9 @@
   height: auto;
   /* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条 */
   filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
+  /* heroReady 门控的显现走短淡入而非瞬时跳变：重载首帧透明→解码后淡入，
+     肉眼读作渐显而非「闪一下」；opacity 变化仍触发重光栅，首帧浅色方框修复不回归 */
+  transition: opacity 160ms ease-out;
 }
 
 .test-page__section {
@@ -215,6 +223,10 @@
   width: 172rpx;
   height: 172rpx;
   margin: -12rpx 0 -12rpx -12rpx;
+  /* 标题折两行时文字柱比 spot 高，align-items:center 会把 tile 往下顶、
+     钉卡顶的 TOP 奖牌相对 tile 角上浮（热门榜第 4 卡实拍）；
+     align-self 把 spot 钉回顶：spot 本身是最高子元素的行居中本就是 no-op，零变化 */
+  align-self: flex-start;
   /* 接触影烘焙在图内，CSS 不叠投影避免双重影 */
   filter: none;
 }

@@ -134,6 +134,9 @@ describe('测试首页软陶单列布局', () => {
     expect(icon).toContain('flex: 0 0 172rpx')
     expect(icon).toContain('width: 172rpx')
     expect(icon).toContain('height: 172rpx')
+    /* 标题折两行文字柱比 spot 高时，居中会把 tile 顶下、钉卡顶的 TOP 奖牌相对 tile 角上浮
+       （热门榜第 4 卡实拍）；spot 钉回顶，spot 为最高子元素的行零变化 */
+    expect(icon).toContain('align-self: flex-start')
     expect(icon).not.toContain('absolute')
   })
 
@@ -217,5 +220,17 @@ describe('测试首页软陶单列布局', () => {
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill" lazyLoad/)
     expect(source).not.toContain('hoverClass')
     expect(styles).not.toContain('--press')
+  })
+
+  it('重载不闪：hero 容器按宽高比预留盒高（不随 onLoad 塌陷），门控显现走短淡入（不瞬时跳变）', () => {
+    /* 微信原生下拉刷新整页重载会重挂组件：widthFix+height:auto 在 onLoad 前高度未知
+       会塌陷，叠加 heroReady 门控透明态 = 「撑开+弹出」的闪；预留盒高+短淡入消掉两者 */
+    const hero = styleBlock('.test-page__hero')
+    expect(hero).toContain('height: 317rpx')
+    const heroImg = styleBlock('.test-page__hero-img')
+    expect(heroImg).toContain('transition: opacity')
+    /* 门控本体保留（onLoad/定时器兜底置 heroReady），首帧浅色方框修复不回归 */
+    expect(source).toContain('const [heroReady, setHeroReady] = useState(false)')
+    expect(source).toContain('onLoad={() => setHeroReady(true)}')
   })
 })
