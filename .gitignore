@@ -21,9 +21,9 @@ project.private.config.json
 .qoder/
 .zcode/
 
-# 验收截图统一落这里,一律不入库(automator 实机截图/放大对照)
-miniapp/art/verify-shots/
-art/verify-shots/
+# 验收截图统一落 miniapp/art/verify-shots/(脚本写 path.join(__dirname,'..','verify-shots')),**/verify-shots/ 全嵌套覆盖防漏
+miniapp/art/**/verify-shots/
+art/**/verify-shots/
 .worktrees/
 
 # 本地边缘预览与一次性草稿，不入库
