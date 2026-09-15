@@ -34,7 +34,7 @@ export const DARK_TRIAD_TEST: TestDefinition = {
   meta: { minutes: 8, resultLabel: '3 因素 · 暗黑剖析' },
   intro: [
     '心理学家发现，大多数人心里都住着一点「小暗黑」：对权力的兴趣、对关注的渴望、对他人情绪的钝感。暗黑三联体（Dark Triad）研究的正是这三股隐秘的潜流——它们不等于坏，用对了地方是魄力、魅力与果断。',
-    '共 27 道态度题（约 8 分钟）。请诚实作答：这里没有旁观者，越诚实结果越有意思。',
+    '共 27 道态度题（约 8 分钟），凭直觉诚实作答：这里没有旁观者。测完你会知道，自己的暗黑天赋在哪条线上——认识它，比被它牵着走好。',
   ],
   notice: '该测试基于暗黑三联体研究框架的娱乐化改编，结果为人格风格倾向参考，非任何临床含义。',
   questions: [
@@ -87,6 +87,8 @@ export const DARK_TRIAD_TEST: TestDefinition = {
       id: 'dark-strategist',
       title: '执棋者',
       tagline: '你的暗黑面是「布局」',
+      quote: '你不一定下场，但棋盘上每一步你都要看得见。',
+      labels: ['执棋者人格', '布局型选手'],
       summary:
         '三股潜流中，你的「掌控欲」最突出。你看关系自带透视镜：谁需要什么、谁怕失去什么，你心里有图。这不是坏——军事、商业、谈判，人类文明的很多高级博弈靠的正是这种天赋。',
       detail: [
@@ -109,6 +111,8 @@ export const DARK_TRIAD_TEST: TestDefinition = {
       id: 'dark-star',
       title: '聚光灯本体',
       tagline: '你的暗黑面是「光芒」',
+      quote: '没人会为「无所谓」的东西拼命，你的渴望是引擎。',
+      labels: ['聚光灯本体', '光芒需求者'],
       summary:
         '三股潜流中，你的「自我中心」最突出。你渴望被看见、被记住、被谈论，而这份渴望恰恰是你魅力的引擎——没有人会为「无所谓」的东西拼命。',
       detail: [
@@ -131,6 +135,8 @@ export const DARK_TRIAD_TEST: TestDefinition = {
       id: 'dark-wildcard',
       title: '脱缰野马',
       tagline: '你的暗黑面是「不定时」',
+      quote: '情绪在你这里像天气，不是指令。',
+      labels: ['脱缰野马人格', '低阈值冲锋者'],
       summary:
         '三股潜流中，你的「冷漠冲动」最突出。你活在当下、边界松散、对风险的口味偏重；情绪在你这里更像天气而不是指令。你自由得让旁人羡慕，也让旁人头疼。',
       detail: [

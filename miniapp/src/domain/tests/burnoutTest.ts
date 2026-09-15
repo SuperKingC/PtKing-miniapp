@@ -18,12 +18,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const BURNOUT_TEST: TestDefinition = {
   id: 'burnout',
-  title: '职场倦怠测试',
+  title: '你的职业电量还剩多少',
   category: '职场',
   meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
-    '周一睁眼就疲惫、开会只想划水、下班只想躺平？倦怠不是懒，是能量账户长期「只取不存」后的余额不足信号。',
-    '20 道近期状态自查题，3 分钟看看你的职业能量余额，附对应的小建议。',
+    '周一睁眼就累、开会只想划水、下班只想躺平——不是你懒，可能是你的职业电量只剩最后一格。倦怠是能量账户长期「只取不存」的余额提醒。',
+    '20 道职场状态自查题，3 分钟读出你的职业电量：满格、偏低，还是已经余额告急？',
   ],
   notice: '该测试为自我觉察工具，非医疗评估，附对应的小建议。',
   questions: [
@@ -62,6 +62,8 @@ export const BURNOUT_TEST: TestDefinition = {
       id: 'burnout-fresh',
       title: '能量满格',
       tagline: '现在的你，工作是有奔头的',
+      quote: '有奔头的日子，是最好的充电器。',
+      labels: ['电量满格选手', '职场续航王'],
       summary:
         '你的职业能量充沛：有干劲、有盼头、下班后还有自己的生活。你正处在职业状态的良性区间，现在的节奏值得保持。',
       detail: [
@@ -84,6 +86,8 @@ export const BURNOUT_TEST: TestDefinition = {
       id: 'burnout-tired',
       title: '电量偏低',
       tagline: '不是不想干，是有点干不动了',
+      quote: '累是提醒不是判决，该给自己安排充电了。',
+      labels: ['电量偏低预警', '需要充电的人'],
       summary:
         '你的职业能量偏低：疲惫感开始渗进日常，成就感变淡，「混到下班」的念头变多。这是能量账户发出的提醒——该给自己安排「充值」了，别等到余额见底。',
       detail: [
@@ -106,6 +110,8 @@ export const BURNOUT_TEST: TestDefinition = {
       id: 'burnout-empty',
       title: '余额告急',
       tagline: '你已经硬撑太久了',
+      quote: '停下来不是认输，是止损。',
+      labels: ['余额告急选手', '硬撑太久了'],
       summary:
         '你的职业能量余额告急：多个重度信号同时出现，说明你已经「只取不存」太久了。这不是你的错，是时候认真对待自己的状态——先停下来，再谈方向。',
       detail: [

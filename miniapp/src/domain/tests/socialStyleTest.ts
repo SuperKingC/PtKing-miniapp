@@ -10,6 +10,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'social-spark',
     title: '人形气氛组',
     tagline: '你在哪，笑声就在哪',
+    quote: '别人社交是耗电，你偏偏是充电。',
+    labels: ['人形气氛组', '社交充电宝'],
     summary:
       '聚会有你就有梗，冷场这个词在你这里不存在。你的社交能量天然外放，认识五分钟就能聊成老朋友——人群因你而热起来，你也在人群里充电。',
     detail: [
@@ -32,6 +34,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'social-anchor',
     title: '慢热深交型',
     tagline: '朋友不在多，一个顶十个',
+    quote: '一次真心话大冒险，胜过十次饭局寒暄。',
+    labels: ['慢热深交型', '十年老友制造机'],
     summary:
       '你不爱泛泛之交，认定的朋友可以交心十年。聚会里你不是最吵的那个，却常常是散场后大家最想再见的那个——你的友谊走深不走量。',
     detail: [
@@ -54,6 +58,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'social-chameleon',
     title: '多频段选手',
     tagline: '见什么人说什么话，是本事',
+    quote: '你一眼读懂场域，切换只是你的母语。',
+    labels: ['多频段选手', '跨界翻译官'],
     summary:
       '跟长辈聊养生、跟同事聊八卦、跟陌生人聊天气，你切换自如毫不费力。这不是虚伪——是你天生读懂每个场域的语言规则，真的会换位思考。',
     detail: [
@@ -76,6 +82,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'social-observer',
     title: '人间观察员',
     tagline: '话不多，但什么都看在眼里',
+    quote: '你开口不多，但一说就在点子上。',
+    labels: ['人间观察员', '选择性输出'],
     summary:
       '热闹是别人的，你负责看清全场：谁和谁走得近、谁话里有话，你心里门儿清。你开口不多，但一说就在点子上——安静不是缺席，是选择性输出。',
     detail: [
@@ -154,7 +162,7 @@ function q(text: string, options: QOptions = OPTIONS): TestDefinition['questions
 
 export const SOCIAL_TEST: TestDefinition = {
   id: 'social-style',
-  title: '社交人格测试',
+  title: '你的社交人设是哪种',
   category: '人格',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [

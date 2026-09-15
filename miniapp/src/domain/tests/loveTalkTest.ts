@@ -15,6 +15,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'talk-freeze',
     title: '冷冻处理型',
     tagline: '各自冷静，气消了就当无事发生',
+    quote: '你相信时间能解冻一切，但有些账冻久了会变质。',
+    labels: ['冷战冷冻机', '静默消化型'],
     summary:
       '你的和好姿态是冷冻处理：吵完不追问、不总结、不翻篇讨论，先给彼此一段静默期——你默认时间是万能解药，气头一过，这事就自动结案。你最怕的不是吵架，是有人把冻好的旧账重新开箱。',
     detail: [
@@ -40,6 +42,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'talk-resolve',
     title: '解决派',
     tagline: '不把事聊透，今晚谁也别想睡',
+    quote: '对你来说，没聊透的和好等于没和。',
+    labels: ['当场解决派', '必须聊透星人'],
     summary:
       '你的和好姿态是当场解决：吵完可以哭、可以吼，但不可以把事悬着——错在哪、为什么、下次怎么办，必须聊出结论才能睡觉。对你来说，没聊透的和好像没系扣的外套，看着穿上了，风一吹就开。',
     detail: [
@@ -61,6 +65,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'talk-coax',
     title: '哄人破冰型',
     tagline: '对不起别说了，先抱一个',
+    quote: '人比道理贵，是你刻在骨子里的排序。',
+    labels: ['先哄再说派', '破冰小能手'],
     summary:
       '你的和好姿态是哄人破冰：气氛一冷你就浑身难受，对不起还没说完整，抱抱、台阶、笑话已经连环上阵——人先哄好，事后再说，甚至不说也行。你信一个道理：人比道理贵，气氛好了，啥都好说。',
     detail: [
@@ -82,6 +88,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'talk-prove',
     title: '行动赎罪型',
     tagline: '嘴上一个字没有，早餐加了蛋',
+    quote: '你的道歉从不过嘴，全程走货。',
+    labels: ['行动派道歉人', '嘴笨心诚选手'],
     summary:
       '你的和好姿态是行动赎罪：嘴笨，狠话说得出口、「对不起」卡在喉咙里——但第二天的早餐会加蛋、TA念叨很久的奶茶会到桌上、你吐槽很久的东西会悄悄修好。你的道歉从不过嘴，全程走货。',
     detail: [
@@ -103,7 +111,7 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const LOVE_TALK_TEST: TestDefinition = {
   id: 'love-talk',
-  title: '吵架和好风格测试',
+  title: '吵架后你是哪种和好派',
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 和好姿态' },
   intro: [

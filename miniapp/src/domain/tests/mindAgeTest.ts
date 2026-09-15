@@ -11,6 +11,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'mind-teen',
     title: '精神年龄 16 岁',
     tagline: '永远热泪盈眶，永远好奇在线',
+    quote: '你的出厂设置还没被磨损，好奇是最贵的配置。',
+    labels: ['灵魂16岁', '永远好奇在线'],
     summary:
       '你的精神年龄停在最好的年纪：对新事物永远好奇，情绪来得快去得也快，讨厌无聊胜过讨厌麻烦。你的世界里，「好玩」是重要的价值排序。',
     detail: [
@@ -33,6 +35,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'mind-twenties',
     title: '精神年龄 25 岁',
     tagline: '一半是火焰，一半是算力',
+    quote: '一半火焰一半算力，是你最好的平衡点。',
+    labels: ['灵魂25岁', '理想现实停战中'],
     summary:
       '你的精神年龄正值当打之年：还愿意冲动，但冲动前会查攻略；还相信热爱，但也盘算性价比。理想和现实在你身上达成了微妙停战。',
     detail: [
@@ -55,6 +59,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'mind-thirties',
     title: '精神年龄 35 岁',
     tagline: '情绪稳定，是你的超能力',
+    quote: '情绪稳定，是你给世界最贵的答案。',
+    labels: ['灵魂35岁', '稳定输出型'],
     summary:
       '你的精神年龄成熟稳重：事情来了先想解决方案而不是情绪，人际里讲究舒适距离，消费讲究「值得」。你是朋友圈里那个「靠谱得让人安心」的存在。',
     detail: [
@@ -77,6 +83,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'mind-sixties',
     title: '精神年龄 60 岁',
     tagline: '见过风浪，只想岁月静好',
+    quote: '见过风浪的人，才配得上岁月静好。',
+    labels: ['灵魂60岁', '长期主义钝感力'],
     summary:
       '你的精神年龄通透豁达：很多曾经重要的事，现在你一句「无所谓」就放下了。养生枸杞保温杯可能提前配置，热闹的局能推就推，安静的日子最养人。',
     detail: [
@@ -99,12 +107,12 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const MIND_AGE_TEST: TestDefinition = {
   id: 'mind-age',
-  title: '精神年龄测试',
+  title: '你的灵魂多少岁',
   category: '趣味',
   meta: { minutes: 4, resultLabel: '4 档 · 解析' },
   intro: [
-    '有人 20 岁就揣着保温杯，有人 50 岁还在追新——身份证上的数字选不了，灵魂的岁数是自己活出来的。',
-    '20 道日常题：从闹钟、歌单到体检报告，处处都是心态露的马脚。测完你就知道，你的灵魂今年几岁。',
+    '有人 20 岁就揣着保温杯，有人 50 岁还在追新——身份证上的数字选不了，灵魂的岁数是自己活出来的。心理年龄，才是你真实的运行系统。',
+    '20 道日常题：从闹钟、歌单到体检报告，处处都是心态露的马脚。3 分钟测出你的灵魂今年几岁。',
   ],
   notice: '本测试为娱乐向内容，精神年龄仅供玩梗参考，不构成任何专业建议。',
   questions: [

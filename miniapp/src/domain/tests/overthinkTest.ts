@@ -18,12 +18,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const OVERTHINK_TEST: TestDefinition = {
   id: 'overthink',
-  title: '内耗指数测试',
+  title: '内耗浓度鉴定',
   category: '趣味',
   meta: { minutes: 4, resultLabel: '3 档 · 建议' },
   intro: [
-    '想太多、睡不好、别人一句话能琢磨一整天？内耗更像一种「心理摩擦力」——事情还没开始，能量已经耗掉一半。',
-    '20 道日常场景题，3 分钟测出你最近的心理摩擦程度，并附上对应的小建议。',
+    '想太多、睡不好、别人一句话琢磨一整天——内耗的本质是「心理摩擦」：能量没耗在事情上，全耗在对事情的反复加工上。',
+    '20 个日常瞬间，3 分钟测出你的内耗浓度：轻装上阵、中等摩擦，还是重度空转？',
   ],
   notice: '该测试为趣味自我觉察工具，非医疗评估。',
   questions: [
@@ -62,6 +62,8 @@ export const OVERTHINK_TEST: TestDefinition = {
       id: 'overthink-low',
       title: '轻装上阵',
       tagline: '心里不装事，睡着了就真放下了',
+      quote: '事情过去了就翻篇，是你最贵的超能力。',
+      labels: ['轻装上阵选手', '零内耗体质'],
       summary: `你的内耗程度很低。事情过去了就翻篇，别人的话不过夜，你的能量基本都用在「往前走」而不是「来回想」上。这是很健康的心理状态，保持住。`,
       detail: [
         '你的优势：行动力没被「想太多」拖住，遇事先做再说。',
@@ -83,6 +85,8 @@ export const OVERTHINK_TEST: TestDefinition = {
       id: 'overthink-mid',
       title: '中等摩擦',
       tagline: '大脑常在空转，还好你有所察觉',
+      quote: '大脑偶尔空转，还好你已经察觉。',
+      labels: ['中等内耗选手', '察觉即转机'],
       summary: `你的内耗处于中等水平。大多数时候你能正常运转，但在压力、社交和重要决定面前，大脑容易「空转」——想得多、做得慢、睡前纠结。好消息是：这个阶段的内耗最容易通过小习惯改善。`,
       detail: [
         '典型信号：决定后反刍、对他人评价敏感、休息时有负罪感。',
@@ -104,6 +108,8 @@ export const OVERTHINK_TEST: TestDefinition = {
       id: 'overthink-high',
       title: '重度空转',
       tagline: '事情还没发生，能量已耗掉一半',
+      quote: '事情还没发生，能量已耗一半——该松绑了。',
+      labels: ['重度空转预警', '后台线程过多'],
       summary: `你的内耗程度偏高。你可能经常感到「明明什么都没做，但特别累」——那是大脑在后台同时运行太多担忧线程。这份报告不是给你贴标签，而是提醒你：是时候给自己松松绑了。`,
       detail: [
         '第一优先：保证睡眠。内耗最耗的是睡眠，而睡眠不足又放大内耗。',

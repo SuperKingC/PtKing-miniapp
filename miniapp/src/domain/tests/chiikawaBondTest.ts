@@ -24,6 +24,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'chiikawa',
     title: '吉伊',
     tagline: '我们都柔软，但谁也不肯先认输',
+    quote: '你们互相害怕，又互相壮胆——这是最珍贵的默契。',
+    labels: ['吉伊同款灵魂', '柔软但坚韧'],
     summary:
       '你和吉伊最有缘：两个胆子都不大的人，却总在对方快哭的时候先站出来。你们的默契是「我害怕，但我陪你」，看起来柔软，谁也欺负不了。',
     detail: [
@@ -45,6 +47,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'hachiware',
     title: '小八',
     tagline: '你一开口，世界就亮了半格',
+    quote: '有人接住你的梗，快乐才会无限续杯。',
+    labels: ['小八同款能量', '气氛供氧师'],
     summary:
       '你和小八最有缘：TA负责把气氛点亮，你负责让TA被看见。你们在一起永远不缺话题，冷场对你们来说是传说。这段缘分的底色是「随时都能重新开始」。',
     detail: [
@@ -66,6 +70,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'usagi',
     title: '乌萨奇',
     tagline: '你闹，我看着，谁也别管谁',
+    quote: '你不需要剧本，你们的关系自带喜剧结构。',
+    labels: ['乌萨奇同款疯', '无拘束快乐体'],
     summary:
       '你和乌萨奇最有缘：TA负责横冲直撞，你负责在一旁笑到打鸣。你们的关系没有剧本，随时可能拐进一条莫名其妙但特别快乐的支路。',
     detail: [
@@ -87,6 +93,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'rakko',
     title: '海獭',
     tagline: '有你在，天塌下来也能先修好',
+    quote: '可靠是你们之间的通用语言，不用翻译。',
+    labels: ['海獭同款可靠', '移动安全区'],
     summary:
       '你和海獭最有缘：两个稳当又靠谱的人，凑在一起就是一个移动的安全区。遇事不慌、动手就修，你们的默契是沉默里也让人安心。',
     detail: [
@@ -108,6 +116,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'kurimanju',
     title: '栗子馒头',
     tagline: '嘴上嫌弃，手里却一直没停过',
+    quote: '别扭的深情最贵：不说，但一直在。',
+    labels: ['栗子馒头同款', '别扭的深情'],
     summary:
       '你和栗子馒头最有缘：两个看着不好惹的人，一旦熟起来，嫌弃里全是关心。你们不擅长说漂亮话，但对方需要的时候，人一定在。',
     detail: [
@@ -129,6 +139,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'momonga',
     title: '飞鼠',
     tagline: '会撒娇的人，日子通常过得不差',
+    quote: '柔软是生存智慧：绕得过去，就别硬碰。',
+    labels: ['飞鼠同款巧劲', '柔软生存智慧'],
     summary:
       '你和飞鼠最有缘：TA负责讨人喜欢，你负责看穿TA的小把戏还心甘情愿。你们都不爱硬碰硬，擅长用巧劲把日子过舒服。',
     detail: [
@@ -150,6 +162,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'kaiman',
     title: '铠甲先生',
     tagline: '先喂饱你，再跟你讲道理',
+    quote: '照顾人是你的本能，被照顾是TA的福气。',
+    labels: ['铠甲先生同款', '生活化守护者'],
     summary:
       '你和铠甲先生最有缘：一个把照顾人当本能，一个受得住这份唠叨。你们的相处像一碗热汤面——不惊艳，但冷的时候最想它。',
     detail: [
@@ -171,6 +185,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'shisa',
     title: '狮萨',
     tagline: '再练一次，总会变强的',
+    quote: '最好的关系是互相较劲，还互相兜底。',
+    labels: ['狮萨同款斗志', '较劲式支持'],
     summary:
       '你和狮萨最有缘：两个都不服输的人，凑在一起就是互相加压又互相撑腰。你们的相处方式是「一起去变强」，赢了击掌，输了复盘。',
     detail: [

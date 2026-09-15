@@ -14,6 +14,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'office-slacker',
     title: '摸鱼哲学家',
     tagline: '活干完了就是干完了，摸鱼摸出了体系',
+    quote: '活要干完，时间要归自己——你摸的是体系。',
+    labels: ['摸鱼哲学家本鱼', '效率盈余支配者'],
     summary:
       '你的职场哲学是「活要干完，时间要归自己」：同样的活你总能找到最短路径提前交付，省下来的每一分钟都是你给自己发的隐形加班费。摸鱼对你不是偷懒，是一套自洽的精力管理体系。',
     detail: [
@@ -36,6 +38,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'office-grinder',
     title: '卷王显眼包',
     tagline: '主动加戏是本能，KPI 是安全感的来源',
+    quote: '你卷得累，但也卷得可爱——记得为自己卷一次。',
+    labels: ['卷王显眼包', '被看见需求者'],
     summary:
       '你是办公室里最亮的那盏灯：活抢着干、进度抢着报、存在感抢着立——卷生卷死的背后，其实是在用「被看见」换安全感。卷得很累，但也卷得很可爱。',
     detail: [
@@ -58,6 +62,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'office-pleaser',
     title: '职场老好人',
     tagline: '谁的忙都帮，啥锅都敢接',
+    quote: '你的好人缘很烫手，别用它换存在感。',
+    labels: ['办公室老好人', '公共基础设施'],
     summary:
       '你是办公室的公共基础设施：借线、带饭、救火、调解，样样在行。你的人缘好到烫手——但烫手的另一面是，你总在用「对别人好」来确认自己被需要。',
     detail: [
@@ -80,6 +86,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'office-clearheaded',
     title: '人间清醒预备役',
     tagline: '表面乖巧，内心已办妥退休手续',
+    quote: '领导的饼你听得懂，但你的账你算得清。',
+    labels: ['人间清醒预备役', '精神退休办理中'],
     summary:
       '你入职第一天就开始攒离职基金：领导的饼你听得懂但不当真，公司的规则你遵守但不迷信。表面是模范员工，内心早已给自己办好了精神退休手续。',
     detail: [
@@ -102,7 +110,7 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const OFFICE_ROLE_TEST: TestDefinition = {
   id: 'office-role',
-  title: '办公室生存人格',
+  title: '办公室生存人设鉴定',
   category: '职场',
   meta: { minutes: 4, resultLabel: '4 型 · 职场人设' },
   intro: [

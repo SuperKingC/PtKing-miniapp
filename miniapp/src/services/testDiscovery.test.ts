@@ -48,7 +48,7 @@ describe('pickRecommendedTests', () => {
     expect(picked.map((item) => item.id)).toEqual([...NEW_USER_RECOMMEND_IDS])
     expect(NEW_USER_RECOMMEND_IDS.map((id) => getTestDefinition(id)?.title)).toEqual([
       'MBTI 人格测试',
-      '恋爱人格测试',
+      '恋爱人格鉴定所',
       'XP 测试',
       'Chiikawa中谁和你最有缘',
     ])

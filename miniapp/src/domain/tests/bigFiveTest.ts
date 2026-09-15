@@ -44,7 +44,7 @@ export const BIGFIVE_TEST: TestDefinition = {
   meta: { minutes: 10, resultLabel: '5 因素 · 剖析' },
   intro: [
     '大五人格（Big Five / OCEAN）是当代人格心理学公认的主流框架，用五个维度刻画一个人：开放性、尽责性、外向性、宜人性、情绪稳定性。它不像十六型那样给你贴标签，而是告诉你——每个维度上，你落在哪里。',
-    '共 30 道描述题（约 8-10 分钟），请凭第一直觉作答，不要过度思考「哪个更好」：每个维度没有好坏，只有不同。',
+    '共 30 道描述题（约 8-10 分钟），凭第一直觉作答：五个维度没有好坏，只有你站得最高的那一根——它会告诉你，在哪里发力最像你自己。',
   ],
   notice: '该测试基于大五人格理论的趣味化改编，仅供自我探索，非临床评估。',
   questions: [
@@ -107,6 +107,8 @@ export const BIGFIVE_TEST: TestDefinition = {
       id: 'bigfive-explorer',
       title: '开放性主导',
       tagline: '你的世界比别人的大一圈',
+      quote: '你的世界默认运行在「还能是什么样」的频道。',
+      labels: ['开放性主导', '可能性爱好者'],
       summary:
         '五个维度中你的开放性最突出：好奇心、想象力与审美敏感是你的底色。你天然被新观念吸引，常规与套路会让你窒息。你适合一切允许「重新想象」的领域。',
       detail: [
@@ -129,6 +131,8 @@ export const BIGFIVE_TEST: TestDefinition = {
       id: 'bigfive-architect',
       title: '尽责性主导',
       tagline: '靠谱，是你最锋利的武器',
+      quote: '靠谱，是你随时间复利的武器。',
+      labels: ['尽责性主导', '长期主义实干家'],
       summary:
         '五个维度中你的尽责性最突出：自律、条理与责任心是你的标志。你说到做到，计划性强，长期主义在你身上不是口号而是日常。',
       detail: [
@@ -151,6 +155,8 @@ export const BIGFIVE_TEST: TestDefinition = {
       id: 'bigfive-energizer',
       title: '外向性主导',
       tagline: '人群是你的充电站',
+      quote: '人群是你的充电站，刺激是你的燃料。',
+      labels: ['外向性主导', '外部供电型选手'],
       summary:
         '五个维度中你的外向性最突出：热情、健谈、行动导向。社交对你不是消耗而是补给，你天然能把气氛和人连接起来。',
       detail: [
@@ -173,6 +179,8 @@ export const BIGFIVE_TEST: TestDefinition = {
       id: 'bigfive-guardian',
       title: '宜人性主导',
       tagline: '你是人群里天然的和平使者',
+      quote: '你天然假设人是善意的，和平是你的底层设置。',
+      labels: ['宜人性主导', '和平使者'],
       summary:
         '五个维度中你的宜人性最突出：善意、信任与合作精神是你的底色。你在乎关系的质量，愿意先迈出理解的那一步。',
       detail: [
@@ -195,6 +203,8 @@ export const BIGFIVE_TEST: TestDefinition = {
       id: 'bigfive-steady',
       title: '情绪稳定性主导',
       tagline: '泰山崩于前，你先分析崩的原因',
+      quote: '坏事发生时，你的第一反应不是慌，是拆解。',
+      labels: ['情绪稳定性主导', '风暴中的定海针'],
       summary:
         '五个维度中你的情绪稳定性最突出：抗压、冷静、情绪恢复快。风暴里你是那个「先别慌」的声音，这种特质在任何团队里都极其珍贵。',
       detail: [

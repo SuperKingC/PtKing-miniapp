@@ -12,6 +12,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-guardian',
     title: '护花使者型',
     tagline: '爱是把对方的一切安排好',
+    quote: '你的爱不挂在嘴上，全落在日程表里。',
+    labels: ['行动派恋人', '安全感供应商'],
     summary:
       '你的测试结果显示你是护花使者型。恋爱里的你安全感拉满：记得对方的习惯、提前想好安排、把关心落在具体行动上。你要的爱情不是轰轰烈烈，而是「我一直都在」。',
     detail: [
@@ -46,6 +48,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-romantic',
     title: '浪漫理想型',
     tagline: '爱情必须要有心动的感觉',
+    quote: '没有心动的感情，在你这里不算开场。',
+    labels: ['心动至上主义者', '浪漫浓度满格'],
     summary:
       '你的测试结果显示你是浪漫理想型。你相信心动是爱情的入场券：纪念日期待惊喜、聊天期待火花、牵手要有感觉。你要的是「对的人」，而不是「合适的人」。',
     detail: [
@@ -80,6 +84,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-rational',
     title: '理性评估型',
     tagline: '爱情很重要，但脑子要在线',
+    quote: '你不是不爱，你是爱得比谁都清醒。',
+    labels: ['清醒恋爱选手', '长期主义恋人'],
     summary:
       '你的测试结果显示你是理性评估型。你不是不爱，而是习惯先看三观、习惯与长期相处的可能性。你要的是一段「聊得来、处得久」的关系，感情升温对你来说慢一点没关系。',
     detail: [
@@ -114,6 +120,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-free',
     title: '自由灵魂型',
     tagline: '相爱，但谁也别想拴住谁',
+    quote: '最好的爱情对你来说，是并肩而不是套牢。',
+    labels: ['自由灵魂选手', '恋爱松紧带'],
     summary:
       '你的测试结果显示你是自由灵魂型。你渴望亲密，但同样需要自己的空间：恋爱要像朋友一样轻松，可以一起玩闹，也别查岗别翻手机。你要的是「我们很好，但我们也都是我们自己」。',
     detail: [
@@ -148,12 +156,12 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const LOVE_PERSONA_TEST: TestDefinition = {
   id: 'love-persona',
-  title: '恋爱人格测试',
+  title: '恋爱人格鉴定所',
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [
-    '同样谈一场恋爱，有人把日子过成贴心的日程表，有人过成心动的偶像剧，有人过成清醒的长期计划，还有人过成各自精彩的并行世界。',
-    '20 道恋爱日常场景题，凭第一直觉选就好——没有对错，测完你会拿到自己的恋爱人格：护花使者型、浪漫理想型、理性评估型，还是自由灵魂型。',
+    '恋爱里有人是护花使者，有人是浪漫理想家，有人先做风险评估，有人只要自由——你不是「不会恋爱」，你只是有一套自己的出厂剧本。',
+    '20 个恋爱名场面，3 分钟鉴定你的恋爱人格：看清你的付出方式、心动开关，以及哪类人最接得住你。',
   ],
   notice: '该测试为趣味向内容，结果仅供娱乐参考，不构成任何情感或人生建议。',
   questions: [

@@ -14,6 +14,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'boss-vanguard',
     title: '冲锋陷阵型',
     tagline: '最能打的兵，永远站在队伍最前面',
+    quote: '你带的不是团队，是身后跟上来的那群人。',
+    labels: ['冲锋型老板', '示范派领队'],
     summary:
       '你的带队风格是冲锋陷阵：最难的活先抢、最硬的仗先上，你带的不是团队，是你冲在前面时身后跟上来的那群人。团队里最能打的兵就是你自己——你信示范，不信说教。',
     detail: [
@@ -36,6 +38,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'boss-strategist',
     title: '运筹帷幄型',
     tagline: '我只管方向，路你们自己走',
+    quote: '只管方向、不管细节，杠杆是你的天赋。',
+    labels: ['运筹帷幄派', '天生的决策者'],
     summary:
       '你的带队风格是运筹帷幄：定方向、拆目标、派活儿，然后消失——直到验收那一刻才现身。你看结果不看过程，天生的决策者：别人在埋头赶路，你在排兵布阵。',
     detail: [
@@ -58,6 +62,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'boss-visionary',
     title: '灵魂画饼型',
     tagline: '钱先不谈，未来管够',
+    quote: '再苦的项目经你一讲，都是热血番。',
+    labels: ['灵魂画饼师', '意义变现者'],
     summary:
       '你的带队风格是灵魂画饼：再苦的项目经你一讲都变热血番。愿景、气氛、团建魂全是你的主场——跟你干活的人不缺激情，缺的可能是加班费，但那今晚先不谈。',
     detail: [
@@ -80,6 +86,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'boss-zen',
     title: '佛系放养型',
     tagline: '你热爱工作我不拦着，我爱生活也请别打扰',
+    quote: '你从不拿焦虑当管理工具，成年人值得信任。',
+    labels: ['佛系放养派', '低干预老板'],
     summary:
       '你的带队风格是佛系放养：目标给清楚、结果盯得住，过程一律不折腾。你人畜无害、从不施压，组员在你手下自由生长——结果导向，但从不拿焦虑当管理工具。',
     detail: [
@@ -102,7 +110,7 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const BOSS_STYLE_TEST: TestDefinition = {
   id: 'boss-style',
-  title: '老板型人格测试',
+  title: '你的带队风格鉴定',
   category: '职场',
   meta: { minutes: 4, resultLabel: '4 型 · 带队风格' },
   intro: [

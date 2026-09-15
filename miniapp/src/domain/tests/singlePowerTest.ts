@@ -18,12 +18,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const SINGLE_TEST: TestDefinition = {
   id: 'single-power',
-  title: '单身力测试',
+  title: '单身力段位鉴定',
   category: '情感',
   meta: { minutes: 4, resultLabel: '3 档 · 解读' },
   intro: [
-    '单身力，不是「喜欢单身」，而是单身时也能把日子过好的能力：一个人吃饭不将就、一个人旅行够尽兴、情绪有出口、生活有秩序。',
-    '20 道日常题，测测你的单身自洽指数——分数高低都不重要，重要的是知道自己现在处在哪个状态。',
+    '一个人吃饭能不能吃出滋味、周末空白能不能填得有趣、情绪低谷能不能自己接住——这些合起来叫单身力。它不是「没人要」的遮羞布，是把日子过好的硬本事。',
+    '20 个独居日常瞬间，3 分钟鉴定你的单身力段位：从充电进行时到单身满级，看看你把自己照顾得怎么样。',
   ],
   notice: '该测试为趣味向内容，包含单身力解读与生活建议。感谢你的理解与支持。',
   questions: [
@@ -62,6 +62,8 @@ export const SINGLE_TEST: TestDefinition = {
       id: 'single-growing',
       title: '充电进行时',
       tagline: '一个人有点慌，但正在学会稳',
+      quote: '会慌说明你在乎，练着练着就稳了。',
+      labels: ['单身力修炼中', '正在学会独处'],
       summary:
         '你的单身力还在充电阶段。一个人的时候容易空虚，热闹散场后的落差感也常找上门——这不丢人，大多数人都从这里起步。好消息是：单身力是一项可练的技能，而你已经在测了。',
       detail: [
@@ -84,6 +86,8 @@ export const SINGLE_TEST: TestDefinition = {
       id: 'single-steady',
       title: '自洽进行时',
       tagline: '一个人挺好，偶尔也想要个拥抱',
+      quote: '你的独处有滋有味，偶尔想被爱也很正常。',
+      labels: ['自洽生活家', '偶尔想被拥抱'],
       summary:
         '你的单身力处于健康区间。大部分时间你能把日子过得有声有色，偶尔emo也知道怎么接住自己。你不是「不需要人」，而是「有也行、没有也能过」——这正是最好的状态。',
       detail: [
@@ -106,6 +110,8 @@ export const SINGLE_TEST: TestDefinition = {
       id: 'single-flourish',
       title: '单身满级',
       tagline: '你不是没人爱，是把自己爱得很满',
+      quote: '你把「一个人」过成了很多人羡慕的样子。',
+      labels: ['单身满级选手', '自爱天花板'],
       summary:
         '你的单身力接近满级。一个人也能把生活过成想要的样子：吃饭认真、兴趣丰富、情绪自洽、决定自主。你的单身是选择，不是将就。',
       detail: [

@@ -10,6 +10,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'gift-creator',
     title: '空白画布型',
     tagline: '别人看到东西，你看到可能性',
+    quote: '你不是在找灵感，灵感默认常驻你脑内。',
+    labels: ['空白画布型', '无中生有选手'],
     summary:
       '你的脑子自带一块空白画布：别人看到「事物本身」，你看到「它还能变成什么」——新组合、新玩法、新表达，在你这里自动生成。你适合一切从零到一的工作与爱好。',
     detail: [
@@ -32,6 +34,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'gift-empath',
     title: '人形情绪雷达',
     tagline: '没说出口的，表情先替你说了',
+    quote: '你接收到的情绪，比你意识到的多得多。',
+    labels: ['人形情绪雷达', '天然安慰者'],
     summary:
       '语气里 5% 的失落、笑容背后 10% 的勉强，你都接收得到。朋友有话总愿意跟你说，因为你听得懂没说出口的那部分。你适合一切「与人打交道」并让人变好的事。',
     detail: [
@@ -54,6 +58,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'gift-logic',
     title: '行走的因果网',
     tagline: '混乱到你手里，总会被理出结构',
+    quote: '听到一个观点自动找漏洞，是你的出厂默认。',
+    labels: ['行走的因果网', '结构化大脑'],
     summary:
       '你天然爱找规律、搭框架、问「为什么」：听到一个观点自动找漏洞，看到一个现象自动找机制。世界在你眼里是一张可以梳理的网——你适合一切需要分析与系统构建的事。',
     detail: [
@@ -76,6 +82,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'gift-action',
     title: '点火就着型',
     tagline: '你想三分钟就敢上手干一分钟',
+    quote: '先开枪再瞄准，你用试错速度换认知速度。',
+    labels: ['点火就着型', '行动派本派'],
     summary:
       '想法再多不落地等于零，而你最强的就是落地：别人还在权衡利弊，你已经上手干了。敢开始、扛得住试错、越挫越勇——你适合一切「需要有人先干起来」的事。',
     detail: [
@@ -114,12 +122,12 @@ function qo(text: string, options: Array<[string, string]>): TestDefinition['que
 
 export const GIFT_TEST: TestDefinition = {
   id: 'gift',
-  title: '天赋能力测试',
+  title: '你的隐藏天赋是哪个',
   category: '人格',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [
-    '每个人都有自己的「出厂设置」：有人天生爱琢磨新点子，有人天然接得住情绪，有人看见混乱就想理逻辑，有人想到就敢干。',
-    '20 道日常场景题，帮你找到自己的天赋主战场——不是给自己设限，而是知道在哪里发力最省力。',
+    '每个人都有自己的出厂设置：有人脑子自带空白画布，有人长着情绪雷达，有人自带因果网，有人点火就着——天赋不是稀缺品，只是你还没认出它。',
+    '20 个日常场景，3 分钟找到你的天赋主战场——不是给自己设限，是知道在哪发力最省力。',
   ],
   notice: '该测试为趣味向内容，包含天赋类型与发挥建议。',
   questions: [

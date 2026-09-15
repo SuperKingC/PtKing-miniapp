@@ -10,6 +10,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'work-captain',
     title: '掌舵者',
     tagline: '没有方向的事，交给我来定',
+    quote: '别人还在讨论，你已经画出作战图。',
+    labels: ['天生掌舵手', '拍板担当'],
     summary:
       '你的职场角色是掌舵者。项目没方向时你敢拍板，团队混乱时你能拉齐。你天然对「目标」和「节奏」敏感，别人还在讨论时，你已经在排作战图了。',
     detail: [
@@ -32,6 +34,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'work-master',
     title: '匠人',
     tagline: '方案可以过，但细节不能输',
+    quote: '你的交付标准，就是团队的质量底线。',
+    labels: ['细节控匠人', '质量守门员'],
     summary:
       '你的职场角色是匠人。交付质量是你的尊严：别人做到 80 分交差，你总忍不住再磨到 95。专业深度是你的护城河，也是团队敢接硬仗的底气。',
     detail: [
@@ -54,6 +58,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'work-glue',
     title: '黏合剂',
     tagline: '团队有没有战斗力，看气氛就知道',
+    quote: '你是团队的隐形基础设施，撑住所有人的情绪。',
+    labels: ['团队黏合剂', '氛围守护者'],
     summary:
       '你的职场角色是黏合剂。你未必是声音最大的那个，但团队士气低落时是你兜住情绪，部门扯皮时是你穿针引线。你是团队真正的「隐形基础设施」。',
     detail: [
@@ -76,6 +82,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'work-spark',
     title: '点子王',
     tagline: '一个问题到你手里有五种解法',
+    quote: '标准答案满足不了你，你自带五种解法。',
+    labels: ['行走的点子库', '创意发动机'],
     summary:
       '你的职场角色是点子王。例会上你的「我有个不成熟的小想法」常常是全场最有价值的发言。你受不了「一直这么干」，新工具新玩法你永远是第一批尝鲜的人。',
     detail: [
@@ -114,12 +122,12 @@ function qo(text: string, options: Array<[string, string]>): TestDefinition['que
 
 export const WORK_ROLE_TEST: TestDefinition = {
   id: 'work-role',
-  title: '职场角色测试',
+  title: '职场角色鉴定所',
   category: '职场',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [
-    '一个团队里有人掌舵、有人深耕、有人黏合、有人点火花——没有哪种角色更高级，只有位置放得对不对。看清自己的职场角色，发力才不拧巴。',
-    '20 道职场场景题，找出你在团队里的天然位置。',
+    '一个团队就是一支小队：有人掌舵、有人磨细节、有人黏合气氛、有人出点子。角色没有高低，放对位置才是好戏。',
+    '20 个职场日常瞬间，3 分钟鉴定你的职场角色——看清你在团队里最值钱的位置。',
   ],
   notice: '该测试为趣味向内容，包含职场角色解析与合作建议。',
   questions: [

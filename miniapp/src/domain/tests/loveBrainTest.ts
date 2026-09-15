@@ -13,6 +13,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-brain-sober',
     title: '清醒主导型',
     tagline: '心动归心动，人生归人生',
+    quote: '心动是你的甜味剂，不是你的主食。',
+    labels: ['三分糖清醒选手', '恋爱人间清醒'],
     summary:
       '你的恋爱脑含量：低。恋爱在你这里是生活的加分项，不是全部剧情：事业照拼、朋友照聚、自我照养。你也能爱得很认真，但你的世界里从来不止爱情一个主角——这份清醒，就是你的恋爱段位。',
     detail: [
@@ -35,6 +37,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-brain-balanced',
     title: '理性投入型',
     tagline: '认真爱你，但自我从不缺席',
+    quote: '你爱得认真，但从不弄丢自己。',
+    labels: ['五分糖定投恋人', '爱得有分寸'],
     summary:
       '你的恋爱脑含量：轻度。你爱得认真，但投入有度：会加温、会校准、会留退路。你不是不心动，是心动之后依然会做尽职调查——在「全情投入」和「保留自我」之间，你总能找到舒服的配比。',
     detail: [
@@ -57,6 +61,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-brain-immersed',
     title: '沉浸上头型',
     tagline: '热恋期，全世界只剩下TA',
+    quote: '你上头的样子很甜，记得给退潮留个缓冲垫。',
+    labels: ['七分糖热恋选手', '全世界都是TA'],
     summary:
       '你的恋爱脑含量：中度。热恋期的你自动切全屏：消息秒回、社交主页全是TA、朋友约不动你、工作靠意志力硬撑。你上头时是真甜，但甜到世界变窄——好在你的上头有周期，退潮后记得把人生捡回来。',
     detail: [
@@ -79,6 +85,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'love-brain-full-sugar',
     title: '全糖去智型',
     tagline: '一心动，智商当场办离职',
+    quote: '全糖的快乐是真的，锚也要有一根是真的。',
+    labels: ['全糖去智选手', '为爱梭哈型'],
     summary:
       '你的恋爱脑含量：重度。恋爱一启动，你的理性直接离场：消息秒回是基本操作，为TA改规划、换城市、辞职搬家都在所不惜。你爱得惊天动地，但全仓押一个人的风险也要心中有数——甜要有，锚也要有。',
     detail: [
@@ -101,7 +109,7 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const LOVE_BRAIN_TEST: TestDefinition = {
   id: 'love-brain',
-  title: '恋爱脑检测',
+  title: '你的恋爱脑几分糖',
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 恋爱段位' },
   intro: [

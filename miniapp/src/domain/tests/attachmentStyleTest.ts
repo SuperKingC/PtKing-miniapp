@@ -10,6 +10,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'attach-secure',
     title: '安全型依恋',
     tagline: '我爱你，但我的人生不是只有你',
+    quote: '你能放心去爱，因为你的世界里不止有爱。',
+    labels: ['安全感本安全', '恋爱定海神针'],
     summary:
       '你的测试结果显示你偏向安全型依恋。亲密关系里的你既享受靠近，也保有自己的世界：能放心依赖对方，也能坦然独处。这是亲密关系里最舒服的底色。',
     detail: [
@@ -32,6 +34,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'attach-anxious',
     title: '焦虑型依恋',
     tagline: '消息不回的每一分钟我都在脑补',
+    quote: '你的爱很浓，只是需要多一点回音。',
+    labels: ['脑补型选手', '爱得很浓的人'],
     summary:
       '你的测试结果显示你偏向焦虑型依恋。你在感情里投入得又快又深，也容易对方一个眼神就开始「内心小剧场」。你不是作，你只是需要比常人更多的确认。',
     detail: [
@@ -54,6 +58,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'attach-avoidant',
     title: '回避型依恋',
     tagline: '不是不爱，是靠太近会想逃',
+    quote: '你需要的爱有安全距离，近了反而看不清。',
+    labels: ['空间需求型选手', '爱情独行者'],
     summary:
       '你的测试结果显示你偏向回避型依恋。关系升温太快时你会莫名想撤退，压力大到窒息时你会自动封闭。你习惯自己消化情绪，因为从小的经验告诉你：靠人不如靠己。',
     detail: [
@@ -76,6 +82,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'attach-fearful',
     title: '又怕冷又怕烫型',
     tagline: '渴望拥抱，又怕被拥抱烫伤',
+    quote: '你一脚油门一脚刹车，只因太想爱又怕疼。',
+    labels: ['矛盾型依恋选手', '又想爱又怕疼'],
     summary:
       '你的测试结果显示你偏向恐惧-回避型（矛盾型）依恋。你一边渴望亲密、一边害怕受伤：靠近了想逃，疏远了又慌。这种「油门刹车一起踩」的状态让你在感情里格外累。',
     detail: [
@@ -109,12 +117,12 @@ function q(text: string): TestDefinition['questions'][number] {
 
 export const ATTACHMENT_TEST: TestDefinition = {
   id: 'attachment-style',
-  title: '依恋风格测试',
+  title: '你在感情里是哪种依恋',
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 解析' },
   intro: [
-    '为什么有人恋爱后越来越安心，有人却总在「作」与「逃」之间反复横跳？成人依恋理论认为，我们在亲密关系里的姿态，早在童年就悄悄埋下了底稿。',
-    '20 道场景题，看看你在亲密关系里偏向哪种依恋风格——了解它是为了理解自己，而不是给自己贴标签。',
+    '为什么TA一冷战你就慌、你一靠近就想逃？成年后的亲密姿势，多半是早年依恋的回声——它不是宿命，是你看得清就能改写的模式。',
+    '20 个亲密关系场景，3 分钟定位你的依恋风格：安全型、焦虑型、回避型，还是又怕冷又怕烫的矛盾型？了解它，是为了理解自己而不是贴标签。',
   ],
   notice: '该测试为趣味心理科普，非临床评估，包含依恋风格解析与相处建议。',
   questions: [

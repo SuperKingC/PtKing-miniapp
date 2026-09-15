@@ -14,6 +14,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'breakup-graceful',
     title: '体面退场型',
     tagline: '再见也是朋友，情绪稳定收尾',
+    quote: '散场也要散得漂亮，是你给自己的最后体面。',
+    labels: ['体面退场选手', '情绪稳定收尾人'],
     summary:
       '你的分手姿态是体面退场：不撕、不闹、不纠缠，把告别做成一件干净利落的事。你可以难过，但绝不让难看发生——散场也要散得漂亮，是你给自己留的最后一分体面。',
     detail: [
@@ -35,6 +37,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'breakup-analyst',
     title: '复盘分析型',
     tagline: '把关系当项目结项，根因必须找到',
+    quote: '找到根因，这段关系才算正式结项。',
+    labels: ['关系复盘大师', '理性结项人'],
     summary:
       '你的分手姿态是复盘分析：别人在情绪里打滚，你在找 root cause。吵过的架、错付的耐心、消失的喜欢，都要一条条拆开归档——找到根因，这段关系才算正式结项。',
     detail: [
@@ -56,6 +60,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'breakup-midnight',
     title: '深夜破防型',
     tagline: '白天没事人，凌晨的emo循环才开场',
+    quote: '你的难过按时区运行：白天静音，深夜最大声。',
+    labels: ['深夜emo选手', '白天没事人'],
     summary:
       '你的分手姿态是深夜破防：白天谈笑自若、照常营业、冷笑话照讲，一到凌晨，单曲循环加翻聊天记录的emo套餐准时开演。你的难过按时区运行——白天静音，深夜全场最大声。',
     detail: [
@@ -77,6 +83,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'breakup-glowup',
     title: '前任克星型',
     tagline: '最好的退场，是活成TA拿不到的版本',
+    quote: '最好的发光是为自己，顺便照亮前任的悔意。',
+    labels: ['前任克星本星', '发光式告别'],
     summary:
       '你的分手姿态是前任克星：眼泪只留给当天，第二天健身房、新发型、搞事业全线开工。你要的不是回头，是下次再见面时，TA在人群里看到发光的你——所谓放下，就是把自己升级到对方够不着的版本。',
     detail: [
@@ -98,7 +106,7 @@ const REPORTS: TestDefinition['reports'] = {
 
 export const BREAKUP_TEST: TestDefinition = {
   id: 'breakup-style',
-  title: '分手挽回指南',
+  title: '你的分手姿态是哪种',
   category: '情感',
   meta: { minutes: 4, resultLabel: '4 型 · 分手姿态' },
   intro: [

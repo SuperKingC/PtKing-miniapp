@@ -14,6 +14,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'crush-ghost',
     title: '隐身侦探型',
     tagline: '情报全知，痕迹全无',
+    quote: '你把喜欢活成谍战片：情报满分，出场为零。',
+    labels: ['暗恋谍战之王', '零痕迹观察员'],
     summary:
       '你暗恋的方式是「绝对静默」：观察入微、记忆超群、行动为零。TA的一切你如数家珍，TA本人却对你一无所知——你把喜欢活成了一场一个人的谍战，情报网越铺越大，脚印一个不留。',
     detail: [
@@ -35,6 +37,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'crush-tease',
     title: '欲擒故纵型',
     tagline: '嘴上是戏，心里是TA',
+    quote: '你嘴上全是演技，眼里全是破绽。',
+    labels: ['口是心非表演家', '暗恋戏精'],
     summary:
       '你暗恋的方式是「全程演技」：明明在意到失眠，表面云淡风轻；句句嫌弃，步步破功。你把喜欢拍成了一部谍战剧——编剧是你，主演是你，唯一的观众还是你自己。',
     detail: [
@@ -56,6 +60,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'crush-direct',
     title: '直球冲锋型',
     tagline: '心动不过夜，亮牌要趁早',
+    quote: '被拒绝不丢人，错过才丢人——你的信条救了你。',
+    labels: ['暗恋直球选手', '心动不过夜'],
     summary:
       '你的暗恋保质期极短：从心动到亮牌，中间最多隔三天。你的人生信条是「被拒绝不丢人，错过才丢人」——与其在心里内耗一百集，不如当面把话说完，痛快拿一个答案。',
     detail: [
@@ -77,6 +83,8 @@ const REPORTS: TestDefinition['reports'] = {
     id: 'crush-slow',
     title: '细水长流型',
     tagline: '不惊动你，只铺满你',
+    quote: '渗透是你的温柔战术：不惊动你，只铺满你。',
+    labels: ['细水长流型暗恋', '日常渗透大师'],
     summary:
       '你的暗恋像渗灌：不制造浪花，只制造日常。TA的口味、习惯、随口提过的愿望，你全部记得并且悄悄兑现——等TA某天回头，才发现生活里早已处处是你。',
     detail: [
