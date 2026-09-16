@@ -109,10 +109,4 @@ describe('test flow pages (M1)', () => {
     expect(appStyles).toContain('width: 100%')
     expect(appStyles).not.toContain('calc(100% + 20rpx)')
   })
-
-  it('imports View on the privacy page so weapp runtime can render sections', () => {
-    const privacy = readFileSync(resolve(miniappRoot(), 'src/pages/privacy/index.tsx'), 'utf8')
-    expect(privacy).toContain("from '@tarojs/components'")
-    expect(privacy).toMatch(/import \{[^}]*\bView\b[^}]*\} from '@tarojs\/components'/)
-  })
 })

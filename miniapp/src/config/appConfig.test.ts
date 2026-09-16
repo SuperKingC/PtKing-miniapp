@@ -65,11 +65,12 @@ describe('WeChat app config (M0 skeleton)', () => {
     }
   })
 
-  it('registers the privacy sub page with its source file (settings merged into me page)', () => {
+  it('keeps settings merged into the me page and ships no privacy sub page', () => {
     const configSource = readFileSync(resolve(miniappRoot(), 'src/app.config.ts'), 'utf8')
 
-    expect(configSource).toContain("'pages/privacy/index'")
-    expect(existsSync(resolve(miniappRoot(), 'src/pages/privacy/index.tsx'))).toBe(true)
+    // 隐私政策页已整页下线（含我的页入口），合规口径走平台侧隐私保护指引声明
+    expect(configSource).not.toContain("'pages/privacy/index'")
+    expect(existsSync(resolve(miniappRoot(), 'src/pages/privacy/index.tsx'))).toBe(false)
     // 设置内容并入我的页后，settings 页不应再注册
     expect(configSource).not.toContain("'pages/settings/index'")
   })
@@ -109,7 +110,6 @@ describe('WeChat app config (M0 skeleton)', () => {
       'pages/test-detail/index.config.ts',
       'pages/test-play/index.config.ts',
       'pages/test-report/index.config.ts',
-      'pages/privacy/index.config.ts',
     ] as const
 
     for (const file of pageConfigs) {

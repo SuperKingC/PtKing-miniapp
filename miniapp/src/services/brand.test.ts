@@ -25,7 +25,6 @@ describe('visible brand', () => {
       'src/pages/me/index.tsx',
       'src/pages/test-report/index.tsx',
       'src/pages/tarot/index.tsx',
-      'src/pages/privacy/index.tsx',
       'src/services/reportShareCard.ts',
     ]
     const joined = files.map((file) => readFileSync(resolve(miniappRoot(), file), 'utf8')).join('\n')

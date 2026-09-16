@@ -44,7 +44,7 @@ describe('share capability wiring', () => {
     expect(me).not.toContain('未完成测试')
     expect(me).not.toContain('已做测试')
     expect(me).not.toContain('塔罗历史')
-    expect(me).toContain('/pages/privacy/index')
+    expect(me).not.toContain('/pages/privacy/index')
     expect(me).toContain("openType={entry.contact ? 'contact' : undefined}")
     expect(me).toContain('me-page__switch')
     expect(me).toContain("changeTheme(on ? 'dark' : 'light')")

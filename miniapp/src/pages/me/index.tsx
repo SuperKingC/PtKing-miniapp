@@ -16,7 +16,6 @@ import { APP_SHARE_TITLE } from '../../services/brand'
 import { clearTestRecords, loadTestRecords } from '../../services/testRecords'
 import meBannerImg from '../../assets/illus/me-banner-panel-v12.png'
 import iconClear from '../../assets/illus/icon-me-clear-v8.png'
-import iconPrivacy from '../../assets/illus/icon-me-privacy-v8.png'
 import iconShare from '../../assets/illus/icon-me-share-v8.png'
 import iconFeedback from '../../assets/illus/icon-me-feedback-v8.png'
 import iconTheme from '../../assets/illus/icon-me-theme-v8.png'
@@ -52,7 +51,7 @@ function SlimSwitch({
   )
 }
 
-// 我的页：数据管理直出（清空测试记录，二次确认）+ 主题/震动开关 + 隐私条款 + 分享 + 问题反馈。
+// 我的页：数据管理直出（清空测试记录，二次确认）+ 主题/震动开关 + 分享 + 问题反馈。
 export default function MePage() {
   useTabBarSelected(3)
   const theme = useAppTheme()
@@ -104,7 +103,6 @@ export default function MePage() {
 
   const ENTRIES: MeEntry[] = [
     { id: 'clear', label: `清空测试记录${recordCount > 0 ? `（${recordCount} 条）` : ''}`, icon: iconClear, onTap: clearRecords },
-    { id: 'privacy', label: '隐私政策与用户条款', icon: iconPrivacy, onTap: () => { wx.navigateTo({ url: '/pages/privacy/index' }) } },
     { id: 'share', label: '分享给好友', icon: iconShare, contact: false },
     { id: 'feedback', label: '问题反馈', icon: iconFeedback, contact: true },
   ]

@@ -94,12 +94,4 @@ describe('体验入口契约', () => {
     expect(source('app.scss')).not.toContain('.pressable--pressed')
     expect(source('app.scss')).toContain('.button-hover')
   })
-
-  it('keeps the privacy page left-aligned with a separate header', () => {
-    const page = source('pages/privacy/index.tsx')
-    const styles = source('pages/privacy/index.scss')
-    expect(page).toContain('privacy-page__header')
-    expect(styles).toContain('text-align: left')
-    expect(styles).not.toContain('text-align: justify')
-  })
 })
