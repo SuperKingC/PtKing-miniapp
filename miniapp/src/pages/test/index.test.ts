@@ -200,8 +200,10 @@ describe('测试首页软陶单列布局', () => {
     expect(hero).toContain('margin-top: -56rpx')
     expect(heroImg).toContain('width: 100%')
     expect(heroImg).toContain('height: auto')
-    /* 影随烘焙形状（猫+云+圆角卡）：drop-shadow 随形，不用容器盒阴影避免图片直边下露出实条 */
-    expect(heroImg).toContain('drop-shadow')
+    /* 影随烘焙形状（猫+云+圆角卡）：drop-shadow 随形，不用容器盒阴影避免图片直边下露出实条；
+       但 filter 必须延迟挂载（--shadowed 修饰类），基类首帧不带 filter，避免解码前光栅出矩形陈旧纹理 */
+    expect(heroImg).not.toContain('drop-shadow')
+    expect(styleBlock('.test-page__hero-img--shadowed')).toContain('drop-shadow')
     expect(heroImg).not.toContain('overflow: hidden')
     expect(styles).not.toContain('test-page__hero-shade')
     /* 按钮剖面提为全局令牌，与二级页主 CTA 同层（值逐像素采样，见 app.scss） */
@@ -213,8 +215,10 @@ describe('测试首页软陶单列布局', () => {
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
     expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
     /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会让 filter 阴影层按未解码态出方形边）。
-       断言做空白容忍（JSX 属性已折多行书写） */
-    expect(source.replace(/\s+/g, ' ')).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix"')
+       className 走表达式（基类首帧无 filter，onLoad 后再挂 --shadowed），断言做空白容忍 */
+    const flat = source.replace(/\s+/g, ' ')
+    expect(flat).toContain("className={heroShadowed ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'} src={heroCardImg} mode=\"widthFix\"")
+    expect(flat).not.toContain('src={heroCardImg} mode="widthFix" lazyLoad')
     expect(source).not.toContain('hero-shade')
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill"/)
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill" lazyLoad/)
@@ -234,9 +238,12 @@ describe('测试首页软陶单列布局', () => {
     expect(heroImg).not.toContain('animation')
     /* 门控本体保留（onLoad/定时器兜底置 heroReady），首帧浅色方框修复不回归 */
     expect(source).toContain('const [heroReady, setHeroReady] = useState(false)')
-    expect(source).toContain('onLoad={() => setHeroReady(true)}')
-    /* 门控期间 height 一起压 0：否则容器预留盒高会让 widthFix 在解码前拿到非零盒，
-       filter 层首帧光栅出矩形陈旧纹理；释放时 0→全高的几何变化强制带解码内容重光栅 */
+    expect(source).toContain('onLoad={revealHero}')
+    /* 门控期间 height 一起压 0：藏住未解码像素且不让早期光栅有尺寸 */
     expect(source).toContain("heroReady ? undefined : 'opacity: 0; height: 0'")
+    /* 阴影层延迟挂载：onLoad 后再等一拍加 --shadowed 类，filter 第一次光栅就用已解码内容 */
+    expect(source).toContain('const [heroShadowed, setHeroShadowed] = useState(false)')
+    expect(source).toContain('setTimeout(() => setHeroShadowed(true), 120)')
+    expect(source).toContain("'test-page__hero-img test-page__hero-img--shadowed'")
   })
 })

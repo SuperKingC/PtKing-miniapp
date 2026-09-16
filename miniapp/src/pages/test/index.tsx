@@ -49,14 +49,19 @@ export default function TestPage() {
   const theme = useAppTheme()
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
-  /* hero 图解码完成前不参与渲染：真机上 filter 阴影层的合成纹理不随图片解码失效，
-     首帧会按未解码的矩形光栅出一条浅色方框（滚动重绘才恢复）。门控期间连 height 一起
-     压 0：容器预留了盒高后 widthFix 可能在解码前就拿到非零盒，filter 层会在「有尺寸
-     但未解码」的首帧光栅出矩形陈旧纹理；onLoad 后 height 0→全高的几何变化＋opacity
-     跳变一起强制该层带已解码内容重光栅，容器盒高预留兜住布局不跳；定时器兜底永隐 */
+  /* hero 图解码完成前不参与渲染：门控期间 opacity+height 压 0 藏住未解码像素；
+     定时器兜底 load 事件异常导致的永隐 */
   const [heroReady, setHeroReady] = useState(false)
+  /* 阴影层延迟挂载：filter 合成纹理首帧光栅后不随图片解码失效，解码前光栅会留下
+     浅色矩形陈旧纹理（真机实测滚动重绘才恢复）。onLoad 后再等一拍才挂 filter 类，
+     让阴影层第一次光栅就用已解码内容，从根上不存在可残留的矩形；与 opacity 门控分工 */
+  const [heroShadowed, setHeroShadowed] = useState(false)
+  const revealHero = () => {
+    setHeroReady(true)
+    setTimeout(() => setHeroShadowed(true), 120)
+  }
   useEffect(() => {
-    const t = setTimeout(() => setHeroReady(true), 1500)
+    const t = setTimeout(revealHero, 1500)
     return () => clearTimeout(t)
   }, [])
   /* 分类切换闪屏（实机录屏逐帧复现+automator offset 采样量化）：页面带非零滚动位
@@ -179,11 +184,11 @@ export default function TestPage() {
             {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满。
                 不挂 lazyLoad：首屏图延迟解码会让 filter 阴影层先按未解码态光栅一版方形边 */}
             <Image
-              className="test-page__hero-img"
+              className={heroShadowed ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'}
               src={heroCardImg}
               mode="widthFix"
               style={heroReady ? undefined : 'opacity: 0; height: 0'}
-              onLoad={() => setHeroReady(true)}
+              onLoad={revealHero}
             />
           </View>}
           {resume && <View className="test-page__resume" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>

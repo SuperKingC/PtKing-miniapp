@@ -80,11 +80,16 @@
   display: block;
   width: 100%;
   height: auto;
-  /* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条 */
-  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
   /* 禁给 opacity 加过渡或动画：门控靠 onLoad 后那次「瞬时」opacity 跳变
-     强制 filter 阴影层带已解码内容重光栅；opacity 渐变走合成器、不触发重光栅，
-     会把首帧未解码的浅色方框陈旧纹理原样保留（滚动重绘才恢复）。2026-09-15 回归教训 */
+     隐藏未解码像素；opacity 渐变走合成器、不触发重光栅。2026-09-15 回归教训 */
+}
+
+/* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条。
+   延迟挂载（onLoad 后再等一拍加本类）：filter 合成纹理首帧光栅后不随图片
+   解码失效，解码前光栅会留下浅色矩形陈旧纹理（滚动重绘才恢复）；让阴影层
+   第一次光栅就用已解码内容，从根上不存在可残留的矩形 */
+.test-page__hero-img--shadowed {
+  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
 }
 
 .test-page__section {
