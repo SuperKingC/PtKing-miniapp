@@ -217,7 +217,7 @@ describe('测试首页软陶单列布局', () => {
     /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会让 filter 阴影层按未解码态出方形边）。
        className 走表达式（基类首帧无 filter，onLoad 后再挂 --shadowed），断言做空白容忍 */
     const flat = source.replace(/\s+/g, ' ')
-    expect(flat).toContain("className={heroShadowed ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'} src={heroCardImg} mode=\"widthFix\"")
+    expect(flat).toContain("className={heroShadowStage === 2 ? 'test-page__hero-img test-page__hero-img--shadowed-b' : heroShadowStage >= 1 ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'} src={heroCardImg} mode=\"widthFix\"")
     expect(flat).not.toContain('src={heroCardImg} mode="widthFix" lazyLoad')
     expect(source).not.toContain('hero-shade')
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill"/)
@@ -241,9 +241,12 @@ describe('测试首页软陶单列布局', () => {
     expect(source).toContain('onLoad={revealHero}')
     /* 门控期间 height 一起压 0：藏住未解码像素且不让早期光栅有尺寸 */
     expect(source).toContain("heroReady ? undefined : 'opacity: 0; height: 0'")
-    /* 阴影层延迟挂载：onLoad 后再等一拍加 --shadowed 类，filter 第一次光栅就用已解码内容 */
-    expect(source).toContain('const [heroShadowed, setHeroShadowed] = useState(false)')
-    expect(source).toContain('setTimeout(() => setHeroShadowed(true), 120)')
-    expect(source).toContain("'test-page__hero-img test-page__hero-img--shadowed'")
+    /* 阴影层延迟挂载＋阶梯强制重光栅：filter 取值变更是 paint 变更、必然失效重光栅，
+       阶梯切回保证最终态是一次带解码内容的光栅，无需滚动 */
+    expect(source).toContain('const [heroShadowStage, setHeroShadowStage] = useState(0)')
+    expect(source).toContain('setTimeout(() => setHeroShadowStage(1), 120)')
+    expect(source).toContain('setTimeout(() => setHeroShadowStage(2), 700)')
+    expect(source).toContain('setTimeout(() => setHeroShadowStage(3), 1300)')
+    expect(styles).toContain('.test-page__hero-img--shadowed-b')
   })
 })

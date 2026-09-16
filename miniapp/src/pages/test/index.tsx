@@ -52,13 +52,16 @@ export default function TestPage() {
   /* hero 图解码完成前不参与渲染：门控期间 opacity+height 压 0 藏住未解码像素；
      定时器兜底 load 事件异常导致的永隐 */
   const [heroReady, setHeroReady] = useState(false)
-  /* 阴影层延迟挂载：filter 合成纹理首帧光栅后不随图片解码失效，解码前光栅会留下
-     浅色矩形陈旧纹理（真机实测滚动重绘才恢复）。onLoad 后再等一拍才挂 filter 类，
-     让阴影层第一次光栅就用已解码内容，从根上不存在可残留的矩形；与 opacity 门控分工 */
-  const [heroShadowed, setHeroShadowed] = useState(false)
+  /* 阴影层延迟挂载＋阶梯强制重光栅：filter 合成纹理首帧光栅后不随解码失效，真机解码
+     可能滞后 onLoad 数百 ms，单靠首挂时机不够。onLoad 后 120ms 首挂 --shadowed，
+     700ms 切等价取值 --shadowed-b、1300ms 切回：filter 取值变更是 paint 变更、必然
+     失效重光栅，阶梯保证最终态是一次带解码内容的光栅，无需滚动；与 opacity 门控分工 */
+  const [heroShadowStage, setHeroShadowStage] = useState(0)
   const revealHero = () => {
     setHeroReady(true)
-    setTimeout(() => setHeroShadowed(true), 120)
+    setTimeout(() => setHeroShadowStage(1), 120)
+    setTimeout(() => setHeroShadowStage(2), 700)
+    setTimeout(() => setHeroShadowStage(3), 1300)
   }
   useEffect(() => {
     const t = setTimeout(revealHero, 1500)
@@ -184,7 +187,7 @@ export default function TestPage() {
             {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满。
                 不挂 lazyLoad：首屏图延迟解码会让 filter 阴影层先按未解码态光栅一版方形边 */}
             <Image
-              className={heroShadowed ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'}
+              className={heroShadowStage === 2 ? 'test-page__hero-img test-page__hero-img--shadowed-b' : heroShadowStage >= 1 ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'}
               src={heroCardImg}
               mode="widthFix"
               style={heroReady ? undefined : 'opacity: 0; height: 0'}

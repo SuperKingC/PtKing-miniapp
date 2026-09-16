@@ -92,6 +92,14 @@
   filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
 }
 
+/* 与 --shadowed 视觉完全等价（仅多一枚零 alpha 无操作阴影），唯一用途是强制 filter 层
+   重光栅：真机解码可能滞后 onLoad 数百 ms，首挂 filter 仍可能光栅到未解码矩形且纹理
+   不随解码失效；切换 filter 取值是 paint 变更、必然失效重光栅，阶梯切回保证最终态正确，
+   无需滚动。禁改用 opacity/transform 做此目的（合成器属性不失效 filter 纹理） */
+.test-page__hero-img--shadowed-b {
+  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1)) drop-shadow(0 0 0 rgba(150, 120, 85, 0));
+}
+
 .test-page__section {
   margin-bottom: 28rpx;
 }
