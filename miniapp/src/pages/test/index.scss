@@ -71,8 +71,8 @@
   margin-bottom: 28rpx;
   /* 按图真实宽高比（675:312）在 100% 宽（686rpx）下显式预留盒高：
      微信原生下拉刷新会整页重载重挂组件，widthFix+height:auto 在 onLoad 前
-     高度未知会塌陷，与 heroReady 门控的透明态叠加成「撑开+弹出」的闪；
-     预留后加载前后布局不变，高度跳变消除（只动布局，不碰光栅触发） */
+     高度未知会塌陷＝「撑开」的闪；预留后加载前后布局不变，高度跳变消除
+     （只动布局，不碰光栅） */
   height: 317rpx;
 }
 
@@ -80,24 +80,10 @@
   display: block;
   width: 100%;
   height: auto;
-  /* 禁给 opacity 加过渡或动画：门控靠 onLoad 后那次「瞬时」opacity 跳变
-     隐藏未解码像素；opacity 渐变走合成器、不触发重光栅。2026-09-15 回归教训 */
-}
-
-/* 影随烘焙形状（猫+云+圆角卡），不用容器盒阴影避免图片直边下露出实条。
-   延迟挂载（onLoad 后再等一拍加本类）：filter 合成纹理首帧光栅后不随图片
-   解码失效，解码前光栅会留下浅色矩形陈旧纹理（滚动重绘才恢复）；让阴影层
-   第一次光栅就用已解码内容，从根上不存在可残留的矩形 */
-.test-page__hero-img--shadowed {
-  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1));
-}
-
-/* 与 --shadowed 视觉完全等价（仅多一枚零 alpha 无操作阴影），唯一用途是强制 filter 层
-   重光栅：真机解码可能滞后 onLoad 数百 ms，首挂 filter 仍可能光栅到未解码矩形且纹理
-   不随解码失效；切换 filter 取值是 paint 变更、必然失效重光栅，阶梯切回保证最终态正确，
-   无需滚动。禁改用 opacity/transform 做此目的（合成器属性不失效 filter 纹理） */
-.test-page__hero-img--shadowed-b {
-  filter: drop-shadow(0 8rpx 10rpx rgba(150, 120, 85, 0.16)) drop-shadow(0 20rpx 30rpx rgba(150, 120, 85, 0.1)) drop-shadow(0 0 0 rgba(150, 120, 85, 0));
+  /* 禁挂投影滤镜与透明度门控（架构决定，2026-09-16）：真机实测投影滤镜层对懒解码图
+     会残留浅色矩形陈旧纹理（滚动重绘才恢复），延迟首挂/height 压 0/阶梯强制重光栅
+     四轮补丁均真机无效；阴影改由资产烘焙或接受无投影，渲染保持最简形态，
+     未解码占位帧（若有）随解码自愈、不需滚动 */
 }
 
 .test-page__section {

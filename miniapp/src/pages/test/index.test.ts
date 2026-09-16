@@ -200,10 +200,10 @@ describe('测试首页软陶单列布局', () => {
     expect(hero).toContain('margin-top: -56rpx')
     expect(heroImg).toContain('width: 100%')
     expect(heroImg).toContain('height: auto')
-    /* 影随烘焙形状（猫+云+圆角卡）：drop-shadow 随形，不用容器盒阴影避免图片直边下露出实条；
-       但 filter 必须延迟挂载（--shadowed 修饰类），基类首帧不带 filter，避免解码前光栅出矩形陈旧纹理 */
+    /* 架构决定（2026-09-16）：投影滤镜层对懒解码图真机残留浅色矩形陈旧纹理，
+       四轮补丁无效后 hero 整体不挂投影滤镜与透明度门控，渲染保持最简 */
     expect(heroImg).not.toContain('drop-shadow')
-    expect(styleBlock('.test-page__hero-img--shadowed')).toContain('drop-shadow')
+    expect(styles).not.toContain('hero-img--shadowed')
     expect(heroImg).not.toContain('overflow: hidden')
     expect(styles).not.toContain('test-page__hero-shade')
     /* 按钮剖面提为全局令牌，与二级页主 CTA 同层（值逐像素采样，见 app.scss） */
@@ -214,10 +214,10 @@ describe('测试首页软陶单列布局', () => {
     expect(styleBlock('.test-page__card-spot')).toContain('filter: none')
     /* 分类切换大增删卡片时 lazy 图重触发解码缺图一帧（整列闪），tile 不挂 lazyLoad */
     expect(source).not.toContain('cardSpot(definition)} mode="aspectFit" lazyLoad')
-    /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会让 filter 阴影层按未解码态出方形边）。
-       className 走表达式（基类首帧无 filter，onLoad 后再挂 --shadowed），断言做空白容忍 */
+    /* 今日推荐整卡等宽自适应：widthFix、不挂 lazyLoad（首屏图延迟解码会出一帧占位矩形）。
+       渲染最简：无投影滤镜、无透明度门控，断言做空白容忍 */
     const flat = source.replace(/\s+/g, ' ')
-    expect(flat).toContain("className={heroShadowStage === 2 ? 'test-page__hero-img test-page__hero-img--shadowed-b' : heroShadowStage >= 1 ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'} src={heroCardImg} mode=\"widthFix\"")
+    expect(flat).toContain('className="test-page__hero-img" src={heroCardImg} mode="widthFix"')
     expect(flat).not.toContain('src={heroCardImg} mode="widthFix" lazyLoad')
     expect(source).not.toContain('hero-shade')
     expect(source).not.toMatch(/hero-card-v\d+\.png" mode="scaleToFill"/)
@@ -226,27 +226,20 @@ describe('测试首页软陶单列布局', () => {
     expect(styles).not.toContain('--press')
   })
 
-  it('重载不闪且不回浅色方框：hero 容器预留盒高（不随 onLoad 塌陷），门控 opacity 禁过渡（保瞬时重光栅）', () => {
+  it('重载不闪且无浅色方框：hero 容器预留盒高（不随 onLoad 塌陷），渲染最简（无投影滤镜/无透明度门控）', () => {
     /* 微信原生下拉刷新整页重载会重挂组件：widthFix+height:auto 在 onLoad 前高度未知
-       会塌陷，叠加门控透明态 = 「撑开+弹出」的闪；预留盒高消掉高度跳变 */
+       会塌陷＝「撑开」的闪；预留盒高消掉高度跳变 */
     const hero = styleBlock('.test-page__hero')
     expect(hero).toContain('height: 317rpx')
-    /* opacity 过渡是合成器动画、不触发 filter 重光栅，会把首帧浅色方框陈旧纹理淡入保留；
-       门控必须靠瞬时 opacity 跳变强制重光栅，故 hero-img 禁任何 transition/animation */
+    /* 架构决定：投影滤镜层与透明度门控的合成层都会缓存未解码矩形陈旧纹理（真机滚动才恢复），
+       延迟首挂/height 压 0/阶梯强制重光栅四轮补丁均无效后整体移除；禁任何过渡动画 */
     const heroImg = styleBlock('.test-page__hero-img')
+    expect(heroImg).not.toContain('filter')
     expect(heroImg).not.toContain('transition')
     expect(heroImg).not.toContain('animation')
-    /* 门控本体保留（onLoad/定时器兜底置 heroReady），首帧浅色方框修复不回归 */
-    expect(source).toContain('const [heroReady, setHeroReady] = useState(false)')
-    expect(source).toContain('onLoad={revealHero}')
-    /* 门控期间 height 一起压 0：藏住未解码像素且不让早期光栅有尺寸 */
-    expect(source).toContain("heroReady ? undefined : 'opacity: 0; height: 0'")
-    /* 阴影层延迟挂载＋阶梯强制重光栅：filter 取值变更是 paint 变更、必然失效重光栅，
-       阶梯切回保证最终态是一次带解码内容的光栅，无需滚动 */
-    expect(source).toContain('const [heroShadowStage, setHeroShadowStage] = useState(0)')
-    expect(source).toContain('setTimeout(() => setHeroShadowStage(1), 120)')
-    expect(source).toContain('setTimeout(() => setHeroShadowStage(2), 700)')
-    expect(source).toContain('setTimeout(() => setHeroShadowStage(3), 1300)')
-    expect(styles).toContain('.test-page__hero-img--shadowed-b')
+    expect(styles).not.toContain('hero-img--shadowed')
+    expect(source).not.toContain('heroReady')
+    expect(source).not.toContain('heroShadowStage')
+    expect(source).not.toContain('opacity: 0; height: 0')
   })
 })

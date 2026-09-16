@@ -49,24 +49,6 @@ export default function TestPage() {
   const theme = useAppTheme()
   const [definitions, setDefinitions] = useState(listTestDefinitions)
   const [activeCategory, setActiveCategory] = useState<TestCategoryKey>('all')
-  /* hero 图解码完成前不参与渲染：门控期间 opacity+height 压 0 藏住未解码像素；
-     定时器兜底 load 事件异常导致的永隐 */
-  const [heroReady, setHeroReady] = useState(false)
-  /* 阴影层延迟挂载＋阶梯强制重光栅：filter 合成纹理首帧光栅后不随解码失效，真机解码
-     可能滞后 onLoad 数百 ms，单靠首挂时机不够。onLoad 后 120ms 首挂 --shadowed，
-     700ms 切等价取值 --shadowed-b、1300ms 切回：filter 取值变更是 paint 变更、必然
-     失效重光栅，阶梯保证最终态是一次带解码内容的光栅，无需滚动；与 opacity 门控分工 */
-  const [heroShadowStage, setHeroShadowStage] = useState(0)
-  const revealHero = () => {
-    setHeroReady(true)
-    setTimeout(() => setHeroShadowStage(1), 120)
-    setTimeout(() => setHeroShadowStage(2), 700)
-    setTimeout(() => setHeroShadowStage(3), 1300)
-  }
-  useEffect(() => {
-    const t = setTimeout(revealHero, 1500)
-    return () => clearTimeout(t)
-  }, [])
   /* 分类切换闪屏（实机录屏逐帧复现+automator offset 采样量化）：页面带非零滚动位
      （含 reLaunch 恢复的残留 ~55px）切分类，推荐区卸载内容高度骤减，WebView 对
      越界滚动位逐帧钳制回弹，整页内容连帧窜动。方案：切换当拍把视口归零——
@@ -185,13 +167,13 @@ export default function TestPage() {
             openDetail(daily.id)
           }}>
             {/* 参考图整卡：标题/副标题/猫/云全部烘焙在图里，等宽铺满。
-                不挂 lazyLoad：首屏图延迟解码会让 filter 阴影层先按未解码态光栅一版方形边 */}
+                不挂 lazyLoad：首屏图延迟解码会先出一帧占位矩形（解码后自愈），常驻解码更稳。
+                不挂 filter/opacity 门控：真机 filter 阴影层对懒解码图残留浅色矩形陈旧纹理，
+                四轮补丁无效后架构性移除（见 index.scss 同名块注释） */}
             <Image
-              className={heroShadowStage === 2 ? 'test-page__hero-img test-page__hero-img--shadowed-b' : heroShadowStage >= 1 ? 'test-page__hero-img test-page__hero-img--shadowed' : 'test-page__hero-img'}
+              className="test-page__hero-img"
               src={heroCardImg}
               mode="widthFix"
-              style={heroReady ? undefined : 'opacity: 0; height: 0'}
-              onLoad={revealHero}
             />
           </View>}
           {resume && <View className="test-page__resume" onClick={() => wx.navigateTo({ url: `/pages/test-play/index?testId=${encodeURIComponent(resume.definition.id)}` })}>
