@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-16 10:06
+- 原因：用户三反馈边缘仍有「浅浅的黑线」。取证（_scratch_edge_diag3.py）：资产贴白卡合成剖面干净（d0 偏亮 1.11-1.15、d1-9 为 0.97-1.01）；实机截图裁切左缘剖面 白卡 226 → 灰环 177-194 → 牌身 190-197，且灰环绕全周含顶边——资产暗环与纯下投影都到不了顶边。模拟 CSS 复现：`.me-page__icon` 的 drop-shadow 中 blur > offset 的层（0 3rpx 3rpx 0.22 侧边陡环 + 0 10rpx 16rpx 0.12 模糊锥翻顶边）在白卡上叠出贴轮廓灰环。
+- 修改：index.scss `.me-page__icon` 投影改严格向下、每层 blur ≤ offset：`drop-shadow(0 4rpx 0 rgba(150,118,82,0.18)) drop-shadow(0 12rpx 8rpx rgba(150,118,82,0.08))`（实色接触带锁底部厚度 + 软影 offset 12 > blur 8 顶边零渗）。模拟剖面：顶边外 255.0 与白卡同、侧边外 251-252 缓环境光、底部保留贴地带。shareWiring 6 例过；build:weapp fresh dist 待验收。
+
 - 时间：2026-09-16 09:31
 - 原因：用户反馈第一轮修复后图标边缘仍有「浅浅的黑线」。取证（ref 剖面与设计稿 ui-3_v2.png 逐点比对）：暗环是满 alpha 像素上的烘焙深边——设计稿牌体外缘自带 ~10-15px 暗边渐变（最外 2px 亮度 86%→内渐 99%），在参考稿奶油底上自然、贴 app 白卡即显黑线；非 BEN2 渗色残留。项目惯例：列表图标影一律 CSS，资产不带烘焙影。
 - 修改：`clean-icon-fringe.py` 重写为整条边缘带熨平——距轮廓外(a==0)BAND=16px 内 a>0 像素 RGB 用 interior 色源 8 邻域迭代膨胀替换（alpha 形状不动），DEPTHS=(16,12,8,5,3) 逐级退浅色源兜底星/月尖小物件；`compress-v9.mjs` 删 state 重压 TinyPNG 同名覆盖包内 `icon-me-*-v8.png`（10.1-11.9KB/张）。修后六枚 edge ratio 均值 0.99-1.0，before/after 对照图（prepared/_cmp/_before_after_v2.png）目检黑线消失。build:weapp fresh dist 待开发者工具验收（同名覆盖需清「全部缓存」再重编译）。

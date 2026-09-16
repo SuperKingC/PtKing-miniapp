@@ -92,8 +92,11 @@ page {
   height: 84rpx;
   margin-right: 16rpx;
   filter: none;
-  /* 软陶物件接触投影：贴卡面的近影 + 随形的弥散远影（与 tile 同套路） */
-  filter: drop-shadow(0 3rpx 3rpx rgba(150, 118, 82, 0.22)) drop-shadow(0 10rpx 16rpx rgba(150, 118, 82, 0.12));
+  /* 软陶物件接触投影：只允许严格向下、且每层 blur ≤ offset——
+     blur > offset 时模糊锥翻过顶边/扫过侧边，在白卡上成贴轮廓灰环
+     （2026-09-16 实机「浅浅的黑线」根因）。实色接触带锁底部厚度，
+     软影 offset 12 > blur 8 保证顶边零渗。 */
+  filter: drop-shadow(0 4rpx 0 rgba(150, 118, 82, 0.18)) drop-shadow(0 12rpx 8rpx rgba(150, 118, 82, 0.08));
 }
 
 .me-page__entry-label,
