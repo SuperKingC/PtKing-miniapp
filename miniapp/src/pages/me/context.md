@@ -1,5 +1,9 @@
 # 工作记录
 
+- 时间：2026-09-16 09:31
+- 原因：用户反馈第一轮修复后图标边缘仍有「浅浅的黑线」。取证（ref 剖面与设计稿 ui-3_v2.png 逐点比对）：暗环是满 alpha 像素上的烘焙深边——设计稿牌体外缘自带 ~10-15px 暗边渐变（最外 2px 亮度 86%→内渐 99%），在参考稿奶油底上自然、贴 app 白卡即显黑线；非 BEN2 渗色残留。项目惯例：列表图标影一律 CSS，资产不带烘焙影。
+- 修改：`clean-icon-fringe.py` 重写为整条边缘带熨平——距轮廓外(a==0)BAND=16px 内 a>0 像素 RGB 用 interior 色源 8 邻域迭代膨胀替换（alpha 形状不动），DEPTHS=(16,12,8,5,3) 逐级退浅色源兜底星/月尖小物件；`compress-v9.mjs` 删 state 重压 TinyPNG 同名覆盖包内 `icon-me-*-v8.png`（10.1-11.9KB/张）。修后六枚 edge ratio 均值 0.99-1.0，before/after 对照图（prepared/_cmp/_before_after_v2.png）目检黑线消失。build:weapp fresh dist 待开发者工具验收（同名覆盖需清「全部缓存」再重编译）。
+
 - 时间：2026-09-15 19:45
 - 原因：用户反馈列表图标边缘发脏。取证（_scratch_edge_diag.py）：BEN2 透明区 RGB=(0,0,0)，prepare/clean 两段 LANCZOS resize 走 straight-alpha，黑 RGB 渗进半透明边像素（fringe 实测 meanRGB ≈60-94、宽 1-3px），贴白卡合成显灰黑脏边，`.me-page__icon` 的 drop-shadow 再投影更脏；d18fa54 的 128px 降尺直缩再放大一次。
 - 修改：新增 `clean-icon-fringe.py`（fringe RGB 用 solid 区颜色 8 邻域迭代膨胀替换 + 预乘 alpha resize 到 128px，alpha 形状不动）；`compress-v9.mjs` 走 TinyPNG 同名覆盖包内 `icon-me-*-v8.png`（11-12.6KB/张）；`prepare-ben2-me.py`/`clean-icon-stray.py` 的 resize 改预乘、prepare 加 defringe 步杜根。修后 fringe meanRGB 回物件本色（蓝牌 ≈195/203/204、米牌 ≈232/201/166）。全量 568 测试过；build:weapp fresh dist 待开发者工具验收。
